@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>insightedge-packager</artifactId>
+
+    <parent>
+        <groupId>com.gigaspaces.insightedge</groupId>
+        <artifactId>insightedge-package</artifactId>
+        <version>0.3.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.10</version>
+        </dependency>
+
+        <!-- Scala -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>package-deployment</id>
+
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>scala-compile-first</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.scala-tools</groupId>
+                        <artifactId>maven-scala-plugin</artifactId>
+                        <version>2.15.2</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>com.gigaspaces.spark.packager.Launcher</mainClass>
+                                    <jvmArgs>
+                                        <!-- Basedir for project files -->
+                                        <jvmArg>-Dproject.directory=.</jvmArg>
+                                        <!-- Where all distribution contents will go before zipping -->
+                                        <jvmArg>-Doutput.exploded.directory=${project.build.directory}/package</jvmArg>
+                                        <!-- Final compressed file location and name -->
+                                        <jvmArg>
+                                            -Doutput.compressed.file=${project.build.directory}/gigaspaces-insightedge-${project.version}.zip
+                                        </jvmArg>
+                                        <!-- Compressed contents prefix -->
+                                        <jvmArg>-Doutput.contents.prefix=gigaspaces-insightedge-${project.version}</jvmArg>
+                                        <!-- Path to spark distribution file (tgz) -->
+                                        <jvmArg>-Ddist.spark=${dist.spark}</jvmArg>
+                                        <!-- Path to gigaspaces XAP distribution file (zip) -->
+                                        <jvmArg>-Ddist.xap=${dist.xap}</jvmArg>
+                                        <!-- Path to Zeppelin distribution file (tgz) -->
+                                        <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
+                                    </jvmArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Default path to spark distribution file (tgz) -->
+        <profile>
+            <id>default-dist-spark</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!dist.spark</name>
+                </property>
+            </activation>
+            <properties>
+                <dist.spark>${project.basedir}/dist/spark.tgz</dist.spark>
+            </properties>
+        </profile>
+
+        <!-- Default path to gigaspaces XAP distribution file (zip) -->
+        <profile>
+            <id>default-dist-xap</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!dist.xap</name>
+                </property>
+            </activation>
+            <properties>
+                <dist.xap>${project.basedir}/dist/gigaspaces.zip</dist.xap>
+            </properties>
+        </profile>
+
+        <!-- Default path to Zeppelin distribution file (tgz) -->
+        <profile>
+            <id>default-dist-zeppelin</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!dist.zeppelin</name>
+                </property>
+            </activation>
+            <properties>
+                <dist.zeppelin>${project.basedir}/dist/zeppelin.tar.gz</dist.zeppelin>
+            </properties>
+        </profile>
+
+    </profiles>
+</project>

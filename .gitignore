@@ -1,0 +1,75 @@
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+#*.jar
+*.war
+*.ear
+
+# IDE garbage
+*.iml
+*.ipr
+*.iws
+*.project
+*.classpath
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Ignore idea settings
+.idea/
+**/.idea/*
+**/*/*.iml
+**/.idea/*
+out/
+bin/*
+build/*
+
+# eclipse specific git ignore
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# Ignore target directories
+target/
+**/target/*
+
+#gigaspaces
+gigaspaces/*
+transaction.log
+=======
+### Scala template
+*.class
+*.log
+
+# sbt specific
+.cache
+.history
+.lib/
+lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+
+
+# Created by .ignore support plugin (hsz.mobi)

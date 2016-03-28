@@ -1,0 +1,455 @@
+{
+  "paragraphs": [
+    {
+      "text": "%md\n\u003e If you see \u0027Interpreter binding\u0027 above, just hit `Save` without deselecting any interpreters.\n\n## Welcome to InsightEdge tutorial.\n\n##### This tutorial shows some of basic features of InsightEdge:\n* saving RDDs\n* loading RDDs\n* loading RDDs via SQL queries\n* loading DataFrames\n* querying tables created with DataFrames\n\n##### This is a live tutorial, you can run the code yourself. _(click `Run` button in each paragraph from top to bottom)_",
+      "dateUpdated": "Mar 23, 2016 1:04:31 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458738770688_121330753",
+      "id": "20160323-091250_333199915",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003cblockquote\u003e\u003cp\u003eIf you see \u0027Interpreter binding\u0027 above, just hit \u003ccode\u003eSave\u003c/code\u003e without deselecting any interpreters.\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003ch2\u003eWelcome to InsightEdge tutorial.\u003c/h2\u003e\n\u003ch5\u003eThis tutorial shows some of basic features of InsightEdge:\u003c/h5\u003e\n\u003cul\u003e\n\u003cli\u003esaving RDDs\u003c/li\u003e\n\u003cli\u003eloading RDDs\u003c/li\u003e\n\u003cli\u003eloading RDDs via SQL queries\u003c/li\u003e\n\u003cli\u003eloading DataFrames\u003c/li\u003e\n\u003cli\u003equerying tables created with DataFrames\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch5\u003eThis is a live tutorial, you can run the code yourself. \u003cem\u003e(click \u003ccode\u003eRun\u003c/code\u003e button in each paragraph from top to bottom)\u003c/em\u003e\u003c/h5\u003e\n"
+      },
+      "dateCreated": "Mar 23, 2016 9:12:50 AM",
+      "dateStarted": "Mar 23, 2016 1:04:31 PM",
+      "dateFinished": "Mar 23, 2016 1:04:32 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading Product model",
+      "text": "%dep\nz.load(\"./quickstart/insightedge-examples.jar\")",
+      "dateUpdated": "Mar 23, 2016 1:04:34 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "tableHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458664216475_628607036",
+      "id": "20160322-123016_1480512033",
+      "dateCreated": "Mar 22, 2016 12:30:16 PM",
+      "dateStarted": "Mar 23, 2016 1:04:34 PM",
+      "dateFinished": "Mar 23, 2016 1:04:43 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n##### `Product` model in examples has next fields:\n* `id`: Long\n* `description`: String\n* `quantity`: Int\n* `featuredProduct`: Boolean\n\n##### This structure will be also printed in `Loading DataFrames` example",
+      "dateUpdated": "Mar 23, 2016 11:53:21 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458748242063_849271418",
+      "id": "20160323-115042_848878957",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch5\u003e\u003ccode\u003eProduct\u003c/code\u003e model in examples has next fields:\u003c/h5\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ccode\u003eid\u003c/code\u003e: Long\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003edescription\u003c/code\u003e: String\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003equantity\u003c/code\u003e: Int\u003c/li\u003e\n\u003cli\u003e\u003ccode\u003efeaturedProduct\u003c/code\u003e: Boolean\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch5\u003eThis structure will be also printed in \u003ccode\u003eLoading DataFrames\u003c/code\u003e example\u003c/h5\u003e\n"
+      },
+      "dateCreated": "Mar 23, 2016 11:50:42 AM",
+      "dateStarted": "Mar 23, 2016 11:53:20 AM",
+      "dateFinished": "Mar 23, 2016 11:53:20 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "saving RDDs",
+      "text": "%spark\nimport com.gigaspaces.spark.examples.basic.Product\nimport scala.util.Random\n\nval products \u003d (1 to 100000).map { i \u003d\u003e Product(i, \"Description of product \" + i, Random.nextInt(10) + Random.nextInt(10), if (Random.nextDouble() \u003c 0.2) true else false) }\nval generatedRdd \u003d sc.parallelize(products)\ngeneratedRdd.saveToGrid()",
+      "dateUpdated": "Mar 23, 2016 1:04:46 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "tableHide": false,
+        "title": true,
+        "lineNumbers": false,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458664305326_-516082238",
+      "id": "20160322-123145_868354728",
+      "dateCreated": "Mar 22, 2016 12:31:45 PM",
+      "dateStarted": "Mar 23, 2016 1:04:46 PM",
+      "dateFinished": "Mar 23, 2016 1:05:11 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading RDDs",
+      "text": "%spark\nval plainRdd \u003d sc.gridRdd[Product]()\nval count \u003d plainRdd.count()",
+      "dateUpdated": "Mar 23, 2016 10:46:57 AM",
+      "config": {
+        "colWidth": 4.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "tableHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458664709627_866483668",
+      "id": "20160322-123829_696506364",
+      "dateCreated": "Mar 22, 2016 12:38:29 PM",
+      "dateStarted": "Mar 23, 2016 10:46:57 AM",
+      "dateFinished": "Mar 23, 2016 10:47:01 AM",
+      "status": "FINISHED",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading RDDs with SQL",
+      "text": "%spark\nval sqlRdd \u003d sc.gridSql[Product](\"quantity \u003c ?\", Seq(5))\nval count \u003d sqlRdd.count()",
+      "dateUpdated": "Mar 23, 2016 10:47:23 AM",
+      "config": {
+        "colWidth": 4.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "tableHide": false,
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458664970075_2064190026",
+      "id": "20160322-124250_1579821413",
+      "dateCreated": "Mar 22, 2016 12:42:50 PM",
+      "dateStarted": "Mar 23, 2016 10:47:23 AM",
+      "dateFinished": "Mar 23, 2016 10:47:24 AM",
+      "status": "FINISHED",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading DataFrames",
+      "text": "%spark\nval df \u003d sc.gridDataFrame[Product]()\ndf.printSchema()\ndf.registerTempTable(\"product\")\nval count \u003d df.filter(df(\"quantity\") \u003c 5).count()",
+      "dateUpdated": "Mar 23, 2016 11:45:47 AM",
+      "config": {
+        "colWidth": 4.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458665145579_2071392986",
+      "id": "20160322-124545_549400901",
+      "dateCreated": "Mar 22, 2016 12:45:45 PM",
+      "dateStarted": "Mar 23, 2016 11:45:47 AM",
+      "dateFinished": "Mar 23, 2016 11:45:49 AM",
+      "status": "FINISHED",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n#### After executing `df.registerTempTable(\"product\")`, you can run SQL queries on the `product` table to perform interactive analysis",
+      "dateUpdated": "Mar 23, 2016 11:41:20 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458747579246_487440530",
+      "id": "20160323-113939_758113340",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003eAfter executing \u003ccode\u003edf.registerTempTable(\"product\")\u003c/code\u003e, you can run SQL queries on the \u003ccode\u003eproduct\u003c/code\u003e table to perform interactive analysis\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Mar 23, 2016 11:39:39 AM",
+      "dateStarted": "Mar 23, 2016 11:41:19 AM",
+      "dateFinished": "Mar 23, 2016 11:41:19 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Number of featured/usual products",
+      "text": "%sql\nselect\n    (case when featuredProduct \u003c\u003e 0 then \u0027featured\u0027 ELSE \u0027not-featured\u0027 END) as featured,\n    count(featuredProduct) as count \nfrom product\ngroup by featuredProduct \norder by featuredProduct ",
+      "dateUpdated": "Mar 23, 2016 12:07:20 PM",
+      "config": {
+        "colWidth": 6.0,
+        "graph": {
+          "mode": "pieChart",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "featured",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "count",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "yAxis": {
+              "name": "count",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458747965946_-512722720",
+      "id": "20160323-114605_1858792632",
+      "dateCreated": "Mar 23, 2016 11:46:05 AM",
+      "dateStarted": "Mar 23, 2016 12:07:03 PM",
+      "dateFinished": "Mar 23, 2016 12:07:04 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Number of products by quantity",
+      "text": "%sql\nselect quantity, count(quantity) as count \nfrom product \nwhere featuredProduct \u003d ${featured\u003dtrue,true|false}\ngroup by quantity \norder by quantity ",
+      "dateUpdated": "Mar 23, 2016 12:06:12 PM",
+      "config": {
+        "colWidth": 6.0,
+        "graph": {
+          "mode": "multiBarChart",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "quantity",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "count",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "quantity",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "count",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "title": true
+      },
+      "settings": {
+        "params": {
+          "featured": "true"
+        },
+        "forms": {
+          "featured": {
+            "name": "featured",
+            "defaultValue": "true",
+            "options": [
+              {
+                "value": "true"
+              },
+              {
+                "value": "false"
+              }
+            ],
+            "hidden": false
+          }
+        }
+      },
+      "jobName": "paragraph_1458665174405_1952303072",
+      "id": "20160322-124614_1574894951",
+      "dateCreated": "Mar 22, 2016 12:46:14 PM",
+      "dateStarted": "Mar 23, 2016 12:06:12 PM",
+      "dateFinished": "Mar 23, 2016 12:06:14 PM",
+      "status": "FINISHED",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n## Congratulations, it\u0027s done.\n##### You can create your own notebook in \u0027Notebook\u0027 menu. Good luck!",
+      "dateUpdated": "Mar 23, 2016 9:12:40 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458667380756_-1080130704",
+      "id": "20160322-132300_673016402",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch2\u003eCongratulations, it\u0027s done.\u003c/h2\u003e\n\u003ch5\u003eYou can create your own notebook in \u0027Notebook\u0027 menu. Good luck!\u003c/h5\u003e\n"
+      },
+      "dateCreated": "Mar 22, 2016 1:23:00 PM",
+      "dateStarted": "Mar 23, 2016 9:12:36 AM",
+      "dateFinished": "Mar 23, 2016 9:12:37 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458736181360_-254661391",
+      "id": "20160323-082941_1270698105",
+      "dateCreated": "Mar 23, 2016 8:29:41 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "InsightEdge basics",
+  "id": "INSIGHTEDGE-BASIC",
+  "angularObjects": {
+    "2BGGCKXRE": [],
+    "2BE7CF49X": []
+  },
+  "config": {
+    "looknfeel": "default"
+  },
+  "info": {}
+}
