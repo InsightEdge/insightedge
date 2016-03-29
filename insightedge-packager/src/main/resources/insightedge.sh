@@ -5,7 +5,7 @@ if [ -z "${INSIGHTEDGE_HOME}" ]; then
 fi
 
 THIS_SCRIPT_NAME=`basename "$0"`
-VERSION="0.3.0-SNAPSHOT"
+VERSION="0.3.0-ea"
 ARTIFACT="gigaspaces-insightedge-$VERSION"
 ARTIFACT_EC2="https://s3.amazonaws.com/insightedge/builds/gigaspaces-insightedge-0.3.0-ea.zip"
 

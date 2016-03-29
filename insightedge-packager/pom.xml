@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
-        <version>0.3.0-SNAPSHOT</version>
+        <version>0.3.0</version>
     </parent>
 
     <dependencies>
@@ -73,10 +73,10 @@
                                         <jvmArg>-Doutput.exploded.directory=${project.build.directory}/package</jvmArg>
                                         <!-- Final compressed file location and name -->
                                         <jvmArg>
-                                            -Doutput.compressed.file=${project.build.directory}/gigaspaces-insightedge-${project.version}.zip
+                                            -Doutput.compressed.file=${project.build.directory}/gigaspaces-insightedge-${project.version}-ea.zip
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
-                                        <jvmArg>-Doutput.contents.prefix=gigaspaces-insightedge-${project.version}</jvmArg>
+                                        <jvmArg>-Doutput.contents.prefix=gigaspaces-insightedge-${project.version}-ea</jvmArg>
                                         <!-- Path to spark distribution file (tgz) -->
                                         <jvmArg>-Ddist.spark=${dist.spark}</jvmArg>
                                         <!-- Path to gigaspaces XAP distribution file (zip) -->

@@ -2,7 +2,7 @@
 
 # This scripts installs InsightEdge artifacts(jars) to local maven repository
 
-INSIGHTEDGE_VER=0.3.0-SNAPSHOT
+INSIGHTEDGE_VER=0.3.0
 
 if [ -z "${INSIGHTEDGE_HOME}" ]; then
   INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
