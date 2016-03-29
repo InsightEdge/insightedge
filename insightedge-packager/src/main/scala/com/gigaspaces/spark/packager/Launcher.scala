@@ -25,7 +25,6 @@ object Launcher {
 
     run("Adding docs to insightedge") {
       copy(s"$project/README.md", s"$output/RELEASE")
-      copy(s"$project/docs/", s"$output/docs/")
     }
 
     run("Adding integration libs") {
@@ -46,10 +45,6 @@ object Launcher {
       copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
       copy(s"$resources/insightedge.sh", s"$output/sbin/insightedge.sh")
       copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
-    }
-
-    run("Adding examples") {
-      copy(s"$project/insightedge-examples/target/insightedge-examples.jar", s"$output/quickstart/insightedge-examples.jar")
     }
 
     run("Unpacking Gigaspaces datagrid") {

@@ -29,7 +29,6 @@ mvn clean install -Dcom.gs.home={PATH_TO_YOUR_XAP_FOLDER}
 mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz>
 ```
 
-You can also find build configuration and artifacts for this project at our [Teamcity CI/CD server](http://10.8.1.76:8111/overview.html) on AWS.
 
 ## Features
 * Exposes Data Grid as Spark RDDs
@@ -45,4 +44,4 @@ You can also find build configuration and artifacts for this project at our [Tea
 
 ## Documentation
 
-Please refer to the [isightedge.io](http://insightedge.io/docs/010/index.html) site.
+Please refer to the [isightedge.io](http://insightedge.io/docs) site.
