@@ -83,6 +83,8 @@
                                         <jvmArg>-Ddist.xap=${dist.xap}</jvmArg>
                                         <!-- Path to Zeppelin distribution file (tgz) -->
                                         <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
+                                        <!-- Path to examples (jar) -->
+                                        <jvmArg>-Ddist.examples=${dist.examples}</jvmArg>
                                     </jvmArgs>
                                 </configuration>
                             </execution>

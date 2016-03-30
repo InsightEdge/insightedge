@@ -17,6 +17,7 @@ object Launcher {
     val spark = parameter("Spark distribution" -> "dist.spark")
     val grid = parameter("Xap distribution" -> "dist.xap")
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
+    val examples = parameter("Examples jar" -> "dist.examples")
     val resources = s"$project/insightedge-packager/src/main/resources"
 
     run("Unpacking spark") {
@@ -45,6 +46,10 @@ object Launcher {
       copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
       copy(s"$resources/insightedge.sh", s"$output/sbin/insightedge.sh")
       copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
+    }
+
+    run("Adding examples") {
+      copy(s"$examples", s"$output/quickstart/insightedge-examples.jar")
     }
 
     run("Unpacking Gigaspaces datagrid") {

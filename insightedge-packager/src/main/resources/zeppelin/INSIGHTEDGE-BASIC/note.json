@@ -105,7 +105,7 @@
     },
     {
       "title": "saving RDDs",
-      "text": "%spark\nimport com.gigaspaces.spark.examples.basic.Product\nimport scala.util.Random\n\nval products \u003d (1 to 100000).map { i \u003d\u003e Product(i, \"Description of product \" + i, Random.nextInt(10) + Random.nextInt(10), if (Random.nextDouble() \u003c 0.2) true else false) }\nval generatedRdd \u003d sc.parallelize(products)\ngeneratedRdd.saveToGrid()",
+      "text": "%spark\nimport com.gigaspaces.insightedge.examples.basic.Product\nimport scala.util.Random\n\nval products \u003d (1 to 100000).map { i \u003d\u003e Product(i, \"Description of product \" + i, Random.nextInt(10) + Random.nextInt(10), if (Random.nextDouble() \u003c 0.2) true else false) }\nval generatedRdd \u003d sc.parallelize(products)\ngeneratedRdd.saveToGrid()",
       "dateUpdated": "Mar 23, 2016 1:04:46 PM",
       "config": {
         "colWidth": 12.0,
