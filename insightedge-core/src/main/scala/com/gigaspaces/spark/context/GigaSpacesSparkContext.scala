@@ -11,6 +11,7 @@ import org.apache.spark.sql.{DataFrame, Row, SQLContext}
 
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
+import scala.reflect._
 
 class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializable {
 
@@ -64,7 +65,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @tparam R GigaSpaces space class
     * @return `DataFrame` instance
     */
-  def gridDataFrame[R: ClassTag : TypeTag](readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = gridSqlDataFrame[R]("", Seq(), readRddBufferSize)
+  def gridDataFrame[R: ClassTag](readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = gridSqlDataFrame[R]("", Seq(), readRddBufferSize)
 
   /**
     * Read `DataFrame` from Data Grid with GigaSpaces SQL query
@@ -74,7 +75,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @tparam R GigaSpacesl space class
     * @return `DataFrame` instance with the query results.
     */
-  def gridSqlDataFrame[R: ClassTag : TypeTag](sqlQuery: String, args: Seq[Any] = Seq(), readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = {
+  def gridSqlDataFrame[R: ClassTag](sqlQuery: String, args: Seq[Any] = Seq(), readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = {
     val schema = buildSchema[R]
 
     val fieldNames = getFieldNames[R]
@@ -140,18 +141,18 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   }
 
 
-  private def buildSchema[R: TypeTag]: StructType = {
+  private def buildSchema[R: ClassTag]: StructType = {
     val fields = getFieldNames[R].zip(getFieldTypes[R])
     val structFields = fields.map { case (a, b) => StructField(a, convertType(b), nullable = true) }
     new StructType(structFields)
   }
 
-  private def getFieldNames[R: TypeTag]: Array[String] = {
-    typeOf[R].members.collect { case m: MethodSymbol if m.isGetter => m.fullName }.map(name).toArray.reverse
+  private def getFieldNames[R: ClassTag]: Array[String] = {
+    readType[R]().members.collect { case m: MethodSymbol if m.isGetter => m.fullName }.map(name).toArray.reverse
   }
 
-  private def getFieldTypes[R: TypeTag]: Array[String] = {
-    typeOf[R].members.collect { case m: MethodSymbol if m.isGetter => m.returnType.toString }.map(name).toArray.reverse
+  private def getFieldTypes[R: ClassTag]: Array[String] = {
+    readType[R]().members.collect { case m: MethodSymbol if m.isGetter => m.returnType.toString }.map(name).toArray.reverse
   }
 
   private def getFieldValueByName[R](elem: R, fieldName: String): AnyRef = {
@@ -161,6 +162,8 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   private def name(fullName: String) = {
     fullName.substring(fullName.lastIndexOf(".") + 1)
   }
+
+  private def readType[R: ClassTag](): Type = runtimeMirror(this.getClass.getClassLoader).classSymbol(classTag[R].runtimeClass).toType
 
   private def convertType(fieldType: String): DataType = fieldType match {
     case "Boolean" => BooleanType
