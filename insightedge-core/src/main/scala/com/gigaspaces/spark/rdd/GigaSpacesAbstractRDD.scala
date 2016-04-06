@@ -1,6 +1,7 @@
 package com.gigaspaces.spark.rdd
 
 import com.gigaspaces.client.iterator.IteratorScope
+import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.impl.{GigaSpacesPartition, GigaSpacesQueryIterator, ProfilingIterator}
 import com.gigaspaces.spark.utils.{GigaSpaceFactory, GigaSpaceUtils, Profiler}
@@ -9,14 +10,14 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, SparkContext, TaskContext}
 import org.openspaces.core.{GigaSpace, IteratorBuilder}
 
-import scala.reflect.ClassTag
+import scala.reflect._
 
 abstract class GigaSpacesAbstractRDD[R: ClassTag](
                                                    gsConfig: GigaSpacesConfig,
                                                    sc: SparkContext,
                                                    partitions: Option[Int],
                                                    readRddBufferSize: Int
-                                                 )  extends RDD[R](sc, deps = Nil) {
+                                                 ) extends RDD[R](sc, deps = Nil) {
 
   /**
     * Reads rdd data from Data Grid for given partition(split)
@@ -53,8 +54,8 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   }
 
   /**
-   * @return if RDD implementation supports bucketing or not
-   */
+    * @return if RDD implementation supports bucketing or not
+    */
   protected def supportsBuckets(): Boolean = false
 
   /**
@@ -62,21 +63,44 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     *
     * @param sqlQuery query statement
     * @param params   bounded parameters
+    * @param fields   projected fields
     * @tparam T type of query
     * @return GigaSpaces sql query
     */
-  protected def createGigaSpacesQuery[T: ClassTag](sqlQuery: String, params: Any*): SQLQuery[T] = {
-    val tag = implicitly[ClassTag[T]].runtimeClass
-    val query = new SQLQuery[T](tag.asInstanceOf[Class[T]], sqlQuery)
+  protected def createGigaSpacesQuery[T: ClassTag](sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[T] = {
+    val clazz = classTag[T].runtimeClass
+    val query = new SQLQuery[T](clazz.asInstanceOf[Class[T]], sqlQuery)
     query.setParameters(params.map(_.asInstanceOf[Object]): _*)
+    if (fields.nonEmpty) {
+      query.setProjections(fields.toArray: _*)
+    }
     query
   }
 
   /**
-   * Create a query by metaBucketId for given bucketed partition or empty query for non-bucketed partition
-   * @param split the partition bean
-   * @return sql query string with bucket range
-   */
+    * Create GigaSpaces Query for SpaceDocuments
+    *
+    * @param typeName name of the documents type
+    * @param sqlQuery query statement
+    * @param params   bounded parameters
+    * @param fields   projected fields
+    * @return GigaSpaces sql query
+    */
+  protected def createDocumentGigaSpacesQuery(typeName: String, sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[SpaceDocument] = {
+    val query = new SQLQuery[SpaceDocument](typeName, sqlQuery)
+    query.setParameters(params.map(_.asInstanceOf[Object]): _*)
+    if (fields.nonEmpty) {
+      query.setProjections(fields.toArray: _*)
+    }
+    query
+  }
+
+  /**
+    * Create a query by metaBucketId for given bucketed partition or empty query for non-bucketed partition
+    *
+    * @param split the partition bean
+    * @return sql query string with bucket range
+    */
   protected def bucketQuery(split: Partition): String = {
     val partition = split.asInstanceOf[GigaSpacesPartition]
     val rangeQuery = for {

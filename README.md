@@ -33,6 +33,7 @@ mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to s
 ## Features
 * Exposes Data Grid as Spark RDDs
 * Saves Spark RDDs to Data Grid
+* Full DataFrames API support with persistence
 * Transparent integration with SparkContext using Scala implicits
 * Ability to select and filter data from Data Grid with arbitrary SQL and leverage Data Grid indexes
 * Running SQL queries in Spark over Data Grid

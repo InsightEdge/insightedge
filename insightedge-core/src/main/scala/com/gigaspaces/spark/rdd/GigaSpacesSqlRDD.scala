@@ -9,14 +9,14 @@ import scala.reflect.ClassTag
 class GigaSpacesSqlRDD[R: ClassTag](
                                      gsConfig: GigaSpacesConfig,
                                      sc: SparkContext,
-                                     sqlQuery: String,
-                                     readRddBufferSize: Int,
-                                     args: Any*
+                                     query: String,
+                                     queryParams: Seq[Any],
+                                     readRddBufferSize: Int
                                    ) extends GigaSpacesAbstractRDD[R](gsConfig, sc, None, readRddBufferSize) {
 
   @DeveloperApi
   override def compute(split: Partition, context: TaskContext): Iterator[R] = {
-    val gsQuery = createGigaSpacesQuery[R](sqlQuery, args: _*)
+    val gsQuery = createGigaSpacesQuery[R](query, queryParams)
     compute[R](split, gsQuery, R => R, context)
   }
 

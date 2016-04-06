@@ -6,13 +6,6 @@ import com.gigaspaces.spark.implicits._
 
 class GigaSpacesDataFrameRDDSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
-  it("should successfully read data from Data Grid via DataFrame API") {
-    writeDataSeqToDataGrid(1000)
-    val dataFrameRdd = sc.gridSqlDataFrame[Data]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
-    val count = dataFrameRdd.count()
-    assert(count == 3, "Wrong objects count")
-  }
-
   it("should filter data via DataFrame API") {
     writeDataSeqToDataGrid(1000)
     val df = sc.gridDataFrame[Data]()
@@ -27,7 +20,7 @@ class GigaSpacesDataFrameRDDSpec extends FunSpec with GsConfig with GigaSpaces w
     assert(differentRoutingValues == 10, "Wrong aggregation count")
   }
 
-  it("should be possible to query data frame with SQL") {
+  it("should be possible to query persisted data frame with SQL") {
     writeDataSeqToDataGrid(1000)
 
     val df = sc.gridDataFrame[Data]()
