@@ -3,7 +3,7 @@ package org.apache.spark.sql.insightedge
 import com.gigaspaces.spark.rdd.Data
 import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.insightedge.GigaspacesRelation.filtersToSql
+import org.apache.spark.sql.insightedge.GigaspacesRelation.{unsupportedFilters, filtersToSql}
 import org.apache.spark.sql.sources._
 import org.scalatest.FunSpec
 
@@ -12,8 +12,7 @@ import scala.collection.mutable.ListBuffer
 class GigaSpacesRelationSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
   it("should handle simple filters") {
-    val relation = new GigaspacesRelation(new SQLContext(sc))
-    val unhandled = relation.unhandledFilters(Array(
+    val unhandled = unsupportedFilters(Array(
       EqualTo("key", 0),
       EqualNullSafe("key", 0),
       GreaterThan("key", 0),
@@ -28,8 +27,7 @@ class GigaSpacesRelationSpec extends FunSpec with GsConfig with GigaSpaces with 
   }
 
   it("should handle and/or filters with handled children") {
-    val relation = new GigaspacesRelation(new SQLContext(sc))
-    val unhandled = relation.unhandledFilters(Array(
+    val unhandled = unsupportedFilters(Array(
       And(GreaterThan("key", 0), LessThan("key", 1)),
       Or(GreaterThan("key", 1), LessThan("key", 0)),
       And(
@@ -41,8 +39,7 @@ class GigaSpacesRelationSpec extends FunSpec with GsConfig with GigaSpaces with 
   }
 
   it("should not handle some filters") {
-    val relation = new GigaspacesRelation(new SQLContext(sc))
-    val unhandled = relation.unhandledFilters(Array(
+    val unhandled = unsupportedFilters(Array(
       StringStartsWith("key", "value"),
       StringEndsWith("key", "value"),
       StringContains("key", "value"),
@@ -52,8 +49,7 @@ class GigaSpacesRelationSpec extends FunSpec with GsConfig with GigaSpaces with 
   }
 
   it("should not handle and/or filters with unhandled children") {
-    val relation = new GigaspacesRelation(new SQLContext(sc))
-    val unhandled = relation.unhandledFilters(Array(
+    val unhandled = unsupportedFilters(Array(
       And(GreaterThan("key", 0), StringContains("key", "value")),
       Or(GreaterThan("key", 1), StringContains("key", "value")),
       And(

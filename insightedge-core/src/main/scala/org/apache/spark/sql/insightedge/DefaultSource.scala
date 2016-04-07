@@ -25,15 +25,20 @@ class DefaultSource
     buildRelation(sqlContext, parameters, mode = mode, data = Some(data))
   }
 
-  private def buildRelation(
-                             sqlContext: SQLContext,
-                             parameters: Predef.Map[String, String],
-                             mode: SaveMode = SaveMode.Append,
-                             data: Option[DataFrame] = None,
-                             schema: Option[StructType] = None
+  private def buildRelation(sqlContext: SQLContext,
+                            parameters: Predef.Map[String, String],
+                            mode: SaveMode = SaveMode.Append,
+                            data: Option[DataFrame] = None,
+                            schema: Option[StructType] = None
                            ): BaseRelation = {
-    val tag = ClassTag[AnyRef](this.getClass.getClassLoader.loadClass(parameters.get("class").get))
-    new GigaspacesRelation(sqlContext)(tag)
+    if (parameters.contains("class")) {
+      val tag = ClassTag[AnyRef](this.getClass.getClassLoader.loadClass(parameters("class")))
+      new GigaspacesRelation(sqlContext, Some(tag), None)
+    } else if (parameters.contains("collection")) {
+      new GigaspacesRelation(sqlContext, None, Some(parameters("collection")))
+    } else {
+      throw new Exception("'class' or 'collection' must be specified")
+    }
   }
 
 }

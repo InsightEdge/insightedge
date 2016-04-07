@@ -12,14 +12,15 @@ import com.gigaspaces.spark.implicits._
 import scala.collection.mutable.ListBuffer
 import scala.reflect._
 
-private[insightedge] class GigaspacesRelation[T: ClassTag](
-                                                            override val sqlContext: SQLContext)
+private[insightedge] class GigaspacesRelation(override val sqlContext: SQLContext,
+                                              clazz: Option[ClassTag[AnyRef]],
+                                              collection: Option[String])
   extends BaseRelation
     with InsertableRelation
     with PrunedFilteredScan
     with Logging {
 
-  private val wipDataframe = sqlContext.sparkContext.gridDataFrame[T]()
+  private val wipDataframe = sqlContext.sparkContext.gridDataFrame()(clazz.get)
 
   override def schema: StructType = wipDataframe.schema
 
@@ -31,13 +32,15 @@ private[insightedge] class GigaspacesRelation[T: ClassTag](
     wipDataframe.rdd
   }
 
-  override def unhandledFilters(filters: Array[Filter]): Array[Filter] = {
-    filters.filterNot(GigaspacesRelation.canHandleFilter)
-  }
+  override def unhandledFilters(filters: Array[Filter]): Array[Filter] = GigaspacesRelation.unsupportedFilters(filters)
 
 }
 
 private[insightedge] object GigaspacesRelation {
+  def unsupportedFilters(filters: Array[Filter]): Array[Filter] = {
+    filters.filterNot(GigaspacesRelation.canHandleFilter)
+  }
+
   def canHandleFilter(filter: Filter): Boolean = {
     filter match {
       case _: EqualTo => true
