@@ -32,12 +32,12 @@ class DefaultSource
                             schema: Option[StructType] = None
                            ): BaseRelation = {
     if (parameters.contains("class")) {
-      val tag = ClassTag[AnyRef](this.getClass.getClassLoader.loadClass(parameters("class")))
+      val tag = ClassTag[Any](this.getClass.getClassLoader.loadClass(parameters("class")))
       new GigaspacesRelation(sqlContext, Some(tag), None)
     } else if (parameters.contains("collection")) {
       new GigaspacesRelation(sqlContext, None, Some(parameters("collection")))
     } else {
-      throw new Exception("'class' or 'collection' must be specified")
+      throw new IllegalArgumentException("'class' or 'collection' must be specified")
     }
   }
 

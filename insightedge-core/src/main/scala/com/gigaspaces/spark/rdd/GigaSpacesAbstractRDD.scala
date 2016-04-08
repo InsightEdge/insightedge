@@ -9,14 +9,14 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, SparkContext, TaskContext}
 import org.openspaces.core.{GigaSpace, IteratorBuilder}
 
-import scala.reflect.ClassTag
+import scala.reflect._
 
 abstract class GigaSpacesAbstractRDD[R: ClassTag](
                                                    gsConfig: GigaSpacesConfig,
                                                    sc: SparkContext,
                                                    partitions: Option[Int],
                                                    readRddBufferSize: Int
-                                                 )  extends RDD[R](sc, deps = Nil) {
+                                                 ) extends RDD[R](sc, deps = Nil) {
 
   /**
     * Reads rdd data from Data Grid for given partition(split)
@@ -53,8 +53,8 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   }
 
   /**
-   * @return if RDD implementation supports bucketing or not
-   */
+    * @return if RDD implementation supports bucketing or not
+    */
   protected def supportsBuckets(): Boolean = false
 
   /**
@@ -65,18 +65,22 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     * @tparam T type of query
     * @return GigaSpaces sql query
     */
-  protected def createGigaSpacesQuery[T: ClassTag](sqlQuery: String, params: Any*): SQLQuery[T] = {
-    val tag = implicitly[ClassTag[T]].runtimeClass
-    val query = new SQLQuery[T](tag.asInstanceOf[Class[T]], sqlQuery)
+  protected def createGigaSpacesQuery[T: ClassTag](sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[T] = {
+    val clazz = classTag[T].runtimeClass
+    val query = new SQLQuery[T](clazz.asInstanceOf[Class[T]], sqlQuery)
     query.setParameters(params.map(_.asInstanceOf[Object]): _*)
+    if (fields.nonEmpty) {
+      query.setProjections(fields.toArray: _*)
+    }
     query
   }
 
   /**
-   * Create a query by metaBucketId for given bucketed partition or empty query for non-bucketed partition
-   * @param split the partition bean
-   * @return sql query string with bucket range
-   */
+    * Create a query by metaBucketId for given bucketed partition or empty query for non-bucketed partition
+    *
+    * @param split the partition bean
+    * @return sql query string with bucket range
+    */
   protected def bucketQuery(split: Partition): String = {
     val partition = split.asInstanceOf[GigaSpacesPartition]
     val rangeQuery = for {

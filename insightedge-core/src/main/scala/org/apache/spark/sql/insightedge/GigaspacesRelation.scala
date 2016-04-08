@@ -1,42 +1,88 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.model.GridModel
-import org.apache.spark.Logging
+import com.gigaspaces.spark.context.GigaSpacesConfig
+import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.rdd.GigaSpacesDataFrameRDD
+import org.apache.spark.sql.catalyst.ScalaReflection
+import org.apache.spark.sql.insightedge.GigaspacesRelation._
+import org.apache.spark.{SparkContext, Logging}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql._
 import org.apache.spark.sql.sources._
-
-import com.gigaspaces.spark.implicits._
+import org.apache.spark.sql.types._
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect._
+import scala.reflect.runtime.universe._
 
-private[insightedge] class GigaspacesRelation(override val sqlContext: SQLContext,
-                                              clazz: Option[ClassTag[AnyRef]],
+private[insightedge] case class GigaspacesRelation(override val sqlContext: SQLContext,
+                                              clazz: Option[ClassTag[Any]],
                                               collection: Option[String])
   extends BaseRelation
     with InsertableRelation
     with PrunedFilteredScan
     with Logging {
 
-  private val wipDataframe = sqlContext.sparkContext.gridDataFrame()(clazz.get)
+  private def sc: SparkContext = sqlContext.sparkContext
 
-  override def schema: StructType = wipDataframe.schema
+  private def gsConfig: GigaSpacesConfig = GigaSpacesConfig.fromSparkConf(sc.getConf)
+
+  override def schema: StructType = {
+    if (clazz.nonEmpty) {
+      buildSchemaFromClass(clazz.get)
+    } else if (collection.nonEmpty) {
+      buildSchemaFromDocument(collection.get)
+    } else {
+      throw new Exception("'clazz' or 'collection' must be specified")
+    }
+  }
 
   override def insert(data: DataFrame, overwrite: Boolean): Unit = {
     logInfo("trying to write")
   }
 
   override def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
-    wipDataframe.rdd
+    val fields = if (requiredColumns.nonEmpty) requiredColumns else schema.fieldNames
+    if (clazz.nonEmpty) {
+      val (query, params) = filtersToSql(filters)
+      def convertToRowFunc(element: Any): Row = {
+        Row.fromSeq(fields.map(valueByName(element, _)))
+      }
+      new GigaSpacesDataFrameRDD(gsConfig, sc, query, params, requiredColumns.toSeq, convertToRowFunc, DefaultReadDfBufferSize)(clazz.get)
+    } else {
+      // wip
+      null
+    }
   }
 
   override def unhandledFilters(filters: Array[Filter]): Array[Filter] = GigaspacesRelation.unsupportedFilters(filters)
 
+  private def buildSchemaFromClass[R: ClassTag]: StructType = {
+    ScalaReflection.schemaFor(readType[R]()).dataType.asInstanceOf[StructType]
+  }
+
+  private def buildSchemaFromDocument(name: String): StructType = {
+    val descriptor = sqlContext.sparkContext.gigaSpace.getTypeManager.getTypeDescriptor(name)
+    if (descriptor == null) throw new Exception("collection 'name' does not exist, have you written it before?")
+
+    val structFields = (0 to descriptor.getNumOfFixedProperties).map(descriptor.getFixedProperty).map { f =>
+      new StructField(f.getName, convertDocumentType(f.getType), nullable = true)
+    }
+    new StructType(structFields.toArray)
+  }
+
+  private def valueByName[R](element: R, fieldName: String): AnyRef = {
+    element.getClass.getMethod(fieldName).invoke(element)
+  }
+
+  private def readType[R: ClassTag](): Type = runtimeMirror(this.getClass.getClassLoader).classSymbol(classTag[R].runtimeClass).toType
+
+  private def convertDocumentType(fieldType: Class[_]): DataType = ObjectType(fieldType)
 }
 
 private[insightedge] object GigaspacesRelation {
+  val DefaultReadDfBufferSize = 1000
+
   def unsupportedFilters(filters: Array[Filter]): Array[Filter] = {
     filters.filterNot(GigaspacesRelation.canHandleFilter)
   }
@@ -101,10 +147,10 @@ private[insightedge] object GigaspacesRelation {
         f.values.map(value => "?").addString(builder, " in (", ",", ")")
         params ++= f.values
 
-      case f: IsNull => true
+      case f: IsNull =>
         builder -> f.attribute -> " is null"
 
-      case f: IsNotNull => true
+      case f: IsNotNull =>
         builder -> f.attribute -> " is not null"
 
       case f: And =>

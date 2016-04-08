@@ -1,13 +1,9 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.rdd.Data
 import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
-import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.insightedge.GigaspacesRelation.{unsupportedFilters, filtersToSql}
+import org.apache.spark.sql.insightedge.GigaspacesRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.sources._
 import org.scalatest.FunSpec
-
-import scala.collection.mutable.ListBuffer
 
 class GigaSpacesRelationSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
