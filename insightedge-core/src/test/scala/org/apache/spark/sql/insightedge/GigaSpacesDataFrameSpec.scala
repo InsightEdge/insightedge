@@ -1,10 +1,9 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.rdd.Data
-import com.gigaspaces.spark.utils.{Spark, GigaSpaces, GsConfig}
-import org.apache.spark.sql.{AnalysisException, SQLContext}
+import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
+import org.apache.spark.sql.AnalysisException
 import org.scalatest.FunSpec
-import org.apache.spark.sql.insightedge._
 
 class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
@@ -65,6 +64,21 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     intercept[AnalysisException] {
       val count = df.select(df("abc")).count()
     }
+  }
+
+  it("should work with sql api") {
+    writeDataSeqToDataGrid(1000)
+
+    sql.sql(
+      """create temporary table mytable
+        |using org.apache.spark.sql.insightedge
+        |options (
+        | class "com.gigaspaces.spark.rdd.Data"
+        |)
+      """.stripMargin)
+
+    val count = sql.sql("select count(*) from mytable where routing > 500").first().getAs[Long](0)
+    assert(count == 500)
   }
 
 }
