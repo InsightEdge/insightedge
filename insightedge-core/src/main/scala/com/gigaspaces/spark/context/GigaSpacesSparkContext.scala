@@ -9,6 +9,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.{DataFrame, SQLContext}
 
 import scala.reflect.ClassTag
+import org.apache.spark.sql.insightedge._
 
 class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializable {
 
@@ -63,8 +64,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @return `DataFrame` instance
     */
   def gridDataFrame[R: ClassTag](readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = {
-    import org.apache.spark.sql.insightedge._
-    gridSqlContext.read.grid[R].load()
+    gridSqlContext.read.grid.loadClass[R]
   }
 
   /**

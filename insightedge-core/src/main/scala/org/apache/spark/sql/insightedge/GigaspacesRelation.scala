@@ -1,23 +1,29 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.document.SpaceDocument
+import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits._
-import com.gigaspaces.spark.rdd.GigaSpacesDataFrameRDD
-import org.apache.spark.sql.catalyst.ScalaReflection
-import org.apache.spark.sql.insightedge.GigaspacesRelation._
-import org.apache.spark.{SparkContext, Logging}
+import com.gigaspaces.spark.rdd.{GigaSpacesDocumentDataFrameRDD, GigaSpacesAbstractRDD, GigaSpacesClassDataFrameRDD}
+import com.j_spaces.core.client.SQLQuery
+import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
+import org.apache.spark.sql.catalyst.ScalaReflection
+import org.apache.spark.sql.insightedge.GigaspacesRelation._
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types._
+import org.apache.spark.{TaskContext, Partition, Logging, SparkContext}
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 import scala.reflect._
 import scala.reflect.runtime.universe._
 
-private[insightedge] case class GigaspacesRelation(override val sqlContext: SQLContext,
-                                              clazz: Option[ClassTag[Any]],
-                                              collection: Option[String])
+private[insightedge] case class GigaspacesRelation(
+                                                    override val sqlContext: SQLContext,
+                                                    options: InsightEdgeSourceOptions
+                                                  )
   extends BaseRelation
     with InsertableRelation
     with PrunedFilteredScan
@@ -28,60 +34,85 @@ private[insightedge] case class GigaspacesRelation(override val sqlContext: SQLC
   private def gsConfig: GigaSpacesConfig = GigaSpacesConfig.fromSparkConf(sc.getConf)
 
   override def schema: StructType = {
-    if (clazz.nonEmpty) {
-      buildSchemaFromClass(clazz.get)
-    } else if (collection.nonEmpty) {
-      buildSchemaFromDocument(collection.get)
+    if (options.schema.nonEmpty) {
+      options.schema.get
+    } else if (options.clazz.nonEmpty) {
+      buildSchemaFromClass(options.clazz.get)
+    } else if (options.collection.nonEmpty) {
+      buildSchemaFromDocument(options.collection.get)
     } else {
       throw new Exception("'clazz' or 'collection' must be specified")
     }
   }
 
   override def insert(data: DataFrame, overwrite: Boolean): Unit = {
-    logInfo("trying to write")
+    logInfo("trying to insert")
+  }
+
+  def save(data: DataFrame, mode: SaveMode): Unit = {
+    if (options.collection.isEmpty) {
+      throw new IllegalStateException("saving without 'collection' specified is not supported")
+    }
+
+    val collection = options.collection.get
+
+    val query = new SQLQuery[SpaceDocument](collection, "", Seq()).setProjections("")
+    mode match {
+      case SaveMode.Overwrite => sc.gigaSpace.takeMultiple(query)
+      case SaveMode.ErrorIfExists => if (sc.gigaSpace.read(query) != null) sys.error(s"'$collection' already exists")
+      case SaveMode.Ignore => if (sc.gigaSpace.read(query) != null) return
+      case SaveMode.Append =>
+    }
+
+    sc.gigaSpace.getTypeManager.registerTypeDescriptor(schema.fields.foldLeft(new SpaceTypeDescriptorBuilder(collection)) { (builder, field) =>
+      builder.addFixedProperty(field.name, dataTypeToJava(field.dataType))
+    }.create())
+
+    data.rdd.map(row => {
+      new SpaceDocument(collection, row.getValuesMap(schema.fieldNames))
+    }).saveToGrid()
   }
 
   override def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
     val fields = if (requiredColumns.nonEmpty) requiredColumns else schema.fieldNames
-    if (clazz.nonEmpty) {
-      val (query, params) = filtersToSql(filters)
-      def convertToRowFunc(element: Any): Row = {
-        Row.fromSeq(fields.map(valueByName(element, _)))
+    val (query, params) = filtersToSql(filters)
+
+    if (options.clazz.nonEmpty) {
+      def converter(element: Any): Row = {
+        Row.fromSeq(fields.map(getValueByName(element, _)))
       }
-      new GigaSpacesDataFrameRDD(gsConfig, sc, query, params, requiredColumns.toSeq, convertToRowFunc, DefaultReadDfBufferSize)(clazz.get)
+      new GigaSpacesClassDataFrameRDD(gsConfig, sc, query, params, requiredColumns.toSeq, converter, options.readBufferSize)(options.clazz.get)
     } else {
-      // wip
-      null
+      def converter(document: SpaceDocument): Row = {
+        Row.fromSeq(fields.map(document.getProperty))
+      }
+      new GigaSpacesDocumentDataFrameRDD(gsConfig, sc, options.collection.get, query, params, requiredColumns.toSeq, converter, options.readBufferSize)
     }
   }
 
   override def unhandledFilters(filters: Array[Filter]): Array[Filter] = GigaspacesRelation.unsupportedFilters(filters)
 
-  private def buildSchemaFromClass[R: ClassTag]: StructType = {
-    ScalaReflection.schemaFor(readType[R]()).dataType.asInstanceOf[StructType]
-  }
+  private def buildSchemaFromClass[R: ClassTag]: StructType = ScalaReflection.schemaFor(readType[R]()).dataType.asInstanceOf[StructType]
 
   private def buildSchemaFromDocument(name: String): StructType = {
     val descriptor = sqlContext.sparkContext.gigaSpace.getTypeManager.getTypeDescriptor(name)
     if (descriptor == null) throw new Exception("collection 'name' does not exist, have you written it before?")
 
-    val structFields = (0 to descriptor.getNumOfFixedProperties).map(descriptor.getFixedProperty).map { f =>
-      new StructField(f.getName, convertDocumentType(f.getType), nullable = true)
+    val structFields = (0 until descriptor.getNumOfFixedProperties).map(descriptor.getFixedProperty).map { f =>
+      new StructField(f.getName, dataTypeFromJava(f.getType), nullable = true)
     }
     new StructType(structFields.toArray)
   }
 
-  private def valueByName[R](element: R, fieldName: String): AnyRef = {
+  private def getValueByName[R](element: R, fieldName: String): AnyRef = {
     element.getClass.getMethod(fieldName).invoke(element)
   }
 
   private def readType[R: ClassTag](): Type = runtimeMirror(this.getClass.getClassLoader).classSymbol(classTag[R].runtimeClass).toType
 
-  private def convertDocumentType(fieldType: Class[_]): DataType = ObjectType(fieldType)
 }
 
 private[insightedge] object GigaspacesRelation {
-  val DefaultReadDfBufferSize = 1000
 
   def unsupportedFilters(filters: Array[Filter]): Array[Filter] = {
     filters.filterNot(GigaspacesRelation.canHandleFilter)
@@ -170,6 +201,14 @@ private[insightedge] object GigaspacesRelation {
       GigaspacesRelation.appendFilter(filter, builder, params)
       builder
     }
+  }
+
+  def dataTypeToJava(dataType: DataType): Class[_] = {
+    classOf[Object]
+  }
+
+  def dataTypeFromJava(clazz: Class[_]): DataType = {
+    ObjectType(clazz)
   }
 
 }
