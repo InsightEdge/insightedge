@@ -1,11 +1,11 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
-import org.apache.spark.sql.insightedge.GigaspacesRelation.{filtersToSql, unsupportedFilters}
+import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.sources._
 import org.scalatest.FunSpec
 
-class GigaSpacesRelationSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
+class GigaSpacesAbstractRelationSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
   it("should handle simple filters") {
     val unhandled = unsupportedFilters(Array(

@@ -2,12 +2,11 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.rdd.Data
 import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
-import org.apache.spark.sql.{SaveMode, AnalysisException}
+import org.apache.commons.lang3.RandomStringUtils
+import org.apache.spark.sql.{AnalysisException, SaveMode}
 import org.scalatest.FunSpec
-import com.gigaspaces.spark.implicits._
 
 class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
-
   it("should create dataframe with gigaspaces format") {
     writeDataSeqToDataGrid(1000)
 
@@ -32,6 +31,31 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
 
     val df = sql.read.grid.loadClass[Data]
     assert(df.count() == 1000)
+  }
+
+  it("should work with SQL syntax") {
+    writeDataSeqToDataGrid(1000)
+
+    sql.sql(
+      s"""
+         |create temporary table dataTable
+         |using org.apache.spark.sql.insightedge
+         |options (class "${classOf[Data].getName}")
+      """.stripMargin)
+
+    val count = sql.sql("select routing from dataTable").collect().length
+    assert(count == 1000)
+  }
+
+  it("should read empty classes") {
+    sql.sql(
+      s"""
+         |create temporary table dataTable
+         |using org.apache.spark.sql.insightedge
+         |options (class "${classOf[Data].getName}")
+      """.stripMargin)
+
+    assert(sql.sql("select * from dataTable where data is null").collect().length == 0)
   }
 
   it("should select one field") {
@@ -67,29 +91,55 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     }
   }
 
-  it("should work with sql api") {
-    writeDataSeqToDataGrid(1000)
-
-    sql.sql(
-      """create temporary table mytable
-        |using org.apache.spark.sql.insightedge
-        |options (
-        | class "com.gigaspaces.spark.rdd.Data"
-        |)
-      """.stripMargin)
-
-    val count = sql.sql("select count(*) from mytable where routing > 500").first().getAs[Long](0)
-    assert(count == 500)
-  }
-
   it("should write back half of data") {
     writeDataSeqToDataGrid(1000)
+    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
 
     val df = sql.read.grid.loadClass[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save("half")
+    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
 
-    val count = sql.read.grid.load("half").select("routing").count()
+    val readDf = sql.read.grid.load(table)
+    val count = readDf.select("routing").count()
     assert(count == 500)
+
+    readDf.printSchema()
+  }
+
+  it("should fail to write with ErrorIfExists mode") {
+    writeDataSeqToDataGrid(1000)
+    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+
+    val df = sql.read.grid.loadClass[Data]
+    df.filter(df("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
+
+    val thrown = intercept[IllegalStateException] {
+      df.filter(df("routing") < 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
+    }
+    println(thrown.getMessage)
+  }
+
+  it("should clear before write with Overwrite mode") {
+    writeDataSeqToDataGrid(1000)
+    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+
+    val df = sql.read.grid.loadClass[Data]
+    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
+    assert(sql.read.grid.load(table).count() == 500)
+
+    df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Overwrite).save(table)
+    assert(sql.read.grid.load(table).count() == 200)
+  }
+
+  it("should not write with Ignore mode") {
+    writeDataSeqToDataGrid(1000)
+    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+
+    val df = sql.read.grid.loadClass[Data]
+    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
+    assert(sql.read.grid.load(table).count() == 500)
+
+    df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Ignore).save(table)
+    assert(sql.read.grid.load(table).count() == 500)
   }
 
 }

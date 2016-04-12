@@ -2,7 +2,7 @@ package org.apache.spark.sql.insightedge
 
 import org.apache.spark.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
-import org.apache.spark.sql.sources.{BaseRelation, CreatableRelationProvider, RelationProvider, SchemaRelationProvider}
+import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
@@ -22,26 +22,29 @@ class DefaultSource
     buildRelation(sqlContext, parameters, schema = Some(schema))
   }
 
+  /**
+    * This actually must save given df to the source and create relation on top of saved data
+    */
   override def createRelation(sqlContext: SQLContext, mode: SaveMode, parameters: Predef.Map[String, String], data: DataFrame): BaseRelation = {
     val relation = buildRelation(sqlContext, parameters, Some(data.schema))
-    relation.save(data, mode)
+    relation.insert(data, mode)
     relation
   }
 
   private def buildRelation(sqlContext: SQLContext,
                             parameters: Predef.Map[String, String],
                             schema: Option[StructType] = None
-                           ): GigaspacesRelation = {
+                           ): GigaspacesAbstractRelation = {
     val readBufferSize = parameters.get(DefaultSource.InsightEdgeReadBufferSizeProperty).map(v => v.toInt).getOrElse(InsightEdgeReadBufferSizeDefault)
     val options = InsightEdgeSourceOptions(readBufferSize, schema)
 
     if (parameters.contains(InsightEdgeClassProperty)) {
       val tag = ClassTag[Any](this.getClass.getClassLoader.loadClass(parameters(InsightEdgeClassProperty)))
-      new GigaspacesRelation(sqlContext, options.copy(clazz = Some(tag)))
+      new GigaspacesClassRelation(sqlContext, tag, options)
 
     } else if (parameters.contains(InsightEdgeCollectionProperty) || parameters.contains("path")) {
       val collection = parameters.getOrElse(InsightEdgeClassProperty, parameters("path"))
-      new GigaspacesRelation(sqlContext, options.copy(collection = Some(collection)))
+      new GigaspacesDocumentRelation(sqlContext, collection, options)
 
     } else {
       throw new IllegalArgumentException("'path', 'collection' or 'class' must be specified")
@@ -52,9 +55,7 @@ class DefaultSource
 
 case class InsightEdgeSourceOptions(
                                      readBufferSize: Int,
-                                     schema: Option[StructType],
-                                     clazz: Option[ClassTag[Any]] = None,
-                                     collection: Option[String] = None
+                                     schema: Option[StructType]
                                    )
 
 object DefaultSource {
