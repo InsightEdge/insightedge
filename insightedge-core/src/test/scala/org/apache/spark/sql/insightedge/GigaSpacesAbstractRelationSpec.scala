@@ -108,4 +108,12 @@ class GigaSpacesAbstractRelationSpec extends FunSpec with GsConfig with GigaSpac
   it("should create empty sql query") {
     assert(filtersToSql(Array()) equals("", Seq()))
   }
+
+  it("should create sql query with nested properties") {
+    val (query, params) = filtersToSql(
+      Array(EqualTo("address.city", "Buffalo"))
+    )
+    assert(query equals "(address.city = ?)")
+    assert(params equals Seq("Buffalo"))
+  }
 }

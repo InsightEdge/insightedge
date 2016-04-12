@@ -5,6 +5,7 @@ import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.spark.sql.{AnalysisException, SaveMode}
 import org.scalatest.FunSpec
+import com.gigaspaces.spark.implicits._
 
 class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
   it("should create dataframe with gigaspaces format") {
@@ -140,6 +141,24 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
 
     df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Ignore).save(table)
     assert(sql.read.grid.load(table).count() == 500)
+  }
+
+  it("should support nested properties") {
+    sc.parallelize(Seq(
+      new Person(id = null, name = "Paul", age = 30, address = new Address(city = "Columbus", state = "OH")),
+      new Person(id = null, name = "Mike", age = 25, address = new Address(city = "Buffalo", state = "NY")),
+      new Person(id = null, name = "John", age = 20, address = new Address(city = "Charlotte", state = "NC")),
+      new Person(id = null, name = "Silvia", age = 27, address = new Address(city = "Charlotte", state = "NC"))
+    )).saveToGrid()
+
+    val df = sql.read.grid.loadClass[Person]
+    assert(df.count() == 4)
+    assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
+
+    df.registerTempTable("people")
+    val sqlDf = sql.sql("select address.city as city, address.state as state from people")
+    val countByCity = sqlDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
+    assert(countByCity("Charlotte") == 2)
   }
 
 }
