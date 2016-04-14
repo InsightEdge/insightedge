@@ -3,7 +3,7 @@ package org.apache.spark.sql.insightedge
 import com.gigaspaces.scala.annotation._
 import com.gigaspaces.spark.model.GridModel
 
-import scala.beans.{BeanProperty, BooleanBeanProperty}
+import scala.beans.BeanProperty
 
 /**
   * Space class for tests

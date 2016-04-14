@@ -34,7 +34,7 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     assert(df.count() == 1000)
   }
 
-  it("should work with SQL syntax") {
+  it("should create dataframe with SQL syntax") {
     writeDataSeqToDataGrid(1000)
 
     sql.sql(
@@ -58,6 +58,8 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
 
     assert(sql.sql("select * from dataTable where data is null").collect().length == 0)
   }
+
+
 
   it("should select one field") {
     writeDataSeqToDataGrid(1000)
@@ -92,12 +94,14 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     }
   }
 
-  it("should write back half of data") {
+
+
+  it("should persist with simplified syntax") {
     writeDataSeqToDataGrid(1000)
     val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
 
     val df = sql.read.grid.loadClass[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
+    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
     val readDf = sql.read.grid.load(table)
     val count = readDf.select("routing").count()
@@ -105,6 +109,29 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
 
     readDf.printSchema()
   }
+
+  it("should persist without imports") {
+    writeDataSeqToDataGrid(1000)
+    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+
+    val df = sql.read
+      .format("org.apache.spark.sql.insightedge")
+      .option("class", classOf[Data].getName)
+      .load()
+    df.filter(df("routing") > 500)
+      .write
+      .mode(SaveMode.Overwrite)
+      .format("org.apache.spark.sql.insightedge")
+      .save(table)
+
+    val readDf = sql.read.grid.load(table)
+    val count = readDf.select("routing").count()
+    assert(count == 500)
+
+    readDf.printSchema()
+  }
+
+
 
   it("should fail to write with ErrorIfExists mode") {
     writeDataSeqToDataGrid(1000)
@@ -154,11 +181,14 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     val df = sql.read.grid.loadClass[Person]
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
+    df.printSchema()
 
     df.registerTempTable("people")
-    val sqlDf = sql.sql("select address.city as city, address.state as state from people")
-    val countByCity = sqlDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
+
+    val unwrapDf = sql.sql("select address.city as city, address.state as state from people")
+    val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
     assert(countByCity("Charlotte") == 2)
+    unwrapDf.printSchema()
   }
 
 }
