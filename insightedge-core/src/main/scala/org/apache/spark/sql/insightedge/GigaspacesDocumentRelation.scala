@@ -30,7 +30,7 @@ private[insightedge] case class GigaspacesDocumentRelation(
   }
 
   override def insert(data: DataFrame, overwrite: Boolean): Unit = {
-    if (overwrite) {
+    if (overwrite && !collectionIsEmpty) {
       gs.takeMultiple(new SQLQuery[SpaceDocument](collection, "", Seq()).setProjections(""))
     }
 
