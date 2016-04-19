@@ -34,9 +34,7 @@ private[insightedge] case class GigaspacesDocumentRelation(
       gs.takeMultiple(new SQLQuery[SpaceDocument](collection, "", Seq()).setProjections(""))
     }
 
-    gs.getTypeManager.registerTypeDescriptor(schema.fields.foldLeft(new SpaceTypeDescriptorBuilder(collection)) { (builder, field) =>
-      builder.addFixedProperty(field.name, classOf[Any])
-    }.create())
+    gs.getTypeManager.registerTypeDescriptor(new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true).create())
 
     data.rdd.map(row => {
       new SpaceDocument(collection, row.getValuesMap(schema.fieldNames))
