@@ -39,15 +39,34 @@ class DefaultSource
     val options = InsightEdgeSourceOptions(readBufferSize, schema)
 
     if (parameters.contains(InsightEdgeClassProperty)) {
-      val tag = ClassTag[Any](this.getClass.getClassLoader.loadClass(parameters(InsightEdgeClassProperty)))
+      val tag = loadClass(parameters(InsightEdgeClassProperty))
       new GigaspacesClassRelation(sqlContext, tag, options)
-
     } else if (parameters.contains(InsightEdgeCollectionProperty) || parameters.contains("path")) {
       val collection = parameters.getOrElse(InsightEdgeClassProperty, parameters("path"))
       new GigaspacesDocumentRelation(sqlContext, collection, options)
 
     } else {
       throw new IllegalArgumentException("'path', 'collection' or 'class' must be specified")
+    }
+  }
+
+  private def loadClass(path: String): ClassTag[Any] = {
+    loadClass(Thread.currentThread().getContextClassLoader, path)
+      .orElse(loadClass(this.getClass.getClassLoader, path))
+      .getOrElse {
+        throw new ClassNotFoundException(path)
+      }
+  }
+
+  private def loadClass(classLoader: ClassLoader, path: String): Option[ClassTag[Any]] = {
+    if (classLoader == null) {
+      None
+    }
+
+    try {
+      Some(ClassTag[Any](classLoader.loadClass(path)))
+    } catch {
+      case up: ClassNotFoundException => None
     }
   }
 

@@ -204,4 +204,11 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     df.select("id").write.grid.mode(SaveMode.Overwrite).save(table)
   }
 
+  it("should fail to load class") {
+    val thrown = intercept[ClassNotFoundException] {
+      sql.read.grid.option("class", "non.existing.Class").load()
+    }
+    assert(thrown.getMessage equals "non.existing.Class")
+  }
+
 }
