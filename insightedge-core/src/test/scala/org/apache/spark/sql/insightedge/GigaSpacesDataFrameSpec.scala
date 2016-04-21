@@ -191,4 +191,24 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     unwrapDf.printSchema()
   }
 
+  it("should override document schema") {
+    writeDataSeqToDataGrid(1000)
+    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+
+    val df = sql.read.grid.loadClass[Data]
+    // persist with modified schema
+    df.select("id", "data").write.grid.save(table)
+    // persist with original schema
+    df.write.grid.mode(SaveMode.Overwrite).save(table)
+    // persist with modified schema again
+    df.select("id").write.grid.mode(SaveMode.Overwrite).save(table)
+  }
+
+  it("should fail to load class") {
+    val thrown = intercept[ClassNotFoundException] {
+      sql.read.grid.option("class", "non.existing.Class").load()
+    }
+    assert(thrown.getMessage equals "non.existing.Class")
+  }
+
 }

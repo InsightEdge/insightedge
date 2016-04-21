@@ -1,5 +1,6 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.metadata.StorageType
 import com.gigaspaces.scala.annotation._
 import org.apache.spark.sql.types.StructType
 
@@ -11,6 +12,7 @@ class DataFrameSchema(
                        var collection: String,
 
                        @BeanProperty
+                       @SpaceStorageType(storageType = StorageType.BINARY)
                        var schema: StructType
                      ) {
 
