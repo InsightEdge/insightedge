@@ -10,6 +10,7 @@ import scala.collection.mutable
 import scala.reflect.internal.util.{BatchSourceFile, Position}
 import scala.tools.nsc.reporters.AbstractReporter
 import scala.tools.nsc.{Global, Settings}
+import scala.util.Try
 
 class StringCompiler(outputFolder: File, classpath: List[String]) {
 
@@ -42,13 +43,8 @@ class StringCompiler(outputFolder: File, classpath: List[String]) {
         case _ => ""
       }
       // the line number is not always available
-      val lineMessage =
-        try {
-          "line " + pos.line
-        } catch {
-          case _: Throwable => ""
-        }
-      messages ++= (severityName + lineMessage + ": " + message) ::
+      val lineMessage = Try("line " + pos.line + ": ").getOrElse("")
+      messages ++= (severityName + lineMessage + message) ::
         (if (pos.isDefined) {
           pos.inUltimateSource(pos.source).lineContent.stripLineEnd ::
             (" " * (pos.column - 1) + "^") ::

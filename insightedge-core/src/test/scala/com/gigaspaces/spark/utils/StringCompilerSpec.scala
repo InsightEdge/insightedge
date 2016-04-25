@@ -125,7 +125,7 @@ class StringCompilerSpec extends FunSpec with BeforeAndAfterEach{
     assert(classLoader.loadClass("generated.code.Address") != null)
   }
 
-  it ("should fail to compile") {
+  it ("should fail to compile with line message") {
     assert(compiler.compile("abc") == false)
     assert(compiler.getAndRemoveMessages() == List("error: line 1: expected class or object definition", "abc", "^"))
     assert(compiler.getAndRemoveMessages() == List())
