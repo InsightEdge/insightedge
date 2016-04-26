@@ -46,14 +46,14 @@ private[spark] object GigaSpaceUtils extends Logging {
   }
 
 
-  def buildGigaSpacePartitions[R: ClassTag](gsConfig: GigaSpacesConfig, splitCount: Option[Int], supportsBuckets: Boolean): Seq[GigaSpacesPartition] = {
+  def buildGigaSpacePartitions[R : ClassTag](gsConfig: GigaSpacesConfig, splitCount: Option[Int], supportsBuckets: Boolean): Seq[GigaSpacesPartition] = {
     profileWithInfo("lookupGigaSpacePartitions") {
       val gs = GigaSpaceFactory.getOrCreateClustered(gsConfig)
       val asyncResult = gs.execute(new LookupPartitionTask)
       val gsPartitions = asyncResult.get().map(_.toList).map {
         case List(hostName: String, containerName: String, id: String) => GigaSpacesPartition(id.toInt, hostName, containerName)
       }
-      if (supportsBuckets && classOf[GridModel].isAssignableFrom(classTag[R].runtimeClass)) {
+      if (supportsBuckets) {
         splitPartitionsByBuckets(gsPartitions, splitCount)
       } else {
         gsPartitions

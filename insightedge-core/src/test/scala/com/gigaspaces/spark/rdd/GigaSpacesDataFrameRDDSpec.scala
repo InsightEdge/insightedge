@@ -1,8 +1,8 @@
 package com.gigaspaces.spark.rdd
 
-import com.gigaspaces.spark.utils.{Spark, GigaSpaces, GsConfig}
-import org.scalatest.{Matchers, FunSpec}
 import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
+import org.scalatest.FunSpec
 
 class GigaSpacesDataFrameRDDSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
@@ -14,7 +14,7 @@ class GigaSpacesDataFrameRDDSpec extends FunSpec with GsConfig with GigaSpaces w
   }
 
   it("should aggregate data via DataFrame API") {
-    (1 to 1000).foreach(i => spaceProxy.write(new Data(i % 10, "data" + i)))
+    writeDataSeqToDataGrid((1 to 1000).map(i => new Data(i % 10, "data" + i)))
     val df = sc.gridDataFrame[Data]()
     val differentRoutingValues = df.groupBy(df("routing")).count().count
     assert(differentRoutingValues == 10, "Wrong aggregation count")

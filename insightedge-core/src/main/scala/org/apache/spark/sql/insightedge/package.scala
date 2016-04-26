@@ -1,5 +1,7 @@
 package org.apache.spark.sql
 
+import com.gigaspaces.spark.model.GridModel
+
 import scala.reflect._
 
 package object insightedge {
@@ -13,8 +15,8 @@ package object insightedge {
       reader.format(GigaSpacesFormat)
     }
 
-    def loadClass[T: ClassTag]: DataFrame = {
-      reader.format(GigaSpacesFormat).option("class", classTag[T].runtimeClass.getName).load()
+    def loadClass[R <: GridModel : ClassTag]: DataFrame = {
+      reader.format(GigaSpacesFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
   }
 

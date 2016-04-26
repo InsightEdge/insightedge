@@ -112,6 +112,21 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   }
 
   /**
+    * Wraps given query into (...) and appends 'and $bucketQuery' in the end.
+    *
+    * @param query given query
+    * @param split given partition
+    * @return query appended with bucket ids
+    */
+  protected def bucketize(query: String, split: Partition): String = {
+    if (query.trim.isEmpty) {
+      bucketQuery(split)
+    } else {
+      s"($query) and ${bucketQuery(split)}"
+    }
+  }
+
+  /**
     * Gets partitions for the given cache RDD.
     *
     * @return Partitions
