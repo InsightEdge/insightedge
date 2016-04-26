@@ -32,7 +32,9 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
 
   protected def dataSeq(count: Int): Seq[Data] = (1 to count).map(i => new Data(i, "data" + i))
 
-  protected def writeDataSeqToDataGrid(count: Int) = randomBucket(dataSeq(count)).foreach(data => spaceProxy.write(data))
+  protected def writeDataSeqToDataGrid(data: Seq[Data]): Unit = spaceProxy.writeMultiple(randomBucket(data).toArray)
+
+  protected def writeDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(dataSeq(count))
 
   protected def randomBucket(seq: Seq[GridModel]): Seq[GridModel] = {
     seq.foreach(data => data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount))

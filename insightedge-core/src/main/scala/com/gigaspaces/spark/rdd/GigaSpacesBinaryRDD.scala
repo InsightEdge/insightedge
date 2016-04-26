@@ -16,18 +16,18 @@ import scala.reflect._
   *
   * TODO: cleanup/refactor/remove
   */
-class GigaSpacesBinaryRDD[R : ClassTag](
-                                         gsConfig: GigaSpacesConfig,
-                                         sc: SparkContext,
-                                         splitCount: Option[Int],
-                                         readRddBufferSize: Int
-                                       ) extends GigaSpacesAbstractRDD[R](gsConfig, sc, splitCount, readRddBufferSize) {
+class GigaSpacesBinaryRDD[R <: GridModel : ClassTag](
+                                                      gsConfig: GigaSpacesConfig,
+                                                      sc: SparkContext,
+                                                      splitCount: Option[Int],
+                                                      readRddBufferSize: Int
+                                                    ) extends GigaSpacesAbstractRDD[R](gsConfig, sc, splitCount, readRddBufferSize) {
 
   @DeveloperApi
   override def compute(split: Partition, context: TaskContext): Iterator[R] = {
     val clazzString = classTag[R].runtimeClass.getName
 
-    val query = new SQLQuery[GridBinaryModel](classOf[GridBinaryModel], bucketQuery(split) + " AND clazz = ?")
+    val query = new SQLQuery[GridBinaryModel](classOf[GridBinaryModel], bucketize("clazz = ?", split))
     query.setParameters(clazzString)
 
     val startTime = System.currentTimeMillis()

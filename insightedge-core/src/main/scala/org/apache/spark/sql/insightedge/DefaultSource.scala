@@ -1,12 +1,13 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.spark.model.GridModel
 import org.apache.spark.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
-import scala.reflect.ClassTag
+import scala.reflect._
 
 class DefaultSource
   extends RelationProvider
@@ -40,7 +41,10 @@ class DefaultSource
 
     if (parameters.contains(InsightEdgeClassProperty)) {
       val tag = loadClass(parameters(InsightEdgeClassProperty))
-      new GigaspacesClassRelation(sqlContext, tag, options)
+      if (!classOf[GridModel].isAssignableFrom(tag.runtimeClass)) {
+        throw new IllegalArgumentException(s"'class' must extend ${classOf[GridModel].getName}")
+      }
+      new GigaspacesClassRelation(sqlContext, tag.asInstanceOf[ClassTag[GridModel]], options)
     } else if (parameters.contains(InsightEdgeCollectionProperty) || parameters.contains("path")) {
       val collection = parameters.getOrElse(InsightEdgeClassProperty, parameters("path"))
       new GigaspacesDocumentRelation(sqlContext, collection, options)

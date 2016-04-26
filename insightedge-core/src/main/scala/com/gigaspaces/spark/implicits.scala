@@ -1,6 +1,7 @@
 package com.gigaspaces.spark
 
 import com.gigaspaces.spark.context.{GigaSpacesConfig, GigaSpacesSparkContext}
+import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.SaveRddToGridExtension
 import com.gigaspaces.spark.utils.LocalCache
 import org.apache.spark.{SparkConf, SparkContext}
@@ -22,8 +23,8 @@ object implicits {
     gigaSpacesSparkContextCache.getOrElseUpdate(sc, new GigaSpacesSparkContext(sc))
   }
 
-  implicit def saveToDataGridExtension[T: ClassTag](rdd: RDD[T]): SaveRddToGridExtension[T] = {
-    new SaveRddToGridExtension[T](rdd)
+  implicit def saveToDataGridExtension[R : ClassTag](rdd: RDD[R]): SaveRddToGridExtension[R] = {
+    new SaveRddToGridExtension[R](rdd)
   }
 
   implicit class SparkConfExtension(sparkConf: SparkConf) {

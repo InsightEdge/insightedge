@@ -1,11 +1,11 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.spark.implicits._
 import com.gigaspaces.spark.rdd.Data
 import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.spark.sql.{AnalysisException, SaveMode}
 import org.scalatest.FunSpec
-import com.gigaspaces.spark.implicits._
 
 class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
   it("should create dataframe with gigaspaces format") {
@@ -211,4 +211,13 @@ class GigaSpacesDataFrameSpec extends FunSpec with GsConfig with GigaSpaces with
     assert(thrown.getMessage equals "non.existing.Class")
   }
 
+  it("should fail to work with class that is not GridModel") {
+    val thrown = intercept[IllegalArgumentException] {
+      sql.read.grid.option("class", classOf[NotGridModel].getName).load()
+    }
+    assert(thrown.getMessage equals "'class' must extend com.gigaspaces.spark.model.GridModel")
+  }
+
 }
+
+case class NotGridModel()

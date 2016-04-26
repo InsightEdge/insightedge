@@ -1,5 +1,6 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.GigaSpacesClassDataFrameRDD
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
@@ -11,7 +12,7 @@ import scala.reflect.runtime.universe._
 
 private[insightedge] case class GigaspacesClassRelation(
                                                          context: SQLContext,
-                                                         clazz: ClassTag[Any],
+                                                         clazz: ClassTag[GridModel],
                                                          options: InsightEdgeSourceOptions
                                                        )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
