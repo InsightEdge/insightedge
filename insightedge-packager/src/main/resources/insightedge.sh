@@ -9,6 +9,13 @@ VERSION="0.4.0-SNAPSHOT"
 ARTIFACT="gigaspaces-insightedge-$VERSION"
 ARTIFACT_EC2="https://s3.amazonaws.com/insightedge/builds/gigaspaces-insightedge-0.4.0-SNAPSHOT.zip"
 
+# override this variable with custom command if you want your distribution to be downloaded from custom location
+# for customization, call before insightedge.sh:
+# export ARTIFACT_DOWNLOAD_COMMAND="curl -L -O http://.../gigaspaces-insightedge.zip"
+if [ -z "${ARTIFACT_DOWNLOAD_COMMAND}" ]; then
+  export ARTIFACT_DOWNLOAD_COMMAND="curl -L -O $ARTIFACT_EC2"
+fi
+
 main() {
     define_defaults
     parse_options $@
@@ -17,17 +24,17 @@ main() {
     display_logo
     case "$MODE" in
       "master")
-        local_master $IE_PATH $IE_INSTALL $ARTIFACT $ARTIFACT_EC2 $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
+        local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
         ;;
       "slave")
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT $ARTIFACT_EC2 $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
+        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
         ;;
       "zeppelin")
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         ;;
       "demo")
-        local_master $IE_PATH $IE_INSTALL $ARTIFACT $ARTIFACT_EC2 $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT $ARTIFACT_EC2 $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
+        local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
+        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
         deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         display_demo_help $CLUSTER_MASTER
@@ -277,13 +284,13 @@ local_master() {
     local home=$1
     local install=$2
     local artifact=$3
-    local link=$4
+    local download=$4
     local master=$5
     local locator=$6
     local group=$7
     local size=$8
 
-    intall_insightedge $install $artifact $link $home
+    intall_insightedge $install $artifact "$download" $home
     stop_grid_master $home
     stop_spark_master $home
     start_grid_master $home $locator $group $size
@@ -294,14 +301,14 @@ local_slave() {
     local home=$1
     local install=$2
     local artifact=$3
-    local link=$4
+    local download=$4
     local master=$5
     local locator=$6
     local group=$7
     local containers=$8
     local size=$9
 
-    intall_insightedge $install $artifact $link $home
+    intall_insightedge $install $artifact "$download" $home
     stop_grid_slave $home
     stop_spark_slave $home
     start_grid_slave $home $master $locator $group $containers $size
@@ -323,7 +330,7 @@ remote_master() {
     local user=$2
     local key=$3
 
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT $ARTIFACT_EC2 $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE"
+    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE"
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to master at $host"
@@ -342,7 +349,7 @@ remote_slave() {
     local user=$2
     local key=$3
 
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT $ARTIFACT_EC2 $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE"
+    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE"
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to slave at $host"
@@ -404,7 +411,7 @@ shutdown_all() {
 intall_insightedge() {
     local install=$1
     local artifact=$2
-    local link=$3
+    local command=$3
     local home=$4
 
     if [ $install == "false" ]; then
@@ -418,7 +425,7 @@ intall_insightedge() {
     mkdir $home
     cd $home
     echo "- Downloading $artifact"
-    curl -L -O $link
+    eval $command
     echo "- Unpacking $artifact"
     unzip ${artifact}.zip > insightedge-unzip.log
     rm ${artifact}.zip
