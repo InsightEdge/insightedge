@@ -8,24 +8,21 @@ fi
 export PYTHONHASHSEED=0
 
 # add datagrid and InsightEdge JARs to job --jars
-DATAGRID_LOCATION="${INSIGHTEDGE_HOME}/datagrid"
-INSIGHTEDGE_JAR_LOCATION="$(find ${INSIGHTEDGE_HOME}/lib -name "insightedge-core-*.jar")"
-GS_SCALA_JAR_LOCATION="$(find ${INSIGHTEDGE_HOME}/lib -name "gigaspaces-scala-*.jar")"
-GS_JARS=$(echo $DATAGRID_LOCATION/lib/required/*.jar | tr ' ' ',')
-GS_JARS="$GS_JARS,$INSIGHTEDGE_JAR_LOCATION,$GS_SCALA_JAR_LOCATION"
+. ${INSIGHTEDGE_HOME}/sbin/common-insightedge.sh
+INSIGHTEDGE_JARS=$(get_libs ',')
 
 process_args(){
     ARGUMENTS=""
     for i in "$@"
         do
             if [[ $i == "--jars" ]]; then
-                ARGUMENTS+="--jars $GS_JARS,"
+                ARGUMENTS+="--jars $INSIGHTEDGE_JARS,"
             else ARGUMENTS+="$i "
             fi
         done
     if [[ ! $ARGUMENTS =~ .*--jars.* ]]
     then
-       ARGUMENTS=" --jars $GS_JARS $ARGUMENTS"
+       ARGUMENTS=" --jars $INSIGHTEDGE_JARS $ARGUMENTS"
     fi
     echo $ARGUMENTS
 }

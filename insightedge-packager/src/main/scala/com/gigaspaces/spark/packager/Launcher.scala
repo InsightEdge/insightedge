@@ -40,6 +40,7 @@ object Launcher {
     }
 
     run("Adding integration scripts") {
+      copy(s"$resources/common-insightedge.sh", s"$output/sbin/common-insightedge.sh")
       copy(s"$resources/insightedge-shell", s"$output/bin/insightedge-shell")
       copy(s"$resources/insightedge-submit", s"$output/bin/insightedge-submit")
       copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
@@ -82,6 +83,8 @@ object Launcher {
     }
     run("Configuring Zeppelin") {
       copy(s"$resources/zeppelin-site.xml", s"$output/zeppelin/conf/zeppelin-site.xml")
+      copy(s"$resources/zeppelin-env.sh", s"$output/zeppelin/conf/zeppelin-env.sh")
+      remove(s"$output/zeppelin/interpreter/spark/dep")
     }
     run("Adding Zeppelin scripts") {
       copy(s"$resources/start-zeppelin.sh", s"$output/sbin/start-zeppelin.sh")
