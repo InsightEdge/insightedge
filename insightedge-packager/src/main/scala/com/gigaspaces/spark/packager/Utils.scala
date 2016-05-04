@@ -143,4 +143,17 @@ object Utils {
     }
   }
 
+  def writeToFile(name: String, str: String): Unit = {
+    val pW = new PrintWriter(new File(name))
+    pW.append(str)
+    pW.close()
+  }
+
+  val GIT_HASH_LENGTH = 40
+  def validateHash(hash: String): Unit = {
+    if (hash.length != GIT_HASH_LENGTH) {
+      throw new IllegalArgumentException("Invalid commit hash: " + hash)
+    }
+  }
+
 }

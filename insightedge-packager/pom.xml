@@ -69,6 +69,10 @@
                                     <jvmArgs>
                                         <!-- Basedir for project files -->
                                         <jvmArg>-Dproject.directory=.</jvmArg>
+                                        <!-- Project release version -->
+                                        <jvmArg>-Dproject.version=${project.version}</jvmArg>
+                                        <!-- Hash of last commit, TeamCity variable -->
+                                        <jvmArg>-DlastCommit.hash=${env.BUILD_VCS_NUMBER}</jvmArg>
                                         <!-- Where all distribution contents will go before zipping -->
                                         <jvmArg>-Doutput.exploded.directory=${project.build.directory}/package</jvmArg>
                                         <!-- Final compressed file location and name -->
