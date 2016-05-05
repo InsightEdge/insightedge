@@ -69,6 +69,8 @@
                                     <jvmArgs>
                                         <!-- Basedir for project files -->
                                         <jvmArg>-Dproject.directory=.</jvmArg>
+                                        <!-- Project release version -->
+                                        <jvmArg>-Dproject.version=${project.version}</jvmArg>
                                         <!-- Where all distribution contents will go before zipping -->
                                         <jvmArg>-Doutput.exploded.directory=${project.build.directory}/package</jvmArg>
                                         <!-- Final compressed file location and name -->
@@ -85,6 +87,8 @@
                                         <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
                                         <!-- Path to examples (jar) -->
                                         <jvmArg>-Ddist.examples=${dist.examples}</jvmArg>
+                                        <!-- Hash of last commit, optional -->
+                                        <jvmArg>-Dlast.commit.hash=${last.commit.hash}</jvmArg>
                                     </jvmArgs>
                                 </configuration>
                             </execution>
@@ -134,6 +138,20 @@
             </activation>
             <properties>
                 <dist.zeppelin>${project.basedir}/dist/zeppelin.tar.gz</dist.zeppelin>
+            </properties>
+        </profile>
+
+        <!-- Allows to package distribution locally with empty hash value-->
+        <profile>
+            <id>default-dist-githash</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!last.commit.hash</name>
+                </property>
+            </activation>
+            <properties>
+                <last.commit.hash></last.commit.hash>
             </properties>
         </profile>
 

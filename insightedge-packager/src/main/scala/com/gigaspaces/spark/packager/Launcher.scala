@@ -1,6 +1,7 @@
 package com.gigaspaces.spark.packager
 
-import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 import com.gigaspaces.spark.packager.Utils._
 import org.apache.commons.io.filefilter.{AbstractFileFilter, TrueFileFilter}
@@ -11,6 +12,8 @@ import org.apache.commons.io.filefilter.{AbstractFileFilter, TrueFileFilter}
 object Launcher {
   def main(args: Array[String]) {
     val project = parameter("Project folder" -> "project.directory")
+    val version = parameter("Project version" -> "project.version")
+    val lastCommitHash = optionalParameter("Last commit hash" -> "last.commit.hash")
     val output = parameter("Output folder" -> "output.exploded.directory")
     val outputFile = parameter("Output file" -> "output.compressed.file")
     val outputPrefix = parameter("Output contents prefix" -> "output.contents.prefix")
@@ -20,12 +23,17 @@ object Launcher {
     val examples = parameter("Examples jar" -> "dist.examples")
     val resources = s"$project/insightedge-packager/src/main/resources"
 
+    validateHash(lastCommitHash)
+
     run("Unpacking spark") {
       untgz(spark, output, cutRootFolder = true)
     }
 
     run("Adding docs to insightedge") {
       copy(s"$project/README.md", s"$output/RELEASE")
+      val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
+      val versionInfo = s"Version: $version\nHash: ${lastCommitHash.getOrElse("")}\nTimestamp: $timestamp"
+      writeToFile(s"$output/VERSION", versionInfo)
     }
 
     run("Adding integration libs") {
@@ -125,6 +133,13 @@ object Launcher {
     require(value.isDefined, s"$key ($label) must be set as environment variable")
     println(s"$label: ${value.get}")
     value.get
+  }
+
+  def optionalParameter(tuple: (String, String)): Option[String] = {
+    val (label, key) = tuple
+    val value = Option(System.getProperty(key)).filter(!_.isEmpty)
+    println(s"$label: ${value.getOrElse("")}")
+    value
   }
 
   def run(name: String)(block: => Unit): Unit = {
