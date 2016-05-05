@@ -129,14 +129,15 @@ object Launcher {
 
   def parameter(tuple: (String, String)): String = {
     val (label, key) = tuple
-    val value = optionalParameter(tuple)
+    val value = Option(System.getProperty(key))
     require(value.isDefined, s"$key ($label) must be set as environment variable")
+    println(s"$label: ${value.get}")
     value.get
   }
 
   def optionalParameter(tuple: (String, String)): Option[String] = {
     val (label, key) = tuple
-    val value = Option(System.getProperty(key))
+    val value = Option(System.getProperty(key)).filter(!_.isEmpty)
     println(s"$label: ${value.getOrElse("")}")
     value
   }

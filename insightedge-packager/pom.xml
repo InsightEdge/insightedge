@@ -141,5 +141,19 @@
             </properties>
         </profile>
 
+        <!-- Allows to package distribution locally with empty hash value-->
+        <profile>
+            <id>default-dist-githash</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!last.commit.hash</name>
+                </property>
+            </activation>
+            <properties>
+                <last.commit.hash></last.commit.hash>
+            </properties>
+        </profile>
+
     </profiles>
 </project>
