@@ -71,8 +71,6 @@
                                         <jvmArg>-Dproject.directory=.</jvmArg>
                                         <!-- Project release version -->
                                         <jvmArg>-Dproject.version=${project.version}</jvmArg>
-                                        <!-- Hash of last commit, TeamCity variable -->
-                                        <jvmArg>-DlastCommit.hash=${env.BUILD_VCS_NUMBER}</jvmArg>
                                         <!-- Where all distribution contents will go before zipping -->
                                         <jvmArg>-Doutput.exploded.directory=${project.build.directory}/package</jvmArg>
                                         <!-- Final compressed file location and name -->
@@ -89,6 +87,8 @@
                                         <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
                                         <!-- Path to examples (jar) -->
                                         <jvmArg>-Ddist.examples=${dist.examples}</jvmArg>
+                                        <!-- Hash of last commit, optional -->
+                                        <jvmArg>-Dlast.commit.hash=${last.commit.hash}</jvmArg>
                                     </jvmArgs>
                                 </configuration>
                             </execution>

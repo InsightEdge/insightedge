@@ -150,9 +150,9 @@ object Utils {
   }
 
   val GIT_HASH_LENGTH = 40
-  def validateHash(hash: String): Unit = {
-    if (hash.length != GIT_HASH_LENGTH) {
-      throw new IllegalArgumentException("Invalid commit hash: " + hash)
+  def validateHash(hash: Option[String]): Unit = {
+    if (hash.isDefined && hash.get.length != GIT_HASH_LENGTH) {
+      throw new IllegalArgumentException("Invalid commit hash: " + hash.get)
     }
   }
 
