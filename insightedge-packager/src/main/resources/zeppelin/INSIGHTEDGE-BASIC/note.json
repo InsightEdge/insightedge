@@ -447,8 +447,8 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Creating SQL context",
-      "text": "%spark\nimport org.apache.spark.sql._\n\nval sqlContext \u003d new SQLContext(sc)",
+      "title": "Import Spark SQL classes",
+      "text": "%spark\nimport org.apache.spark.sql._\n",
       "dateUpdated": "Apr 20, 2016 6:03:29 AM",
       "config": {
         "colWidth": 12.0,
