@@ -602,7 +602,7 @@
     },
     {
       "title": "Loading Classes As DataFrames (simpler syntax)",
-      "text": "%spark\nimport org.apache.spark.sql.insightedge._\n\nval df \u003d sqlContext.read.grid.loadClass[Product]\n\n",
+      "text": "%spark\nval df \u003d sqlContext.read.grid.loadClass[Product]\n\n",
       "dateUpdated": "Apr 20, 2016 8:36:36 AM",
       "config": {
         "colWidth": 4.0,
@@ -633,7 +633,7 @@
     },
     {
       "title": "Saving DataFrame as collection (simpler syntax)",
-      "text": "%spark\nimport org.apache.spark.sql.insightedge._\n\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5)\n    .write.grid.mode(SaveMode.Overwrite).save(\"smallStock\")\n    ",
+      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5)\n    .write.grid.mode(SaveMode.Overwrite).save(\"smallStock\")\n    ",
       "dateUpdated": "Apr 20, 2016 8:36:36 AM",
       "config": {
         "colWidth": 4.0,
@@ -663,7 +663,7 @@
     },
     {
       "title": "Loading Collection as DataFrame (simpler syntax)",
-      "text": "%spark\nimport org.apache.spark.sql.insightedge._\n\nval df \u003d sqlContext.read.grid.load(\"smallStock\")\n\nval outOfStock \u003d df.filter(df(\"quantity\") equalTo 0).count()",
+      "text": "%spark\nval df \u003d sqlContext.read.grid.load(\"smallStock\")\n\nval outOfStock \u003d df.filter(df(\"quantity\") equalTo 0).count()",
       "dateUpdated": "Apr 20, 2016 8:36:36 AM",
       "config": {
         "colWidth": 4.0,
