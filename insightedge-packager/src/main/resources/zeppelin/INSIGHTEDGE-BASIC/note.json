@@ -447,7 +447,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Import Spark SQL classes",
+      "title": "Importing Spark SQL classes",
       "text": "%spark\nimport org.apache.spark.sql._\n",
       "dateUpdated": "Apr 20, 2016 6:03:29 AM",
       "config": {
