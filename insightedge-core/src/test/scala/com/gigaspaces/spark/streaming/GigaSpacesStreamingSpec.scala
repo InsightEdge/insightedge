@@ -1,9 +1,9 @@
 package com.gigaspaces.spark.streaming
 
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
+import com.gigaspaces.spark.implicits.streaming._
 import com.gigaspaces.spark.rdd.Data
-import com.gigaspaces.spark.streaming.implicits._
-import com.gigaspaces.spark.utils.{SparkStreaming, Spark, GigaSpaces, GsConfig}
+import com.gigaspaces.spark.utils.{SparkStreaming, GigaSpaces, GsConfig}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.dstream.InputDStream

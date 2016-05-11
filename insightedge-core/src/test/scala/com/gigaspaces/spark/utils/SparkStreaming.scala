@@ -1,11 +1,11 @@
 package com.gigaspaces.spark.utils
 
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.SparkConf
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Span
 import org.scalatest.{time, BeforeAndAfterEach, BeforeAndAfterAll, Suite}
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 
 /**
   * @author Oleksiy_Dyagilev

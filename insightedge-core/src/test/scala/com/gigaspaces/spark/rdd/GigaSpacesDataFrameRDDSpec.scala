@@ -1,6 +1,6 @@
 package com.gigaspaces.spark.rdd
 
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
 import org.scalatest.FunSpec
 

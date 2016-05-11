@@ -1,9 +1,11 @@
 package com.gigaspaces.spark
 
 import com.gigaspaces.spark.context.{GigaSpacesConfig, GigaSpacesSparkContext}
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.mllib.MllibImplicits
 import com.gigaspaces.spark.rdd.SaveRddToGridExtension
+import com.gigaspaces.spark.streaming.StreamingImplicits
 import com.gigaspaces.spark.utils.LocalCache
+import org.apache.spark.sql.insightedge.DataFrameImplicits
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 
@@ -16,6 +18,23 @@ import scala.reflect.ClassTag
   */
 object implicits {
 
+  object basic extends BasicImplicits
+
+  object streaming extends StreamingImplicits
+
+  object mllib extends MllibImplicits
+
+  object datafarame extends DataFrameImplicits
+
+  // Mix all
+  object all extends BasicImplicits
+    with MllibImplicits
+    with StreamingImplicits
+    with DataFrameImplicits
+
+}
+
+trait BasicImplicits {
   /** this is to not create a new instance of GigaSpacesSparkContext every time implicit conversion fired **/
   val gigaSpacesSparkContextCache = new LocalCache[SparkContext, GigaSpacesSparkContext]()
 

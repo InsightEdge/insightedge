@@ -12,6 +12,14 @@ import scala.reflect.ClassTag
   */
 object implicits {
 
+//  implicit def saveDStreamToGridExtension[T: ClassTag](dStream: DStream[T]): SaveDStreamToGridExtension[T] = {
+//    new SaveDStreamToGridExtension(dStream)
+//  }
+
+}
+
+trait StreamingImplicits {
+
   implicit def saveDStreamToGridExtension[T: ClassTag](dStream: DStream[T]): SaveDStreamToGridExtension[T] = {
     new SaveDStreamToGridExtension(dStream)
   }

@@ -1,7 +1,7 @@
 package com.gigaspaces.spark.mllib
 
-import com.gigaspaces.spark.implicits._
-import com.gigaspaces.spark.mllib.implicits._
+import com.gigaspaces.spark.implicits.basic._
+import com.gigaspaces.spark.implicits.mllib._
 import com.gigaspaces.spark.utils.{Spark, GigaSpaces, GsConfig}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.mllib.tree.DecisionTree

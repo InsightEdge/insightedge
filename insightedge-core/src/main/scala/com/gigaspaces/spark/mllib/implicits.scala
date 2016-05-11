@@ -4,6 +4,14 @@ import org.apache.spark.mllib.util.Saveable
 
 object implicits {
 
+//  implicit def saveModelToDataGridExtension(model: Saveable): SaveModelToGridExtension = {
+//    new SaveModelToGridExtension(model)
+//  }
+
+}
+
+trait MllibImplicits {
+
   implicit def saveModelToDataGridExtension(model: Saveable): SaveModelToGridExtension = {
     new SaveModelToGridExtension(model)
   }

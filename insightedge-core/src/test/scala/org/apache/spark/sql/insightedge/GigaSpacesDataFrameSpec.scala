@@ -1,6 +1,7 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
+import com.gigaspaces.spark.implicits.datafarame._
 import com.gigaspaces.spark.rdd.Data
 import com.gigaspaces.spark.utils.{GigaSpaces, GsConfig, Spark}
 import org.apache.commons.lang3.RandomStringUtils

@@ -1,6 +1,6 @@
 package com.gigaspaces.spark.utils
 
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}

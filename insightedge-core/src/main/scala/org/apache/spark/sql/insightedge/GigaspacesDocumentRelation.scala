@@ -1,11 +1,9 @@
 package org.apache.spark.sql.insightedge
 
-import java.lang.reflect.{Array => JavaArray}
-
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.gigaspaces.query.IdQuery
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.rdd.GigaSpacesDocumentDataFrameRDD
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD

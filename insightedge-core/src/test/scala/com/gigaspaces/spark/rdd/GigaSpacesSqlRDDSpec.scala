@@ -1,8 +1,8 @@
 package com.gigaspaces.spark.rdd
 
 import com.gigaspaces.spark.utils.{GigaSpaces, Spark, GsConfig}
-import org.scalatest.{Matchers, FunSpec}
-import com.gigaspaces.spark.implicits._
+import org.scalatest.FunSpec
+import com.gigaspaces.spark.implicits.basic._
 
 class GigaSpacesSqlRDDSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 

@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.context.GigaSpacesConfig
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.sources._
