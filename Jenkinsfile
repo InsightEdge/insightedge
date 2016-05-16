@@ -10,18 +10,18 @@ node {
 
     stage 'Checkout zeppelin'
     env.ZEPPELIN_REPO = ""
-    echo "Branch: ${BRANCH_NAME}"
+    echo "Branch: ${GIT_BRANCH}"
 
     // write a number of branches matching current BRANCH_NAME to a file "zeppelin-branch-exists"
     // never fails with non-zero status code (using ||: syntax)
-    sh "git ls-remote --heads ${env.ZEPPELIN_REPO} | grep -c ${BRANCH_NAME} > zeppelin-branch-exists || :"
+    sh "git ls-remote --heads ${env.ZEPPELIN_REPO} | grep -c ${GIT_BRANCH} > zeppelin-branch-exists || :"
     BRANCH_MATCH_COUNT = readFile('zeppelin-branch-exists').trim()
     if ( BRANCH_MATCH_COUNT == "1" ) {
-        echo "Branch ${BRANCH_NAME} found in Zeppelin at: ${env.ZEPPELIN_REPO}"
-        echo "Using ${BRANCH_NAME} for Zeppelin"
-        ZEPPELIN_BRANCH_NAME = "${BRANCH_NAME}"
+        echo "Branch ${GIT_BRANCH} found in Zeppelin at: ${env.ZEPPELIN_REPO}"
+        echo "Using ${GIT_BRANCH} for Zeppelin"
+        ZEPPELIN_BRANCH_NAME = "${GIT_BRANCH}"
     } else {
-        echo "Found ${BRANCH_MATCH_COUNT} branches matching ${BRANCH_NAME} at: ${env.ZEPPELIN_REPO}"
+        echo "Found ${BRANCH_MATCH_COUNT} branches matching ${GIT_BRANCH} at: ${env.ZEPPELIN_REPO}"
         echo "Using default branch for Zeppelin: ${ZEPPELIN_DEFAULT_BRANCH_NAME}"
         ZEPPELIN_BRANCH_NAME = "${ZEPPELIN_DEFAULT_BRANCH_NAME}"
     }
