@@ -1,6 +1,8 @@
 node {
     echo "Branch: ${env.BRANCH_NAME}"
 
+    sh "git ls-remote --heads"
+    sh "git ls-remote --heads ${env.ZEPPELIN_REPO}"
 
     stage 'Checkout insightedge'
     checkout scm
