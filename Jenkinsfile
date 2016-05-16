@@ -22,8 +22,8 @@ node {
         ZEPPELIN_BRANCH_NAME = "${env.BRANCH_NAME}"
     } else {
         echo "Found ${BRANCH_MATCH_COUNT} branches matching ${env.BRANCH_NAME} at: ${env.ZEPPELIN_REPO}"
-        echo "Using default branch for Zeppelin: ${ZEPPELIN_DEFAULT_BRANCH_NAME}"
-        ZEPPELIN_BRANCH_NAME = "${ZEPPELIN_DEFAULT_BRANCH_NAME}"
+        echo "Using default branch for Zeppelin: ${env.ZEPPELIN_DEFAULT_BRANCH_NAME}"
+        ZEPPELIN_BRANCH_NAME = "${env.ZEPPELIN_DEFAULT_BRANCH_NAME}"
     }
 
     // checkout Zeppelin repo
