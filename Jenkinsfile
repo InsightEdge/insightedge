@@ -1,4 +1,5 @@
 node {
+    printenv
     sh "git symbolic-ref --short HEAD"
 
 
