@@ -1,5 +1,5 @@
 node {
-    echo "Branch: ${GIT_BRANCH}"
+    sh "git symbolic-ref --short HEAD"
 
 
     stage 'Checkout insightedge'
