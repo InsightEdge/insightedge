@@ -3,5 +3,5 @@ node {
 
     stage 'Build and Test'
     checkout scm
-    sh 'mvn clean install -Dcom.gs.home=${env.XAP_HOME_DIR}'
+    sh "mvn clean install -Dcom.gs.home=${env.XAP_HOME_DIR}"
 }
