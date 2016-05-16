@@ -1,4 +1,7 @@
 node {
+    echo "Branch: ${GIT_BRANCH}"
+
+
     stage 'Checkout insightedge'
     checkout scm
 
@@ -9,9 +12,6 @@ node {
 
 
     stage 'Checkout zeppelin'
-    env.ZEPPELIN_REPO = ""
-    echo "Branch: ${GIT_BRANCH}"
-
     // write a number of branches matching current BRANCH_NAME to a file "zeppelin-branch-exists"
     // never fails with non-zero status code (using ||: syntax)
     sh "git ls-remote --heads ${env.ZEPPELIN_REPO} | grep -c ${GIT_BRANCH} > zeppelin-branch-exists || :"
