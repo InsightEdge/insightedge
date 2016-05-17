@@ -48,7 +48,7 @@ node {
 
 
         stage 'Build zeppelin'
-        // sh "mvn -f zeppelin/$zeppelinBranchName clean install -DskipTests -P spark-1.6 -P build-distr"
+        sh "mvn -f zeppelin/$zeppelinBranchName clean install -DskipTests -P spark-1.6 -P build-distr"
 
 
         stage 'Checkout examples'
