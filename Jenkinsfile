@@ -1,7 +1,7 @@
 node {
     echo "Branch: ${env.BRANCH_NAME}"
 
-    sh "git ls-remote --heads git@github.com:InsightEdge/insightedge.git"
+    sh "git ls-remote --heads https://github.com/InsightEdge/insightedge.git"
     sh "git ls-remote --heads ${env.ZEPPELIN_REPO}"
 
     stage 'Checkout insightedge'
