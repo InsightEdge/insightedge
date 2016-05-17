@@ -32,6 +32,7 @@ node {
         }
 
         // checkout Zeppelin repo
+        sh "rm -r zeppelin"
         sh "git clone -b ${zeppelinBranchName} --single-branch ${zeppelinRepo} zeppelin"
 
 
