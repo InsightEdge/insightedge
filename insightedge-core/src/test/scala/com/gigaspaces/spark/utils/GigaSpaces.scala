@@ -1,7 +1,7 @@
 package com.gigaspaces.spark.utils
 
 import com.gigaspaces.spark.model.GridModel
-import com.gigaspaces.spark.rdd.Data
+import com.gigaspaces.spark.rdd.{Data, JData}
 import org.openspaces.core.GigaSpace
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import org.springframework.context.support.ClassPathXmlApplicationContext
@@ -9,10 +9,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext
 import scala.util.Random
 
 /**
- * Suite mixin that starts GigaSpaces data grid
- *
- * @author Oleksiy_Dyagilev
- */
+  * Suite mixin that starts GigaSpaces data grid
+  *
+  * @author Oleksiy_Dyagilev
+  */
 trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
   self: Suite with GsConfig =>
 
@@ -30,11 +30,15 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
     spaceProxy = GigaSpaceFactory.getOrCreateClustered(gsConfig)
   }
 
-  protected def dataSeq(count: Int): Seq[Data] = (1 to count).map(i => new Data(i, "data" + i))
+  protected def dataSeq(count: Int): Seq[Data] = (1L to count).map(i => new Data(i, "data" + i))
 
-  protected def writeDataSeqToDataGrid(data: Seq[Data]): Unit = spaceProxy.writeMultiple(randomBucket(data).toArray)
+  protected def jDataSeq(count: Int): Seq[JData] = (1L to count).map(i => new JData(i, "data" + i))
+
+  protected def writeDataSeqToDataGrid(data: Seq[GridModel]): Unit = spaceProxy.writeMultiple(randomBucket(data).toArray)
 
   protected def writeDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(dataSeq(count))
+
+  protected def writeJDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(jDataSeq(count))
 
   protected def randomBucket(seq: Seq[GridModel]): Seq[GridModel] = {
     seq.foreach(data => data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount))
