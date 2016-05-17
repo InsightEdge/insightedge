@@ -33,10 +33,10 @@ node {
 
         // checkout Zeppelin repo
         sh "rm -r zeppelin"
-        sh "git clone -b ${zeppelinBranchName} --single-branch ${zeppelinRepo} zeppelin"
+        sh "git clone -b ${zeppelinBranchName} --single-branch ${zeppelinRepo} zeppelin/${zeppelinBranchName}"
 
 
-        dir('zeppelin') {
+        dir("zeppelin/${zeppelinBranchName}") {
             stage 'Build zeppelin'
             sh "mvn clean install -DskipTests -P spark-1.6 -P build-distr"
         }
