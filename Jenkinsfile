@@ -14,12 +14,8 @@ node {
 
         stage 'Checkout zeppelin'
         // write a number of branches matching current BRANCH_NAME to a file "zeppelin-branch-exists"
-        // never fails with non-zero status code (using "set +e")
-        sh '''
-            set +xe
-            git ls-remote --heads https://$USERNAME:$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git | grep -c ${env.BRANCH_NAME} > zeppelin-branch-count
-            set -xe
-        '''
+        // never fails with non-zero status code (using ||: syntax)
+        sh "git ls-remote --heads https://$USERNAME:$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git | grep -c ${env.BRANCH_NAME} > zeppelin-branch-count || :"
         BRANCH_MATCH_COUNT = readFile('zeppelin-branch-count').trim()
         if ( BRANCH_MATCH_COUNT == "1" ) {
             echo "Branch ${env.BRANCH_NAME} found in Zeppelin at: ${env.ZEPPELIN_REPO}"
