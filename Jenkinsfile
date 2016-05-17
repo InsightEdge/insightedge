@@ -20,26 +20,19 @@ node {
         // write a number of branches matching current BRANCH_NAME to a file 'zeppelinBranchFile'
         // never fails with non-zero status code (using ||: syntax)
         sh "git ls-remote --heads ${zeppelinRepo} | grep -c ${branchName} > ${zeppelinBranchFile} || :"
-        BRANCH_MATCH_COUNT = readFile(zeppelinBranchFile).trim()
-        if (BRANCH_MATCH_COUNT == "1") {
+        branchMatchCount = readFile(zeppelinBranchFile).trim()
+        if (branchMatchCount == "1") {
             echo "Branch ${branchName} found in Zeppelin at: ${zeppelinRepo}"
             echo "Using ${branchName} for Zeppelin"
-            ZEPPELIN_BRANCH_NAME = "${branchName}"
+            zeppelinBranchName = "${branchName}"
         } else {
-            echo "Found ${BRANCH_MATCH_COUNT} branches matching ${branchName} at: ${zeppelinRepo}"
+            echo "Found ${branchMatchCount} branches matching ${branchName} at: ${zeppelinRepo}"
             echo "Using default branch for Zeppelin: ${zeppelinDefaultBranchName}"
-            ZEPPELIN_BRANCH_NAME = "${zeppelinDefaultBranchName}"
+            zeppelinBranchName = "${zeppelinDefaultBranchName}"
         }
 
         // checkout Zeppelin repo
-        checkout([
-            $class: 'GitSCM',
-            branches: [[name: "*/${ZEPPELIN_BRANCH_NAME}"]],
-            doGenerateSubmoduleConfigurations: false,
-            extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'zeppelin']],
-            submoduleCfg: [],
-            userRemoteConfigs: [[url: "${zeppelinRepo}"]]
-        ])
+        sh "git clone -b ${zeppelinBranchName} --single-branch ${zeppelinRepo} zeppelin"
 
 
         stage 'Build zeppelin'
