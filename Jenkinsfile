@@ -37,7 +37,7 @@ node {
 
 
         stage 'Build zeppelin'
-        sh "mvn -f zeppelin/pom.xml clean install -DskipTests -P spark-1.6 -P build-distr"
+        sh "mvn -f zeppelin clean install -DskipTests -P spark-1.6 -P build-distr"
 
     }
 }
