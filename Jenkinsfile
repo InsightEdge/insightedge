@@ -38,7 +38,7 @@ node {
         stage 'Checkout zeppelin'
         String zeppelinBranchName = getBranchOrDefault(zeppelinRepo, branchName, zeppelinDefaultBranchName)
         echo "Using $zeppelinBranchName branch for Zeppelin"
-        sh "rm -r zeppelin"
+        sh "rm -r zeppelin || :"
         sh "git clone -b $zeppelinBranchName --single-branch $zeppelinRepo zeppelin/$zeppelinBranchName"
 
 
@@ -49,7 +49,7 @@ node {
         stage 'Checkout examples'
         String examplesBranchName = getBranchOrDefault(examplesRepo, branchName, examplesDefaultBranchName)
         echo "Using $examplesBranchName branch for examples"
-        sh "rm -r examples"
+        sh "rm -r examples || :"
         sh "git clone -b $examplesBranchName --single-branch $examplesRepo examples/$examplesBranchName"
 
 
