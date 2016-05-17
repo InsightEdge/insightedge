@@ -1,7 +1,11 @@
 node {
     withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insightedge-dev', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
 
-        echo "Branch: ${env.BRANCH_NAME}"
+        branchName = "${env.BRANCH_NAME}"
+        zeppelinDefaultBranchName = "branch-0.5.6"
+        zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
+        zeppelinBranchFile = "zeppelin-branch-count"
+        echo "Branch: ${branchName}"
 
         stage 'Checkout insightedge'
         checkout scm
@@ -13,18 +17,18 @@ node {
 
 
         stage 'Checkout zeppelin'
-        // write a number of branches matching current BRANCH_NAME to a file "zeppelin-branch-exists"
+        // write a number of branches matching current BRANCH_NAME to a file 'zeppelinBranchFile'
         // never fails with non-zero status code (using ||: syntax)
-        sh "git ls-remote --heads https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git | grep -c ${env.BRANCH_NAME} > zeppelin-branch-count || :"
-        BRANCH_MATCH_COUNT = readFile('zeppelin-branch-count').trim()
-        if ( BRANCH_MATCH_COUNT == "1" ) {
-            echo "Branch ${env.BRANCH_NAME} found in Zeppelin at: ${env.ZEPPELIN_REPO}"
-            echo "Using ${env.BRANCH_NAME} for Zeppelin"
-            ZEPPELIN_BRANCH_NAME = "${env.BRANCH_NAME}"
+        sh "git ls-remote --heads ${zeppelinRepo} | grep -c ${branchName} > ${zeppelinBranchFile} || :"
+        BRANCH_MATCH_COUNT = readFile(zeppelinBranchFile).trim()
+        if (BRANCH_MATCH_COUNT == "1") {
+            echo "Branch ${branchName} found in Zeppelin at: ${zeppelinRepo}"
+            echo "Using ${branchName} for Zeppelin"
+            ZEPPELIN_BRANCH_NAME = "${branchName}"
         } else {
-            echo "Found ${BRANCH_MATCH_COUNT} branches matching ${env.BRANCH_NAME} at: ${env.ZEPPELIN_REPO}"
-            echo "Using default branch for Zeppelin: ${env.ZEPPELIN_DEFAULT_BRANCH_NAME}"
-            ZEPPELIN_BRANCH_NAME = "${env.ZEPPELIN_DEFAULT_BRANCH_NAME}"
+            echo "Found ${BRANCH_MATCH_COUNT} branches matching ${branchName} at: ${zeppelinRepo}"
+            echo "Using default branch for Zeppelin: ${zeppelinDefaultBranchName}"
+            ZEPPELIN_BRANCH_NAME = "${zeppelinDefaultBranchName}"
         }
 
         // checkout Zeppelin repo
@@ -34,7 +38,7 @@ node {
             doGenerateSubmoduleConfigurations: false,
             extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'zeppelin']],
             submoduleCfg: [],
-            userRemoteConfigs: [[url: 'https://github.com/InsightEdge/insightedge-zeppelin.git']]
+            userRemoteConfigs: [[url: "${zeppelinRepo}"]]
         ])
 
 
