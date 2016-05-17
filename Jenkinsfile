@@ -13,6 +13,8 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 }
 
 node {
+    sh "env"
+
     String branchName = "$env.BRANCH_NAME"
 
     String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
