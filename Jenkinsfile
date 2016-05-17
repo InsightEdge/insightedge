@@ -30,6 +30,9 @@ node {
 
         stage 'Checkout insightedge'
         checkout scm
+        sh 'git log -1 --format="%H" > temp-git-commit-hash'
+        String commitHash = readFile("temp-git-commit-hash").trim()
+        echo "Commit: $commitHash"
 
 
         stage 'Build insightedge'
@@ -64,7 +67,7 @@ node {
         distributions = "$distributions -Ddist.xap=$env.XAP_DIST"
         distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
         distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples.jar"
-        sh "mvn package -pl insightedge-packager -DskipTests=true -P package-deployment $distributions -Dlast.commit.hash=$env.GIT_COMMIT"
+        sh "mvn package -pl insightedge-packager -DskipTests=true -P package-deployment $distributions -Dlast.commit.hash=$commitHash"
         
     }
 }
