@@ -36,8 +36,9 @@ node {
         sh "git clone -b ${zeppelinBranchName} --single-branch ${zeppelinRepo} zeppelin"
 
 
-        stage 'Build zeppelin'
-        sh "mvn -f zeppelin clean install -DskipTests -P spark-1.6 -P build-distr"
-
+        dir('zeppelin') {
+            stage 'Build zeppelin'
+            sh "mvn clean install -DskipTests -P spark-1.6 -P build-distr"
+        }
     }
 }
