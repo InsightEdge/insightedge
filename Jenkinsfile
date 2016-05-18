@@ -68,6 +68,9 @@ node {
         distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
         distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples.jar"
         sh "mvn package -pl insightedge-packager -DskipTests=true -P package-deployment $distributions -Dlast.commit.hash=$commitHash"
-        
+
+
+        stage 'Export artifacts'
+        archive 'insightedge-packager/target/gigaspaces-*.zip'
     }
 }
