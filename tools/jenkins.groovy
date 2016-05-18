@@ -1,9 +1,14 @@
 def String getBranchOrDefault(String repo, String targetBranch, String defaultBranch) {
+    // default branch is preferred over master
+    if (targetBranch.equals("master")) {
+        return defaultBranch
+    }
+
     // write a number of branches matching target to a file
     // never fails with non-zero status code (using ||: syntax)
     sh "git ls-remote --heads $repo | grep -c $targetBranch > temp-branch-count || :"
     String branchMatchCount = readFile("temp-branch-count").trim()
-    if (branchMatchCount == "1") {
+    if (branchMatchCount.equals("1")) {
         echo "Branch $targetBranch found at: $repo"
         return targetBranch
     } else {
@@ -41,7 +46,9 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
 
     stage 'Build zeppelin'
-    sh "mvn -f zeppelin/$zeppelinBranchName clean install -DskipTests -P spark-1.6 -P build-distr"
+    dir("zeppelin/$zeppelinBranchName") {
+        load 'tools/build.groovy'
+    }
 
 
     stage 'Checkout examples'
@@ -52,7 +59,9 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
 
     stage 'Build examples'
-    sh "mvn -f examples/$examplesBranchName clean test package"
+    dir("examples/$examplesBranchName") {
+        load 'tools/build.groovy'
+    }
 
 
     stage 'Package insightedge'
