@@ -54,6 +54,7 @@ object Launcher {
       copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
       copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
       copy(s"$resources/insightedge.sh", s"$output/sbin/insightedge.sh")
+      copy(s"$resources/insightedge-ce.sh", s"$output/sbin/insightedge-ce.sh")
       copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
     }
 
@@ -63,6 +64,7 @@ object Launcher {
 
     run("Unpacking Gigaspaces datagrid") {
       unzip(grid, s"$output/datagrid", cutRootFolder = true)
+      unzip(s"$output/datagrid/bin/advanced_scripts.zip", s"$output/datagrid/bin/", cutRootFolder = false) // Do we want all advanced scripts in bin folder?
     }
     run("Adding Gigaspaces datagrid license key") {
       copy(s"$resources/gslicense.xml", s"$output/datagrid/gslicense.xml")
