@@ -22,14 +22,11 @@ String examplesRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insi
 String examplesDefaultBranchName = "master"
 
 echo "Branch: $branchName"
+sh 'git log -1 --format="%H" > temp-git-commit-hash'
+String commitHash = readFile("temp-git-commit-hash").trim()
+echo "Commit: $commitHash"
 
 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insightedge-dev', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-    stage 'Checkout insightedge'
-    checkout scm
-    sh 'git log -1 --format="%H" > temp-git-commit-hash'
-    String commitHash = readFile("temp-git-commit-hash").trim()
-    echo "Commit: $commitHash"
-
 
     stage 'Build insightedge'
     env.PATH = "${tool 'maven-3.3.9'}/bin:$env.PATH"
