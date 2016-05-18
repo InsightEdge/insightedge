@@ -31,10 +31,12 @@ sh 'git log -1 --format="%H" > temp-git-commit-hash'
 String commitHash = readFile("temp-git-commit-hash").trim()
 echo "Commit: $commitHash"
 
+env.PATH = "${tool 'maven-3.3.9'}/bin:$env.PATH"
+env.PATH = "${tool 'sbt-0.13.11'}/bin:$env.PATH"
+
 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insightedge-dev', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
 
     stage 'Build insightedge'
-    env.PATH = "${tool 'maven-3.3.9'}/bin:$env.PATH"
     load 'tools/build.groovy'
 
 
