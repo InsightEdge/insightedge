@@ -30,7 +30,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
     stage 'Build insightedge'
     env.PATH = "${tool 'maven-3.3.9'}/bin:$env.PATH"
-    load 'build.groovy'
+    load 'tools/build.groovy'
 
 
     stage 'Checkout zeppelin'
