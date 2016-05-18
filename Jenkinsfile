@@ -1,3 +1,3 @@
 node {
-    load 'build/jenkins.groovy'
+    load 'tools/jenkins.groovy'
 }
