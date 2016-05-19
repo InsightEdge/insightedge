@@ -6,7 +6,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 
 /**
-  * Suite mixin that starts and stops Spark
+  * Suite mixin that starts and stops Spark before and after each test
   *
   * @author Oleksiy_Dyagilev
   */
