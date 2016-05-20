@@ -28,7 +28,7 @@ class GigaSpacesClassDataFrameRDD[R <: GridModel : ClassTag](
 
     val gsQuery = createGigaSpacesQuery[R](bucketize(query, split), queryParams, queryFields)
 
-    val methods: Seq[Method] = queryFields.map(fieldToMethodName)
+    val methods: Seq[Method] = queryFields.map(fieldNameToMethod)
 
     def converter(element: Any): Row = {
       Row.fromSeq(methods.map(_.invoke(element)))
@@ -37,7 +37,7 @@ class GigaSpacesClassDataFrameRDD[R <: GridModel : ClassTag](
     computeInternal(split, gsQuery, converter, context)
   }
 
-  private def fieldToMethodName(fieldName: String): Method = {
+  private def fieldNameToMethod(fieldName: String): Method = {
     val methodName = classDefLang match {
       case ScalaClassDef => fieldName
       case JavaClassDef => "get" + fieldName.capitalize
