@@ -78,10 +78,7 @@ private[insightedge] case class GigaspacesDocumentRelation(
   }
 
   override def buildScan(query: String, params: Seq[Any], fields: Seq[String]): RDD[Row] = {
-    def converter(document: SpaceDocument): Row = {
-      Row.fromSeq(fields.map(document.getProperty))
-    }
-    new GigaSpacesDocumentDataFrameRDD(gsConfig, sc, collection, query, params, fields.toSeq, converter, options.readBufferSize)
+    new GigaSpacesDocumentDataFrameRDD(gsConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
   }
 
 }
