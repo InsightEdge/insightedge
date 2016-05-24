@@ -33,6 +33,7 @@
     <modules>
         <module>insightedge-core</module>
         <module>insightedge-packager</module>
+        <module>insightedge-integration-tests</module>
         <module>gigaspaces-scala</module>
     </modules>
 
