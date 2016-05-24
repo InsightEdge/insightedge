@@ -17,16 +17,12 @@ RUN curl -sL --retry 3 --insecure \
   && ln -s $JAVA_HOME /usr/java \
   && rm -rf $JAVA_HOME/man
 
-# download and upack InsightEdge
+# add InsightEdge distr
 RUN mkdir -p /opt
 ADD gigaspaces-insightedge-*.zip /opt/gigaspaces-insightedge.zip
 RUN cd /opt \
-    && unzip gigaspaces-insightedge.zip
-
-#RUN mkdir -p /opt \
-#    && cd /opt \
-#    && wget https://www.dropbox.com/s/4e78nzm9pu7h1kf/gigaspaces-insightedge-0.4.0-SNAPSHOT.zip?dl=1 -O gigaspaces-insightedge-0.4.0-SNAPSHOT.zip \
-#    && unzip gigaspaces-insightedge-0.4.0-SNAPSHOT.zip
+    && unzip gigaspaces-insightedge.zip \
+    && mv gigaspaces-insightedge-* gigaspaces-insightedge
 
 ADD bootstrap.sh /etc/bootstrap.sh
 RUN chown root:root /etc/bootstrap.sh

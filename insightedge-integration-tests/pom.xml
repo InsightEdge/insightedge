@@ -60,8 +60,7 @@
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
-                            <!--<directory>${project.basedir}/../ins</directory>-->
-                            <directory>/home/fe2s/Projects/insightedge-docker</directory>
+                            <directory>${project.basedir}/../insightedge-packager/target</directory>
                             <include>*.zip</include>
                         </resource>
                     </resources>
