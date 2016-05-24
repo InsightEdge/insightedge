@@ -23,10 +23,10 @@ This project is based on Maven, so to build it you run the next command:
 mvn clean install -DskipTests=true
 
 # with unit tests
-mvn clean install -Dcom.gs.home={PATH_TO_YOUR_XAP_FOLDER}
+mvn clean install -Dcom.gs.home={path to xap directory}
 
-# package the distribution
-mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz>
+# package the distribution (depends on insightedge-zeppelin, insightedge-examples)
+mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.jar>
 ```
 
 
