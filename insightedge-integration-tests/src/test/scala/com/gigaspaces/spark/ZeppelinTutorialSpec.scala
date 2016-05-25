@@ -27,10 +27,9 @@ class ZeppelinTutorialSpec extends FlatSpec with BeforeAndAfterAll {
     dockerHost = CloudHostFactory.getCloudHost("insightedge-integration-tests")
     dockerHost.setup()
     if (!awaitImageStarted()) {
-
+      throw new RuntimeException("image start failed with timeout")
     }
   }
-
 
   override protected def afterAll(): Unit = {
     println("Stopping docker container")
@@ -62,18 +61,22 @@ class ZeppelinTutorialSpec extends FlatSpec with BeforeAndAfterAll {
     def sleep() = Thread.sleep(sleepBetweenAttempts.toMillis)
 
     @tailrec
-    def await(): Boolean = attempt() match {
-      case fail: Failure[_] =>
-        if (timeoutElapsed()) {
-          false
-        } else {
-          sleep()
-          await()
-        }
-      case succ => true
+    def retryWhile[T](retry: => T)(cond: T => Boolean): T = {
+      val res = retry
+      if (cond(res)) {
+        res
+      } else {
+        retryWhile(retry)(cond)
+      }
     }
 
-    await()
+    val res = retryWhile {
+      val r = attempt()
+      sleep()
+      r
+    }(x => x.isSuccess || timeoutElapsed())
+
+    res.isSuccess
   }
 
 }
