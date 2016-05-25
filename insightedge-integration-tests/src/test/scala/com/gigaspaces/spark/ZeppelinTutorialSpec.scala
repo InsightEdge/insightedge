@@ -5,6 +5,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec}
 import play.api.libs.ws._
 import play.api.libs.ws.ning.NingWSClient
 
+import scala.annotation.tailrec
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,7 +26,9 @@ class ZeppelinTutorialSpec extends FlatSpec with BeforeAndAfterAll {
     println("Starting docker container")
     dockerHost = CloudHostFactory.getCloudHost("insightedge-integration-tests")
     dockerHost.setup()
-    awaitImageStarted()
+    if (!awaitImageStarted()) {
+
+    }
   }
 
 
@@ -39,7 +42,7 @@ class ZeppelinTutorialSpec extends FlatSpec with BeforeAndAfterAll {
     assert(1 == 1)
   }
 
-  def awaitImageStarted(): Unit = {
+  def awaitImageStarted(): Boolean = {
     println("Waiting for Zeppelin to be started ...")
     val startTime = System.currentTimeMillis
 
@@ -48,29 +51,29 @@ class ZeppelinTutorialSpec extends FlatSpec with BeforeAndAfterAll {
     val host = dockerHost.getHostName
     val port = dockerHost.getPort(ZeppelinPort)
 
-    def attempt = Try {
+    def attempt() = Try {
       println("ping zeppelin")
       val resp = wsClient.url(s"http://$host:$port").get()
       Await.result(resp, 1.second)
     }
 
-    def failOnTimeout() = {
-      if (System.currentTimeMillis - startTime > DockerImageStartTimeout.toMillis) {
-        throw new RuntimeException("Docker image didn't start within " + DockerImageStartTimeout)
-      }
-    }
+    def timeoutElapsed() = System.currentTimeMillis - startTime > DockerImageStartTimeout.toMillis
 
     def sleep() = Thread.sleep(sleepBetweenAttempts.toMillis)
 
-    Stream.continually(attempt).map { res =>
-      failOnTimeout()
-      res
-    }.map {
-      case fail: Failure[_] => sleep(); fail
-      case succ => succ
-    }.takeWhile(_.isFailure).toList
+    @tailrec
+    def await(): Boolean = attempt() match {
+      case fail: Failure[_] =>
+        if (timeoutElapsed()) {
+          false
+        } else {
+          sleep()
+          await()
+        }
+      case succ => true
+    }
 
-    println("Imaged started!")
+    await()
   }
 
 }
