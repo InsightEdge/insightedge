@@ -48,4 +48,4 @@ mvn -pl insightedge-integration-tests -P run-integration-tests clean verify
 
 ## Documentation
 
-Please refer to the [isightedge.io](http://insightedge.io/docs) site.
+Please refer to the [insightedge.io](http://insightedge.io/docs) site.
