@@ -13,14 +13,18 @@ class GigaSpacesDocumentDataFrameRDD(
                                       query: String,
                                       queryParams: Seq[Any],
                                       queryFields: Seq[String],
-                                      converter: SpaceDocument => Row,
                                       readRddBufferSize: Int
                                     ) extends GigaSpacesAbstractRDD[Row](gsConfig, sc, None, readRddBufferSize) {
 
   @DeveloperApi
   override def compute(split: Partition, context: TaskContext): Iterator[Row] = {
     val gsQuery = createDocumentGigaSpacesQuery(typeName, query, queryParams, queryFields)
-    compute(split, gsQuery, converter, context)
+
+    def converter(document: SpaceDocument): Row = {
+      Row.fromSeq(queryFields.map(document.getProperty))
+    }
+
+    computeInternal(split, gsQuery, converter, context)
   }
 
 }
