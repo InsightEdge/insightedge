@@ -1,5 +1,5 @@
 FROM centos:7.2.1511
-MAINTAINER Oleksiy Dyagilev Oleksiy_Dyagilev@gigaspaces.com
+MAINTAINER Oleksiy Dyagilev oleksiy.dyagilev@gigaspaces.com
 
 # upgrade system
 RUN yum -y update
