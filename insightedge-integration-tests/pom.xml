@@ -46,6 +46,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Overcast used to run Docker image -->
         <dependency>
             <groupId>com.xebialabs.cloud</groupId>
             <artifactId>overcast</artifactId>
@@ -58,6 +59,7 @@
             <version>1.7.21</version>
             <scope>test</scope>
         </dependency>
+        <!-- REST client lib -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-ws_2.10</artifactId>
@@ -90,6 +92,7 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- This plugin builds a Docker image -->
                     <plugin>
                         <groupId>com.spotify</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
