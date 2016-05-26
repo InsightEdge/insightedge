@@ -22,6 +22,7 @@ object Launcher {
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
     val examples = parameter("Examples jar" -> "dist.examples")
     val resources = s"$project/insightedge-packager/src/main/resources"
+    val templates = s"datagrid/deploy/templates"
 
     validateHash(lastCommitHash)
 
@@ -86,6 +87,9 @@ object Launcher {
       copy(s"$resources/stop-datagrid-slave.sh", s"$output/sbin/stop-datagrid-slave.sh")
       copy(s"$resources/deploy-datagrid.sh", s"$output/sbin/deploy-datagrid.sh")
       copy(s"$resources/undeploy-datagrid.sh", s"$output/sbin/undeploy-datagrid.sh")
+    }
+    run("Adding template space configuration") {
+      copy(s"$resources/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
     }
 
     run("Unpacking Zeppelin") {

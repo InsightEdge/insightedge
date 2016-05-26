@@ -147,6 +147,7 @@ display_usage() {
 }
 
 define_defaults() {
+    # TODO add constant
     # '[]' means 'empty'
     MODE="[]"
     IE_PATH="[]"

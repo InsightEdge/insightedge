@@ -16,7 +16,11 @@ main() {
     echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY] (locator: $GRID_LOCATOR, group: $GRID_GROUP)"
     export LOOKUPLOCATORS=$GRID_LOCATOR
     export LOOKUPGROUPS=$GRID_GROUP
-    $IE_PATH/datagrid/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
+    #$IE_PATH/datagrid/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
+    $IE_PATH/datagrid/bin/puInstance.sh -cluster schema=partitioned-sync2backup total_members=2,1 id=1 $IE_PATH/datagrid/deploy/templates/insightedge-datagrid &
+    $IE_PATH/datagrid/bin/puInstance.sh -cluster schema=partitioned-sync2backup total_members=2,1 id=2 backup_id=1 $IE_PATH/datagrid/deploy/templates/insightedge-datagrid &
+    $IE_PATH/datagrid/bin/puInstance.sh -cluster schema=partitioned-sync2backup total_members=2,1 id=2 $IE_PATH/datagrid/deploy/templates/insightedge-datagrid &
+    $IE_PATH/datagrid/bin/puInstance.sh -cluster schema=partitioned-sync2backup total_members=2,1 id=1 backup_id=1 $IE_PATH/datagrid/deploy/templates/insightedge-datagrid &
 }
 
 display_usage() {
