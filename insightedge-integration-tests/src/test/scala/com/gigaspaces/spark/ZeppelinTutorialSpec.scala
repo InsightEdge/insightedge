@@ -34,6 +34,7 @@ class ZeppelinTutorialSpec extends FlatSpec with BeforeAndAfterAll {
   override protected def afterAll(): Unit = {
     println("Stopping docker container")
     dockerHost.teardown()
+    wsClient.close()
   }
 
   it should "test something" in {

@@ -1,11 +1,11 @@
-package com.gigaspaces.spark.utils
+package com.gigaspaces.spark.fixture
 
+import com.gigaspaces.spark.implicits._
+import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.spark.{SparkContext, SparkConf}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Span
-import org.scalatest.{time, BeforeAndAfterEach, BeforeAndAfterAll, Suite}
-import com.gigaspaces.spark.implicits._
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite, time}
 
 /**
   * @author Oleksiy_Dyagilev
