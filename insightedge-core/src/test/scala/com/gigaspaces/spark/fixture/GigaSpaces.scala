@@ -20,9 +20,14 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
   var spaceProxy: GigaSpace = _
 
   override protected def beforeAll() = {
-    super.beforeAll()
     val ctx = new ClassPathXmlApplicationContext("cluster-test-config.xml")
     spaceProxy = GigaSpaceFactory.getOrCreateClustered(gsConfig)
+    super.beforeAll()
+  }
+
+  override protected def afterEach() = {
+    spaceProxy.clear(new Object())
+    super.afterEach()
   }
 
   override protected def afterEach() = {

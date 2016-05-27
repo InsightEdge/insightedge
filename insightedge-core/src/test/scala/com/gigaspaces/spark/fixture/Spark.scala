@@ -24,15 +24,15 @@ trait Spark extends BeforeAndAfterAll with BeforeAndAfterEach {
   }
 
   override protected def beforeEach() = {
-    super.beforeEach()
     val sparkConf = createSparkConf()
     sc = new SparkContext(sparkConf)
     sql = sc.gridSqlContext
+    super.beforeEach()
   }
 
   override protected def afterEach() = {
-    super.afterEach()
     sc.stopGigaSpacesContext()
+    super.afterEach()
   }
 
 }
