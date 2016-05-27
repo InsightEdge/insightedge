@@ -27,9 +27,9 @@ trait SparkStreaming extends BeforeAndAfterAll with BeforeAndAfterEach {
   }
 
   override protected def afterEach() = {
-    super.afterEach()
     ssc.stop()
     ssc.sparkContext.stopGigaSpacesContext()
+    super.afterEach()
   }
 
   def timeout(sec: Int) = Eventually.PatienceConfig(Span(sec, time.Seconds))
