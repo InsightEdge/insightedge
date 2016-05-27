@@ -32,3 +32,4 @@ RUN chmod 700 /etc/bootstrap.sh
 CMD ["/etc/bootstrap.sh", "-d"]
 
 EXPOSE 8090
+EXPOSE 7077
