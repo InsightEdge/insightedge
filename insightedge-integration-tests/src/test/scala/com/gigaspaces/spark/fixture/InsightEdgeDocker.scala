@@ -20,8 +20,8 @@ trait InsightEdgeDocker extends BeforeAndAfterAll {
 
   private val DockerImageStartTimeout = 2.minutes
   private val TargetZeppelinPort = 8090
+  private lazy val dockerHost: CloudHost = CloudHostFactory.getCloudHost("insightedge-integration-tests")
 
-  lazy val dockerHost: CloudHost = CloudHostFactory.getCloudHost("insightedge-integration-tests")
   val wsClient = NingWSClient()
 
   override protected def beforeAll(): Unit = {
@@ -40,6 +40,12 @@ trait InsightEdgeDocker extends BeforeAndAfterAll {
     wsClient.close()
   }
 
+  def zeppelinUrl = {
+    val host = dockerHost.getHostName
+    val port = dockerHost.getPort(TargetZeppelinPort)
+    s"http://$host:$port"
+  }
+
   private def awaitImageStarted(): Boolean = {
     println("Waiting for Zeppelin to be started ...")
     val startTime = System.currentTimeMillis
@@ -51,7 +57,7 @@ trait InsightEdgeDocker extends BeforeAndAfterAll {
 
     def attempt() = Try {
       println("ping zeppelin")
-      val resp = wsClient.url(s"http://$host:$port").get()
+      val resp = wsClient.url(zeppelinUrl).get()
       Await.result(resp, 1.second)
     }
 

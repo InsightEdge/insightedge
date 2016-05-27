@@ -1,10 +1,9 @@
 package com.gigaspaces.spark
 
 import com.gigaspaces.spark.fixture.InsightEdgeDocker
+import com.gigaspaces.spark.utils.RestUtils._
 import org.scalatest.FlatSpec
-import org.scalatest.concurrent.Eventually._
-
-import scala.concurrent.Await
+import play.api.libs.json.JsString
 
 /**
   * Zeppelin Tutorial tests
@@ -14,8 +13,10 @@ import scala.concurrent.Await
 class ZeppelinTutorialSpec extends FlatSpec with InsightEdgeDocker {
 
   "Zeppelin" should "have InsightEdge Basics tutorial" in {
-    val resp = wsClient.url(s"http://localhost:32829/api/notebook").get()
-    val res = Await.result(resp, 1.second)
+    val resp = wsClient.url(s"$zeppelinUrl/api/notebook").get()
+    val notebookIds = jsonBody(resp) \\ "id"
+
+    assert(notebookIds.contains(JsString("INSIGHTEDGE-BASIC")))
   }
 
 }
