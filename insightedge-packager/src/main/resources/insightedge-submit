@@ -9,23 +9,50 @@ export PYTHONHASHSEED=0
 
 # add datagrid and InsightEdge JARs to job --jars
 . ${INSIGHTEDGE_HOME}/sbin/common-insightedge.sh
-INSIGHTEDGE_JARS=$(get_libs ',')
+INSIGHTEDGE_DRIVER_CP=$(get_libs ':')
+INSIGHTEDGE_EXECUTOR_CP=$(get_relative_libs ':' '../../..')
 
-process_args(){
-    ARGUMENTS=""
-    for i in "$@"
-        do
-            if [[ $i == "--jars" ]]; then
-                ARGUMENTS+="--jars $INSIGHTEDGE_JARS,"
-            else ARGUMENTS+="$i "
-            fi
-        done
-    if [[ ! $ARGUMENTS =~ .*--jars.* ]]
-    then
-       ARGUMENTS=" --jars $INSIGHTEDGE_JARS $ARGUMENTS"
+process_arguments() {
+    local arguments=""
+    local current=""
+    local modifiedDriver="false"
+    local modifiedExecutor="false"
+
+    while [ "$1" != "" ]; do
+      case $1 in
+        "--conf")
+          shift
+          local configLine=$1
+          if [[ $configLine == spark.driver.extraClassPath* ]]; then
+            configLine="$configLine:$INSIGHTEDGE_DRIVER_CP"
+            modifiedDriver="true"
+          fi
+          if [[ $configLine == spark.executor.extraClassPath* ]]; then
+            configLine="$configLine:$INSIGHTEDGE_EXECUTOR_CP"
+            modifiedExecutor="true"
+          fi
+
+          current="--conf \"$configLine\""
+          ;;
+
+        *)
+          current="\"$1\""
+          ;;
+      esac
+      arguments="$arguments $current"
+      shift
+    done
+
+    if [[ $modifiedDriver == "false" ]]; then
+      arguments="--conf \"spark.driver.extraClassPath=$INSIGHTEDGE_DRIVER_CP\" $arguments"
     fi
-    echo $ARGUMENTS
-}
-ARGS=$(process_args "$@")
+    if [[ $modifiedExecutor == "false" ]]; then
+      arguments="--conf \"spark.executor.extraClassPath=$INSIGHTEDGE_EXECUTOR_CP\" $arguments"
+    fi
 
-exec "${INSIGHTEDGE_HOME}"/bin/insightedge-class org.apache.spark.deploy.SparkSubmit $ARGS
+    echo $arguments
+}
+
+ARGS=$(process_arguments "$@")
+printf "\e[32m$ARGS\e[0m\n"
+eval "$INSIGHTEDGE_HOME/bin/insightedge-class org.apache.spark.deploy.SparkSubmit $ARGS"
