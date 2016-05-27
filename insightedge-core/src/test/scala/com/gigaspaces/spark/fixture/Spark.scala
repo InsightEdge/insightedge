@@ -1,4 +1,4 @@
-package com.gigaspaces.spark.utils
+package com.gigaspaces.spark.fixture
 
 import com.gigaspaces.spark.implicits._
 import org.apache.spark.sql.SQLContext

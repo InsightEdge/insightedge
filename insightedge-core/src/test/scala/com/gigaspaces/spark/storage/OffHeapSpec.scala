@@ -1,5 +1,6 @@
 package com.gigaspaces.spark.storage
 
+import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, OffHeap, Spark}
 import com.gigaspaces.spark.utils._
 import org.apache.spark.storage.StorageLevel
 import org.scalatest.FlatSpec
