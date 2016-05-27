@@ -27,6 +27,9 @@ mvn clean install -Dcom.gs.home={path to xap directory}
 
 # package the distribution (depends on insightedge-zeppelin, insightedge-examples)
 mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.jar>
+
+# run integration tests with Docker (depends on running Docker daemon tcp://127.0.0.1:2375 and built zip distribution file)
+mvn -pl insightedge-integration-tests -P run-integration-tests clean verify
 ```
 
 
@@ -45,4 +48,4 @@ mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to s
 
 ## Documentation
 
-Please refer to the [isightedge.io](http://insightedge.io/docs) site.
+Please refer to the [insightedge.io](http://insightedge.io/docs) site.

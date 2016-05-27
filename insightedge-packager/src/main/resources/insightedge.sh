@@ -27,14 +27,14 @@ main() {
         local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
         ;;
       "slave")
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $SPARK_MASTER_PORT $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
+        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
         ;;
       "zeppelin")
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         ;;
       "demo")
         local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $SPARK_MASTER_PORT $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
+        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
         deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         display_demo_help $CLUSTER_MASTER
@@ -161,9 +161,6 @@ define_defaults() {
     REMOTE_HOSTS="[]"
     REMOTE_USER="[]"
     REMOTE_KEY="[]"
-    if [ -z "$SPARK_MASTER_PORT" ]; then
-        SPARK_MASTER_PORT="7077"
-    fi
 }
 
 parse_options() {
@@ -221,7 +218,7 @@ parse_options() {
           REMOTE_KEY=$1
           ;;
         *)
-          error_line "unknown option '$1'"
+          echo "Unknown option: $1"
           display_usage
           ;;
       esac
@@ -306,17 +303,16 @@ local_slave() {
     local artifact=$3
     local download=$4
     local master=$5
-    local masterPort=$6
-    local locator=$7
-    local group=$8
-    local containers=$9
-    local size=${10}
+    local locator=$6
+    local group=$7
+    local containers=$8
+    local size=$9
 
     intall_insightedge $install $artifact "$download" $home
     stop_grid_slave $home
     stop_spark_slave $home
     start_grid_slave $home $master $locator $group $containers $size
-    start_spark_slave $home $master $masterPort
+    start_spark_slave $home $master
 }
 
 local_zeppelin() {
@@ -353,7 +349,7 @@ remote_slave() {
     local user=$2
     local key=$3
 
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $SPARK_MASTER_PORT $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE"
+    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE"
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to slave at $host"
@@ -506,11 +502,10 @@ stop_spark_master() {
 start_spark_slave() {
     local home=$1
     local master=$2
-    local masterPort=$3
 
     echo ""
     step_title "--- Starting Spark slave"
-    $home/sbin/start-slave.sh spark://$master:$masterPort
+    $home/sbin/start-slave.sh spark://$master:7077
     step_title "--- Spark slave started"
 }
 
