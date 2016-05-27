@@ -30,11 +30,6 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
     super.afterEach()
   }
 
-  override protected def afterEach() = {
-    super.afterEach()
-    spaceProxy.clear(new Object())
-  }
-
   protected def dataSeq(count: Int): Seq[Data] = (1L to count).map(i => new Data(i, "data" + i))
 
   protected def jDataSeq(count: Int): Seq[JData] = (1L to count).map(i => new JData(i, "data" + i))
