@@ -11,27 +11,6 @@
        http://www.openspaces.org/schema/events http://www.openspaces.org/schema/10.2/events/openspaces-events.xsd
        http://www.openspaces.org/schema/remoting http://www.openspaces.org/schema/10.2/remoting/openspaces-remoting.xsd">
 
-    <!--
-        Spring property configurer which allows us to use system properties (such as user.name).
-    -->
-    <bean id="propertiesConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="properties">
-            <props>
-                <prop key="dataGridName">insightedge-space</prop>
-            </props>
-        </property>
-    </bean>
-
-    <!--
-        A bean representing an embedded space.
-    -->
-    <os-core:embedded-space id="space" name="${dataGridName}">
-        <os-core:properties>
-            <props>
-                <prop key="com.j_spaces.core.container.directory_services.jini_lus.start-embedded-lus">false</prop>
-            </props>
-        </os-core:properties>
-    </os-core:embedded-space>
-    <os-core:giga-space id="gigaSpace" space="space"/>
+    <os-core:embedded-space id="space" name="lus-substitutor"/>
 
 </beans>

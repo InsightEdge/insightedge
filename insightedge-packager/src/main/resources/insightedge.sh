@@ -64,34 +64,34 @@ display_usage() {
     echo ""
     echo "Usage: * - required, ** - required in some modes"
     echo "     --mode      |  * insightedge mode: master, slave, deploy, remote-master, remote-slave"
-    echo "                 |       master:        locally restarts spark master and grid manager"
-    echo "                 |       slave:         locally restarts spark slave and grid containers"
-    echo "                 |       deploy:        deploys empty space to grid"
-    echo "                 |       undeploy:      undeploys space from grid"
-    echo "                 |       zeppelin:      locally starts zeppelin"
-    echo "                 |       demo:          locally starts datagrid master, datagrid slave and zeppelin, deploys empty space"
-    echo "                 |       remote-master: executes 'master' mode on remote system (use for automation)"
-    echo "                 |       remote-slave:  executes 'slave' mode on remote system (use for automation)"
-    echo "                 |       shutdown:      stops 'master', 'slave' and 'zeppelin'"
-    echo " -m, --master    |  * cluster master IP or hostname"
-    echo " -l, --locator   |    lookup locators for the grid components                    | default master:4174"
-    echo " -g, --group     |    lookup groups for the grid components                      | default insightedge"
+    echo "                 |      +- master:        locally restarts spark master and grid manager"
+    echo "                 |      +- slave:         locally restarts spark slave and grid containers"
+    echo "                 |      - deploy:        deploys empty space to grid"
+    echo "                 |      - undeploy:      undeploys space from grid"
+    echo "                 |      + zeppelin:      locally starts zeppelin"
+    echo "                 |      + demo:          locally starts datagrid master, datagrid slave and zeppelin, deploys empty space"
+    echo "                 |      +- remote-master: executes 'master' mode on remote system (use for automation)"
+    echo "                 |      +- remote-slave:  executes 'slave' mode on remote system (use for automation)"
+    echo "                 |      + shutdown:      stops 'master', 'slave' and 'zeppelin'"
+    echo " -m, --master    |+  * cluster master IP or hostname"
+    echo " -l, --locator   |+    lookup locators for the grid components                    | default master:4174"
+    echo " -g, --group     |+    lookup groups for the grid components                      | default insightedge"
     echo "                 |               usage: if you have several clusters in one LAN,"
     echo "                 |                      it's recommended to have unique group per cluster"
-    echo " -s, --size      |    grid container/manager heap size                           | default 1G"
+    echo " -s, --size      |+    grid container/manager heap size                           | default 1G"
     echo "                 |             format:  java-style heap size string"
     echo "                 |             example: '1G', '4096M'"
-    echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
-    echo " -n, --name      |    (deploy/undeploy modes) name of the deployed space         | default insightedge-space"
-    echo " -t, --topology  |    (deploy mode) number of space primary and backup instances | default 2,0"
+    echo " -c, --container |-    (slave modes) number of grid containers to start           | default 2"
+    echo " -n, --name      |+    (deploy/undeploy modes) name of the deployed space         | default insightedge-space"
+    echo " -t, --topology  |+    (deploy mode) number of space primary and backup instances | default 2,0"
     echo "                 |             format:  <num-of-primaries>,<num-of-backups-per-primary>"
     echo "                 |             example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
-    echo " -p, --path      | ** (remote modes) path to insightedge installation"
-    echo " -i, --install   |    if specified, a fresh insightedge distribution will be installed to specified path"
+    echo " -p, --path      |+ ** (remote modes) path to insightedge installation"
+    echo " -i, --install   |+    if specified, a fresh insightedge distribution will be installed to specified path"
     echo "                 |             warning: folder specified in path will be fully removed and recreated"
-    echo " -h, --hosts     | ** (remote modes) comma separated list of remote nodes: IPs or hostnames"
-    echo " -u, --user      | ** (remote modes) username"
-    echo " -k, --key       |    (remote modes) identity file"
+    echo " -h, --hosts     |+ ** (remote modes) comma separated list of remote nodes: IPs or hostnames"
+    echo " -u, --user      |+ ** (remote modes) username"
+    echo " -k, --key       |+    (remote modes) identity file"
     echo ""
     local script="./sbin/$THIS_SCRIPT_NAME"
     echo "Examples:"
@@ -147,7 +147,7 @@ display_usage() {
 }
 
 define_defaults() {
-    # TODO add constant
+    # TODO add constant for empty value
     # '[]' means 'empty'
     MODE="[]"
     IE_PATH="[]"
@@ -396,11 +396,12 @@ shutdown_all() {
     step_title "--- Stopping Zeppelin"
     $home/sbin/stop-zeppelin.sh
     echo ""
+    #TODO DRY
     step_title "--- Stopping datagrid master"
-    $home/sbin/stop-datagrid-master.sh
+    $home/sbin/stop-datagrid-master-os.sh
     echo ""
     step_title "--- Stopping datagrid slave"
-    $home/sbin/stop-datagrid-slave.sh
+    $home/sbin/stop-datagrid-slave-os.sh
     echo ""
     step_title "--- Stopping Spark master"
     $home/sbin/stop-master.sh
@@ -445,7 +446,7 @@ start_grid_master() {
 
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node (locator: $locator, group: $group, heap: $size)"
-    $home/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
+    $home/sbin/start-datagrid-master-os.sh --master $master --locator $locator --group $group --size $size
     step_title "--- Gigaspaces datagrid management node started"
 }
 
@@ -454,7 +455,7 @@ stop_grid_master() {
 
     echo ""
     step_title "--- Stopping datagrid master"
-    $home/sbin/stop-datagrid-master.sh
+    $home/sbin/stop-datagrid-master-os.sh
     step_title "--- Datagrid master stopped"
 }
 
@@ -477,7 +478,7 @@ stop_grid_slave() {
 
     echo ""
     step_title "--- Stopping datagrid slave"
-    $home/sbin/stop-datagrid-slave.sh
+    $home/sbin/stop-datagrid-slave-os.sh
     step_title "--- Datagrid slave stopped"
 }
 

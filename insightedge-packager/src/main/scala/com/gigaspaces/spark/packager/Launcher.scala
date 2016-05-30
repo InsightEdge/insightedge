@@ -90,6 +90,7 @@ object Launcher {
     }
     run("Adding template space configuration") {
       copy(s"$resources/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
+//      copy(s"$resources/template/insightedge-lus.xml", s"$output/datagrid/deploy/templates/insightedge-lus/META-INF/spring/pu.xml")
     }
 
     run("Unpacking Zeppelin") {

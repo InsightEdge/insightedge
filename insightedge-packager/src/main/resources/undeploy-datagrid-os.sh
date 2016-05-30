@@ -7,16 +7,18 @@ if [ -z "${INSIGHTEDGE_HOME}" ]; then
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
 
+#TODO remove obsolete code?
+
 main() {
     define_defaults
     parse_options $@
     check_options
     redefine_defaults
 
-    echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY] (locator: $GRID_LOCATOR, group: $GRID_GROUP)"
+    echo "Undeploying space: $SPACE_NAME (locator: $GRID_LOCATOR, group: $GRID_GROUP)"
     export LOOKUPLOCATORS=$GRID_LOCATOR
     export LOOKUPGROUPS=$GRID_GROUP
-    $IE_PATH/datagrid/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
+    $IE_PATH/sbin/stop-datagrid-slave-os.sh
 }
 
 display_usage() {
@@ -29,15 +31,12 @@ display_usage() {
     echo "                 |              usage: if you have several clusters in one LAN,"
     echo "                 |                     it's recommended to have unique group per cluster"
     echo " -n, --name      |   name of the deployed space                                 | default insightedge-space"
-    echo " -t, --topology  |   number of space primary and backup instances               | default 2,0"
-    echo "                 |            format:  <num-of-primaries>,<num-of-backups-per-primary>"
-    echo "                 |            example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
     echo ""
     local script="./sbin/$THIS_SCRIPT_NAME"
     echo "Examples:"
-    echo "    Deploy space |  deploys 8 primary and 8 backup partitions of 'my-space' on cluster with 10.0.0.1 as a master"
+    echo "  Undeploy space |  undeploys 'my-space' from cluster with 10.0.0.1 as a master"
     echo ""
-    echo " $script -m 10.0.0.1 -n my-space -t 8,1"
+    echo " $script -m 10.0.0.1 -n my-space"
     echo ""
     exit 1
 }
@@ -49,7 +48,6 @@ define_defaults() {
     GRID_LOCATOR="[]"
     GRID_GROUP="insightedge"
     SPACE_NAME="insightedge-space"
-    SPACE_TOPOLOGY="2,0"
 }
 
 parse_options() {
@@ -70,10 +68,6 @@ parse_options() {
         "-n" | "--name")
           shift
           SPACE_NAME=$1
-          ;;
-        "-t" | "--topology")
-          shift
-          SPACE_TOPOLOGY=$1
           ;;
         *)
           echo "Unknown option: $1"
