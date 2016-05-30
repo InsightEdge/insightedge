@@ -36,10 +36,10 @@ class ZeppelinTutorialSpec extends FlatSpec with InsightEdgeDocker {
 
     bindInterpreter()
 
-    val notebookJob = s"$zeppelinUrl/api/notebook/job/$TutorialId"
+    val notebookJobUrl = s"$zeppelinUrl/api/notebook/job/$TutorialId"
 
     val notebookBeforeRun = jsonBody(
-      wsClient.url(notebookJob).get()
+      wsClient.url(notebookJobUrl).get()
     )
 
     val paragraphsCount = (notebookBeforeRun \ "body" \\ "status").size
@@ -49,13 +49,13 @@ class ZeppelinTutorialSpec extends FlatSpec with InsightEdgeDocker {
 
     // run notebook
     jsonBody(
-      wsClient.url(notebookJob).post(JsObject(Seq()))
+      wsClient.url(notebookJobUrl).post(JsObject(Seq()))
     )
 
     // eventually all paragraphs should be in FINISHED status
     eventually(timeout(3.minutes), interval(5.second))  {
       val jobStatus = jsonBody(
-        wsClient.url(notebookJob).get()
+        wsClient.url(notebookJobUrl).get()
       )
       val finished = (jobStatus \ "body" \\ "status").collect { case s@JsString("FINISHED") => s }
       val finishedCount = finished.size
