@@ -1,6 +1,6 @@
 package com.gigaspaces.spark.fixture
 
-import com.xebialabs.overcast.host.{CloudHost, CloudHostFactory}
+import com.xebialabs.overcast.host.{CloudHost, CloudHostFactory, DockerHost}
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.libs.ws.ning.NingWSClient
 
@@ -20,7 +20,7 @@ trait InsightEdgeDocker extends BeforeAndAfterAll {
 
   private val DockerImageStartTimeout = 2.minutes
   private val TargetZeppelinPort = 8090
-  private lazy val dockerHost: CloudHost = CloudHostFactory.getCloudHost("insightedge-integration-tests")
+  private lazy val dockerHost: DockerHost = CloudHostFactory.getCloudHost("insightedge-integration-tests").asInstanceOf[DockerHost]
 
   val wsClient = NingWSClient()
 
@@ -46,14 +46,15 @@ trait InsightEdgeDocker extends BeforeAndAfterAll {
     s"http://$host:$port"
   }
 
+  def runningContainerId() = {
+    dockerHost.getDockerDriver.getContainerId
+  }
+
   private def awaitImageStarted(): Boolean = {
     println("Waiting for Zeppelin to be started ...")
     val startTime = System.currentTimeMillis
 
     val sleepBetweenAttempts = 1.second
-
-    val host = dockerHost.getHostName
-    val port = dockerHost.getPort(TargetZeppelinPort)
 
     def attempt() = Try {
       println("ping zeppelin")
