@@ -18,6 +18,7 @@ object RestUtils {
   def jsonBody(respFuture: Future[WSResponse], timeout: Duration = 1.second): JsValue = {
     val res = Await.result(respFuture, timeout)
     assert(res.status == 200, res)
+    println(res.body)
     Json.parse(res.body)
   }
 }
