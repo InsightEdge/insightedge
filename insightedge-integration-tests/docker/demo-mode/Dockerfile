@@ -1,3 +1,7 @@
+#
+# Runs InsightEdge in a demo mode
+#
+
 FROM centos:7.2.1511
 MAINTAINER Oleksiy Dyagilev oleksiy.dyagilev@gigaspaces.com
 

@@ -99,7 +99,7 @@
                         <version>0.4.9</version>
                         <configuration>
                             <imageName>insightedge-integration-tests:${project.version}</imageName>
-                            <dockerDirectory>${main.basedir}/insightedge-integration-tests/docker</dockerDirectory>
+                            <dockerDirectory>${main.basedir}/insightedge-integration-tests/docker/demo-mode</dockerDirectory>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>

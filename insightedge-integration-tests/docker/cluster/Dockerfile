@@ -8,7 +8,7 @@ MAINTAINER Oleksiy Dyagilev oleksiy.dyagilev@gigaspaces.com
 
 RUN yum -y update
 RUN yum clean all
-RUN yum install -y initscripts openssh openssh-server openssh-clients sudo passwd sed curl wget unzip
+RUN yum install -y initscripts openssh openssh-server openssh-clients sudo passwd sed curl wget unzip telnet net-tools
 RUN sshd-keygen
 RUN sed -i "s/#UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config
 
@@ -33,7 +33,8 @@ RUN curl -sL --retry 3 --insecure \
 # ssh auth with pem file
 USER ie-user
 
-RUN cd /home/ie-user && ssh-keygen -q -N "" -b 1024 -f ie-user.pem -t dsa
+ADD ie-user.pem.pub /home/ie-user/ie-user.pem.pub
+#RUN cd /home/ie-user && ssh-keygen -q -N "" -b 1024 -f ie-user.pem -t dsa
 RUN mkdir /home/ie-user/.ssh
 RUN chmod 700 /home/ie-user/.ssh
 RUN cat /home/ie-user/ie-user.pem.pub >> /home/ie-user/.ssh/authorized_keys
@@ -47,6 +48,20 @@ RUN printf "export JAVA_HOME=/usr/jdk1.8.0_31 \nexport PATH=$PATH:$JAVA_HOME/bin
 
 USER root
 
-# expose ports for ssh
+# ssh
 EXPOSE 22
+# spark
+EXPOSE 8090 8080 7077
+# datagrid
+#EXPOSE 10000-10100
+EXPOSE 9104
+EXPOSE 7102
+EXPOSE 4174
+EXPOSE 7000-7010
+EXPOSE 7055
+EXPOSE 2222
+EXPOSE 3333
+EXPOSE 2181
+EXPOSE 3306
+
 CMD    ["/usr/sbin/sshd", "-D"]
