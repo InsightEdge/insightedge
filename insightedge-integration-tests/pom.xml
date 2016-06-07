@@ -97,24 +97,42 @@
                         <groupId>com.spotify</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <version>0.4.9</version>
-                        <configuration>
-                            <imageName>insightedge-integration-tests:${project.version}</imageName>
-                            <dockerDirectory>${main.basedir}/insightedge-integration-tests/docker/demo-mode</dockerDirectory>
-                            <resources>
-                                <resource>
-                                    <targetPath>/</targetPath>
-                                    <directory>${main.basedir}/insightedge-packager/target</directory>
-                                    <include>*.zip</include>
-                                </resource>
-                            </resources>
-                        </configuration>
                         <executions>
                             <execution>
-                                <id>build-image</id>
+                                <id>build-demo-mode-image</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>
+                                <configuration>
+                                    <imageName>insightedge-tests-demo-mode:${project.version}</imageName>
+                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/demo-mode</dockerDirectory>
+                                    <resources>
+                                        <resource>
+                                            <targetPath>/</targetPath>
+                                            <directory>${main.basedir}/insightedge-packager/target</directory>
+                                            <include>*.zip</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-cluster-install-image</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <imageName>insightedge-tests-cluster-install:${project.version}</imageName>
+                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install/cluster-node</dockerDirectory>
+                                    <resources>
+                                        <resource>
+                                            <targetPath>/</targetPath>
+                                            <directory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install</directory>
+                                            <include>ie-user.pem</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

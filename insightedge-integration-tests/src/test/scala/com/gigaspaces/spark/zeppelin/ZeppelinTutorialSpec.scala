@@ -1,19 +1,19 @@
-package com.gigaspaces.spark
+package com.gigaspaces.spark.zeppelin
 
-import com.gigaspaces.spark.fixture.InsightEdgeDocker
+import com.gigaspaces.spark.fixture.InsightedgeDemoModeDocker
 import com.gigaspaces.spark.utils.RestUtils._
 import org.scalatest.FlatSpec
-import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
 import org.scalatest.concurrent.Eventually._
+import play.api.libs.json.{JsArray, JsObject, JsString}
 
 import scala.concurrent.duration._
 
 /**
-  * Zeppelin Tutorial tests
+  * Verifies that Zeppelin Tutorial works in a demo mode
   *
   * @author Oleksiy_Dyagilev
   */
-class ZeppelinTutorialSpec extends FlatSpec with InsightEdgeDocker {
+class ZeppelinTutorialSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   val TutorialId = "INSIGHTEDGE-BASIC"
 

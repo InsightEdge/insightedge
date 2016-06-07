@@ -40,19 +40,16 @@ main() {
         display_demo_help $CLUSTER_MASTER
         ;;
       "remote-master")
-        remote_master $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY $REMOTE_SSH_PORT
+        remote_master $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY
         ;;
       "remote-slave")
-        remote_slave $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY $REMOTE_SSH_PORT
+        remote_slave $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY
         ;;
       "deploy")
         deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         ;;
       "undeploy")
         undeploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME
-        ;;
-      "remote-deploy")
-        remote_deploy_space $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY $REMOTE_SSH_PORT $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         ;;
       "shutdown")
         shutdown_all $IE_PATH
@@ -95,7 +92,6 @@ display_usage() {
     echo " -h, --hosts     | ** (remote modes) comma separated list of remote nodes: IPs or hostnames"
     echo " -u, --user      | ** (remote modes) username"
     echo " -k, --key       |    (remote modes) identity file"
-    echo " --ssh-port      |    (remote modes) ssh port, by default 22"
     echo ""
     local script="./sbin/$THIS_SCRIPT_NAME"
     echo "Examples:"
@@ -165,7 +161,6 @@ define_defaults() {
     REMOTE_HOSTS="[]"
     REMOTE_USER="[]"
     REMOTE_KEY="[]"
-    REMOTE_SSH_PORT="22"
 }
 
 parse_options() {
@@ -221,10 +216,6 @@ parse_options() {
         "-k" | "--key")
           shift
           REMOTE_KEY=$1
-          ;;
-        "--ssh-port")
-          shift
-          REMOTE_SSH_PORT=$1
           ;;
         *)
           echo "Unknown option: $1"
@@ -339,16 +330,15 @@ remote_master() {
     local hosts=${1//,/ }
     local user=$2
     local key=$3
-    local ssh_port=$4
 
     local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE"
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to master at $host"
         if [ $key == "[]" ]; then
-          ssh -oStrictHostKeyChecking=no $user@$host -p $ssh_port "$(typeset -f); local_master $args"
+          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         else
-          ssh -i $key -oStrictHostKeyChecking=no $user@$host -p $ssh_port "$(typeset -f); local_master $args"
+          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         fi
         echo ""
         step_title "---- Disconnected from $host"
@@ -359,16 +349,15 @@ remote_slave() {
     local hosts=${1//,/ }
     local user=$2
     local key=$3
-    local ssh_port=$4
 
     local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE"
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to slave at $host"
         if [ $key == "[]" ]; then
-          ssh -oStrictHostKeyChecking=no $user@$host -p $ssh_port "$(typeset -f); local_slave $args"
+          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         else
-          ssh -i $key -oStrictHostKeyChecking=no $user@$host -p $ssh_port "$(typeset -f); local_slave $args"
+          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         fi
         echo ""
         step_title "---- Disconnected from $host"
@@ -386,35 +375,6 @@ deploy_space() {
     step_title "--- Deploying space: $space [$topology] (locator: $locator, group: $group)"
     $home/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
     step_title "--- Done deploying space: $space"
-}
-
-remote_deploy_space() {
-    local hosts=${1//,/ }
-    local user=$2
-    local key=$3
-    local ssh_port=$4
-
-    local home=$5
-    local locator=$6
-    local group=$7
-    local space=$8
-    local topology=$9
-
-    # TODO: remove
-    echo "hosts = $hosts"
-    echo "user = $user"
-    echo "key = $key"
-    echo "ssh_port = $ssh_port"
-    echo "home = $home"
-    echo "locator = $locator"
-    echo "group = $group"
-    echo "space = $space"
-    echo "topology = $topology"
-
-
-    echo ""
-    step_title "--- Deploying space from remote: $hosts $space [$topology] (locator: $locator, group: $group)"
-
 }
 
 undeploy_space() {
