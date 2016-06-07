@@ -29,11 +29,8 @@ RUN curl -sL --retry 3 --insecure \
   && ln -s $JAVA_HOME /usr/java \
   && rm -rf $JAVA_HOME/man
 
-
-# ssh auth with pem file
-USER ie-user
-
 ADD ie-user.pem.pub /home/ie-user/ie-user.pem.pub
+ADD ie-user.pem /home/ie-user/ie-user.pem
 #RUN cd /home/ie-user && ssh-keygen -q -N "" -b 1024 -f ie-user.pem -t dsa
 RUN mkdir /home/ie-user/.ssh
 RUN chmod 700 /home/ie-user/.ssh
@@ -41,6 +38,7 @@ RUN cat /home/ie-user/ie-user.pem.pub >> /home/ie-user/.ssh/authorized_keys
 RUN chmod 600 /home/ie-user/.ssh/authorized_keys
 RUN chown ie-user /home/ie-user/.ssh
 RUN chown ie-user /home/ie-user/.ssh/authorized_keys
+RUN chown ie-user /home/ie-user/ie-user.pem
 
 # add env variables for ie-user
 RUN printf "export JAVA_HOME=/usr/jdk1.8.0_31 \n" >> /home/ie-user/.bashrc
@@ -48,8 +46,10 @@ RUN printf "export PATH=$PATH:$JAVA_HOME/bin \n" >> /home/ie-user/.bashrc
 RUN printf 'export XAP_NIC_ADDRESS="#local:ip#" \n' >> /home/ie-user/.bashrc
 RUN printf 'export NIC_ADDR="#local:ip#" \n' >> /home/ie-user/.bashrc
 
-
-USER root
+# Script to be run by 'client' container
+ADD remote_install.sh /home/ie-user/remote_install.sh
+RUN chmod +x /home/ie-user/remote_install.sh
+RUN chown ie-user /home/ie-user/remote_install.sh
 
 # ssh
 EXPOSE 22

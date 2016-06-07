@@ -124,12 +124,12 @@
                                 </goals>
                                 <configuration>
                                     <imageName>insightedge-tests-cluster-install:${project.version}</imageName>
-                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install/cluster-node</dockerDirectory>
+                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install</dockerDirectory>
                                     <resources>
                                         <resource>
                                             <targetPath>/</targetPath>
                                             <directory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install</directory>
-                                            <include>ie-user.pem</include>
+                                            <!--<include>ie-user.pem</include>-->
                                         </resource>
                                     </resources>
                                 </configuration>
