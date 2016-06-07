@@ -1,3 +1,6 @@
+#
+# Starts a cluster of containers and installs InsightEdge there.
+#
 #!/usr/bin/env bash
 
 if [ "$#" -ne 1 ]; then
@@ -29,22 +32,5 @@ echo "Slave IP: $SLAVE_IP"
 echo "Client IP: $CLIENT_IP"
 
 docker exec --user ie-user -it client /home/ie-user/remote_install.sh
-
-# override download zip command
-#export ARTIFACT_DOWNLOAD_COMMAND="cp /download/gigaspaces-insightedge-*.zip ."
-
-# TODO: change _dev.sh
-# install master and slave
-#$LOCAL_IE_HOME/sbin/insightedge_dev.sh --mode remote-master --hosts $MASTER_IP --user ie-user --key $PATH_TO_PEM_FILE --install --path /home/ie-user/ie --master $MASTER_IP
-#$LOCAL_IE_HOME/sbin/insightedge_dev.sh --mode remote-slave --hosts $SLAVE_IP --user ie-user --key $PATH_TO_PEM_FILE --install --path /home/ie-user/ie --master $MASTER_IP
-
-# deploy
-# export nic address so we can get deployment notification from GSM via docker network
-#export XAP_NIC_ADDRESS="172.17.0.1"
-#export NIC_ADDR="172.17.0.1"
-#$LOCAL_IE_HOME/sbin/insightedge_dev.sh --mode deploy --master $MASTER_IP
-
-
-
 
 
