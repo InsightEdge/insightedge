@@ -18,8 +18,7 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
   val scriptsDir = getClass.getClassLoader.getResource("docker/cluster-install/").getFile
 
   "insightedge.sh" should "install cluster" in {
-    val packagerDir = findPackagerDir(new File("."))
-      .getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+    val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
 
     println(s"Package dir: $packagerDir")
     val zipDir = s"$packagerDir/target"
