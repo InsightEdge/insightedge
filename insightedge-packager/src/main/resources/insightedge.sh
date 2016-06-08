@@ -242,7 +242,6 @@ check_options() {
        [ $MODE != "remote-slave" ] && \
        [ $MODE != "shutdown" ] && \
        [ $MODE != "deploy" ] && \
-       [ $MODE != "remote-deploy" ] && \
        [ $MODE != "undeploy" ]; then
          error_line "unknown mode selected with --mode: $MODE"
          display_usage
