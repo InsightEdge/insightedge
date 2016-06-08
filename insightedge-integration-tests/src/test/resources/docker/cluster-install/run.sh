@@ -19,15 +19,18 @@ $DIR/stop.sh
 
 # Run cluster containers
 docker run --name master -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
-docker run --name slave -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
-docker run --name client -P -d --link master:master --link slave:slave -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
+docker run --name slave1 -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
+docker run --name slave2 -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
+docker run --name client -P -d --link master:master --link slave1:slave1 --link slave2:slave2 -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
 
 MASTER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' master)
-SLAVE_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' slave)
+SLAVE1_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' slave1)
+SLAVE2_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' slave2)
 CLIENT_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' client)
 
 echo "Master IP: $MASTER_IP"
-echo "Slave IP: $SLAVE_IP"
+echo "Slave1 IP: $SLAVE1_IP"
+echo "Slave2 IP: $SLAV21_IP"
 echo "Client IP: $CLIENT_IP"
 
 # Install & smoke test
