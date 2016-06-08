@@ -31,7 +31,6 @@ RUN curl -sL --retry 3 --insecure \
 
 ADD ie-user.pem.pub /home/ie-user/ie-user.pem.pub
 ADD ie-user.pem /home/ie-user/ie-user.pem
-#RUN cd /home/ie-user && ssh-keygen -q -N "" -b 1024 -f ie-user.pem -t dsa
 RUN mkdir /home/ie-user/.ssh
 RUN chmod 700 /home/ie-user/.ssh
 RUN cat /home/ie-user/ie-user.pem.pub >> /home/ie-user/.ssh/authorized_keys
