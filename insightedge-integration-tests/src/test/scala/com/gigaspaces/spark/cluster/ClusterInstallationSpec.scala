@@ -2,38 +2,49 @@ package com.gigaspaces.spark.cluster
 
 import java.io.File
 
-import org.scalatest.FlatSpec
+import org.scalatest.{BeforeAndAfter, FlatSpec}
 
-import scala.language.postfixOps
+import com.gigaspaces.spark.utils.ProcessUtils._
 
 /**
+  * Setup a cluster of empty docker containers and install InsightEdge there remotely from another container(named Client).
+  * Run smoke test after installation.
+  *
   * @author Oleksiy_Dyagilev
   */
-class ClusterInstallationSpec extends FlatSpec {
+class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
 
   val PackagerDirName = "insightedge-packager"
+  val scriptsDir = getClass.getClassLoader.getResource("docker/cluster-install/").getFile
 
-  "test" should "test" in {
+  "insightedge.sh" should "install cluster" in {
     val packagerDir = findPackagerDir(new File("."))
       .getOrElse(fail(s"Cannot find $PackagerDirName directory"))
 
-    val targetDir = packagerDir.getAbsolutePath + "/target"
-    val zipFileMask = targetDir + "/*.zip"
+    println(s"Package dir: $packagerDir")
+    val zipDir = s"$packagerDir/target"
 
-    import sys.process._
-    println(s"Unpacking zip in $targetDir")
-    s"unzip $zipFileMask -d $targetDir" !
+    println(s"Scripts dir: $scriptsDir")
 
+    // workaround for maven plugin bug, it doesn't preserve file permissions
+    execAssertSucc(s"chmod +x $scriptsDir/run.sh")
+    execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
-
+    // run installation
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir")
   }
 
+  after {
+    execAssertSucc(s"$scriptsDir/stop.sh")
+  }
 
   /**
     * Looks for `packager` directory no matter where this test executed from ... command line, IDE, etc
     */
   def findPackagerDir(findFrom: File): Option[File] = {
-    println(s"Looking for $PackagerDirName ... checking ${findFrom.getAbsolutePath}")
+    def log(s: File) = println(s"Looking for $PackagerDirName ... checking $s")
+    log(findFrom)
+
     findFrom.getName match {
       case "" => None
       case PackagerDirName => Some(findFrom)
@@ -42,7 +53,7 @@ class ClusterInstallationSpec extends FlatSpec {
         parent
           .listFiles()
           .filter(_.isDirectory)
-          .find(_.getName == PackagerDirName)
+          .find(dir => {log(dir); dir.getName == PackagerDirName})
           .orElse(findPackagerDir(parent))
 
     }

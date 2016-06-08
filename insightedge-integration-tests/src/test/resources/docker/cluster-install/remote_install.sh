@@ -1,7 +1,8 @@
-#
-# Starts InsightEdge installation on cluster. Executed in Client container by ie-user
-#
 #!/usr/bin/env bash
+#
+# Starts InsightEdge installation on cluster and verifies installation with smoke test.
+# Executed in Client container by ie-user.
+#
 echo "Starting installation from Client container"
 set -e
 

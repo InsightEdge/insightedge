@@ -1,6 +1,6 @@
+#!/usr/bin/env bash
 #
 # Helper script for debug purpose. Not used by auto-tests
 #
-#!/usr/bin/env bash
 
 docker exec --user ie-user -it master /bin/bash
