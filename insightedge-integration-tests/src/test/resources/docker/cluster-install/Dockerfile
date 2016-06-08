@@ -38,6 +38,7 @@ RUN chmod 600 /home/ie-user/.ssh/authorized_keys
 RUN chown ie-user /home/ie-user/.ssh
 RUN chown ie-user /home/ie-user/.ssh/authorized_keys
 RUN chown ie-user /home/ie-user/ie-user.pem
+RUN chmod 400 /home/ie-user/ie-user.pem
 
 # add env variables for ie-user
 RUN printf "export JAVA_HOME=/usr/jdk1.8.0_31 \n" >> /home/ie-user/.bashrc
