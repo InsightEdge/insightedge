@@ -335,9 +335,9 @@ remote_master() {
         echo ""
         step_title "---- Connecting to master at $host"
         if [ $key == "[]" ]; then
-          ssh $user@$host "$(typeset -f); local_master $args"
+          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         else
-          ssh -i $key $user@$host "$(typeset -f); local_master $args"
+          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         fi
         echo ""
         step_title "---- Disconnected from $host"
@@ -354,9 +354,9 @@ remote_slave() {
         echo ""
         step_title "---- Connecting to slave at $host"
         if [ $key == "[]" ]; then
-          ssh $user@$host "$(typeset -f); local_slave $args"
+          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         else
-          ssh -i $key $user@$host "$(typeset -f); local_slave $args"
+          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         fi
         echo ""
         step_title "---- Disconnected from $host"

@@ -1,16 +1,15 @@
-package com.gigaspaces.spark
+package com.gigaspaces.spark.examples
 
-import com.gigaspaces.spark.fixture.InsightEdgeDocker
-import com.gigaspaces.spark.utils.DockerUtils
+import com.gigaspaces.spark.fixture.InsightedgeDemoModeDocker
 import com.gigaspaces.spark.utils.DockerUtils.dockerExec
 import org.scalatest.FlatSpec
 
 /**
-  * Verifies that we can submit InsightEdge examples
+  * Verifies that we can submit InsightEdge examples locally (demo mode + submit within docker container)
   *
   * @author Oleksiy_Dyagilev
   */
-class ExamplesSubmitSpec extends FlatSpec with InsightEdgeDocker {
+class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   "insightedge-submit.sh " should "submit examples from insightedge-examples.jar" in {
     val containerId = runningContainerId()

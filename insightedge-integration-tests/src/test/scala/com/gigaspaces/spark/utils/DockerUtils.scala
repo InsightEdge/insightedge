@@ -17,12 +17,4 @@ object DockerUtils {
     processCommand !
   }
 
-  /**
-    * runs command in container, blocks until process is finished and returns stdout as a string
-    */
-  def dockerExecAndOutput(containerId: String, command: String): String = {
-    s"docker exec $containerId $command" !!
-  }
-
-
 }

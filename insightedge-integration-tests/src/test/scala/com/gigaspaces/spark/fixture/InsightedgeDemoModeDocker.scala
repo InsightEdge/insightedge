@@ -11,16 +11,16 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
-  * Suite mixin that starts InsightEdge docker image before all tests and stops after
+  * Suite mixin that starts InsightEdge Demo Mode docker image before all tests and stops after
   *
   * @author Oleksiy_Dyagilev
   */
-trait InsightEdgeDocker extends BeforeAndAfterAll {
+trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   self: Suite =>
 
   private val DockerImageStartTimeout = 2.minutes
   private val TargetZeppelinPort = 8090
-  private lazy val dockerHost: DockerHost = CloudHostFactory.getCloudHost("insightedge-integration-tests").asInstanceOf[DockerHost]
+  private lazy val dockerHost: DockerHost = CloudHostFactory.getCloudHost("insightedge-tests-demo-mode").asInstanceOf[DockerHost]
 
   val wsClient = NingWSClient()
 
