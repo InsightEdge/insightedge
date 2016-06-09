@@ -76,4 +76,8 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
     stage 'Export artifacts'
     archive 'insightedge-packager/target/gigaspaces-*.zip'
+
+
+    stage 'Run integration tests'
+    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests -e"
 }
