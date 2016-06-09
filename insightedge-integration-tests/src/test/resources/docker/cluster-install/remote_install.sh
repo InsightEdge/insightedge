@@ -6,6 +6,8 @@
 echo "Starting installation from Client container"
 set -e
 
+sudo mkdir /download
+sudo chmod a+rwx /download
 unzip -o /download/gigaspaces-insightedge-*.zip -d /download/
 IE_HOME=$(ls /download/gigaspaces-insightedge*.zip | awk '{split($0,a,".zip"); print a[1]}')
 
