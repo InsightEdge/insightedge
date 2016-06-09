@@ -32,6 +32,7 @@ echo "Master IP: $MASTER_IP"
 echo "Slave1 IP: $SLAVE1_IP"
 echo "Slave2 IP: $SLAV21_IP"
 echo "Client IP: $CLIENT_IP"
+echo "Local download dir: $LOCAL_DOWNLOAD_DIR"
 
 # Install & smoke test
 docker exec --user ie-user client /home/ie-user/remote_install.sh
