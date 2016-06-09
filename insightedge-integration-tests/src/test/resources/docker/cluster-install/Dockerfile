@@ -38,6 +38,7 @@ RUN chmod 600 /home/ie-user/.ssh/authorized_keys
 RUN chown ie-user /home/ie-user/.ssh
 RUN chown ie-user /home/ie-user/.ssh/authorized_keys
 RUN chown ie-user /home/ie-user/ie-user.pem
+RUN mkdir /download
 RUN chown ie-user /download
 RUN chmod 400 /home/ie-user/ie-user.pem
 
