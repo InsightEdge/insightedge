@@ -8,7 +8,7 @@ set -e
 
 mkdir ~/insightedge
 unzip -o /download/gigaspaces-insightedge-*.zip -d ~/insightedge/
-IE_HOME=$(ls ~/insightedge/gigaspaces-insightedge-*)
+IE_HOME=$(ls -d -1 ~/insightedge/gigaspaces-insightedge-*)
 
 ### install master and 2 slaves
 
