@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 
 import com.gigaspaces.spark.packager.Utils._
-import org.apache.commons.io.filefilter.{AbstractFileFilter, TrueFileFilter}
+import org.apache.commons.io.filefilter.TrueFileFilter
 
 /**
   * @author Leonid_Poliakov
@@ -55,7 +55,6 @@ object Launcher {
       copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
       copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
       copy(s"$resources/insightedge.sh", s"$output/sbin/insightedge.sh")
-      copy(s"$resources/insightedge-ce.sh", s"$output/sbin/insightedge-ce.sh")
       copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
     }
 
@@ -88,9 +87,13 @@ object Launcher {
       copy(s"$resources/deploy-datagrid.sh", s"$output/sbin/deploy-datagrid.sh")
       copy(s"$resources/undeploy-datagrid.sh", s"$output/sbin/undeploy-datagrid.sh")
     }
+    run("Adding Datagrid scripts for Community Edition") {
+      copy(s"$resources/start-datagrid-master-ce.sh", s"$output/sbin/start-datagrid-master-ce.sh")
+      copy(s"$resources/start-datagrid-slave-ce.sh", s"$output/sbin/start-datagrid-slave-ce.sh")
+      copy(s"$resources/stop-datagrid-slave-ce.sh", s"$output/sbin/stop-datagrid-slave-ce.sh")
+    }
     run("Adding template space configuration") {
       copy(s"$resources/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
-//      copy(s"$resources/template/insightedge-lus.xml", s"$output/datagrid/deploy/templates/insightedge-lus/META-INF/spring/pu.xml")
     }
 
     run("Unpacking Zeppelin") {
