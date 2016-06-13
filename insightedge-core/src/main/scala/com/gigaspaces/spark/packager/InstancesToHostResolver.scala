@@ -57,37 +57,3 @@ class InstancesToHostResolver {
 }
 
 case class SpaceInstancesToHosts(instancesToHosts: Map[Host, Set[Instance]])
-
-
-//
-//def resolveForMultipleHosts(hosts: Set[Host], topology: Topology): SpaceInstancesToHosts = {
-//  val partitionsCount = topology.spaceInstancesCount
-//  val backupsCount = topology.backupSpaceInstancesCount
-//
-//  val instances = 1 to partitionsCount
-//  //    for (shift <- 1 to backupsCount) {
-//  //      val shifted = shiftRange(instances, shift)
-//  //      println(shifted)
-//  //    }
-//
-//  val backupsList: IndexedSeq[Seq[Int]] = (1 to backupsCount).map(shift => shiftRange(instances, shift).toSeq)
-//  //    backupsList.map(list => {
-//  //      val toSeq: Seq[Int] = list.toSeq
-//  //      val list1: Iterable[Int] = toSeq
-//  //      BackupSpaceInstance(1, toSeq(3))
-//  //    })
-//  val instancesToHosts = instances.zip(hosts).map { i =>
-//  var backup_id = 0
-//  val backupInstances: IndexedSeq[BackupSpaceInstance] = backupsList.map(seq => {
-//  backup_id += 1
-//  BackupSpaceInstance(seq(i._1 - 1), backup_id)
-//})
-//
-//  val instances1: mutable.ArraySeq[Instance] = SpaceInstance(i._1) +: backupInstances.toArray
-//  i._2 -> Set[Instance](
-//  instances1: _*
-//  )
-//}.toMap
-//
-//  SpaceInstancesToHosts(instancesToHosts)
-//}

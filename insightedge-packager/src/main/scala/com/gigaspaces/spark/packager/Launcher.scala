@@ -64,7 +64,7 @@ object Launcher {
 
     run("Unpacking Gigaspaces datagrid") {
       unzip(grid, s"$output/datagrid", cutRootFolder = true)
-      unzip(s"$output/datagrid/bin/advanced_scripts.zip", s"$output/datagrid/bin/", cutRootFolder = false) // Do we want all advanced scripts in bin folder?
+      unzip(s"$output/datagrid/bin/advanced_scripts.zip", s"$output/datagrid/bin/", cutRootFolder = false)
     }
     run("Adding Gigaspaces datagrid license key") {
       copy(s"$resources/gslicense.xml", s"$output/datagrid/gslicense.xml")
