@@ -6,8 +6,9 @@
 echo "Starting installation from Client container"
 set -e
 
-unzip -o /download/gigaspaces-insightedge-*.zip -d /download/
-IE_HOME=$(ls /download/gigaspaces-insightedge*.zip | awk '{split($0,a,".zip"); print a[1]}')
+mkdir ~/insightedge
+unzip -o /download/gigaspaces-insightedge-*.zip -d ~/insightedge/
+IE_HOME=$(ls -d -1 ~/insightedge/gigaspaces-insightedge-*)
 
 ### install master and 2 slaves
 
