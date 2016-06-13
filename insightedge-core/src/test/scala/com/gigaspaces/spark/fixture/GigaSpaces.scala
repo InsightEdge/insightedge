@@ -1,7 +1,8 @@
-package com.gigaspaces.spark.utils
+package com.gigaspaces.spark.fixture
 
 import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.{Data, JData}
+import com.gigaspaces.spark.utils.{GigaSpaceFactory, GigaSpaceUtils}
 import org.openspaces.core.GigaSpace
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import org.springframework.context.support.ClassPathXmlApplicationContext
@@ -18,16 +19,15 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
 
   var spaceProxy: GigaSpace = _
 
-
-  override protected def afterEach() = {
-    super.afterEach()
-    spaceProxy.clear(new Object())
-  }
-
   override protected def beforeAll() = {
-    super.beforeAll()
     val ctx = new ClassPathXmlApplicationContext("cluster-test-config.xml")
     spaceProxy = GigaSpaceFactory.getOrCreateClustered(gsConfig)
+    super.beforeAll()
+  }
+
+  override protected def afterEach() = {
+    spaceProxy.clear(new Object())
+    super.afterEach()
   }
 
   protected def dataSeq(count: Int): Seq[Data] = (1L to count).map(i => new Data(i, "data" + i))

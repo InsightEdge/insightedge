@@ -1,4 +1,4 @@
-package com.gigaspaces.spark.utils
+package com.gigaspaces.spark.fixture
 
 import org.apache.spark.SparkConf
 import org.scalatest.Suite

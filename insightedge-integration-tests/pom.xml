@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>insightedge-integration-tests</artifactId>
+    <description>InsightEdge Integration Tests</description>
+
+    <parent>
+        <groupId>com.gigaspaces.insightedge</groupId>
+        <artifactId>insightedge-package</artifactId>
+        <version>0.4.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.gigaspaces.insightedge</groupId>
+            <artifactId>insightedge-packager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Scala -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.10</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Overcast used to run Docker image -->
+        <dependency>
+            <groupId>com.xebialabs.cloud</groupId>
+            <artifactId>overcast</artifactId>
+            <version>2.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- REST client lib -->
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-ws_2.10</artifactId>
+            <version>2.4.6</version>
+        </dependency>
+    </dependencies>
+
+
+    <profiles>
+        <profile>
+            <id>run-integration-tests</id>
+
+            <build>
+                <plugins>
+                    <!-- Directory plugin to find parent root directory absolute path -->
+                    <plugin>
+                        <groupId>org.commonjava.maven.plugins</groupId>
+                        <artifactId>directory-maven-plugin</artifactId>
+                        <version>0.1</version>
+                        <executions>
+                            <execution>
+                                <id>directories</id>
+                                <goals>
+                                    <goal>highest-basedir</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <property>main.basedir</property>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- This plugin builds a Docker image -->
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.4.9</version>
+                        <executions>
+                            <execution>
+                                <id>build-demo-mode-image</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <imageName>insightedge-tests-demo-mode:${project.version}</imageName>
+                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/demo-mode</dockerDirectory>
+                                    <resources>
+                                        <resource>
+                                            <targetPath>/</targetPath>
+                                            <directory>${main.basedir}/insightedge-packager/target</directory>
+                                            <include>*.zip</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-cluster-install-image</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <imageName>insightedge-tests-cluster-install:${project.version}</imageName>
+                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install</dockerDirectory>
+                                    <resources>
+                                        <resource>
+                                            <targetPath>/</targetPath>
+                                            <directory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install</directory>
+                                            <!--<include>ie-user.pem</include>-->
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>scala-compile-first</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>scala-test-compile</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.scalatest</groupId>
+                        <artifactId>scalatest-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <executions>
+                            <execution>
+                                <id>test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>integration-test</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
+
+
+
+
+</project>
