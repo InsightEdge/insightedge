@@ -70,7 +70,6 @@ object GridTopologyAllocator {
     val initialMap = hosts.map(h => (h, Seq[SpaceInstance]()))
     val mutableAllocation: Allocation = mutable.LinkedHashMap(initialMap: _*)
 
-
     // allocate primaries
     val primaries = (1 to topology.partitionsCount).map(id => PrimaryInstance(id)).toList
     allocateInstances(mutableAllocation, primaries, 0)
