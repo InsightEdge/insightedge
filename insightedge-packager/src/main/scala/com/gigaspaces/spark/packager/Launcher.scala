@@ -1,5 +1,6 @@
 package com.gigaspaces.spark.packager
 
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -13,6 +14,7 @@ object Launcher {
   def main(args: Array[String]) {
     val project = parameter("Project folder" -> "project.directory")
     val version = parameter("Project version" -> "project.version")
+    val edition = parameter("Distribution edition" -> "dist.edition")
     val lastCommitHash = optionalParameter("Last commit hash" -> "last.commit.hash")
     val output = parameter("Output folder" -> "output.exploded.directory")
     val outputFile = parameter("Output file" -> "output.compressed.file")
@@ -129,11 +131,8 @@ object Launcher {
     }
 
     run("Packing installation") {
+      new File(outputFile).getParentFile.mkdirs()
       zip(output, outputFile, outputPrefix)
-    }
-
-    run("Clearing temporary output") {
-      remove(output)
     }
   }
 

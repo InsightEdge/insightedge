@@ -71,13 +71,18 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     distributions = "$distributions -Ddist.xap=$env.XAP_DIST"
     distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples.jar"
-    sh "mvn package -pl insightedge-packager -DskipTests=true -P package-deployment $distributions -Dlast.commit.hash=$commitHash"
+    sh "mvn clean package -pl insightedge-packager -P package-community,package-premium -DskipTests=true $distributions -Dlast.commit.hash=$commitHash"
 
 
     stage 'Export artifacts'
-    archive 'insightedge-packager/target/gigaspaces-*.zip'
+    archive 'insightedge-packager/target/community/gigaspaces-*.zip'
+    archive 'insightedge-packager/target/premium/gigaspaces-*.zip'
 
 
-    stage 'Run integration tests'
-    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests -e"
+    stage 'Run integration tests (community)'
+    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community -e"
+
+
+    stage 'Run integration tests (premium)'
+    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
 }

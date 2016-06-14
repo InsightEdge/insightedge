@@ -12,6 +12,10 @@
         <version>0.4.0-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <dist.edition></dist.edition>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -67,119 +71,171 @@
         </dependency>
     </dependencies>
 
+    <!-- Integration tests execution are turned off by default profile -->
+    <build>
+        <plugins>
+            <!-- Directory plugin to find parent root directory absolute path -->
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>main.basedir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- This plugin builds a Docker image -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.9</version>
+                <executions>
+                    <execution>
+                        <id>build-demo-mode-image</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>insightedge-tests-demo-mode:${project.version}</imageName>
+                            <dockerDirectory>
+                                ${main.basedir}/insightedge-integration-tests/src/test/resources/docker/demo-mode
+                            </dockerDirectory>
+                            <resources>
+                                <resource>
+                                    <targetPath>/</targetPath>
+                                    <directory>${main.basedir}/insightedge-packager/target/${dist.edition}</directory>
+                                    <include>*.zip</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build-cluster-install-image</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>insightedge-tests-cluster-install:${project.version}</imageName>
+                            <dockerDirectory>
+                                ${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install
+                            </dockerDirectory>
+                            <resources>
+                                <resource>
+                                    <targetPath>/</targetPath>
+                                    <directory>
+                                        ${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install
+                                    </directory>
+                                    <!--<include>ie-user.pem</include>-->
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>scala-test-compile</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <argLine>-Ddist.edition=${dist.edition}</argLine>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>
-            <id>run-integration-tests</id>
+            <id>run-integration-tests-community</id>
+            <properties>
+                <dist.edition>community</dist.edition>
+            </properties>
+        </profile>
 
+        <profile>
+            <id>run-integration-tests-premium</id>
+            <properties>
+                <dist.edition>premium</dist.edition>
+            </properties>
+        </profile>
+
+        <!-- Turns off execution if no profile is specified -->
+        <profile>
+            <id>run-nothing</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
-                    <!-- Directory plugin to find parent root directory absolute path -->
-                    <plugin>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <version>0.1</version>
-                        <executions>
-                            <execution>
-                                <id>directories</id>
-                                <goals>
-                                    <goal>highest-basedir</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <property>main.basedir</property>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- This plugin builds a Docker image -->
                     <plugin>
                         <groupId>com.spotify</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
-                        <version>0.4.9</version>
                         <executions>
                             <execution>
                                 <id>build-demo-mode-image</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <configuration>
-                                    <imageName>insightedge-tests-demo-mode:${project.version}</imageName>
-                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/demo-mode</dockerDirectory>
-                                    <resources>
-                                        <resource>
-                                            <targetPath>/</targetPath>
-                                            <directory>${main.basedir}/insightedge-packager/target</directory>
-                                            <include>*.zip</include>
-                                        </resource>
-                                    </resources>
-                                </configuration>
+                                <phase>none</phase>
                             </execution>
                             <execution>
                                 <id>build-cluster-install-image</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <configuration>
-                                    <imageName>insightedge-tests-cluster-install:${project.version}</imageName>
-                                    <dockerDirectory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install</dockerDirectory>
-                                    <resources>
-                                        <resource>
-                                            <targetPath>/</targetPath>
-                                            <directory>${main.basedir}/insightedge-integration-tests/src/test/resources/docker/cluster-install</directory>
-                                            <!--<include>ie-user.pem</include>-->
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>net.alchim31.maven</groupId>
-                        <artifactId>scala-maven-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <id>scala-compile-first</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>add-source</goal>
-                                    <goal>compile</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>scala-test-compile</id>
-                                <phase>process-test-resources</phase>
-                                <goals>
-                                    <goal>testCompile</goal>
-                                </goals>
+                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.scalatest</groupId>
                         <artifactId>scalatest-maven-plugin</artifactId>
-                        <version>1.0</version>
                         <executions>
                             <execution>
                                 <id>test</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <phase>integration-test</phase>
+                                <phase>none</phase>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
-
         </profile>
     </profiles>
-
-
-
 
 </project>

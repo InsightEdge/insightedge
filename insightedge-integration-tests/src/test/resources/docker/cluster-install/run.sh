@@ -7,7 +7,7 @@ VER=0.4.0-SNAPSHOT
 
 if [ "$#" -ne 1 ]; then
     echo "Illegal number of parameters."
-    echo "Usage: run.sh <dir of InsightEdge zip>"
+    echo "Usage: run.sh <dir with InsightEdge zip>"
     exit 1
 fi
 
