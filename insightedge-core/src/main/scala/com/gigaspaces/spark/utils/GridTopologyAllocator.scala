@@ -6,7 +6,10 @@ import scala.util.Try
 
 /**
   * Utility used from bash script to map(allocate) primary and backup instances to given hosts.
-  * Outputs result with a fixed format to stdout.
+  * Outputs result with a fixed format to stdout. E.g. for input
+  * "2,1", "hostA,hostB"
+  * outputs
+  * "hostA:id=1;id=2,backup_id=1 hostB:id=2;id=1,backup_id=1"
   *
   * Exits with 1 if something goes wrong.
   *
