@@ -17,9 +17,7 @@ import scala.util.Try
   */
 object GridTopologyAllocator {
 
-  case class Host(ip: String) {
-    override def toString: String = ip
-  }
+  case class Host(ip: String)
 
   trait SpaceInstance {
     def partId: Int
