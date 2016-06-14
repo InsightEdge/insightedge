@@ -1,5 +1,6 @@
 package com.gigaspaces.spark.utils
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.Try
 
@@ -23,14 +24,12 @@ object GridTopologyAllocator {
 
   case class PrimaryInstance(override val partId: Int) extends SpaceInstance
 
-  case class BackupInstance(override val partId: Int, backupId: Int) extends SpaceInstance {
-    override def toString: String = s"id=$partId,backup_id=$backupId"
-  }
+  case class BackupInstance(override val partId: Int, backupId: Int) extends SpaceInstance
 
   case class Topology(partitionsCount: Int, backupsCount: Int)
 
-  // we use Seq rather than Set to make the output deterministic and testable, perf. doesn't matter here
-  type Allocation = mutable.Map[Host, Seq[SpaceInstance]]
+  // we use LinkedHashMap/Seq to make the output deterministic and testable
+  type Allocation = mutable.LinkedHashMap[Host, Seq[SpaceInstance]]
 
   def main(args: Array[String]) = {
     val output = allocateAndRender(args)
@@ -52,46 +51,38 @@ object GridTopologyAllocator {
   }
 
   def allocate(topology: Topology, hosts: Seq[Host]): Allocation = {
-    val emptyAllocation = hosts.map(h => (h, Seq[SpaceInstance]()))
-    val mutableAllocation: Allocation = mutable.Map(emptyAllocation: _*)
 
-    // prepare primaries and backups
-    val primaries = (1 to topology.partitionsCount).map(id => PrimaryInstance(id)).toList
-    val backups = primaries.flatMap { p =>
-      (1 to topology.backupsCount).map(backupId => BackupInstance(p.partId, backupId))
-    }
-
-    // allocate
-    (primaries ++ backups).foreach { instance =>
-      val host = findBestHostFor(instance)
-      val currInstances = mutableAllocation(host)
-      mutableAllocation(host) = instance +: currInstances
-    }
-
-    def findBestHostFor(instance: SpaceInstance): Host = {
-      instance match {
-        case PrimaryInstance(_) => lessBusyHost(mutableAllocation)
-        case BackupInstance(partId, backupId) =>
-          val hostsWithoutPart = hostsWithoutPartition(partId)
-          if (hostsWithoutPart.nonEmpty) {
-            lessBusyHost(hostsWithoutPart)
-          } else {
-            lessBusyHost(mutableAllocation)
-          }
+    @tailrec
+    def allocateInstances(allocation: Allocation, instancesLeft: List[SpaceInstance], currHostIndex: Int): Allocation = {
+      instancesLeft match {
+        case Nil => allocation
+        case instance :: instancesTail =>
+          val host = hosts(currHostIndex)
+          val currInstances = allocation(host)
+          val updatedInstances = currInstances ++ Seq(instance)
+          allocation.put(host, updatedInstances)
+          val nextHostIndex = (currHostIndex + 1) % hosts.length
+          allocateInstances(allocation, instancesTail, nextHostIndex)
       }
     }
 
-    def hostsWithoutPartition(partId: Int): Allocation = {
-      mutableAllocation.filter { case (host, instances) => !instances.map(_.partId).contains(partId) }
-    }
+    val initialMap = hosts.map(h => (h, Seq[SpaceInstance]()))
+    val mutableAllocation: Allocation = mutable.LinkedHashMap(initialMap: _*)
 
-    def lessBusyHost(allocation: Allocation): Host = {
-      allocation.mapValues(_.size).toList.map { case (host, size) => (size, host) }.sortBy(_._1).map(_._2).head
+
+    // allocate primaries
+    val primaries = (1 to topology.partitionsCount).map(id => PrimaryInstance(id)).toList
+    allocateInstances(mutableAllocation, primaries, 0)
+
+    // allocate backups
+    (1 to topology.backupsCount).foreach { backupId =>
+      val backups = primaries.map(p => BackupInstance(p.partId, backupId))
+      val currHostIndex = if (hosts.length == 1) 0 else backupId
+      allocateInstances(mutableAllocation, backups, currHostIndex)
     }
 
     mutableAllocation
   }
-
 
   def validateTopology(t: Topology): Unit = {
     require(t.partitionsCount >= 1, "Space partitions count should be >= 1")
