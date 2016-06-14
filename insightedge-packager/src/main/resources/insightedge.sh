@@ -352,6 +352,7 @@ local_slave_ce() {
     local instances=${11}
 
     if [[ -z $instances ]]; then
+        # TODO: use GridTopologyAllocator
         instances=`java -cp "$home/lib/*" com.gigaspaces.spark.packager.ResolverRunner "" "$topology" "single"`
         if [[ $instances == ERROR* ]]; then
             echo "$instances"
@@ -412,6 +413,7 @@ remote_slave_ce() {
     local user=$2
     local key=$3
 
+    # TODO: use GridTopologyAllocator
     hosts_to_instances=`java -cp "/code/insightedge/insightedge-packager/target/gigaspaces-insightedge-0.4.0-SNAPSHOT/lib/*" com.gigaspaces.spark.packager.ResolverRunner "$1" "$SPACE_TOPOLOGY" "multiple"`
     if [[ $hosts_to_instances == ERROR* ]]; then
         echo "$hosts_to_instances"
@@ -480,6 +482,7 @@ deploy_space_ce() {
     local topology=$6
     local size=$7
 
+    # TODO: use GridTopologyAllocator
     instances=`java -cp "$home/lib/*" com.gigaspaces.spark.packager.ResolverRunner "" "$topology" "single"`
     if [[ $instances == ERROR* ]]; then
         echo "$instances"
