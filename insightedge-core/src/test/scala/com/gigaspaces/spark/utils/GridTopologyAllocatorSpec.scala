@@ -54,4 +54,11 @@ class GridTopologyAllocatorSpec extends FlatSpec {
     val expected = "hostA:id=1;id=4;id=3,backup_id=1;id=6,backup_id=1 hostB:id=2;id=5;id=1,backup_id=1;id=4,backup_id=1 hostC:id=3;id=6;id=2,backup_id=1;id=5,backup_id=1"
     assert(GridTopologyAllocator.allocateAndRender(args) == expected)
   }
+
+  it should "fail to parse topology abc" in {
+    val args = Array("abc", "hostA,hostB,hostC")
+    intercept[IllegalArgumentException] {
+      GridTopologyAllocator.allocateAndRender(args)
+    }
+  }
 }
