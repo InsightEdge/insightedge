@@ -39,7 +39,7 @@ object GridTopologyAllocator {
 
   def allocateAndRender(args: Array[String]): String = {
     if (args.length != 2) {
-      System.err.println("Usage: ResolverRunner <topology> <hosts>")
+      System.err.println("Usage: GridTopologyAllocator <topology> <hosts>")
       System.exit(1)
     }
     val Array(topologyStr, hostsStr) = args
