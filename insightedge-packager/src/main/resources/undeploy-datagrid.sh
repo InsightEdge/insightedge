@@ -14,8 +14,8 @@ main() {
     redefine_defaults
 
     echo "Undeploying space: $SPACE_NAME (locator: $GRID_LOCATOR, group: $GRID_GROUP)"
-    export LOOKUPLOCATORS=$GRID_LOCATOR
-    export LOOKUPGROUPS=$GRID_GROUP
+    export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
+    export XAP_LOOKUP_GROUPS=$GRID_GROUP
     $IE_PATH/datagrid/bin/gs.sh undeploy $SPACE_NAME
 }
 
