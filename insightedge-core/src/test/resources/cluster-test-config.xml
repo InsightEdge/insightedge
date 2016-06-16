@@ -23,7 +23,7 @@
   </bean>
 
   <bean id="space" class="org.openspaces.core.space.UrlSpaceFactoryBean" depends-on="space-cluster">
-    <property name="url" value="jini://*/*/test-space?groups=spark"/>
+    <property name="url" value="jini://*/*/test-space?groups=spark&amp;locators=localhost:4174"/>
   </bean>
   <os-core:giga-space id="gigaSpace" space="space"/>
 

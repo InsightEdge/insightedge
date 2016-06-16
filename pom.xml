@@ -9,7 +9,7 @@
     <description>InsightEdge Package</description>
 
     <properties>
-        <xap.version>10.2.1-14000-RELEASE</xap.version>
+        <xap.version>11.0.0-14800-RELEASE</xap.version>
         <spark.version>1.6.0</spark.version>
         <scala.version>2.10.4</scala.version>
         <scalatest.version>2.2.4</scalatest.version>
