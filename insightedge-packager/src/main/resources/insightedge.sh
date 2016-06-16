@@ -1,15 +1,9 @@
 #!/bin/bash
 
-DISTRO_CE="CE"
-DISTRO_PREMIUM="PREMIUM"
-
-DISTRO="PREMIUM" #TODO how to set param DISTO?
-
 if [ -z "${INSIGHTEDGE_HOME}" ]; then
   export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 fi
 
-EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
 VERSION="0.4.0-SNAPSHOT"
 ARTIFACT="gigaspaces-insightedge-$VERSION"
@@ -33,22 +27,14 @@ main() {
         local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
         ;;
       "slave")
-        if [[ "$DISTRO" == "$DISTRO_CE" ]]; then
-            local_slave_ce $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY $GSC_SIZE
-        elif [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-            local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
-        fi
+        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
         ;;
       "zeppelin")
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         ;;
       "demo")
         local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
-        if [[ "$DISTRO" == "$DISTRO_CE" ]]; then
-            local_slave_ce $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY $GSC_SIZE
-        elif [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-            local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
-        fi
+        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
         deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         display_demo_help $CLUSTER_MASTER
@@ -60,11 +46,7 @@ main() {
         remote_slave $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY
         ;;
       "deploy")
-        if [[ "$DISTRO" == "$DISTRO_CE" ]]; then
-            deploy_space_ce $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY $CLUSTER_MASTER $GSC_SIZE
-        elif [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-            deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
-        fi
+        deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         ;;
       "undeploy")
         undeploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME
@@ -165,19 +147,20 @@ display_usage() {
 }
 
 define_defaults() {
-    MODE=$EMPTY
-    IE_PATH=$EMPTY
+    # '[]' means 'empty'
+    MODE="[]"
+    IE_PATH="[]"
     IE_INSTALL="false"
-    CLUSTER_MASTER=$EMPTY
-    GRID_LOCATOR=$EMPTY
+    CLUSTER_MASTER="[]"
+    GRID_LOCATOR="[]"
     GRID_GROUP="insightedge"
     GSC_SIZE="1G"
     GSC_COUNT="2"
     SPACE_NAME="insightedge-space"
     SPACE_TOPOLOGY="2,0"
-    REMOTE_HOSTS=$EMPTY
-    REMOTE_USER=$EMPTY
-    REMOTE_KEY=$EMPTY
+    REMOTE_HOSTS="[]"
+    REMOTE_USER="[]"
+    REMOTE_KEY="[]"
 }
 
 parse_options() {
@@ -245,13 +228,7 @@ parse_options() {
 
 check_options() {
     # check required options
-
-    if [[ ("$DISTRO" != "$DISTRO_CE") && ("$DISTRO" != "$DISTRO_PREMIUM") ]]; then
-        echo "Wrong distribution parameter: $DISTRO"
-        exit 1
-    fi
-
-    if [ $MODE == $EMPTY ]; then
+    if [ $MODE == "[]" ]; then
       error_line "--mode is required"
       display_usage
     fi
@@ -270,21 +247,21 @@ check_options() {
          display_usage
     fi
 
-    if [ $CLUSTER_MASTER == $EMPTY ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
+    if [ $CLUSTER_MASTER == "[]" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
       error_line "--master is required"
       display_usage
     fi
 
     if [[ $MODE == remote-* ]]; then
-        if [ $REMOTE_USER == $EMPTY ]; then
+        if [ $REMOTE_USER == "[]" ]; then
             error_line "--user is required in remote modes"
             display_usage
         fi
-        if [ $REMOTE_HOSTS == $EMPTY ]; then
+        if [ $REMOTE_HOSTS == "[]" ]; then
             error_line "--hosts is required in remote modes"
             display_usage
         fi
-        if [ $IE_PATH == $EMPTY ]; then
+        if [ $IE_PATH == "[]" ]; then
           error_line "--path is required"
           display_usage
         fi
@@ -292,13 +269,13 @@ check_options() {
 }
 
 redefine_defaults() {
-    if [ $CLUSTER_MASTER = $EMPTY ]; then
+    if [ $CLUSTER_MASTER = "[]" ]; then
         CLUSTER_MASTER="127.0.0.1"
     fi
-    if [ $GRID_LOCATOR = $EMPTY ]; then
+    if [ $GRID_LOCATOR = "[]" ]; then
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
-    if [ $IE_PATH = $EMPTY ]; then
+    if [ $IE_PATH = "[]" ]; then
         IE_PATH="$INSIGHTEDGE_HOME"
     fi
 }
@@ -313,7 +290,7 @@ local_master() {
     local group=$7
     local size=$8
 
-    install_insightedge $install $artifact "$download" $home
+    intall_insightedge $install $artifact "$download" $home
     stop_grid_master $home
     stop_spark_master $home
     start_grid_master $home $locator $group $size
@@ -331,39 +308,10 @@ local_slave() {
     local containers=$8
     local size=$9
 
-    install_insightedge $install $artifact "$download" $home
+    intall_insightedge $install $artifact "$download" $home
     stop_grid_slave $home
     stop_spark_slave $home
     start_grid_slave $home $master $locator $group $containers $size
-    start_spark_slave $home $master
-}
-
-local_slave_ce() {
-    local home=$1
-    local install=$2
-    local artifact=$3
-    local download=$4
-    local master=$5
-    local locator=$6
-    local group=$7
-    local space_name=$8
-    local topology=$9
-    local size=${10}
-    local instances=${11}
-
-    if [[ -z $instances ]]; then
-        # TODO: use GridTopologyAllocator
-        instances=`java -cp "$home/lib/*" com.gigaspaces.spark.packager.ResolverRunner "" "$topology" "single"`
-        if [[ $instances == ERROR* ]]; then
-            echo "$instances"
-            exit 1
-        fi
-    fi
-
-    install_insightedge $install $artifact "$download" $home
-    stop_grid_slave $home
-    stop_spark_slave $home
-    start_grid_slave_ce $home $master $locator $group $space_name $topology $size $instances
     start_spark_slave $home $master
 }
 
@@ -372,8 +320,8 @@ local_zeppelin() {
     local master=$2
     echo ""
     step_title "--- Restarting Zeppelin server"
-    stop_zeppelin $1
-    start_zeppelin $1
+    $home/sbin/stop-zeppelin.sh
+    $home/sbin/start-zeppelin.sh
     step_title "--- Zeppelin server can be accessed at http://$master:8090"
 }
 
@@ -386,7 +334,7 @@ remote_master() {
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to master at $host"
-        if [ $key == $EMPTY ]; then
+        if [ $key == "[]" ]; then
           ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         else
           ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
@@ -397,49 +345,6 @@ remote_master() {
 }
 
 remote_slave() {
-    local hosts=$1
-    local user=$2
-    local key=$3
-
-    if [[ "$DISTRO" == "$DISTRO_CE" ]]; then
-        remote_slave_ce $1 $2 $3
-    elif [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-        remote_slave_premium $1 $2 $3
-    fi
-}
-
-remote_slave_ce() {
-    local hosts=${1//,/ }
-    local user=$2
-    local key=$3
-
-    # TODO: use GridTopologyAllocator
-    hosts_to_instances=`java -cp "/code/insightedge/insightedge-packager/target/gigaspaces-insightedge-0.4.0-SNAPSHOT/lib/*" com.gigaspaces.spark.packager.ResolverRunner "$1" "$SPACE_TOPOLOGY" "multiple"`
-    if [[ $hosts_to_instances == ERROR* ]]; then
-        echo "$hosts_to_instances"
-        exit 1
-    else
-        echo "Hosts to instances: $hosts_to_instances"
-    fi
-
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY $GSC_SIZE"
-    for host_to_instance_raw in $hosts_to_instances; do
-        IFS=':' read -r -a host_to_instance <<< "$host_to_instance_raw"
-        host=${host_to_instance[0]}
-        instances=${host_to_instance[1]}
-        echo ""
-        step_title "---- Connecting to slave at $host"
-        if [ $key == $EMPTY ]; then
-          ssh $user@$host "$(typeset -f); local_slave_ce $args \"$instances\""
-        else
-          ssh -i $key $user@$host "$(typeset -f); local_slave_ce $args \"$instances\""
-        fi
-        echo ""
-        step_title "---- Disconnected from $host"
-    done
-}
-
-remote_slave_premium() {
     local hosts=${1//,/ }
     local user=$2
     local key=$3
@@ -448,7 +353,7 @@ remote_slave_premium() {
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to slave at $host"
-        if [ $key == $EMPTY ]; then
+        if [ $key == "[]" ]; then
           ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         else
           ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
@@ -465,30 +370,10 @@ deploy_space() {
     local space=$4
     local topology=$5
 
-    if [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-        echo ""
-        step_title "--- Deploying space: $space [$topology] (locator: $locator, group: $group)"
-        $home/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
-        step_title "--- Done deploying space: $space"
-    fi
-}
-
-deploy_space_ce() {
-    local home=$1
-    local master=$2
-    local locator=$3
-    local group=$4
-    local space_name=$5
-    local topology=$6
-    local size=$7
-
-    # TODO: use GridTopologyAllocator
-    instances=`java -cp "$home/lib/*" com.gigaspaces.spark.packager.ResolverRunner "" "$topology" "single"`
-    if [[ $instances == ERROR* ]]; then
-        echo "$instances"
-        exit 1
-    fi
-    start_grid_slave_ce $home $master $locator $group $space_name $topology $size $instances
+    echo ""
+    step_title "--- Deploying space: $space [$topology] (locator: $locator, group: $group)"
+    $home/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
+    step_title "--- Done deploying space: $space"
 }
 
 undeploy_space() {
@@ -498,43 +383,32 @@ undeploy_space() {
     local space=$4
 
     echo ""
-    if [[ "$DISTRO" == "$DISTRO_CE" ]]; then
-        stop_grid_slave $home
-    elif [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-        step_title "--- Undeploying space: $space (locator: $locator, group: $group)"
-        $home/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
-        step_title "--- Done undeploying space: $space"
-    fi
+    step_title "--- Undeploying space: $space (locator: $locator, group: $group)"
+    $home/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
+    step_title "--- Done undeploying space: $space"
 }
 
 shutdown_all() {
     local home=$1
 
     echo ""
-    stop_zeppelin $home
-    echo ""
-    stop_grid_master $home
-    echo ""
-    stop_grid_slave $home
-    echo ""
-    stop_spark_master $home
-    echo ""
-    stop_spark_slave $home
-}
-
-stop_zeppelin() {
-    local home=$1
     step_title "--- Stopping Zeppelin"
     $home/sbin/stop-zeppelin.sh
+    echo ""
+    step_title "--- Stopping datagrid master"
+    $home/sbin/stop-datagrid-master.sh
+    echo ""
+    step_title "--- Stopping datagrid slave"
+    $home/sbin/stop-datagrid-slave.sh
+    echo ""
+    step_title "--- Stopping Spark master"
+    $home/sbin/stop-master.sh
+    echo ""
+    step_title "--- Stopping Spark slave"
+    $home/sbin/stop-slave.sh
 }
 
-start_zeppelin() {
-    local home=$1
-    step_title "--- Starting Zeppelin"
-    $home/sbin/start-zeppelin.sh
-}
-
-install_insightedge() {
+intall_insightedge() {
     local install=$1
     local artifact=$2
     local command=$3
@@ -568,12 +442,9 @@ start_grid_master() {
     local group=$3
     local size=$4
 
+    echo ""
     step_title "--- Starting Gigaspaces datagrid management node (locator: $locator, group: $group, heap: $size)"
-    if [[ "$DISTRO" == "$DISTRO_CE" ]]; then
-        $home/sbin/start-datagrid-master-ce.sh --master $master --locator $locator --group $group --size $size
-    elif [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-        $home/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
-    fi
+    $home/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
     step_title "--- Gigaspaces datagrid management node started"
 }
 
@@ -586,21 +457,6 @@ stop_grid_master() {
     step_title "--- Datagrid master stopped"
 }
 
-start_grid_slave_ce() {
-    local home=$1
-    local master=$2
-    local locator=$3
-    local group=$4
-    local space_name=$5
-    local topology=$6
-    local size=$7
-    local instances=$8
-
-    step_title "--- Starting Gigaspaces datagrid instances (locator: $locator, group: $group, heap: $size, instances: $instances)"
-    $home/sbin/start-datagrid-slave-ce.sh --master $master --locator $locator --group $group --name $space_name --topology $topology --size $size --instances $instances
-    step_title "--- Gigaspaces datagrid instances started"
-}
-
 start_grid_slave() {
     local home=$1
     local master=$2
@@ -609,6 +465,7 @@ start_grid_slave() {
     local containers=$5
     local size=$6
 
+    echo ""
     step_title "--- Starting Gigaspaces datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
     $home/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
     step_title "--- Gigaspaces datagrid node started"
@@ -618,16 +475,9 @@ stop_grid_slave() {
     local home=$1
 
     echo ""
-    if [[ "$DISTRO" == "$DISTRO_CE" ]]; then
-        step_title "--- Stopping datagrid slave instances"
-        $home/sbin/stop-datagrid-slave-ce.sh
-        step_title "--- Datagrid slave instances stopped"
-    elif [[ "$DISTRO" == "$DISTRO_PREMIUM" ]]; then
-        step_title "--- Stopping datagrid slave"
-        $home/sbin/stop-datagrid-slave.sh
-        step_title "--- Datagrid slave stopped"
-    fi
-
+    step_title "--- Stopping datagrid slave"
+    $home/sbin/stop-datagrid-slave.sh
+    step_title "--- Datagrid slave stopped"
 }
 
 start_spark_master() {
