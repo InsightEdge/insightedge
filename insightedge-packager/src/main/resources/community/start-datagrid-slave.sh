@@ -27,7 +27,10 @@ main() {
     for parsed_instance in ${INSTANCES//;/ }; do
         log_file="$log_template-${parsed_instance//,/_}.log"
         instance=${parsed_instance//,/ }
-        nohup $IE_PATH/datagrid/bin/puInstance.sh -cluster schema=partitioned-sync2backup total_members=$TOPOLOGY $instance $IE_PATH/datagrid/deploy/templates/insightedge-datagrid > $log_file 2>&1 &
+        `nohup   $IE_PATH/datagrid/bin/puInstance.sh \
+                    -cluster schema=partitioned-sync2backup total_members=$TOPOLOGY $instance \
+                    -properties space embed://name=$SPACE_NAME \
+                    $IE_PATH/datagrid/deploy/templates/insightedge-datagrid > $log_file 2>&1 &`
         sleep 3
         echo "Datagrid instance started (log: $log_file)"
     done
@@ -61,13 +64,13 @@ display_usage() {
 }
 
 define_defaults() {
-    # '[]' means 'empty'
-    IE_PATH="[]"
-    CLUSTER_MASTER="[]"
+    EMPTY="[]"
+    IE_PATH=$EMPTY
+    CLUSTER_MASTER=$EMPTY
     SPACE_NAME="insightedge-space"
-    TOPOLOGY="[]"
-    INSTANCES="[]"
-    GRID_LOCATOR="[]"
+    TOPOLOGY=$EMPTY
+    INSTANCES=$EMPTY
+    GRID_LOCATOR=$EMPTY
     GRID_GROUP="insightedge"
     GSC_SIZE="1G"
 }
@@ -114,17 +117,17 @@ parse_options() {
 
 check_options() {
     # check required options
-    if [ $CLUSTER_MASTER == "[]" ] && [ $GRID_LOCATOR == "[]" ] && [ $TOPOLOGY == "[]" ]&& [ $INSTANCES == "[]" ]; then
+    if [ $CLUSTER_MASTER == $EMPTY ] && [ $GRID_LOCATOR == $EMPTY ] && [ $TOPOLOGY == $EMPTY ]&& [ $INSTANCES == $EMPTY ]; then
       echo "Error: --master, --locator, --topology, --instances must be specified"
       display_usage
     fi
 }
 
 redefine_defaults() {
-    if [ $GRID_LOCATOR == "[]" ]; then
+    if [ $GRID_LOCATOR == $EMPTY ]; then
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
-    if [ $IE_PATH == "[]" ]; then
+    if [ $IE_PATH == $EMPTY ]; then
         IE_PATH="$INSIGHTEDGE_HOME"
     fi
 }

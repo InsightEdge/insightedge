@@ -106,7 +106,10 @@ object GridTopologyAllocator {
         case BackupInstance(partId, backupId) => s"id=$partId,backup_id=$backupId"
       }.mkString(";")
 
-      s"${host.ip}:$instancesStr"
+      host.ip match {
+        case ip if ip.isEmpty => instancesStr
+        case ip => s"$ip:$instancesStr"
+      }
     }.mkString(" ")
   }
 

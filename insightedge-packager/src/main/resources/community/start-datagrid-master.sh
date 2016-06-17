@@ -22,7 +22,7 @@ main() {
     log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
     echo "Starting LUS (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSM_SIZE)"
     export EXT_JAVA_OPTIONS="-Xmx$GSM_SIZE -Dinsightedge.marker=master"
-    export LOOKUPLOCATORS=$GRID_LOCATOR
+    export LOOKUPLOCATORS=$GRID_LOCATOR #TODO do we need to set up lookup, groups and nic
     export LOOKUPGROUPS=$GRID_GROUP
     export NIC_ADDR=$CLUSTER_MASTER
     nohup $IE_PATH/datagrid/bin/startJiniLUS.sh > $log 2>&1 &
@@ -38,9 +38,6 @@ display_usage() {
     echo " -g, --group     |    lookup groups for the grid components                      | default insightedge"
     echo "                 |               usage: if you have several clusters in one LAN,"
     echo "                 |                      it's recommended to have unique group per cluster"
-    echo " -t, --topology  |    number of space primary and backup instances | default 2,0"
-    echo "                 |             format:  <num-of-primaries>,<num-of-backups-per-primary>"
-    echo "                 |             example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
     echo " -s, --size      |    grid manager heap size                                     | default 1G"
     echo "                 |             format:  java-style heap size string"
     echo "                 |             example: '1G', '4096M'"
@@ -58,8 +55,6 @@ define_defaults() {
     # '[]' means 'empty'
     IE_PATH="[]"
     CLUSTER_MASTER="[]"
-    SPACE_NAME="insightedge-space"
-    TOPOLOGY="2,0"
     GRID_LOCATOR="[]"
     GRID_GROUP="insightedge"
     GSM_SIZE="1G"
@@ -72,10 +67,6 @@ parse_options() {
           shift
           CLUSTER_MASTER=$1
           ;;
-        "-n" | "--name")
-          shift
-          SPACE_NAME=$1
-          ;;
         "-l" | "--locator")
           shift
           GRID_LOCATOR=$1
@@ -83,10 +74,6 @@ parse_options() {
         "-g" | "--group")
           shift
           GRID_GROUP=$1
-          ;;
-        "-t" | "--topology")
-          shift
-          TOPOLOGY=$1
           ;;
         "-s" | "--size")
           shift

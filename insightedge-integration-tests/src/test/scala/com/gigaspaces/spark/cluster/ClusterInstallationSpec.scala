@@ -32,7 +32,7 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
     // run installation
-    execAssertSucc(s"$scriptsDir/run.sh $zipDir")
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir $edition")
   }
 
   after {

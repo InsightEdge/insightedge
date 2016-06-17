@@ -5,11 +5,11 @@
 main() {
     echo "Trying to stop space instances"
     pids=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
-    if [ -z $pids ]; then
+    if [[ -z $pids ]]; then
         echo "Datagrid instances are not running"
         exit
     fi
-    if [ ${#pids[@]} -eq 0 ]; then
+    if [[ ${#pids[@]} -eq 0 ]]; then
         echo "Datagrid instances are not running"
         exit
     fi

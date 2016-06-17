@@ -55,6 +55,18 @@ class GridTopologyAllocatorSpec extends FlatSpec {
     assert(GridTopologyAllocator.allocateAndRender(args) == expected)
   }
 
+  it should "allocate 2,0 for 1 empty host" in {
+    val args = Array("2,0", "")
+    val expected = "id=1;id=2"
+    assert(GridTopologyAllocator.allocateAndRender(args) == expected)
+  }
+
+  it should "allocate 2,0 for 2 hosts where one is empty" in {
+    val args = Array("2,0", "hostA,")
+    val expected = "hostA:id=1;id=2"
+    assert(GridTopologyAllocator.allocateAndRender(args) == expected)
+  }
+
   it should "fail to parse topology abc" in {
     val args = Array("abc", "hostA,hostB,hostC")
     intercept[IllegalArgumentException] {
