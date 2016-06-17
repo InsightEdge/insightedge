@@ -17,7 +17,11 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   val DefaultReadRddBufferSize = 1000
   val DefaultDriverWriteBatchSize = 1000
 
-  lazy val gridSqlContext = new SQLContext(sc)
+  lazy val gridSqlContext = {
+    val sql = new SQLContext(sc)
+    sql.experimental.extraStrategies = (InsightEdgeSourceStrategy :: Nil) ++ sql.experimental.extraStrategies
+    sql
+  }
 
   val gsConfig = {
     val sparkConf = sc.getConf

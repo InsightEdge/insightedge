@@ -4,6 +4,7 @@ import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
+import org.apache.spark.sql.insightedge.filter.SubtypeOf
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
@@ -18,7 +19,7 @@ abstract class GigaspacesAbstractRelation(
                                          )
   extends BaseRelation
     with InsertableRelation
-    with PrunedFilteredScan
+    with GridPrunedFilteredScan
     with Logging
     with Serializable {
 
@@ -75,6 +76,7 @@ object GigaspacesAbstractRelation {
       case _: StringStartsWith => false
       case _: StringEndsWith => false
       case _: StringContains => false
+      case _: SubtypeOf => true
       case other => false
     }
   }
@@ -129,6 +131,10 @@ object GigaspacesAbstractRelation {
 
       case f: Or =>
         builder -> "(" ->(f.left, params) -> ") or (" ->(f.right, params) -> ")"
+
+      case f: SubtypeOf =>
+        builder -> f.attribute -> " instanceOf ?"
+        params += f.value.getName
     }
   }
 
@@ -144,3 +150,8 @@ object GigaspacesAbstractRelation {
   }
 
 }
+
+/**
+  * Used to apply grid filters with custom strategy
+  */
+trait GridPrunedFilteredScan extends PrunedFilteredScan {}

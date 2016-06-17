@@ -2,6 +2,7 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
+import org.apache.spark.sql.insightedge.filter.SubtypeOf
 import org.apache.spark.sql.sources._
 import org.scalatest.FunSpec
 
@@ -90,6 +91,9 @@ class GigaSpacesAbstractRelationSpec extends FunSpec with GsConfig with GigaSpac
     )
     assert(IsNotNull("key")
       gives("(key is not null)", Seq())
+    )
+    assert(SubtypeOf("key", classOf[String])
+      gives("(key instanceOf ?)", Seq("java.lang.String"))
     )
   }
 

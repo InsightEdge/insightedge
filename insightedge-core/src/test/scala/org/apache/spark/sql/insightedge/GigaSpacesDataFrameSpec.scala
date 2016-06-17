@@ -6,6 +6,7 @@ import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils._
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.spark.sql.{AnalysisException, SaveMode}
+import org.apache.spark.unsafe.types.UTF8String
 import org.scalatest.FlatSpec
 
 class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
@@ -298,6 +299,14 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
       sql.read.grid.option("class", classOf[NotGridModel].getName).load()
     }
     assert(thrown.getMessage equals "'class' must extend com.gigaspaces.spark.model.GridModel")
+  }
+
+  ignore should "use custom dataframe filter" taggedAs ScalaSpaceClass in {
+    writeDataSeqToDataGrid(1000)
+    val df = sql.read.grid.loadClass[Data]
+    val subtypesCount = df.filter(df("data") subtypeOf classOf[UTF8String]).count()
+
+    assert(subtypesCount == 1000)
   }
 
 }
