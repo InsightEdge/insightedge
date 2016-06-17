@@ -9,7 +9,7 @@ if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
   export INSIGHTEDGE_LOG_DIR="${INSIGHTEDGE_HOME}/logs"
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
-export XAP_HOME=""
+export XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
 
 main() {
     define_defaults
