@@ -22,7 +22,7 @@ main() {
     log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
     echo "Starting LUS (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSM_SIZE)"
     export EXT_JAVA_OPTIONS="-Xmx$GSM_SIZE -Dinsightedge.marker=master"
-    export LOOKUPLOCATORS=$GRID_LOCATOR #TODO do we need to set up lookup, groups and nic
+    export LOOKUPLOCATORS=$GRID_LOCATOR
     export LOOKUPGROUPS=$GRID_GROUP
     export NIC_ADDR=$CLUSTER_MASTER
     nohup $IE_PATH/datagrid/bin/startJiniLUS.sh > $log 2>&1 &

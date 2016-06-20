@@ -4,6 +4,7 @@ if [ -z "${INSIGHTEDGE_HOME}" ]; then
   export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 fi
 
+source $INSIGHTEDGE_HOME/sbin/common-insightedge.sh
 
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
@@ -50,6 +51,9 @@ main() {
       "shutdown")
         shutdown_all $IE_PATH
         ;;
+       "describe")
+        describe_topology_allocation $SPACE_TOPOLOGY $HOSTS_COUNT
+        ;;
     esac
 }
 
@@ -60,13 +64,14 @@ display_usage() {
     echo ""
     echo "Usage: * - required, ** - required in some modes"
     echo "     --mode      |  * insightedge mode:"
-    echo "                 |       master:        locally restarts spark master and LUS"
-    echo "                 |       slave:         locally restarts spark slave and space partitions"
-    echo "                 |       zeppelin:      locally starts zeppelin"
-    echo "                 |       demo:          locally starts LUS, zeppelin, space partitions"
-    echo "                 |       remote-master: executes 'master' mode on remote system (use for automation)"
-    echo "                 |       remote-slave:  executes 'slave' mode on remote system (use for automation)"
-    echo "                 |       shutdown:      stops 'master', 'slave' and 'zeppelin'"
+    echo "                 |       master:         locally restarts spark master and LUS"
+    echo "                 |       slave:          locally restarts spark slave and space partitions"
+    echo "                 |       zeppelin:       locally starts zeppelin"
+    echo "                 |       demo:           locally starts LUS, zeppelin, space partitions"
+    echo "                 |       remote-master:  executes 'master' mode on remote system (use for automation)"
+    echo "                 |       remote-slave:   executes 'slave' mode on remote system (use for automation)"
+    echo "                 |       shutdown:       stops 'master', 'slave' and 'zeppelin'"
+    echo "                 |       describe:       allocates space topology for defined hosts count"
     echo " -m, --master    |  * cluster master IP or hostname"
     echo " -l, --locator   |    lookup locators for the grid components                    | default master:4174"
     echo " -g, --group     |    lookup groups for the grid components                      | default insightedge"
@@ -133,6 +138,7 @@ define_defaults() {
     GSC_SIZE="1G"
     SPACE_NAME="insightedge-space"
     SPACE_TOPOLOGY="2,0"
+    HOSTS_COUNT=2
     REMOTE_HOSTS=$EMPTY
     REMOTE_USER=$EMPTY
     REMOTE_KEY=$EMPTY
@@ -180,6 +186,10 @@ parse_options() {
           shift
           REMOTE_HOSTS=$1
           ;;
+        "-c" | "--count")
+          shift
+          HOSTS_COUNT=$1
+          ;;
         "-u" | "--user")
           shift
           REMOTE_USER=$1
@@ -211,15 +221,13 @@ check_options() {
        [ $MODE != "demo" ] && \
        [ $MODE != "remote-master" ] && \
        [ $MODE != "remote-slave" ] && \
-       [ $MODE != "remote-slave" ] && \
        [ $MODE != "shutdown" ] && \
-       [ $MODE != "deploy" ] && \
-       [ $MODE != "undeploy" ]; then
+       [ $MODE != "describe" ]; then
          error_line "unknown mode selected with --mode: $MODE"
          display_usage
     fi
 
-    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
+    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ] && [ $MODE != "describe" ]; then
       error_line "--master is required"
       display_usage
     fi
@@ -297,16 +305,6 @@ local_slave() {
     start_spark_slave $home $master
 }
 
-local_zeppelin() {
-    local home=$1
-    local master=$2
-    echo ""
-    step_title "--- Restarting Zeppelin server"
-    stop_zeppelin $1
-    start_zeppelin $1
-    step_title "--- Zeppelin server can be accessed at http://$master:8090"
-}
-
 remote_master() {
     local hosts=${1//,/ }
     local user=$2
@@ -370,18 +368,6 @@ shutdown_all() {
     stop_spark_master $home
     echo ""
     stop_spark_slave $home
-}
-
-stop_zeppelin() {
-    local home=$1
-    step_title "--- Stopping Zeppelin"
-    $home/sbin/stop-zeppelin.sh
-}
-
-start_zeppelin() {
-    local home=$1
-    step_title "--- Starting Zeppelin"
-    $home/sbin/start-zeppelin.sh
 }
 
 install_insightedge() {
@@ -456,72 +442,20 @@ stop_grid_slave() {
     step_title "--- Datagrid slave instances stopped"
 }
 
-start_spark_master() {
-    local home=$1
-    local master=$2
+describe_topology_allocation() {
+    local topology=$1
+    local hosts_count=$2
 
-    echo ""
-    step_title "--- Starting Spark master at $master"
-    $home/sbin/start-master.sh -h $master
-    step_title "--- Spark master started"
-}
-
-stop_spark_master() {
-    local home=$1
-
-    echo ""
-    step_title "--- Stopping Spark master"
-    $home/sbin/stop-master.sh
-    step_title "--- Spark master stopped"
-}
-
-start_spark_slave() {
-    local home=$1
-    local master=$2
-
-    echo ""
-    step_title "--- Starting Spark slave"
-    $home/sbin/start-slave.sh spark://$master:7077
-    step_title "--- Spark slave started"
-}
-
-stop_spark_slave() {
-    local home=$1
-
-    echo ""
-    step_title "--- Stopping Spark slave"
-    $home/sbin/stop-slave.sh
-    step_title "--- Spark slave stopped"
-}
-
-display_demo_help() {
-    local master=$1
-
-    printf '\e[0;34m\n'
-    echo "Demo steps:"
-    echo "1. make sure steps above were successfully executed"
-    echo "2. Open Web Notebook at http://$master:8090 and run any of the available examples"
-    printf "\e[0m\n"
-}
-
-step_title() {
-    printf "\e[32m$1\e[0m\n"
-}
-
-error_line() {
-    printf "\e[31mError: $1\e[0m\n"
-}
-
-display_logo() {
-    echo "   _____           _       _     _   ______    _            "
-    echo "  |_   _|         (_)     | |   | | |  ____|  | |           "
-    echo "    | |  _ __  ___ _  __ _| |__ | |_| |__   __| | __ _  ___ "
-    echo "    | | | '_ \\/ __| |/ _\` | '_ \\| __|  __| / _\` |/ _\` |/ _ \\"
-    echo "   _| |_| | | \\__ \\ | (_| | | | | |_| |___| (_| | (_| |  __/"
-    echo "  |_____|_| |_|___/_|\\__, |_| |_|\\__|______\\__,_|\\__, |\\___|"
-    echo "                      __/ |                       __/ |     "
-    echo "                     |___/                       |___/   version: $VERSION"
-    echo "                                                         edition: $EDITION"
+    local hosts="host_1"
+    for i in `seq 2 $hosts_count`; do
+        hosts="$hosts,host_$i"
+    done
+    echo "Allocated topology for $hosts_count hosts, topology $topology"
+    IE_PATH="/code/insightedge/insightedge-packager/target/contents-community"
+    instances=`java -cp "$IE_PATH/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$topology" "$hosts"`
+    for ins in $instances; do
+        echo $ins
+    done
 }
 
 main "$@"
