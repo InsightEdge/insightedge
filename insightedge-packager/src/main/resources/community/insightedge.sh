@@ -64,14 +64,14 @@ display_usage() {
     echo ""
     echo "Usage: * - required, ** - required in some modes"
     echo "     --mode      |  * insightedge mode:"
-    echo "                 |       master:         locally restarts spark master and LUS"
+    echo "                 |       master:         locally restarts spark master and Lookup Service"
     echo "                 |       slave:          locally restarts spark slave and space partitions"
     echo "                 |       zeppelin:       locally starts zeppelin"
-    echo "                 |       demo:           locally starts LUS, zeppelin, space partitions"
+    echo "                 |       demo:           locally starts Lookup Service, zeppelin, space partitions"
     echo "                 |       remote-master:  executes 'master' mode on remote system (use for automation)"
     echo "                 |       remote-slave:   executes 'slave' mode on remote system (use for automation)"
     echo "                 |       shutdown:       stops 'master', 'slave' and 'zeppelin'"
-    echo "                 |       describe:       allocates space topology for defined hosts count"
+    echo "                 |       describe:       prints grid allocation for given topology and hosts"
     echo " -m, --master    |  * cluster master IP or hostname"
     echo " -l, --locator   |    lookup locators for the grid components                    | default master:4174"
     echo " -g, --group     |    lookup groups for the grid components                      | default insightedge"
@@ -80,8 +80,8 @@ display_usage() {
     echo " -s, --size      |    grid container/manager heap size                           | default 1G"
     echo "                 |             format:  java-style heap size string"
     echo "                 |             example: '1G', '4096M'"
-    echo " -n, --name      |    (deploy/undeploy modes) name of the deployed space         | default insightedge-space"
-    echo " -t, --topology  |    (deploy mode) number of space primary and backup instances | default 2,0"
+    echo " -n, --name      |    name of the deployed space                                 | default insightedge-space"
+    echo " -t, --topology  |    number of space primary and backup instances               | default 2,0"
     echo "                 |             format:  <num-of-primaries>,<num-of-backups-per-primary>"
     echo "                 |             example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
     echo " -p, --path      | ** (remote modes) path to insightedge installation"
@@ -95,7 +95,7 @@ display_usage() {
     echo "Examples:"
     echo "  Restart master |  restarts spark master at spark://127.0.0.1:7077"
     echo "        on local |  restarts spark master web UI at http://127.0.0.1:8080"
-    echo "     environment |  restarts LUS at 127.0.0.1:4174 with group 'insightedge'"
+    echo "     environment |  restarts Lookup Service at 127.0.0.1:4174 with group 'insightedge'"
     echo ""
     echo " $script --mode master --path \$INSIGHTEDGE_HOME --master 127.0.0.1"
     echo ""
@@ -124,6 +124,10 @@ display_usage() {
     echo " $script --mode remote-slave --hosts \$SLAVES \\"
     echo "   --user insightedge --key ~/.shh/dev-env.pem \\"
     echo "   --path \$IEPATH --master \$MASTER --group dev-env --size 2G --container 4"
+    echo ""
+    echo "  Show grid topology allocation for specified topology"
+    echo ""
+    echo " $script --mode describe --topology 3,2 --count 3"
     echo ""
     exit 1
 }
@@ -199,7 +203,7 @@ parse_options() {
           REMOTE_KEY=$1
           ;;
         *)
-          echo "Unknown option: $1"
+          error_line "unknown option: $1"
           display_usage
           ;;
       esac
@@ -293,7 +297,7 @@ local_slave() {
     if [[ -z $instances ]]; then
         instances=`java -cp "$home/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$topology" ""`
         if [[ $instances == ERROR* ]]; then
-            echo "$instances"
+            error_line "$instances"
             exit 1
         fi
     fi
@@ -329,9 +333,9 @@ remote_slave() {
     local user=$2
     local key=$3
 
-    hosts_to_instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$SPACE_TOPOLOGY" "$1"`
+    hosts_to_instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$SPACE_TOPOLOGY" "$hosts"`
     if [[ $hosts_to_instances == ERROR* ]]; then
-        echo "$hosts_to_instances"
+        error_line "$hosts_to_instances"
         exit 1
     else
         echo "Grid topology: $hosts_to_instances"
@@ -358,44 +362,11 @@ remote_slave() {
 shutdown_all() {
     local home=$1
 
-    echo ""
     stop_zeppelin $home
-    echo ""
     stop_grid_master $home
-    echo ""
     stop_grid_slave $home
-    echo ""
     stop_spark_master $home
-    echo ""
     stop_spark_slave $home
-}
-
-install_insightedge() {
-    local install=$1
-    local artifact=$2
-    local command=$3
-    local home=$4
-
-    if [ $install == "false" ]; then
-        return
-    fi
-
-    echo ""
-    step_title "--- Installing InsightEdge ($2) at $home"
-    echo "- Cleaning up $home"
-    rm -rf $home
-    mkdir $home
-    cd $home
-    echo "- Downloading $artifact"
-    eval $command
-    echo "- Unpacking $artifact"
-    unzip ${artifact}.zip > insightedge-unzip.log
-    rm ${artifact}.zip
-    echo "- Extracting files from subfolder"
-    mv ${artifact}/** .
-    echo "- Removing $artifact bundle"
-    rm -rf ${artifact}
-    step_title "--- Installation complete"
 }
 
 start_grid_master() {

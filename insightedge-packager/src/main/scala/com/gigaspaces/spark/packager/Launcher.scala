@@ -80,33 +80,12 @@ object Launcher {
       remove(s"$output/datagrid/tools/scala")
       remove(s"$output/datagrid/tools/xap-font.json")
     }
-    run("Adding common Datagrid scripts") {
+    run("Adding Datagrid scripts") {
+      copy(s"$resources/$edition/", s"$output/sbin/")
       copy(s"$resources/stop-datagrid-master.sh", s"$output/sbin/stop-datagrid-master.sh")
     }
-
-    edition match {
-      case "community" =>
-        run("Adding Datagrid scripts for Community Edition") {
-          copy(s"$resources/community/insightedge.sh", s"$output/sbin/insightedge.sh")
-          copy(s"$resources/community/start-datagrid-master.sh", s"$output/sbin/start-datagrid-master.sh")
-          copy(s"$resources/community/start-datagrid-slave.sh", s"$output/sbin/start-datagrid-slave.sh")
-          copy(s"$resources/community/stop-datagrid-slave.sh", s"$output/sbin/stop-datagrid-slave.sh")
-        }
-        run("Adding template space configuration") {
-          copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
-        }
-
-      case "premium" =>
-        run("Adding Datagrid scripts for Premium Edition") {
-          copy(s"$resources/insightedge.sh", s"$output/sbin/insightedge.sh")
-          copy(s"$resources/start-datagrid-master.sh", s"$output/sbin/start-datagrid-master.sh")
-          copy(s"$resources/start-datagrid-slave.sh", s"$output/sbin/start-datagrid-slave.sh")
-          copy(s"$resources/stop-datagrid-slave.sh", s"$output/sbin/stop-datagrid-slave.sh")
-          copy(s"$resources/deploy-datagrid.sh", s"$output/sbin/deploy-datagrid.sh")
-          copy(s"$resources/undeploy-datagrid.sh", s"$output/sbin/undeploy-datagrid.sh")
-        }
-
-      case _ => throw new IllegalArgumentException(s"Incorrect distribution edition '$edition'")
+    run("Adding template space configuration") {
+      copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
     }
 
     run("Unpacking Zeppelin") {

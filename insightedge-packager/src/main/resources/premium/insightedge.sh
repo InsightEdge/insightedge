@@ -6,6 +6,7 @@ fi
 
 source $INSIGHTEDGE_HOME/sbin/common-insightedge.sh
 
+EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
 VERSION=`grep "Version" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 EDITION=`grep "Edition" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
@@ -66,7 +67,7 @@ display_usage() {
     display_logo
     echo ""
     echo "Usage: * - required, ** - required in some modes"
-    echo "     --mode      |  * insightedge mode: master, slave, deploy, remote-master, remote-slave"
+    echo "     --mode      |  * insightedge mode:"
     echo "                 |       master:        locally restarts spark master and grid manager"
     echo "                 |       slave:         locally restarts spark slave and grid containers"
     echo "                 |       deploy:        deploys empty space to grid"
@@ -151,19 +152,19 @@ display_usage() {
 
 define_defaults() {
     # '[]' means 'empty'
-    MODE="[]"
-    IE_PATH="[]"
+    MODE=$EMPTY
+    IE_PATH=$EMPTY
     IE_INSTALL="false"
-    CLUSTER_MASTER="[]"
-    GRID_LOCATOR="[]"
+    CLUSTER_MASTER=$EMPTY
+    GRID_LOCATOR=$EMPTY
     GRID_GROUP="insightedge"
     GSC_SIZE="1G"
     GSC_COUNT="2"
     SPACE_NAME="insightedge-space"
     SPACE_TOPOLOGY="2,0"
-    REMOTE_HOSTS="[]"
-    REMOTE_USER="[]"
-    REMOTE_KEY="[]"
+    REMOTE_HOSTS=$EMPTY
+    REMOTE_USER=$EMPTY
+    REMOTE_KEY=$EMPTY
 }
 
 parse_options() {
@@ -231,7 +232,7 @@ parse_options() {
 
 check_options() {
     # check required options
-    if [ $MODE == "[]" ]; then
+    if [ "$MODE" == "$EMPTY" ]; then
       error_line "--mode is required"
       display_usage
     fi
@@ -242,7 +243,6 @@ check_options() {
        [ $MODE != "demo" ] && \
        [ $MODE != "remote-master" ] && \
        [ $MODE != "remote-slave" ] && \
-       [ $MODE != "remote-slave" ] && \
        [ $MODE != "shutdown" ] && \
        [ $MODE != "deploy" ] && \
        [ $MODE != "undeploy" ]; then
@@ -250,21 +250,21 @@ check_options() {
          display_usage
     fi
 
-    if [ $CLUSTER_MASTER == "[]" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
+    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
       error_line "--master is required"
       display_usage
     fi
 
     if [[ $MODE == remote-* ]]; then
-        if [ $REMOTE_USER == "[]" ]; then
+        if [ "$REMOTE_USER" == "$EMPTY" ]; then
             error_line "--user is required in remote modes"
             display_usage
         fi
-        if [ $REMOTE_HOSTS == "[]" ]; then
+        if [ "$REMOTE_HOSTS" == "$EMPTY" ]; then
             error_line "--hosts is required in remote modes"
             display_usage
         fi
-        if [ $IE_PATH == "[]" ]; then
+        if [ "$IE_PATH" == "$EMPTY" ]; then
           error_line "--path is required"
           display_usage
         fi
@@ -272,13 +272,13 @@ check_options() {
 }
 
 redefine_defaults() {
-    if [ $CLUSTER_MASTER = "[]" ]; then
+    if [ "$CLUSTER_MASTER" = "$EMPTY" ]; then
         CLUSTER_MASTER="127.0.0.1"
     fi
-    if [ $GRID_LOCATOR = "[]" ]; then
+    if [ "$GRID_LOCATOR" = "$EMPTY" ]; then
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
-    if [ $IE_PATH = "[]" ]; then
+    if [ "$IE_PATH" = "$EMPTY" ]; then
         IE_PATH="$INSIGHTEDGE_HOME"
     fi
 }
@@ -327,7 +327,7 @@ remote_master() {
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to master at $host"
-        if [ $key == "[]" ]; then
+        if [ "$key" == "$EMPTY" ]; then
           ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         else
           ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
@@ -346,7 +346,7 @@ remote_slave() {
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to slave at $host"
-        if [ $key == "[]" ]; then
+        if [ "$key" == "$EMPTY" ]; then
           ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         else
           ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
@@ -384,21 +384,11 @@ undeploy_space() {
 shutdown_all() {
     local home=$1
 
-    echo ""
-    step_title "--- Stopping Zeppelin"
-    $home/sbin/stop-zeppelin.sh
-    echo ""
-    step_title "--- Stopping datagrid master"
-    $home/sbin/stop-datagrid-master.sh
-    echo ""
-    step_title "--- Stopping datagrid slave"
-    $home/sbin/stop-datagrid-slave.sh
-    echo ""
-    step_title "--- Stopping Spark master"
-    $home/sbin/stop-master.sh
-    echo ""
-    step_title "--- Stopping Spark slave"
-    $home/sbin/stop-slave.sh
+    stop_zeppelin $home
+    stop_grid_master $home
+    stop_grid_slave $home
+    stop_spark_master $home
+    stop_spark_slave $home
 }
 
 start_grid_master() {
@@ -434,6 +424,15 @@ start_grid_slave() {
     step_title "--- Starting Gigaspaces datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
     $home/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
     step_title "--- Gigaspaces datagrid node started"
+}
+
+stop_grid_slave() {
+    local home=$1
+
+    echo ""
+    step_title "--- Stopping datagrid slave instances"
+    $home/sbin/stop-datagrid-slave.sh
+    step_title "--- Datagrid slave instances stopped"
 }
 
 main "$@"

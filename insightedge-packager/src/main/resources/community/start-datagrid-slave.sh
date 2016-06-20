@@ -117,17 +117,17 @@ parse_options() {
 
 check_options() {
     # check required options
-    if [ $CLUSTER_MASTER == $EMPTY ] && [ $GRID_LOCATOR == $EMPTY ] && [ $TOPOLOGY == $EMPTY ]&& [ $INSTANCES == $EMPTY ]; then
+    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ "$GRID_LOCATOR" == "$EMPTY" ] && [ "$TOPOLOGY" == "$EMPTY" ]&& [ "$INSTANCES" == "$EMPTY" ]; then
       echo "Error: --master, --locator, --topology, --instances must be specified"
       display_usage
     fi
 }
 
 redefine_defaults() {
-    if [ $GRID_LOCATOR == $EMPTY ]; then
+    if [ "$GRID_LOCATOR" == "$EMPTY" ]; then
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
-    if [ $IE_PATH == $EMPTY ]; then
+    if [ "$IE_PATH" == "$EMPTY" ]; then
         IE_PATH="$INSIGHTEDGE_HOME"
     fi
 }

@@ -25,7 +25,7 @@ install_insightedge() {
     fi
 
     echo ""
-    step_title "--- Installing InsightEdge ($2) at $home"
+    step_title "--- Installing InsightEdge ($artifact) at $home"
     echo "- Cleaning up $home"
     rm -rf $home
     mkdir $home
