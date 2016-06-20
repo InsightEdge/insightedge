@@ -20,7 +20,7 @@ main() {
 
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     log_template="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave"
-    echo "Starting datagrid instances (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSC_SIZE)"
+    echo "Starting datagrid instances (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSC_SIZE, space name: $SPACE_NAME)"
     export EXT_JAVA_OPTIONS="-server -Xms$GSC_SIZE -Xmx$GSC_SIZE -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:InitiatingHeapOccupancyPercent=50 -XX:+UseCompressedOops -Dinsightedge.marker=slave"
     export LOOKUPLOCATORS=$GRID_LOCATOR
     export LOOKUPGROUPS=$GRID_GROUP
@@ -29,7 +29,7 @@ main() {
         instance=${parsed_instance//,/ }
         `nohup   $IE_PATH/datagrid/bin/puInstance.sh \
                     -cluster schema=partitioned-sync2backup total_members=$TOPOLOGY $instance \
-                    -properties space embed://name=$SPACE_NAME \
+                    -properties space embed://dataGridName=$SPACE_NAME \
                     $IE_PATH/datagrid/deploy/templates/insightedge-datagrid > $log_file 2>&1 &`
         sleep 3
         echo "Datagrid instance started (log: $log_file)"
