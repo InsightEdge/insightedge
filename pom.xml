@@ -9,7 +9,7 @@
     <description>InsightEdge Package</description>
 
     <properties>
-        <xap.version>11.0.0-14800-RELEASE</xap.version>
+        <xap.version>12.0.0-m3</xap.version>
         <spark.version>1.6.0</spark.version>
         <scala.version>2.10.4</scala.version>
         <scalatest.version>2.2.4</scalatest.version>
@@ -60,13 +60,8 @@
 
             <!-- GigaSpaces -->
             <dependency>
-                <groupId>com.gigaspaces</groupId>
-                <artifactId>gs-openspaces</artifactId>
-                <version>${xap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.gigaspaces</groupId>
-                <artifactId>gs-runtime</artifactId>
+                <groupId>org.gigaspaces</groupId>
+                <artifactId>xap-openspaces</artifactId>
                 <version>${xap.version}</version>
             </dependency>
             <!-- Scala -->
