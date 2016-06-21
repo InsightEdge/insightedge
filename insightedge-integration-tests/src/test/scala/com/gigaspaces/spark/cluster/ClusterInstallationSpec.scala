@@ -19,9 +19,11 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
 
   "insightedge.sh" should "install cluster" in {
     val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+    val edition = Option(System.getProperty("dist.edition")).getOrElse("")
 
     println(s"Package dir: $packagerDir")
-    val zipDir = s"$packagerDir/target"
+    val zipDir = s"$packagerDir/target/$edition"
+    println(s"Zip dir: $zipDir")
 
     println(s"Scripts dir: $scriptsDir")
 
@@ -30,7 +32,7 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
     // run installation
-    execAssertSucc(s"$scriptsDir/run.sh $zipDir")
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir $edition")
   }
 
   after {
