@@ -77,7 +77,7 @@ object GridTopologyAllocator {
     // allocate backups
     (1 to topology.backupsCount).foreach { backupId =>
       val backups = primaries.map(p => BackupInstance(p.partId, backupId))
-      val currHostIndex = if (hosts.length == 1) 0 else backupId
+      val currHostIndex = if (hosts.length == 1) 0 else backupId % hosts.length
       allocateInstances(mutableAllocation, backups, currHostIndex)
     }
 

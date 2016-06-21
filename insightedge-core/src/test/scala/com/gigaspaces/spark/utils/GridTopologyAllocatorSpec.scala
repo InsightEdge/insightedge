@@ -73,4 +73,16 @@ class GridTopologyAllocatorSpec extends FlatSpec {
       GridTopologyAllocator.allocateAndRender(args)
     }
   }
+
+  it should "allocate 2,2 for 2 hosts" in {
+    val args = Array("2,2", "hostA,hostB")
+    val expected = "hostA:id=1;id=2,backup_id=1;id=1,backup_id=2 hostB:id=2;id=1,backup_id=1;id=2,backup_id=2"
+    assert(GridTopologyAllocator.allocateAndRender(args) == expected)
+  }
+
+  it should "allocate 2,3 for 2 hosts" in {
+    val args = Array("2,3", "hostA,hostB")
+    val expected = "hostA:id=1;id=2,backup_id=1;id=1,backup_id=2;id=2,backup_id=3 hostB:id=2;id=1,backup_id=1;id=2,backup_id=2;id=1,backup_id=3"
+    assert(GridTopologyAllocator.allocateAndRender(args) == expected)
+  }
 }
