@@ -5,13 +5,14 @@
 
 VER=0.4.0-SNAPSHOT
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
     echo "Illegal number of parameters."
-    echo "Usage: run.sh <dir of InsightEdge zip>"
+    echo "Usage: run.sh <dir with InsightEdge zip> <distribution edition>"
     exit 1
 fi
 
 LOCAL_DOWNLOAD_DIR=$1
+EDITION=$2
 
 # Stop if anything is running
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -36,11 +37,11 @@ CLIENT_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' client)
 
 echo "Master IP: $MASTER_IP"
 echo "Slave1 IP: $SLAVE1_IP"
-echo "Slave2 IP: $SLAV21_IP"
+echo "Slave2 IP: $SLAVE2_IP"
 echo "Client IP: $CLIENT_IP"
 echo "Local download dir: $LOCAL_DOWNLOAD_DIR"
 
 # Install & smoke test
-docker exec --user ie-user client /home/ie-user/remote_install.sh
+docker exec --user ie-user client /home/ie-user/remote_install.sh $EDITION
 
 

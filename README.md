@@ -26,10 +26,14 @@ mvn clean install -DskipTests=true
 mvn clean install -Dcom.gs.home={path to xap directory}
 
 # package the distribution (depends on insightedge-zeppelin, insightedge-examples)
-mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.jar>
+mvn clean package -P package-community -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.jar>
+mvn clean package -P package-premium   -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.jar>
+# you can also run both profiles at the same time using '-P package-community,package-premium'
 
 # run integration tests with Docker (depends on running Docker daemon tcp://127.0.0.1:2375 and built zip distribution file)
-mvn -pl insightedge-integration-tests -P run-integration-tests clean verify
+mvn clean verify -P run-integration-tests-community -pl insightedge-integration-tests
+mvn clean verify -P run-integration-tests-premium   -pl insightedge-integration-tests
+# you cannot run both profiles simultaneously
 ```
 
 

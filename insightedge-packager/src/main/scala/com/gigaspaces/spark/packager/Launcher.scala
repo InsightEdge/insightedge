@@ -1,10 +1,11 @@
 package com.gigaspaces.spark.packager
 
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 import com.gigaspaces.spark.packager.Utils._
-import org.apache.commons.io.filefilter.{AbstractFileFilter, TrueFileFilter}
+import org.apache.commons.io.filefilter.TrueFileFilter
 
 /**
   * @author Leonid_Poliakov
@@ -13,6 +14,7 @@ object Launcher {
   def main(args: Array[String]) {
     val project = parameter("Project folder" -> "project.directory")
     val version = parameter("Project version" -> "project.version")
+    val edition = parameter("Distribution edition" -> "dist.edition")
     val lastCommitHash = optionalParameter("Last commit hash" -> "last.commit.hash")
     val output = parameter("Output folder" -> "output.exploded.directory")
     val outputFile = parameter("Output file" -> "output.compressed.file")
@@ -22,6 +24,7 @@ object Launcher {
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
     val examples = parameter("Examples jar" -> "dist.examples")
     val resources = s"$project/insightedge-packager/src/main/resources"
+    val templates = s"datagrid/deploy/templates"
 
     validateHash(lastCommitHash)
 
@@ -32,7 +35,7 @@ object Launcher {
     run("Adding docs to insightedge") {
       copy(s"$project/README.md", s"$output/RELEASE")
       val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
-      val versionInfo = s"Version: $version\nHash: ${lastCommitHash.getOrElse("")}\nTimestamp: $timestamp"
+      val versionInfo = s"Version: $version\nHash: ${lastCommitHash.getOrElse("")}\nTimestamp: $timestamp\nEdition: $edition"
       writeToFile(s"$output/VERSION", versionInfo)
     }
 
@@ -52,8 +55,7 @@ object Launcher {
       copy(s"$resources/insightedge-shell", s"$output/bin/insightedge-shell")
       copy(s"$resources/insightedge-submit", s"$output/bin/insightedge-submit")
       copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
-      copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
-      copy(s"$resources/insightedge.sh", s"$output/sbin/insightedge.sh")
+      copy(s"$resources/shell-init.scala", s"$output/bin/shell1-init.scala")
       copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
     }
 
@@ -63,6 +65,7 @@ object Launcher {
 
     run("Unpacking Gigaspaces datagrid") {
       unzip(grid, s"$output/datagrid", cutRootFolder = true)
+      unzip(s"$output/datagrid/bin/advanced_scripts.zip", s"$output/datagrid/bin/", cutRootFolder = false)
     }
     run("Adding Gigaspaces datagrid license key") {
       copy(s"$resources/gslicense.xml", s"$output/datagrid/gslicense.xml")
@@ -78,12 +81,11 @@ object Launcher {
       remove(s"$output/datagrid/tools/xap-font.json")
     }
     run("Adding Datagrid scripts") {
-      copy(s"$resources/start-datagrid-master.sh", s"$output/sbin/start-datagrid-master.sh")
-      copy(s"$resources/start-datagrid-slave.sh", s"$output/sbin/start-datagrid-slave.sh")
+      copy(s"$resources/$edition/", s"$output/sbin/")
       copy(s"$resources/stop-datagrid-master.sh", s"$output/sbin/stop-datagrid-master.sh")
-      copy(s"$resources/stop-datagrid-slave.sh", s"$output/sbin/stop-datagrid-slave.sh")
-      copy(s"$resources/deploy-datagrid.sh", s"$output/sbin/deploy-datagrid.sh")
-      copy(s"$resources/undeploy-datagrid.sh", s"$output/sbin/undeploy-datagrid.sh")
+    }
+    run("Adding template space configuration") {
+      copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
     }
 
     run("Unpacking Zeppelin") {
@@ -119,11 +121,8 @@ object Launcher {
     }
 
     run("Packing installation") {
+      new File(outputFile).getParentFile.mkdirs()
       zip(output, outputFile, outputPrefix)
-    }
-
-    run("Clearing temporary output") {
-      remove(output)
     }
   }
 
