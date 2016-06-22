@@ -85,7 +85,8 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     String lockMessage = "branch=$branchName;commit=$commitHash"
     sh "chmod +x tools/lock.sh"
     sh "chmod +x tools/unlock.sh"
-    sh "tools/lock.sh /tmp/integration-tests.lock 600 10 $lockMessage"
+    // lock with 15 minutes timeout - expected time for integration tests to be finished
+    sh "tools/lock.sh /tmp/integration-tests.lock 900 30 $lockMessage"
 
 
     stage 'Run integration tests (community)'
