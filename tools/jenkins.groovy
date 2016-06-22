@@ -83,6 +83,8 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
     stage 'Synchronize integration tests'
     String lockMessage = "branch=$branchName;commit=$commitHash"
+    sh "chmod +x tools/lock.sh"
+    sh "chmod +x tools/unlock.sh"
     sh "tools/lock.sh /tmp/integration-tests.lock 600 10 $lockMessage"
 
 
