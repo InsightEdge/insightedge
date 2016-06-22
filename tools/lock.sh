@@ -1,4 +1,10 @@
 #!/bin/bash
+
+# Locks something using a given file.
+# If the file already exists (someone already locked the resource), then waits for it to unlock.
+# The timestamp when lock was acquired is written in the lock file, this script will wait a certain time and override the lock.
+# This removes the need in manual cleanup of the lock file if the host process does not remove it.
+
 main() {
     echo "Lock file:           $1"
     echo "Lock timeout:        $2 seconds"

@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Unlocks (deletes) the lock file, if the process identifier is written in the file.
+# This prevents from removing someone's lock files.
+
 main() {
     echo "Lock file:           $1"
     echo "Locker name:         $2"
