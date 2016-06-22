@@ -93,5 +93,6 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     stage 'Run integration tests (premium)'
     sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
 
+
     sh "tools/unlock.sh /tmp/integration-tests.lock $lockMessage"
 }
