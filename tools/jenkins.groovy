@@ -81,10 +81,17 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     archive 'insightedge-packager/target/premium/gigaspaces-*.zip'
 
 
+    stage 'Synchronize integration tests'
+    String lockMessage = "branch=$branchName;commit=$commitHash"
+    sh "tools/lock.sh /tmp/integration-tests.lock 600 10 $lockMessage"
+
+
     stage 'Run integration tests (community)'
     sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community -e"
 
 
     stage 'Run integration tests (premium)'
     sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
+
+    sh "tools/unlock.sh /tmp/integration-tests.lock $lockMessage"
 }
