@@ -27,7 +27,7 @@ main() {
     for parsed_instance in ${INSTANCES//;/ }; do
         log_file="$log_template-${parsed_instance//,/_}.log"
         instance=${parsed_instance//,/ }
-        `nohup   $IE_PATH/datagrid/bin/puInstance.sh \
+        `nohup   $IE_PATH/datagrid/bin/pu-instance.sh \
                     -cluster schema=partitioned-sync2backup total_members=$TOPOLOGY $instance \
                     -properties space embed://dataGridName=$SPACE_NAME \
                     $IE_PATH/datagrid/deploy/templates/insightedge-datagrid > $log_file 2>&1 &`
