@@ -9,7 +9,7 @@ if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
   export INSIGHTEDGE_LOG_DIR="${INSIGHTEDGE_HOME}/logs"
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
-export JSHOMEDIR=""
+export XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
 
 main() {
     define_defaults
@@ -21,10 +21,10 @@ main() {
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave.out"
     echo "Starting datagrid slave (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSC_SIZE, containers: $GSC_COUNT)"
-    export GSC_JAVA_OPTIONS="$GSC_JAVA_OPTIONS -server -Xms$GSC_SIZE -Xmx$GSC_SIZE -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:InitiatingHeapOccupancyPercent=50 -XX:+UseCompressedOops"
-    export GSA_JAVA_OPTIONS="$GSA_JAVA_OPTIONS -Dinsightedge.marker=slave"
-    export LOOKUPLOCATORS=$GRID_LOCATOR
-    export LOOKUPGROUPS=$GRID_GROUP
+    export XAP_GSC_OPTIONS="$XAP_GSC_OPTIONS -server -Xms$GSC_SIZE -Xmx$GSC_SIZE -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:InitiatingHeapOccupancyPercent=50 -XX:+UseCompressedOops"
+    export XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave"
+    export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
+    export XAP_LOOKUP_GROUPS=$GRID_GROUP
     nohup $IE_PATH/datagrid/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
     echo "Datagrid slave started (log: $log)"
 }

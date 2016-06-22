@@ -8,8 +8,8 @@ if [ -z "${INSIGHTEDGE_HOME}" ]; then
   INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 fi
 
-JSHOMEDIR=${INSIGHTEDGE_HOME}/datagrid
-echo "Data Grid home $JSHOMEDIR"
+XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
+echo "Data Grid home $XAP_HOME"
 
 if [ -z "${JAVA_HOME}" ]; then
 	export JAVACMD=java
@@ -17,7 +17,7 @@ else
 	export JAVACMD="${JAVA_HOME}/bin/java"
 fi
 
-GS_JARS=${JSHOMEDIR}/lib/required/*
+GS_JARS=${XAP_HOME}/lib/required/*
 
 DATA_GRID_VERSION=`${JAVACMD} -cp "${GS_JARS}" org.openspaces.maven.support.OutputVersion XAP`
 
@@ -28,18 +28,18 @@ mvn install:install-file \
  -DcreateChecksum=true \
  -DartifactId=gs-runtime \
  -Dversion=$DATA_GRID_VERSION \
- -DpomFile=${JSHOMEDIR}/tools/maven/poms/gs-runtime/pom.xml \
+ -DpomFile=${XAP_HOME}/tools/maven/poms/gs-runtime/pom.xml \
  -Dpackaging=jar \
- -Dfile=${JSHOMEDIR}/lib/required/gs-runtime.jar
+ -Dfile=${XAP_HOME}/lib/required/gs-runtime.jar
 
 mvn install:install-file \
  -DgroupId=com.gigaspaces \
  -DcreateChecksum=true \
  -DartifactId=gs-openspaces \
  -Dversion=$DATA_GRID_VERSION \
- -DpomFile=${JSHOMEDIR}/tools/maven/poms/gs-openspaces/pom.xml \
+ -DpomFile=${XAP_HOME}/tools/maven/poms/gs-openspaces/pom.xml \
  -Dpackaging=jar \
- -Dfile=${JSHOMEDIR}/lib/required/gs-openspaces.jar
+ -Dfile=${XAP_HOME}/lib/required/gs-openspaces.jar
 
 echo "Installing InsightEdge $INSIGHTEDGE_VER artifacts"
 

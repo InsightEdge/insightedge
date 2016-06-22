@@ -6,7 +6,6 @@ import org.openspaces.pu.container.integrated.IntegratedProcessingUnitContainerP
 import org.openspaces.pu.container.spi.ApplicationContextProcessingUnitContainer;
 import org.openspaces.pu.container.support.CompoundProcessingUnitContainer;
 import org.openspaces.pu.container.support.ResourceApplicationContext;
-import org.openspaces.pu.sla.SLA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -23,35 +22,49 @@ public class TestCluster {
     private static final Logger LOG = LoggerFactory.getLogger(TestCluster.class);
 
     private String configPath;
-    private SLA sla;
+    private String schema;
+    private Integer numberOfInstances;
+    private Integer numberOfBackups;
 
     public TestCluster() {
     }
 
-    public TestCluster(String configPath, SLA sla) {
-        this.sla = sla;
+    public TestCluster(String configPath, String schema, Integer numberOfInstances, Integer numberOfBackups) {
         this.configPath = configPath;
+        this.schema = schema;
+        this.numberOfInstances = numberOfInstances;
+        this.numberOfBackups = numberOfBackups;
     }
 
     public void setConfigPath(String configPath) {
         this.configPath = configPath;
     }
 
-    public void setSla(SLA sla) {
-        this.sla = sla;
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
+
+    public void setNumberOfInstances(Integer numberOfInstances) {
+        this.numberOfInstances = numberOfInstances;
+    }
+
+    public void setNumberOfBackups(Integer numberOfBackups) {
+        this.numberOfBackups = numberOfBackups;
     }
 
     public void init() {
-        Assert.notNull(sla, "'sla' property must be set");
+        Assert.notNull(schema, "'schema' property must be set");
+        Assert.notNull(numberOfInstances, "'numberOfInstances' property must be set");
+        Assert.notNull(numberOfBackups, "'numberOfBackups' property must be set");
         Assert.hasText(configPath, "'configPath' property must be set");
 
-        LOG.info("Starting the cluster: config = {}, sla = {}", configPath, sla);
+        LOG.info("Starting the cluster: config = {}", configPath);
         long time = System.currentTimeMillis();
 
         ClusterInfo clusterInfo = new ClusterInfo();
-        clusterInfo.setSchema(sla.getClusterSchema());
-        clusterInfo.setNumberOfInstances(sla.getNumberOfInstances());
-        clusterInfo.setNumberOfBackups(sla.getNumberOfBackups());
+        clusterInfo.setSchema(schema);
+        clusterInfo.setNumberOfInstances(numberOfInstances);
+        clusterInfo.setNumberOfBackups(numberOfBackups);
 
         IntegratedProcessingUnitContainerProvider provider = new IntegratedProcessingUnitContainerProvider();
         try {
@@ -79,7 +92,7 @@ public class TestCluster {
         }
     }
 
-    public static String oneDigit(double value) {
+    private static String oneDigit(double value) {
         return new DecimalFormat("#0.0", DecimalFormatSymbols.getInstance(Locale.US)).format(value);
     }
 

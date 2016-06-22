@@ -68,10 +68,12 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
     stage 'Package insightedge'
     distributions = "-Ddist.spark=$env.SPARK_DIST"
-    distributions = "$distributions -Ddist.xap=$env.XAP_DIST"
     distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples.jar"
-    sh "mvn clean package -pl insightedge-packager -P package-community,package-premium -DskipTests=true $distributions -Dlast.commit.hash=$commitHash"
+    premiumDist   = "$distributions -Ddist.xap=$env.XAP12_PREMIUM_DIST"
+    communityDist = "$distributions -Ddist.xap=$env.XAP12_COMMUNITY_DIST"
+    sh "mvn package -pl insightedge-packager -P package-premium   -DskipTests=true $premiumDist   -Dlast.commit.hash=$commitHash"
+    sh "mvn package -pl insightedge-packager -P package-community -DskipTests=true $communityDist -Dlast.commit.hash=$commitHash"
 
 
     stage 'Export artifacts'

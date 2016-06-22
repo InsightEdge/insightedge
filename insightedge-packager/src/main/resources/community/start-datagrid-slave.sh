@@ -9,7 +9,7 @@ if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
   export INSIGHTEDGE_LOG_DIR="${INSIGHTEDGE_HOME}/logs"
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
-export JSHOMEDIR=""
+export XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
 
 main() {
     define_defaults
@@ -22,12 +22,12 @@ main() {
     log_template="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave"
     echo "Starting datagrid instances (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSC_SIZE, space name: $SPACE_NAME)"
     export EXT_JAVA_OPTIONS="-server -Xms$GSC_SIZE -Xmx$GSC_SIZE -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:InitiatingHeapOccupancyPercent=50 -XX:+UseCompressedOops -Dinsightedge.marker=slave"
-    export LOOKUPLOCATORS=$GRID_LOCATOR
-    export LOOKUPGROUPS=$GRID_GROUP
+    export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
+    export XAP_LOOKUP_GROUPS=$GRID_GROUP
     for parsed_instance in ${INSTANCES//;/ }; do
         log_file="$log_template-${parsed_instance//,/_}.log"
         instance=${parsed_instance//,/ }
-        `nohup   $IE_PATH/datagrid/bin/puInstance.sh \
+        `nohup   $IE_PATH/datagrid/bin/pu-instance.sh \
                     -cluster schema=partitioned-sync2backup total_members=$TOPOLOGY $instance \
                     -properties space embed://dataGridName=$SPACE_NAME \
                     $IE_PATH/datagrid/deploy/templates/insightedge-datagrid > $log_file 2>&1 &`
