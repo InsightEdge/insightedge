@@ -86,7 +86,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     sh "chmod +x tools/lock.sh"
     sh "chmod +x tools/unlock.sh"
     // lock with 15 minutes timeout - expected time for integration tests to be finished
-    sh "tools/lock.sh /tmp/integration-tests.lock 900 30 $lockMessage"
+    sh "tools/lock.sh /tmp/integration-tests.lock 900 30 \"$lockMessage\""
 
 
     stage 'Run integration tests (community)'
@@ -97,5 +97,5 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
 
 
-    sh "tools/unlock.sh /tmp/integration-tests.lock $lockMessage"
+    sh "tools/unlock.sh /tmp/integration-tests.lock \"$lockMessage\""
 }
