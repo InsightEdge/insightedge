@@ -67,9 +67,6 @@ object Launcher {
       unzip(grid, s"$output/datagrid", cutRootFolder = true)
       unzip(s"$output/datagrid/bin/advanced_scripts.zip", s"$output/datagrid/bin/", cutRootFolder = false)
     }
-    run("Adding Gigaspaces datagrid license key") {
-      copy(s"$resources/gslicense.xml", s"$output/datagrid/gslicense.xml")
-    }
     run("Removing Gigaspaces datagrid folders") {
       remove(s"$output/datagrid/docs")
       remove(s"$output/datagrid/examples")
