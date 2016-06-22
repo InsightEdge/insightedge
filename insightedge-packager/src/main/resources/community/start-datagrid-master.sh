@@ -25,7 +25,7 @@ main() {
     export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
     export XAP_LOOKUP_GROUPS=$GRID_GROUP
     export NIC_ADDR=$CLUSTER_MASTER
-    nohup $IE_PATH/datagrid/bin/startJiniLUS.sh > $log 2>&1 &
+    nohup $IE_PATH/datagrid/bin/lookup-instance.sh > $log 2>&1 &
     echo "LUS on master started (log: $log)"
 }
 
