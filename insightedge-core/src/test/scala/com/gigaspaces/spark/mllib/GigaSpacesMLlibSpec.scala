@@ -2,7 +2,7 @@ package com.gigaspaces.spark.mllib
 
 import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.implicits.mllib._
-import com.gigaspaces.spark.utils.{Spark, GigaSpaces, GsConfig}
+import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.mllib.tree.DecisionTree
 import org.apache.spark.mllib.tree.model.{DecisionTreeModel, GradientBoostedTreesModel}

@@ -1,4 +1,4 @@
-package com.gigaspaces.spark.utils
+package com.gigaspaces.spark.fixture
 
 import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.sql.SQLContext
@@ -6,7 +6,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 
 /**
-  * Suite mixin that starts and stops Spark
+  * Suite mixin that starts and stops Spark before and after each test
   *
   * @author Oleksiy_Dyagilev
   */
@@ -24,15 +24,15 @@ trait Spark extends BeforeAndAfterAll with BeforeAndAfterEach {
   }
 
   override protected def beforeEach() = {
-    super.beforeEach()
     val sparkConf = createSparkConf()
     sc = new SparkContext(sparkConf)
     sql = sc.gridSqlContext
+    super.beforeEach()
   }
 
   override protected def afterEach() = {
-    super.afterEach()
     sc.stopGigaSpacesContext()
+    super.afterEach()
   }
 
 }

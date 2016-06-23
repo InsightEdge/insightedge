@@ -31,73 +31,130 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Common for all packaging profiles, does not have execution without a profile -->
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <configuration>
+                    <mainClass>com.gigaspaces.spark.packager.Launcher</mainClass>
+                    <jvmArgs combine.children="append">
+                        <!-- Basedir for project files -->
+                        <jvmArg>-Dproject.directory=.</jvmArg>
+                        <!-- Project release version -->
+                        <jvmArg>-Dproject.version=${project.version}</jvmArg>
+                        <!-- Path to spark distribution file (tgz) -->
+                        <jvmArg>-Ddist.spark=${dist.spark}</jvmArg>
+                        <!-- Path to gigaspaces XAP distribution file (zip) -->
+                        <jvmArg>-Ddist.xap=${dist.xap}</jvmArg>
+                        <!-- Path to Zeppelin distribution file (tgz) -->
+                        <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
+                        <!-- Path to examples (jar) -->
+                        <jvmArg>-Ddist.examples=${dist.examples}</jvmArg>
+                        <!-- Hash of last commit, optional -->
+                        <jvmArg>-Dlast.commit.hash=${last.commit.hash}</jvmArg>
+                    </jvmArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
+
         <profile>
-            <id>package-deployment</id>
+            <id>package-community</id>
 
             <build>
                 <plugins>
-
-                    <plugin>
-                        <groupId>net.alchim31.maven</groupId>
-                        <artifactId>scala-maven-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <id>scala-compile-first</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>add-source</goal>
-                                    <goal>compile</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
                     <plugin>
                         <groupId>org.scala-tools</groupId>
                         <artifactId>maven-scala-plugin</artifactId>
-                        <version>2.15.2</version>
                         <executions>
                             <execution>
+                                <id>run-packager-community</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <mainClass>com.gigaspaces.spark.packager.Launcher</mainClass>
                                     <jvmArgs>
-                                        <!-- Basedir for project files -->
-                                        <jvmArg>-Dproject.directory=.</jvmArg>
-                                        <!-- Project release version -->
-                                        <jvmArg>-Dproject.version=${project.version}</jvmArg>
                                         <!-- Where all distribution contents will go before zipping -->
-                                        <jvmArg>-Doutput.exploded.directory=${project.build.directory}/package</jvmArg>
+                                        <jvmArg>-Doutput.exploded.directory=${project.build.directory}/contents-community</jvmArg>
                                         <!-- Final compressed file location and name -->
                                         <jvmArg>
-                                            -Doutput.compressed.file=${project.build.directory}/gigaspaces-insightedge-${project.version}.zip
+                                            -Doutput.compressed.file=${project.build.directory}/community/gigaspaces-insightedge-${project.version}-community.zip
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
-                                        <jvmArg>-Doutput.contents.prefix=gigaspaces-insightedge-${project.version}</jvmArg>
-                                        <!-- Path to spark distribution file (tgz) -->
-                                        <jvmArg>-Ddist.spark=${dist.spark}</jvmArg>
-                                        <!-- Path to gigaspaces XAP distribution file (zip) -->
-                                        <jvmArg>-Ddist.xap=${dist.xap}</jvmArg>
-                                        <!-- Path to Zeppelin distribution file (tgz) -->
-                                        <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
-                                        <!-- Path to examples (jar) -->
-                                        <jvmArg>-Ddist.examples=${dist.examples}</jvmArg>
-                                        <!-- Hash of last commit, optional -->
-                                        <jvmArg>-Dlast.commit.hash=${last.commit.hash}</jvmArg>
+                                        <jvmArg>
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${project.version}-community
+                                        </jvmArg>
+                                        <!-- Distribution edition -->
+                                        <jvmArg>-Ddist.edition=community</jvmArg>
                                     </jvmArgs>
                                 </configuration>
                             </execution>
                         </executions>
                     </plugin>
-
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>package-premium</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.scala-tools</groupId>
+                        <artifactId>maven-scala-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run-packager-premium</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <jvmArgs>
+                                        <!-- Where all distribution contents will go before zipping -->
+                                        <jvmArg>-Doutput.exploded.directory=${project.build.directory}/contents-premium</jvmArg>
+                                        <!-- Final compressed file location and name -->
+                                        <jvmArg>
+                                            -Doutput.compressed.file=${project.build.directory}/premium/gigaspaces-insightedge-${project.version}-premium.zip
+                                        </jvmArg>
+                                        <!-- Compressed contents prefix -->
+                                        <jvmArg>
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${project.version}-premium
+                                        </jvmArg>
+                                        <!-- Distribution edition -->
+                                        <jvmArg>-Ddist.edition=premium</jvmArg>
+                                    </jvmArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
 
         <!-- Default path to spark distribution file (tgz) -->
         <profile>
@@ -138,6 +195,20 @@
             </activation>
             <properties>
                 <dist.zeppelin>${project.basedir}/dist/zeppelin.tar.gz</dist.zeppelin>
+            </properties>
+        </profile>
+
+        <!-- Default path to examples file (jar) -->
+        <profile>
+            <id>default-dist-examples</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!dist.examples</name>
+                </property>
+            </activation>
+            <properties>
+                <dist.examples>${project.basedir}/dist/examples.jar</dist.examples>
             </properties>
         </profile>
 

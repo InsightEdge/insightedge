@@ -4,9 +4,13 @@ if [ -z "${INSIGHTEDGE_HOME}" ]; then
   export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 fi
 
+source $INSIGHTEDGE_HOME/sbin/common-insightedge.sh
+
+EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
-VERSION="0.4.0-SNAPSHOT"
-ARTIFACT="gigaspaces-insightedge-$VERSION"
+VERSION=`grep "Version" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+EDITION=`grep "Edition" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+ARTIFACT="gigaspaces-insightedge-$VERSION-$EDITION"
 ARTIFACT_EC2="https://s3.amazonaws.com/insightedge/builds/gigaspaces-insightedge-0.4.0-SNAPSHOT.zip"
 
 # override this variable with custom command if you want your distribution to be downloaded from custom location
@@ -63,7 +67,7 @@ display_usage() {
     display_logo
     echo ""
     echo "Usage: * - required, ** - required in some modes"
-    echo "     --mode      |  * insightedge mode: master, slave, deploy, remote-master, remote-slave"
+    echo "     --mode      |  * insightedge mode:"
     echo "                 |       master:        locally restarts spark master and grid manager"
     echo "                 |       slave:         locally restarts spark slave and grid containers"
     echo "                 |       deploy:        deploys empty space to grid"
@@ -148,19 +152,19 @@ display_usage() {
 
 define_defaults() {
     # '[]' means 'empty'
-    MODE="[]"
-    IE_PATH="[]"
+    MODE=$EMPTY
+    IE_PATH=$EMPTY
     IE_INSTALL="false"
-    CLUSTER_MASTER="[]"
-    GRID_LOCATOR="[]"
+    CLUSTER_MASTER=$EMPTY
+    GRID_LOCATOR=$EMPTY
     GRID_GROUP="insightedge"
     GSC_SIZE="1G"
     GSC_COUNT="2"
     SPACE_NAME="insightedge-space"
     SPACE_TOPOLOGY="2,0"
-    REMOTE_HOSTS="[]"
-    REMOTE_USER="[]"
-    REMOTE_KEY="[]"
+    REMOTE_HOSTS=$EMPTY
+    REMOTE_USER=$EMPTY
+    REMOTE_KEY=$EMPTY
 }
 
 parse_options() {
@@ -228,7 +232,7 @@ parse_options() {
 
 check_options() {
     # check required options
-    if [ $MODE == "[]" ]; then
+    if [ "$MODE" == "$EMPTY" ]; then
       error_line "--mode is required"
       display_usage
     fi
@@ -239,7 +243,6 @@ check_options() {
        [ $MODE != "demo" ] && \
        [ $MODE != "remote-master" ] && \
        [ $MODE != "remote-slave" ] && \
-       [ $MODE != "remote-slave" ] && \
        [ $MODE != "shutdown" ] && \
        [ $MODE != "deploy" ] && \
        [ $MODE != "undeploy" ]; then
@@ -247,21 +250,21 @@ check_options() {
          display_usage
     fi
 
-    if [ $CLUSTER_MASTER == "[]" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
+    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
       error_line "--master is required"
       display_usage
     fi
 
     if [[ $MODE == remote-* ]]; then
-        if [ $REMOTE_USER == "[]" ]; then
+        if [ "$REMOTE_USER" == "$EMPTY" ]; then
             error_line "--user is required in remote modes"
             display_usage
         fi
-        if [ $REMOTE_HOSTS == "[]" ]; then
+        if [ "$REMOTE_HOSTS" == "$EMPTY" ]; then
             error_line "--hosts is required in remote modes"
             display_usage
         fi
-        if [ $IE_PATH == "[]" ]; then
+        if [ "$IE_PATH" == "$EMPTY" ]; then
           error_line "--path is required"
           display_usage
         fi
@@ -269,13 +272,13 @@ check_options() {
 }
 
 redefine_defaults() {
-    if [ $CLUSTER_MASTER = "[]" ]; then
+    if [ "$CLUSTER_MASTER" = "$EMPTY" ]; then
         CLUSTER_MASTER="127.0.0.1"
     fi
-    if [ $GRID_LOCATOR = "[]" ]; then
+    if [ "$GRID_LOCATOR" = "$EMPTY" ]; then
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
-    if [ $IE_PATH = "[]" ]; then
+    if [ "$IE_PATH" = "$EMPTY" ]; then
         IE_PATH="$INSIGHTEDGE_HOME"
     fi
 }
@@ -290,7 +293,7 @@ local_master() {
     local group=$7
     local size=$8
 
-    intall_insightedge $install $artifact "$download" $home
+    install_insightedge $install $artifact "$download" $home
     stop_grid_master $home
     stop_spark_master $home
     start_grid_master $home $locator $group $size
@@ -308,21 +311,11 @@ local_slave() {
     local containers=$8
     local size=$9
 
-    intall_insightedge $install $artifact "$download" $home
+    install_insightedge $install $artifact "$download" $home
     stop_grid_slave $home
     stop_spark_slave $home
     start_grid_slave $home $master $locator $group $containers $size
     start_spark_slave $home $master
-}
-
-local_zeppelin() {
-    local home=$1
-    local master=$2
-    echo ""
-    step_title "--- Restarting Zeppelin server"
-    $home/sbin/stop-zeppelin.sh
-    $home/sbin/start-zeppelin.sh
-    step_title "--- Zeppelin server can be accessed at http://$master:8090"
 }
 
 remote_master() {
@@ -334,10 +327,10 @@ remote_master() {
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to master at $host"
-        if [ $key == "[]" ]; then
-          ssh $user@$host "$(typeset -f); local_master $args"
+        if [ "$key" == "$EMPTY" ]; then
+          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         else
-          ssh -i $key $user@$host "$(typeset -f); local_master $args"
+          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
         fi
         echo ""
         step_title "---- Disconnected from $host"
@@ -353,10 +346,10 @@ remote_slave() {
     for host in $hosts; do
         echo ""
         step_title "---- Connecting to slave at $host"
-        if [ $key == "[]" ]; then
-          ssh $user@$host "$(typeset -f); local_slave $args"
+        if [ "$key" == "$EMPTY" ]; then
+          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         else
-          ssh -i $key $user@$host "$(typeset -f); local_slave $args"
+          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
         fi
         echo ""
         step_title "---- Disconnected from $host"
@@ -391,49 +384,11 @@ undeploy_space() {
 shutdown_all() {
     local home=$1
 
-    echo ""
-    step_title "--- Stopping Zeppelin"
-    $home/sbin/stop-zeppelin.sh
-    echo ""
-    step_title "--- Stopping datagrid master"
-    $home/sbin/stop-datagrid-master.sh
-    echo ""
-    step_title "--- Stopping datagrid slave"
-    $home/sbin/stop-datagrid-slave.sh
-    echo ""
-    step_title "--- Stopping Spark master"
-    $home/sbin/stop-master.sh
-    echo ""
-    step_title "--- Stopping Spark slave"
-    $home/sbin/stop-slave.sh
-}
-
-intall_insightedge() {
-    local install=$1
-    local artifact=$2
-    local command=$3
-    local home=$4
-
-    if [ $install == "false" ]; then
-        return
-    fi
-
-    echo ""
-    step_title "--- Installing InsightEdge ($2) at $home"
-    echo "- Cleaning up $home"
-    rm -rf $home
-    mkdir $home
-    cd $home
-    echo "- Downloading $artifact"
-    eval $command
-    echo "- Unpacking $artifact"
-    unzip ${artifact}.zip > insightedge-unzip.log
-    rm ${artifact}.zip
-    echo "- Extracting files from subfolder"
-    mv ${artifact}/** .
-    echo "- Removing $artifact bundle"
-    rm -rf ${artifact}
-    step_title "--- Installation complete"
+    stop_zeppelin $home
+    stop_grid_master $home
+    stop_grid_slave $home
+    stop_spark_master $home
+    stop_spark_slave $home
 }
 
 start_grid_master() {
@@ -475,76 +430,9 @@ stop_grid_slave() {
     local home=$1
 
     echo ""
-    step_title "--- Stopping datagrid slave"
+    step_title "--- Stopping datagrid slave instances"
     $home/sbin/stop-datagrid-slave.sh
-    step_title "--- Datagrid slave stopped"
-}
-
-start_spark_master() {
-    local home=$1
-    local master=$2
-
-    echo ""
-    step_title "--- Starting Spark master at $master"
-    $home/sbin/start-master.sh -h $master
-    step_title "--- Spark master started"
-}
-
-stop_spark_master() {
-    local home=$1
-
-    echo ""
-    step_title "--- Stopping Spark master"
-    $home/sbin/stop-master.sh
-    step_title "--- Spark master stopped"
-}
-
-start_spark_slave() {
-    local home=$1
-    local master=$2
-
-    echo ""
-    step_title "--- Starting Spark slave"
-    $home/sbin/start-slave.sh spark://$master:7077
-    step_title "--- Spark slave started"
-}
-
-stop_spark_slave() {
-    local home=$1
-
-    echo ""
-    step_title "--- Stopping Spark slave"
-    $home/sbin/stop-slave.sh
-    step_title "--- Spark slave stopped"
-}
-
-display_demo_help() {
-    local master=$1
-
-    printf '\e[0;34m\n'
-    echo "Demo steps:"
-    echo "1. make sure steps above were successfully executed"
-    echo "2. Open Web Notebook at http://$master:8090 and run any of the available examples"
-    printf "\e[0m\n"
-}
-
-step_title() {
-    printf "\e[32m$1\e[0m\n"
-}
-
-error_line() {
-    printf "\e[31mError: $1\e[0m\n"
-}
-
-display_logo() {
-    echo "   _____           _       _     _   ______    _            "
-    echo "  |_   _|         (_)     | |   | | |  ____|  | |           "
-    echo "    | |  _ __  ___ _  __ _| |__ | |_| |__   __| | __ _  ___ "
-    echo "    | | | '_ \\/ __| |/ _\` | '_ \\| __|  __| / _\` |/ _\` |/ _ \\"
-    echo "   _| |_| | | \\__ \\ | (_| | | | | |_| |___| (_| | (_| |  __/"
-    echo "  |_____|_| |_|___/_|\\__, |_| |_|\\__|______\\__,_|\\__, |\\___|"
-    echo "                      __/ |                       __/ |     "
-    echo "                     |___/                       |___/   version $VERSION"
+    step_title "--- Datagrid slave instances stopped"
 }
 
 main "$@"

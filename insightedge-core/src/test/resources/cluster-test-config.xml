@@ -10,20 +10,19 @@
        xmlns:os-sla="http://www.openspaces.org/schema/sla"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
        http://www.openspaces.org/schema/core http://www.openspaces.org/schema/10.0/core/openspaces-core.xsd
-       http://www.openspaces.org/schema/events http://www.openspaces.org/schema/10.0/events/openspaces-events.xsd
-       http://www.openspaces.org/schema/sla http://www.openspaces.org/schema/10.0/sla/openspaces-sla.xsd">
+       http://www.openspaces.org/schema/events http://www.openspaces.org/schema/10.0/events/openspaces-events.xsd">
 
   <os-events:annotation-support/>
 
   <bean id="space-cluster" class="com.gigaspaces.TestCluster" init-method="init">
     <property name="configPath" value="classpath:cluster-member-config.xml"/>
-    <property name="sla">
-      <os-sla:sla cluster-schema="partitioned-sync2backup" number-of-instances="2" number-of-backups="0"/>
-    </property>
+    <property name="schema" value="partitioned-sync2backup"/>
+    <property name="numberOfInstances" value="2" />
+    <property name="numberOfBackups" value="0" />
   </bean>
 
   <bean id="space" class="org.openspaces.core.space.UrlSpaceFactoryBean" depends-on="space-cluster">
-    <property name="url" value="jini://*/*/test-space?groups=spark"/>
+    <property name="url" value="jini://*/*/test-space?groups=spark&amp;locators=localhost:4174"/>
   </bean>
   <os-core:giga-space id="gigaSpace" space="space"/>
 

@@ -1,11 +1,11 @@
-package com.gigaspaces.spark.utils
+package com.gigaspaces.spark.fixture
 
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.SparkConf
+import com.gigaspaces.spark.implicits.basic._
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Span
-import org.scalatest.{time, BeforeAndAfterEach, BeforeAndAfterAll, Suite}
-import com.gigaspaces.spark.implicits.basic._
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite, time}
 
 /**
   * @author Oleksiy_Dyagilev
@@ -27,9 +27,9 @@ trait SparkStreaming extends BeforeAndAfterAll with BeforeAndAfterEach {
   }
 
   override protected def afterEach() = {
-    super.afterEach()
     ssc.stop()
     ssc.sparkContext.stopGigaSpacesContext()
+    super.afterEach()
   }
 
   def timeout(sec: Int) = Eventually.PatienceConfig(Span(sec, time.Seconds))

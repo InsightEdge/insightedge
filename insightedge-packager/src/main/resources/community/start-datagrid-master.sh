@@ -9,7 +9,7 @@ if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
   export INSIGHTEDGE_LOG_DIR="${INSIGHTEDGE_HOME}/logs"
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
-export JSHOMEDIR=""
+export XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
 
 main() {
     define_defaults
@@ -20,14 +20,13 @@ main() {
 
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
-    echo "Starting datagrid master (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSM_SIZE)"
-    export GSM_JAVA_OPTIONS="$GSM_JAVA_OPTIONS -Xmx$GSM_SIZE"
-    export GSA_JAVA_OPTIONS="$GSA_JAVA_OPTIONS -Dinsightedge.marker=master"
-    export LOOKUPLOCATORS=$GRID_LOCATOR
-    export LOOKUPGROUPS=$GRID_GROUP
+    echo "Starting LUS (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSM_SIZE)"
+    export EXT_JAVA_OPTIONS="-Xmx$GSM_SIZE -Dinsightedge.marker=master"
+    export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
+    export XAP_LOOKUP_GROUPS=$GRID_GROUP
     export NIC_ADDR=$CLUSTER_MASTER
-    nohup $IE_PATH/datagrid/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
-    echo "Datagrid master started (log: $log)"
+    nohup $IE_PATH/datagrid/bin/lookup-instance.sh > $log 2>&1 &
+    echo "LUS on master started (log: $log)"
 }
 
 display_usage() {

@@ -28,7 +28,7 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     * @tparam T type of Data Grid query
     * @return iterator over Data Grid
     */
-  protected def compute[T](split: Partition, dataGridQuery: SQLQuery[T], convertFunc: T => R, context: TaskContext): Iterator[R] = {
+  protected def computeInternal[T](split: Partition, dataGridQuery: SQLQuery[T], convertFunc: T => R, context: TaskContext): Iterator[R] = {
     val startTime = System.currentTimeMillis()
     val gsPartition = split.asInstanceOf[GigaSpacesPartition]
     logInfo(s"Reading partition $gsPartition")
@@ -112,7 +112,7 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   }
 
   /**
-    * Wraps given query into (...) and appends 'and $bucketQuery' in the end.
+    * Wraps given query into (...) and appends 'and `bucketQuery`' in the end.
     *
     * @param query given query
     * @param split given partition

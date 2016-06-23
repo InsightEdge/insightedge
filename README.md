@@ -23,10 +23,17 @@ This project is based on Maven, so to build it you run the next command:
 mvn clean install -DskipTests=true
 
 # with unit tests
-mvn clean install -Dcom.gs.home={PATH_TO_YOUR_XAP_FOLDER}
+mvn clean install
 
-# package the distribution
-mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz>
+# package the distribution (depends on insightedge-zeppelin, insightedge-examples)
+mvn clean package -P package-community -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.jar>
+mvn clean package -P package-premium   -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.jar>
+# you can also run both profiles at the same time using '-P package-community,package-premium'
+
+# run integration tests with Docker (depends on running Docker daemon tcp://127.0.0.1:2375 and built zip distribution file)
+mvn clean verify -P run-integration-tests-community -pl insightedge-integration-tests
+mvn clean verify -P run-integration-tests-premium   -pl insightedge-integration-tests
+# you cannot run both profiles simultaneously
 ```
 
 
@@ -45,4 +52,4 @@ mvn clean package -DskipTests=true -P package-deployment -Ddist.spark=<path to s
 
 ## Documentation
 
-Please refer to the [isightedge.io](http://insightedge.io/docs) site.
+Please refer to the [insightedge.io](http://insightedge.io/docs) site.
