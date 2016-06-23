@@ -97,7 +97,7 @@ check_options() {
 }
 
 redefine_defaults() {
-    if [ $GRID_LOCATOR == "[]:4174" ]; then
+    if [ $GRID_LOCATOR == "[]" ]; then
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
     if [ $IE_PATH == "[]" ]; then
