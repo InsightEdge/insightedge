@@ -68,16 +68,34 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
     stage 'Package insightedge'
     distributions = "-Ddist.spark=$env.SPARK_DIST"
-    distributions = "$distributions -Ddist.xap=$env.XAP_DIST"
     distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples.jar"
-    sh "mvn package -pl insightedge-packager -DskipTests=true -P package-deployment $distributions -Dlast.commit.hash=$commitHash"
+    premiumDist   = "$distributions -Ddist.xap=$env.XAP12_PREMIUM_DIST"
+    communityDist = "$distributions -Ddist.xap=$env.XAP12_COMMUNITY_DIST"
+    sh "mvn package -pl insightedge-packager -P package-premium   -DskipTests=true $premiumDist   -Dlast.commit.hash=$commitHash"
+    sh "mvn package -pl insightedge-packager -P package-community -DskipTests=true $communityDist -Dlast.commit.hash=$commitHash"
 
 
     stage 'Export artifacts'
-    archive 'insightedge-packager/target/gigaspaces-*.zip'
+    archive 'insightedge-packager/target/community/gigaspaces-*.zip'
+    archive 'insightedge-packager/target/premium/gigaspaces-*.zip'
 
 
-    stage 'Run integration tests'
-    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests -e"
+    stage 'Synchronize integration tests'
+    String lockMessage = "branch=$branchName;commit=$commitHash"
+    sh "chmod +x tools/lock.sh"
+    sh "chmod +x tools/unlock.sh"
+    // lock with 15 minutes timeout - expected time for integration tests to be finished
+    sh "tools/lock.sh /tmp/integration-tests.lock 900 30 \"$lockMessage\""
+
+
+    stage 'Run integration tests (community)'
+    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community -e"
+
+
+    stage 'Run integration tests (premium)'
+    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
+
+
+    sh "tools/unlock.sh /tmp/integration-tests.lock \"$lockMessage\""
 }

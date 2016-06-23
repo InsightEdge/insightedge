@@ -16,7 +16,7 @@
   <os-events:annotation-support/>
 
   <!-- Embedded space. -->
-  <os-core:space id="space" url="/./test-space?groups=spark"/>
+  <os-core:space id="space" url="/./test-space?groups=spark&amp;locators=localhost:4174"/>
   <os-core:giga-space id="gigaSpace" space="space"/>
 
 </beans>

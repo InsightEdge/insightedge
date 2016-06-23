@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   self: Suite =>
 
-  private val DockerImageStartTimeout = 2.minutes
+  private val DockerImageStartTimeout = 3.minutes
   private val TargetZeppelinPort = 8090
   private lazy val dockerHost: DockerHost = CloudHostFactory.getCloudHost("insightedge-tests-demo-mode").asInstanceOf[DockerHost]
 
@@ -29,12 +29,18 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     println("Starting docker container")
     dockerHost.setup()
     if (!awaitImageStarted()) {
-      throw new RuntimeException("image start failed with timeout")
+      println("image start failed with timeout ... cleaning up")
+      stopAll()
+      fail("image start failed with timeout")
     }
   }
 
   override protected def afterAll(): Unit = {
     super.afterAll()
+    stopAll()
+  }
+
+  def stopAll() ={
     println("Stopping docker container")
     dockerHost.teardown()
     wsClient.close()

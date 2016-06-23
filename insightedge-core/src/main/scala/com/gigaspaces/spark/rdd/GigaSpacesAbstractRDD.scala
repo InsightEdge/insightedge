@@ -112,7 +112,7 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   }
 
   /**
-    * Wraps given query into (...) and appends 'and $bucketQuery' in the end.
+    * Wraps given query into (...) and appends 'and `bucketQuery`' in the end.
     *
     * @param query given query
     * @param split given partition

@@ -14,8 +14,9 @@ main() {
     redefine_defaults
 
     echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY] (locator: $GRID_LOCATOR, group: $GRID_GROUP)"
-    export LOOKUPLOCATORS=$GRID_LOCATOR
-    export LOOKUPGROUPS=$GRID_GROUP
+    export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
+    export XAP_LOOKUP_GROUPS=$GRID_GROUP
+    await_master_start #TODO: revisit in IE-87
     $IE_PATH/datagrid/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
 }
 
@@ -99,6 +100,19 @@ redefine_defaults() {
     if [ $IE_PATH == "[]" ]; then
         IE_PATH="$INSIGHTEDGE_HOME"
     fi
+}
+
+await_master_start() {
+    TIMEOUT=60
+    echo "  awaiting datagrid master ..."
+    while [ -z "$($IE_PATH/datagrid/bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
+        if [ $TIMEOUT -le 0 ]; then
+          echo "Datagrid master is not available within timeout"
+          exit 1
+        fi
+        TIMEOUT=$((TIMEOUT - 10))
+        echo "  .. ($TIMEOUT sec)"
+    done
 }
 
 main "$@"
