@@ -3,8 +3,9 @@ package org.apache.spark.sql
 import com.gigaspaces.spark.model.GridModel
 import org.apache.spark.sql.catalyst.expressions.Literal
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.insightedge.expression.SubtypeOf
+import org.apache.spark.sql.insightedge.expression.{GeoIntersects, SubtypeOf}
 import org.apache.spark.sql.types.{DataType, ObjectType}
+import org.openspaces.spatial.shapes.Shape
 
 import scala.reflect._
 
@@ -38,6 +39,10 @@ package object insightedge {
     def subtypeOf(other: Column): Column = new Column(SubtypeOf(column.expr, lit(other).expr))
 
     def subtypeOf(clazz: Class[_]): Column = this.subtypeOf(typedLit(clazz, new ObjectType(classOf[Class[_]])))
+
+    def geoIntersects(other: Column): Column = new Column(GeoIntersects(column.expr, lit(other).expr))
+
+    def geoIntersects(shape: Shape): Column = this.geoIntersects(typedLit(shape, new ObjectType(classOf[Shape])))
 
     def typedLit(value: Any, dataType: DataType): Column = {
       value match {

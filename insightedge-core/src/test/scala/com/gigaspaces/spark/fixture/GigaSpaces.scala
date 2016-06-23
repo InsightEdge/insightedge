@@ -44,4 +44,9 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
     seq.foreach(data => data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount))
     seq
   }
+
+  protected def randomBucket(data: GridModel): GridModel = {
+    data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount)
+    data
+  }
 }

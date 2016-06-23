@@ -11,6 +11,7 @@ import org.apache.spark.sql.catalyst.{InternalRow, expressions}
 import org.apache.spark.sql.execution.PhysicalRDD._
 import org.apache.spark.sql.execution.datasources.{DataSourceStrategy, LogicalRelation}
 import org.apache.spark.sql.sources._
+import org.openspaces.spatial.shapes.Shape
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -39,6 +40,7 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
   protected[sql] def translateFilter(predicate: Expression): Option[Filter] = {
     predicate match {
       case expression.SubtypeOf(a: Attribute, Literal(v, t)) => Some(filter.SubtypeOf(a.name, convertToScala(v, t).asInstanceOf[Class[_]]))
+      case expression.GeoIntersects(a: Attribute, Literal(v, t)) => Some(filter.GeoIntersects(a.name, convertToScala(v, t).asInstanceOf[Shape]))
       case _ => DataSourceStrategy.translateFilter(predicate)
     }
   }

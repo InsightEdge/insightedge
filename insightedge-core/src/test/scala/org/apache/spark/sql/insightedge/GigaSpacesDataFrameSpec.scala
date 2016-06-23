@@ -2,11 +2,12 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits._
-import com.gigaspaces.spark.rdd.{Data, JData}
+import com.gigaspaces.spark.rdd.{Data, JData, SpatialData}
 import com.gigaspaces.spark.utils._
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.spark.sql.{AnalysisException, SaveMode}
 import org.apache.spark.unsafe.types.UTF8String
+import org.openspaces.spatial.ShapeFactory.{circle, point}
 import org.scalatest.FlatSpec
 
 class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
@@ -307,6 +308,16 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     val subtypesCount = df.filter(df("data") subtypeOf classOf[UTF8String]).count()
 
     assert(subtypesCount == 1000)
+  }
+
+  it should "find with spatial intersections" taggedAs ScalaSpaceClass in {
+    val searchedCircle = circle(point(0, 0), 1.0)
+    spaceProxy.write(randomBucket(SpatialData(id = null, routing = 1, searchedCircle, null, null)))
+    val df = sql.read.grid.loadClass[SpatialData]
+
+    assert(df.count() == 1)
+    assert(df.filter(df("circle") geoIntersects circle(point(1.0, 0.0), 1.0)).count() == 1)
+    assert(df.filter(df("circle") geoIntersects circle(point(3.0, 0.0), 1.0)).count() == 0)
   }
 
 }

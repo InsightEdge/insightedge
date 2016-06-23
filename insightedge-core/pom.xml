@@ -18,6 +18,10 @@
             <groupId>org.gigaspaces</groupId>
             <artifactId>xap-openspaces</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.gigaspaces</groupId>
+            <artifactId>xap-spatial</artifactId>
+        </dependency>
         <!-- GigaSpaces-Scala -->
         <dependency>
             <groupId>com.gigaspaces.insightedge</groupId>
@@ -121,9 +125,6 @@
                 <groupId>org.scalatest</groupId>
                 <artifactId>scalatest-maven-plugin</artifactId>
                 <version>1.0</version>
-                <configuration>
-                    <argLine>-Dcom.gs.home=${com.gs.home}</argLine>
-                </configuration>
                 <executions>
                     <execution>
                         <id>test</id>
