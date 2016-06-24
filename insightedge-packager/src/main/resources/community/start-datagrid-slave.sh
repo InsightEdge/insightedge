@@ -20,7 +20,7 @@ main() {
 
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     log_template="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave"
-    echo "Starting datagrid instances (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSC_SIZE, space name: $SPACE_NAME)"
+    echo "Starting datagrid instances (locator: $GRID_LOCATOR, group: $GRID_GROUP, heap: $GSC_SIZE, space name: $SPACE_NAME, topology: $TOPOLOGY, instances: $INSTANCES)"
     export EXT_JAVA_OPTIONS="-server -Xms$GSC_SIZE -Xmx$GSC_SIZE -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:InitiatingHeapOccupancyPercent=50 -XX:+UseCompressedOops -Dinsightedge.marker=slave"
     export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
     export XAP_LOOKUP_GROUPS=$GRID_GROUP
@@ -68,8 +68,8 @@ define_defaults() {
     IE_PATH=$EMPTY
     CLUSTER_MASTER=$EMPTY
     SPACE_NAME="insightedge-space"
-    TOPOLOGY=$EMPTY
-    INSTANCES=$EMPTY
+    TOPOLOGY="2,0"
+    INSTANCES="id=1;id=2"
     GRID_LOCATOR=$EMPTY
     GRID_GROUP="insightedge"
     GSC_SIZE="1G"
@@ -117,10 +117,22 @@ parse_options() {
 
 check_options() {
     # check required options
-    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ "$GRID_LOCATOR" == "$EMPTY" ] && [ "$TOPOLOGY" == "$EMPTY" ]&& [ "$INSTANCES" == "$EMPTY" ]; then
-      echo "Error: --master, --locator, --topology, --instances must be specified"
+    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ "$GRID_LOCATOR" == "$EMPTY" ]; then
+      echo "Error: --master, --locator must be specified"
       display_usage
     fi
+
+    if [[ "$TOPOLOGY" != "$EMPTY"  && "$INSTANCES" == "$EMPTY" ]]; then
+      echo "Error: --instances instances must be specified"
+      display_usage
+    fi
+
+    if [[ "$TOPOLOGY" == "$EMPTY"  && "$INSTANCES" != "$EMPTY" ]]; then
+      echo "Error: --topology must be specified"
+      display_usage
+    fi
+
+
 }
 
 redefine_defaults() {
