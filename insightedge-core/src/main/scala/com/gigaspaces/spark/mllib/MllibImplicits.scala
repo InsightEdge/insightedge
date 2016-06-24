@@ -7,7 +7,6 @@ import org.apache.spark.mllib.util.Saveable
   *
   * @author Danylo_Hurin
   */
-
 trait MllibImplicits {
 
   implicit def saveModelToDataGridExtension(model: Saveable): SaveModelToGridExtension = {
