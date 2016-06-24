@@ -2,13 +2,11 @@ package com.gigaspaces.spark.mllib
 
 import org.apache.spark.mllib.util.Saveable
 
-object implicits {
-
-//  implicit def saveModelToDataGridExtension(model: Saveable): SaveModelToGridExtension = {
-//    new SaveModelToGridExtension(model)
-//  }
-
-}
+/**
+  * Enables GigaSpaces Mllib API
+  *
+  * @author Danylo_Hurin
+  */
 
 trait MllibImplicits {
 

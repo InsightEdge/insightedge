@@ -24,9 +24,8 @@ object implicits {
 
   object mllib extends MllibImplicits
 
-  object datafarame extends DataFrameImplicits
+  object dataframe extends DataFrameImplicits
 
-  // Mix all
   object all extends BasicImplicits
     with MllibImplicits
     with StreamingImplicits
@@ -42,7 +41,7 @@ trait BasicImplicits {
     gigaSpacesSparkContextCache.getOrElseUpdate(sc, new GigaSpacesSparkContext(sc))
   }
 
-  implicit def saveToDataGridExtension[R : ClassTag](rdd: RDD[R]): SaveRddToGridExtension[R] = {
+  implicit def saveToDataGridExtension[R: ClassTag](rdd: RDD[R]): SaveRddToGridExtension[R] = {
     new SaveRddToGridExtension[R](rdd)
   }
 

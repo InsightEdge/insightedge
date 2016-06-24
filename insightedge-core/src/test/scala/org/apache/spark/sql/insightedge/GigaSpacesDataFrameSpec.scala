@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.implicits.basic._
-import com.gigaspaces.spark.implicits.datafarame._
+import com.gigaspaces.spark.implicits.dataframe._
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils._

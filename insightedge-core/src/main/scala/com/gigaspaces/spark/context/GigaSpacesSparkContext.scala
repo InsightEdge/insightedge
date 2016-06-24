@@ -1,6 +1,6 @@
 package com.gigaspaces.spark.context
 
-import com.gigaspaces.spark.implicits.datafarame._
+import com.gigaspaces.spark.implicits.dataframe._
 import com.gigaspaces.spark.mllib.MLModel
 import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.{GigaSpacesBinaryRDD, GigaSpacesRDD, GigaSpacesSqlRDD}
