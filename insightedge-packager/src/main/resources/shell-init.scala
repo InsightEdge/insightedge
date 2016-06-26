@@ -1,4 +1,4 @@
-import com.gigaspaces.spark.implicits.all._
+import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import org.apache.spark.{SparkContext, SparkConf}
 
