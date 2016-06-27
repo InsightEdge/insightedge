@@ -1,6 +1,7 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.utils.ClassLoadUtils
 import org.apache.spark.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
 import org.apache.spark.sql.sources._
@@ -40,7 +41,7 @@ class DefaultSource
     val options = InsightEdgeSourceOptions(readBufferSize, schema)
 
     if (parameters.contains(InsightEdgeClassProperty)) {
-      val tag = loadClass(parameters(InsightEdgeClassProperty))
+      val tag = ClassLoadUtils.loadClass(parameters(InsightEdgeClassProperty))
       if (!classOf[GridModel].isAssignableFrom(tag.runtimeClass)) {
         throw new IllegalArgumentException(s"'class' must extend ${classOf[GridModel].getName}")
       }
@@ -51,26 +52,6 @@ class DefaultSource
 
     } else {
       throw new IllegalArgumentException("'path', 'collection' or 'class' must be specified")
-    }
-  }
-
-  private def loadClass(path: String): ClassTag[Any] = {
-    loadClass(Thread.currentThread().getContextClassLoader, path)
-      .orElse(loadClass(this.getClass.getClassLoader, path))
-      .getOrElse {
-        throw new ClassNotFoundException(path)
-      }
-  }
-
-  private def loadClass(classLoader: ClassLoader, path: String): Option[ClassTag[Any]] = {
-    if (classLoader == null) {
-      None
-    }
-
-    try {
-      Some(ClassTag[Any](classLoader.loadClass(path)))
-    } catch {
-      case up: ClassNotFoundException => None
     }
   }
 

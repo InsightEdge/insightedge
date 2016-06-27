@@ -2,8 +2,11 @@ package com.gigaspaces.spark.japi;
 
 import com.gigaspaces.annotation.pojo.SpaceIndex;
 import com.gigaspaces.spark.model.GridModel;
+import com.gigaspaces.spark.utils.GigaSpaceUtils;
+import org.apache.spark.SparkContext;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * A port of {@link GridModel} for Java API.
