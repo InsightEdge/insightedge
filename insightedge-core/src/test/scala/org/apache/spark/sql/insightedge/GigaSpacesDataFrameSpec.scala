@@ -242,9 +242,9 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     )).saveToGrid()
 
     val df = sql.read.grid.loadClass[Person]
+    df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
-    df.printSchema()
 
     df.registerTempTable("people")
 
@@ -254,7 +254,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     unwrapDf.printSchema()
   }
 
-  ignore should "support nested properties [java]" taggedAs JavaSpaceClass in {
+  it should "support nested properties [java]" taggedAs JavaSpaceClass in {
     sc.parallelize(Seq(
       new JPerson(null, "Paul", 30, new JAddress("Columbus", "OH")),
       new JPerson(null, "Mike", 25, new JAddress("Buffalo", "NY")),
@@ -263,9 +263,51 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     )).saveToGrid()
 
     val df = sql.read.grid.loadClass[JPerson]
+    df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
+
+    df.registerTempTable("people")
+
+    val unwrapDf = sql.sql("select address.city as city, address.state as state from people")
+    val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
+    assert(countByCity("Charlotte") == 2)
+    unwrapDf.printSchema()
+  }
+
+  ignore should "support nested properties in udt [java]" taggedAs JavaSpaceClass in {
+    sc.parallelize(Seq(
+      new JDefinedPerson(null, "Paul", 30, new JDefinedAddress("Columbus", "OH")),
+      new JDefinedPerson(null, "Mike", 25, new JDefinedAddress("Buffalo", "NY")),
+      new JDefinedPerson(null, "John", 20, new JDefinedAddress("Charlotte", "NC")),
+      new JDefinedPerson(null, "Silvia", 27, new JDefinedAddress("Charlotte", "NC"))
+    )).saveToGrid()
+
+    val df = sql.read.grid.loadClass[JDefinedPerson]
     df.printSchema()
+    assert(df.count() == 4)
+    assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
+
+    df.registerTempTable("people")
+
+    val unwrapDf = sql.sql("select address.city as city, address.state as state from people")
+    val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
+    assert(countByCity("Charlotte") == 2)
+    unwrapDf.printSchema()
+  }
+
+  it should "support nested properties in products [java]" taggedAs JavaSpaceClass in {
+    sc.parallelize(Seq(
+      new JProductPerson(null, "Paul", 30, new JProductAddress("Columbus", "OH")),
+      new JProductPerson(null, "Mike", 25, new JProductAddress("Buffalo", "NY")),
+      new JProductPerson(null, "John", 20, new JProductAddress("Charlotte", "NC")),
+      new JProductPerson(null, "Silvia", 27, new JProductAddress("Charlotte", "NC"))
+    )).saveToGrid()
+
+    val df = sql.read.grid.loadClass[JProductPerson]
+    df.printSchema()
+    assert(df.count() == 4)
+    assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
 
     df.registerTempTable("people")
 
@@ -302,15 +344,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     assert(thrown.getMessage equals "'class' must extend com.gigaspaces.spark.model.GridModel")
   }
 
-  ignore should "use custom dataframe filter" taggedAs ScalaSpaceClass in {
-    writeDataSeqToDataGrid(1000)
-    val df = sql.read.grid.loadClass[Data]
-    val subtypesCount = df.filter(df("data") subtypeOf classOf[UTF8String]).count()
-
-    assert(subtypesCount == 1000)
-  }
-
-  it should "find with spatial intersections" taggedAs ScalaSpaceClass in {
+  it should "find with spatial intersections when filter is executed at xap" taggedAs ScalaSpaceClass in {
     val searchedCircle = circle(point(0, 0), 1.0)
     spaceProxy.write(randomBucket(SpatialData(id = null, routing = 1, searchedCircle, null, null)))
     val df = sql.read.grid.loadClass[SpatialData]
@@ -318,6 +352,17 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     assert(df.count() == 1)
     assert(df.filter(df("circle") geoIntersects circle(point(1.0, 0.0), 1.0)).count() == 1)
     assert(df.filter(df("circle") geoIntersects circle(point(3.0, 0.0), 1.0)).count() == 0)
+  }
+
+  it should "find with spatial intersections when filter is executed at spark" taggedAs ScalaSpaceClass in {
+    val searchedCircle = circle(point(0, 0), 1.0)
+    spaceProxy.write(randomBucket(SpatialData(id = null, routing = 1, searchedCircle, null, null)))
+    val df = sql.read.grid.loadClass[SpatialData]
+    val pdf = df.persist()
+
+    assert(pdf.count() == 1)
+    assert(pdf.filter(pdf("circle") geoIntersects circle(point(1.0, 0.0), 1.0)).count() == 1)
+    assert(pdf.filter(pdf("circle") geoIntersects circle(point(3.0, 0.0), 1.0)).count() == 0)
   }
 
 }

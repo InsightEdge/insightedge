@@ -1,15 +1,19 @@
 package org.apache.spark.sql.insightedge
 
+import java.beans.Introspector
+
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.insightedge.filter.{GeoIntersects, SubtypeOf}
+import org.apache.spark.sql.insightedge.udt.{CircleUDT, PointUDT}
 import org.apache.spark.sql.sources._
-import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.types.{DataType, StructField, StructType, UserDefinedType}
 import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
 import org.apache.spark.{Logging, SparkContext}
 import org.openspaces.core.GigaSpace
+import org.openspaces.spatial.shapes.{Circle, Point}
 
 import scala.collection.mutable.ListBuffer
 
@@ -140,6 +144,42 @@ object GigaspacesAbstractRelation {
       case f: GeoIntersects =>
         builder -> f.attribute -> " spatial:intersects ?"
         params += f.value
+    }
+  }
+
+  def udtFor(clazz: Class[_]): Option[UserDefinedType[_]] = {
+    clazz match {
+      case c if classOf[Point].isAssignableFrom(c) => Some(PointUDT)
+      case c if classOf[Circle].isAssignableFrom(c) => Some(CircleUDT)
+      case _ => None
+    }
+  }
+
+  def enhanceWithUdts(dataType: DataType, clazz: Class[_]): DataType = {
+    udtFor(clazz) match {
+      case Some(udt) =>
+        udt
+
+      case None =>
+        dataType match {
+          case struct: StructType =>
+            // Product bean info does not have any fields, for some reason
+            val fieldTypeMap: Map[String, Class[_]] = clazz match {
+              case c if classOf[Product].isAssignableFrom(c) =>
+                clazz.getDeclaredFields.map(f => f.getName -> f.getType).toMap
+              case _ =>
+                val beanInfo = Introspector.getBeanInfo(clazz)
+                beanInfo.getPropertyDescriptors.map(d => d.getName -> d.getPropertyType).toMap
+            }
+
+            StructType(
+              struct.fields.map(f => {
+                val maybeNewType = enhanceWithUdts(f.dataType, fieldTypeMap(f.name))
+                StructField(f.name, maybeNewType, f.nullable, f.metadata)
+              })
+            )
+          case other => other
+        }
     }
   }
 
