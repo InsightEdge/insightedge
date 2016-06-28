@@ -6,7 +6,6 @@ import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils._
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.spark.sql.{AnalysisException, SaveMode}
-import org.apache.spark.sql.insightedge._
 import org.scalatest.FlatSpec
 
 class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
