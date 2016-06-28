@@ -1,9 +1,9 @@
 package com.gigaspaces.spark.rdd
 
-import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
+import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.utils._
-import org.scalatest.{FlatSpec}
+import org.scalatest.FlatSpec
 
 class GigaSpacesDataFrameRDDSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
 

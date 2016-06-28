@@ -1,8 +1,8 @@
 package com.gigaspaces.spark.fixture
 
-import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.spark.SparkConf
 import com.gigaspaces.spark.implicits.basic._
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.Span
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite, time}
