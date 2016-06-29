@@ -145,7 +145,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
 
   it should "persist with simplified syntax" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
-    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+    val table = randomString()
 
     val df = sql.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
@@ -159,7 +159,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
 
   it should "persist with simplified syntax [java]" taggedAs JavaSpaceClass in {
     writeJDataSeqToDataGrid(1000)
-    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+    val table = randomString()
 
     val df = sql.read.grid.loadClass[JData]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
@@ -173,7 +173,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
 
   it should "persist without imports" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
-    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+    val table = randomString()
 
     val df = sql.read
       .format("org.apache.spark.sql.insightedge")
@@ -192,11 +192,23 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     readDf.printSchema()
   }
 
+  it should "load dataframe with 'collection' or 'path' option" taggedAs ScalaSpaceClass in {
+    writeDataSeqToDataGrid(1000)
 
+    val collectionName = randomString()
+    val df = sql.read.grid.loadClass[Data]
+    df.write.grid.save(collectionName)
+
+    val fromGrid = sql.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load()
+    assert(fromGrid.count() == 1000)
+
+    val fromGrid2 = sql.read.format("org.apache.spark.sql.insightedge").load(collectionName)
+    assert(fromGrid2.count() == 1000)
+  }
 
   it should "fail to write with ErrorIfExists mode" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
-    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+    val table = randomString()
 
     val df = sql.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
@@ -209,7 +221,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
 
   it should "clear before write with Overwrite mode" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
-    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+    val table = randomString()
 
     val df = sql.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
@@ -221,7 +233,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
 
   it should "not write with Ignore mode" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
-    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+    val table = randomString()
 
     val df = sql.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
@@ -275,7 +287,7 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
 
   it should "override document schema" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
-    val table = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+    val table = randomString()
 
     val df = sql.read.grid.loadClass[Data]
     // persist with modified schema
@@ -299,6 +311,8 @@ class GigaSpacesDataFrameSpec extends FlatSpec with GsConfig with GigaSpaces wit
     }
     assert(thrown.getMessage equals "'class' must extend com.gigaspaces.spark.model.GridModel")
   }
+
+  def randomString() = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
 
 }
 

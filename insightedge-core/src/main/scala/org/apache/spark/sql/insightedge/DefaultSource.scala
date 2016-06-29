@@ -15,25 +15,25 @@ class DefaultSource
     with CreatableRelationProvider
     with Logging {
 
-  override def createRelation(sqlContext: SQLContext, parameters: Predef.Map[String, String]): BaseRelation = {
+  override def createRelation(sqlContext: SQLContext, parameters: Map[String, String]): BaseRelation = {
     buildRelation(sqlContext, parameters)
   }
 
-  override def createRelation(sqlContext: SQLContext, parameters: Predef.Map[String, String], schema: StructType): BaseRelation = {
+  override def createRelation(sqlContext: SQLContext, parameters: Map[String, String], schema: StructType): BaseRelation = {
     buildRelation(sqlContext, parameters, schema = Some(schema))
   }
 
   /**
     * This actually must save given df to the source and create relation on top of saved data
     */
-  override def createRelation(sqlContext: SQLContext, mode: SaveMode, parameters: Predef.Map[String, String], data: DataFrame): BaseRelation = {
+  override def createRelation(sqlContext: SQLContext, mode: SaveMode, parameters: Map[String, String], data: DataFrame): BaseRelation = {
     val relation = buildRelation(sqlContext, parameters, Some(data.schema))
     relation.insert(data, mode)
     relation
   }
 
   private def buildRelation(sqlContext: SQLContext,
-                            parameters: Predef.Map[String, String],
+                            parameters: Map[String, String],
                             schema: Option[StructType] = None
                            ): GigaspacesAbstractRelation = {
     val readBufferSize = parameters.get(DefaultSource.InsightEdgeReadBufferSizeProperty).map(v => v.toInt).getOrElse(InsightEdgeReadBufferSizeDefault)
@@ -46,7 +46,7 @@ class DefaultSource
       }
       new GigaspacesClassRelation(sqlContext, tag.asInstanceOf[ClassTag[GridModel]], options)
     } else if (parameters.contains(InsightEdgeCollectionProperty) || parameters.contains("path")) {
-      val collection = parameters.getOrElse(InsightEdgeClassProperty, parameters("path"))
+      val collection = parameters.getOrElse(InsightEdgeCollectionProperty, parameters("path"))
       new GigaspacesDocumentRelation(sqlContext, collection, options)
 
     } else {
