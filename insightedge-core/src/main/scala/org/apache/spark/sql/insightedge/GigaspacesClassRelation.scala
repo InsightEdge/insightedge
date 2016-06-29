@@ -24,23 +24,24 @@ private[insightedge] case class GigaspacesClassRelation(
                                                        )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  lazy val (structType: StructType, classDefLanguage: ClassDefLang) = {
+  lazy val structType: StructType = {
     // we don't know if space class declared in Scala or Java. So we just try both. There might be a better way to infer that.
-    val (struct, lang) = Try {
+    val struct = Try {
       // try with Scala reflection
+      // this will fail if Scala class has embedded Java properties, e.g. Geospatial shapes
       val reflectionType = universe.runtimeMirror(this.getClass.getClassLoader).classSymbol(clazz.runtimeClass).toType
       val dataType = ScalaReflection.schemaFor(reflectionType).dataType
-      (dataType.asInstanceOf[StructType], ScalaClassDef)
+      dataType
     } getOrElse {
       // fallback to Java
       val (dataType, _) = JavaTypeInference.inferDataType(clazz.runtimeClass)
-      (dataType.asInstanceOf[StructType], JavaClassDef)
+      dataType
     }
 
     // apply custom UDTs for classes where annotating is not possible
     val updatedStructType = enhanceWithUdts(struct, clazz.runtimeClass)
 
-    (updatedStructType.asInstanceOf[StructType], lang)
+    updatedStructType.asInstanceOf[StructType]
   }
 
   override def buildSchema(): StructType = structType
@@ -66,7 +67,9 @@ private[insightedge] case class GigaspacesClassRelation(
   }
 
   /**
-    * Returns a converter that converts any bean with given schema to the Row, has recursive calls for StructTypes
+    * Returns a converter that converts any bean with given schema to the Row.
+    *
+    * Recursive for embedded properties (StructType).
     */
   private def beanToRowConverter(clazzName: String, schema: StructType, fields: Seq[String]): (Any => Row) = {
     // BeanInfo is not serializable so we must rediscover it remotely for each partition.
@@ -78,6 +81,7 @@ private[insightedge] case class GigaspacesClassRelation(
       .filter { f => attributeNames.contains(f.name) }
       .map { f => AttributeReference(f.name, f.dataType, f.nullable)() }
 
+    // Getter methods for Product (case classes) have same names as attributes
     val gettersMap = clazz match {
       case c if classOf[Product].isAssignableFrom(clazz) =>
         attributeNames
@@ -103,11 +107,4 @@ private[insightedge] case class GigaspacesClassRelation(
   }
 
 }
-
-/** Language used to define Space Class **/
-sealed trait ClassDefLang
-
-case object ScalaClassDef extends ClassDefLang
-
-case object JavaClassDef extends ClassDefLang
 
