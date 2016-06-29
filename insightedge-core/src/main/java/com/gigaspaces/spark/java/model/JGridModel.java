@@ -1,12 +1,10 @@
-package com.gigaspaces.spark.japi;
+package com.gigaspaces.spark.java.model;
 
 import com.gigaspaces.annotation.pojo.SpaceIndex;
+import com.gigaspaces.spark.context.GigaSpacesSparkContext;
 import com.gigaspaces.spark.model.GridModel;
-import com.gigaspaces.spark.utils.GigaSpaceUtils;
-import org.apache.spark.SparkContext;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * A port of {@link GridModel} for Java API.
@@ -18,6 +16,8 @@ public class JGridModel implements GridModel, Serializable {
     private Integer metaBucketId;
 
     public Integer metaBucketId() {
+        GigaSpacesSparkContext sc = new GigaSpacesSparkContext(null);
+
         return metaBucketId;
     }
 

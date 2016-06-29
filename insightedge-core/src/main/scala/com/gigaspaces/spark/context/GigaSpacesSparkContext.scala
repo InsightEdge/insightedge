@@ -1,5 +1,6 @@
 package com.gigaspaces.spark.context
 
+import com.gigaspaces.spark.context.GigaSpacesSparkContext._
 import com.gigaspaces.spark.mllib.MLModel
 import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.{GigaSpacesBinaryRDD, GigaSpacesRDD, GigaSpacesSqlRDD}
@@ -13,9 +14,6 @@ import scala.reflect._
 import scala.util.Random
 
 class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializable {
-
-  val DefaultReadRddBufferSize = 1000
-  val DefaultDriverWriteBatchSize = 1000
 
   lazy val gridSqlContext = new SQLContext(sc)
 
@@ -131,5 +129,12 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   def stopGigaSpacesContext() = {
     sc.stop()
   }
+
+}
+
+object GigaSpacesSparkContext {
+
+  val DefaultReadRddBufferSize = 1000
+  val DefaultDriverWriteBatchSize = 1000
 
 }

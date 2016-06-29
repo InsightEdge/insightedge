@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge;
 
 import com.gigaspaces.annotation.pojo.SpaceId;
-import com.gigaspaces.spark.japi.JGridModel;
+import com.gigaspaces.spark.java.model.JGridModel;
 
 import java.io.Serializable;
 

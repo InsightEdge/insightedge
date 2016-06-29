@@ -1,21 +1,22 @@
 package com.gigaspaces.spark.python
 
-import com.gigaspaces.spark.context.GigaSpacesSparkContext
 import com.gigaspaces.spark.java.JavaGigaSpacesSparkContext
 import com.gigaspaces.spark.model.GridModel
-import com.gigaspaces.spark.rdd.GigaSpacesRDD
 import com.gigaspaces.spark.utils.ClassLoadUtils
-
-import scala.reflect.ClassTag
+import org.apache.spark.api.java.JavaRDD
+import org.apache.spark.python.SerDeUtilDelegate
 
 /**
   * @author Oleksiy_Dyagilev
   */
-class PythonGigaSpacesSparkContext(gsSparkContext: GigaSpacesSparkContext) extends JavaGigaSpacesSparkContext(gsSparkContext) {
+class PythonGigaSpacesSparkContext(javaGsSparkContext: JavaGigaSpacesSparkContext) {
 
-  def gridRdd(fullClassName: String): GigaSpacesRDD[GridModel] = {
-    val classTag = ClassLoadUtils.loadClass(fullClassName).asInstanceOf[ClassTag[GridModel]]
-    gsSparkContext.gridRdd()(classTag)
+  // TODO: parameters like splitCount
+  def gridRdd(fullClassName: String): JavaRDD[Array[Byte]] = {
+    val classTag = ClassLoadUtils.loadClass(fullClassName)
+    val clazz: Class[GridModel] = classTag.runtimeClass.asInstanceOf[Class[GridModel]]
+    val jRDD: JavaRDD[GridModel] = javaGsSparkContext.gridRdd(clazz)
+    SerDeUtilDelegate.javaToPython(jRDD)
   }
 
 }

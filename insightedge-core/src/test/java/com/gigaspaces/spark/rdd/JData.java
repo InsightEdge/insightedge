@@ -2,12 +2,8 @@ package com.gigaspaces.spark.rdd;
 
 import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
-import com.gigaspaces.annotation.pojo.SpaceIndex;
 import com.gigaspaces.annotation.pojo.SpaceRouting;
-import com.gigaspaces.spark.japi.JGridModel;
-import com.gigaspaces.spark.model.GridModel;
-
-import java.io.Serializable;
+import com.gigaspaces.spark.java.model.JGridModel;
 
 /**
  * Space class for the tests that work with Java POJOs. Mirror of Data.scala
