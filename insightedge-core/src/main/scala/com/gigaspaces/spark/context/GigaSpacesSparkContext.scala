@@ -17,11 +17,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   val DefaultReadRddBufferSize = 1000
   val DefaultDriverWriteBatchSize = 1000
 
-  lazy val gridSqlContext = {
-    val sql = new SQLContext(sc)
-    sql.experimental.extraStrategies = (InsightEdgeSourceStrategy :: Nil) ++ sql.experimental.extraStrategies
-    sql
-  }
+  lazy val gridSqlContext = new SQLContext(sc)
 
   val gsConfig = {
     val sparkConf = sc.getConf
@@ -69,7 +65,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @return `DataFrame` instance
     */
   def gridDataFrame[R <: GridModel : ClassTag](readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = {
-    gridSqlContext.read.grid.loadClass[R]
+    gridSqlContext.read.option(DefaultSource.InsightEdgeReadBufferSizeProperty, readRddBufferSize.toString).grid.loadClass[R]
   }
 
   /**

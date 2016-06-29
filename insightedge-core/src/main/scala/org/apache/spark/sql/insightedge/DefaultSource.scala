@@ -36,7 +36,11 @@ class DefaultSource
   private def buildRelation(sqlContext: SQLContext,
                             parameters: Predef.Map[String, String],
                             schema: Option[StructType] = None
-                           ): GigaspacesAbstractRelation = {
+                           ): GigaspacesAbstractRelation = synchronized {
+    if (!sqlContext.experimental.extraStrategies.contains(InsightEdgeSourceStrategy)) {
+      sqlContext.experimental.extraStrategies = (InsightEdgeSourceStrategy :: Nil) ++ sqlContext.experimental.extraStrategies
+    }
+
     val readBufferSize = parameters.get(DefaultSource.InsightEdgeReadBufferSizeProperty).map(v => v.toInt).getOrElse(InsightEdgeReadBufferSizeDefault)
     val options = InsightEdgeSourceOptions(readBufferSize, schema)
 
