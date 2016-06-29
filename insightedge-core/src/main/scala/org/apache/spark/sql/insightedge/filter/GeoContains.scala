@@ -1,8 +1,9 @@
 package org.apache.spark.sql.insightedge.filter
 
 import org.apache.spark.sql.sources.Filter
+import org.openspaces.spatial.shapes.Shape
 
 /**
   * @author Leonid_Poliakov
   */
-case class SubtypeOf(attribute: String, value: Class[_]) extends Filter
+case class GeoContains(attribute: String, value: Shape) extends Filter

@@ -2,7 +2,7 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
-import org.apache.spark.sql.insightedge.filter.{GeoIntersects, SubtypeOf}
+import org.apache.spark.sql.insightedge.filter.{GeoIntersects}
 import org.apache.spark.sql.sources._
 import org.openspaces.spatial.ShapeFactory.{circle, point}
 import org.scalatest.FunSpec
@@ -92,9 +92,6 @@ class GigaSpacesAbstractRelationSpec extends FunSpec with GsConfig with GigaSpac
     )
     assert(IsNotNull("key")
       gives("(key is not null)", Seq())
-    )
-    assert(SubtypeOf("key", classOf[String])
-      gives("(key instanceOf ?)", Seq("java.lang.String"))
     )
     assert(GeoIntersects("key", circle(point(0, 0), 1))
       gives("(key spatial:intersects ?)", Seq(circle(point(0, 0), 1)))

@@ -4,7 +4,7 @@ import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.types._
 import org.openspaces.spatial.shapes.Point
 
-object PointUDT extends UserDefinedType[Point] {
+class PointUDT extends UserDefinedType[Point] with Serializable {
 
   override def sqlType: DataType = ArrayType(DoubleType, containsNull = false)
 

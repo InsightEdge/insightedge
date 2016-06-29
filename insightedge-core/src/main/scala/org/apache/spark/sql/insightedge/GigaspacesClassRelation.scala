@@ -1,7 +1,6 @@
 package org.apache.spark.sql.insightedge
 
 import java.beans.Introspector
-import java.lang.reflect.Method
 
 import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.GigaSpacesSqlRDD

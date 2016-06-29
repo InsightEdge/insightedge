@@ -39,8 +39,9 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
     */
   protected[sql] def translateFilter(predicate: Expression): Option[Filter] = {
     predicate match {
-      case expression.SubtypeOf(a: Attribute, Literal(v, t)) => Some(filter.SubtypeOf(a.name, convertToScala(v, t).asInstanceOf[Class[_]]))
       case expression.GeoIntersects(a: Attribute, Literal(v, t)) => Some(filter.GeoIntersects(a.name, convertToScala(v, t).asInstanceOf[Shape]))
+      case expression.GeoContains(a: Attribute, Literal(v, t)) => Some(filter.GeoContains(a.name, convertToScala(v, t).asInstanceOf[Shape]))
+      case expression.GeoWithin(a: Attribute, Literal(v, t)) => Some(filter.GeoWithin(a.name, convertToScala(v, t).asInstanceOf[Shape]))
       case _ => DataSourceStrategy.translateFilter(predicate)
     }
   }
