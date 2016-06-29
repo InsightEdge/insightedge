@@ -1,7 +1,7 @@
 package com.gigaspaces.spark.rdd
 
 import com.gigaspaces.spark.context.GigaSpacesConfig
-import com.gigaspaces.spark.model.{GridBinaryModel, GridModel}
+import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory}
 import org.apache.spark.rdd.RDD
 
@@ -45,29 +45,6 @@ class SaveRddToGridExtension[T: ClassTag](rdd: RDD[T]) extends Serializable {
         space.writeMultiple(batchArray)
       }
     }
-  }
-
-  /**
-    * Experimental. TODO: cleanup
-    */
-  def saveToGridBinary(binaryArraySize: Int = 1000) = {
-    val bucketIdSeq = new BucketIdSeq()
-    // TODO: proper name, perf/uniqueness
-    val clazzString = classTag[T].runtimeClass.getName
-
-    rdd.foreachPartition { partition =>
-      val space = GigaSpaceFactory.getOrCreateClustered(gsConfig)
-      val splits = partition.grouped(binaryArraySize)
-
-      splits.foreach(split => {
-        val itemsArray = split.asInstanceOf[Seq[Object]].toArray
-        val gridBinaryModel = new GridBinaryModel(clazzString, itemsArray)
-        gridBinaryModel.metaBucketId = bucketIdSeq.next()
-
-        space.write(gridBinaryModel)
-      })
-    }
-
   }
 
 }
