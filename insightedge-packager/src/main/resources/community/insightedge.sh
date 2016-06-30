@@ -399,6 +399,7 @@ start_grid_slave() {
     local size=$7
     local instances=$8
 
+    echo ""
     step_title "--- Starting Gigaspaces datagrid instances (locator: $locator, group: $group, heap: $size, instances: $instances)"
     $home/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --name $space_name --topology $topology --size $size --instances $instances
     step_title "--- Gigaspaces datagrid instances started"

@@ -1,0 +1,228 @@
+{
+  "paragraphs": [
+    {
+      "title": "Load SF salaries dataset from file",
+      "text": "%pyspark\nimport os\njsonFilePath \u003d os.environ[\"ZEPPELIN_HOME\"] + \"/../data/sf_salaries_sample.json\"\njsonDf \u003d sqlContext.read.json(jsonFilePath)\n",
+      "dateUpdated": "Jun 30, 2016 7:43:18 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "title": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467286979862_-111567112",
+      "id": "20160630-074259_265567721",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT"
+      },
+      "dateCreated": "Jun 30, 2016 7:42:59 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Save DataFrame to grid",
+      "text": "%pyspark\njsonDf.write.format(\"org.apache.spark.sql.insightedge\").mode(\"overwrite\").save(\"salaries\")\n",
+      "dateUpdated": "Jun 30, 2016 7:43:18 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467286979863_-111951861",
+      "id": "20160630-074259_250547557",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT"
+      },
+      "dateCreated": "Jun 30, 2016 7:42:59 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Load DataFrame From Grid",
+      "text": "%pyspark\ngridDf \u003d sqlContext.read.format(\"org.apache.spark.sql.insightedge\").option(\"collection\", \"salaries\").load()\ngridDf.show()\n",
+      "dateUpdated": "Jun 30, 2016 7:43:18 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467286979863_-111951861",
+      "id": "20160630-074259_1790002902",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT"
+      },
+      "dateCreated": "Jun 30, 2016 7:42:59 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Register table",
+      "text": "%pyspark\ngridDf.registerTempTable(\"salaries\")\n",
+      "dateUpdated": "Jun 30, 2016 7:43:18 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "title": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467286979863_-111951861",
+      "id": "20160630-074259_1611467628",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT"
+      },
+      "dateCreated": "Jun 30, 2016 7:42:59 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Query Table with SQL",
+      "text": "%sql\nSELECT JobTitle, AVG(TotalPay) as AveragePay\nFROM salaries\nWHERE Year \u003d 2012\nGROUP BY JobTitle\nORDER BY AVG(TotalPay) DESC\nLIMIT 5\n",
+      "dateUpdated": "Jun 30, 2016 7:43:19 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "multiBarChart",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "JobTitle",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "AveragePay",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "JobTitle",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "AveragePay",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/sql",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467286979864_-113875605",
+      "id": "20160630-074259_1310214641",
+      "result": {
+      },
+      "dateCreated": "Jun 30, 2016 7:42:59 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "dateUpdated": "Jun 30, 2016 7:43:19 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467286979864_-113875605",
+      "id": "20160630-074259_946528626",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT"
+      },
+      "dateCreated": "Jun 30, 2016 7:42:59 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "InsightEdge python example",
+  "id": "INSIGHTEDGE-PYTHON",
+  "angularObjects": {
+    "2BQH22SED": [],
+    "2BS18TM3E": []
+  },
+  "config": {},
+  "info": {}
+}
