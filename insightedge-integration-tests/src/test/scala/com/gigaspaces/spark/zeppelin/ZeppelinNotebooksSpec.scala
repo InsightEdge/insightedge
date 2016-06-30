@@ -33,6 +33,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   def runNotebook(notebookId: String) = {
     println(s"Running notebook $notebookId ...")
+
     def bindInterpreter() = {
       val bindUrl = s"$zeppelinUrl/api/notebook/interpreter/bind/$notebookId"
       val interpreters = wsClient.url(bindUrl).get()
