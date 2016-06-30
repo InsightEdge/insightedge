@@ -4,6 +4,10 @@ import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits._
 import com.gigaspaces.spark.utils._
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.insightedge.JSpatialData
+import org.apache.spark.sql.insightedge.model.SpatialData
+import org.openspaces.spatial.ShapeFactory
+import org.openspaces.spatial.ShapeFactory._
 import org.scalatest._
 
 class GigaSpacesRDDSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
@@ -81,6 +85,22 @@ class GigaSpacesRDDSpec extends FlatSpec with GsConfig with GigaSpaces with Spar
     assert(rdd.getNumPartitions == 4 * 2)
     assert(GigaSpaceFactory.clusteredCacheSize() == 1)
     assert(GigaSpaceFactory.directCacheSize() == 2)
+  }
+
+  it should "read spatial data" taggedAs ScalaSpaceClass in {
+    val searchedPoint = point(0, 0)
+    spaceProxy.write(randomBucket(SpatialData(id = null, routing = 1, null, null, searchedPoint)))
+
+    assert(sc.gridSql[SpatialData]("point spatial:within ?", Seq(rectangle(-1, 1, -1, 1))).count() == 1)
+    assert(sc.gridSql[SpatialData]("point spatial:within ?", Seq(rectangle(1, 2, -1, 1))).count() == 0)
+  }
+
+  it should "read spatial data [java]" taggedAs JavaSpaceClass in {
+    val searchedPoint = point(0, 0)
+    spaceProxy.write(randomBucket(new JSpatialData(1L, searchedPoint)))
+
+    assert(sc.gridSql[JSpatialData]("point spatial:within ?", Seq(rectangle(-1, 1, -1, 1))).count() == 1)
+    assert(sc.gridSql[JSpatialData]("point spatial:within ?", Seq(rectangle(1, 2, -1, 1))).count() == 0)
   }
 
 }
