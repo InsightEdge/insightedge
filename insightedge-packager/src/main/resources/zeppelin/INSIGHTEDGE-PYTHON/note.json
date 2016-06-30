@@ -27,12 +27,9 @@
       "id": "20160630-074259_265567721",
       "result": {
         "code": "SUCCESS",
-        "type": "TEXT",
-        "msg": ""
+        "type": "TEXT"
       },
       "dateCreated": "Jun 30, 2016 7:42:59 AM",
-      "dateStarted": "Jun 30, 2016 7:43:18 AM",
-      "dateFinished": "Jun 30, 2016 7:43:44 AM",
       "status": "READY",
       "progressUpdateIntervalMs": 500
     },
@@ -63,18 +60,15 @@
       "id": "20160630-074259_250547557",
       "result": {
         "code": "SUCCESS",
-        "type": "TEXT",
-        "msg": ""
+        "type": "TEXT"
       },
       "dateCreated": "Jun 30, 2016 7:42:59 AM",
-      "dateStarted": "Jun 30, 2016 7:43:21 AM",
-      "dateFinished": "Jun 30, 2016 7:43:51 AM",
       "status": "READY",
       "progressUpdateIntervalMs": 500
     },
     {
       "title": "Load DataFrame From Grid",
-      "text": "%pyspark\ngridDf \u003d sqlContext.read.format(\"org.apache.spark.sql.insightedge\").option(\"path\", \"salaries\").load()\ngridDf.cache()\ngridDf.show()\n",
+      "text": "%pyspark\ngridDf \u003d sqlContext.read.format(\"org.apache.spark.sql.insightedge\").option(\"collection\", \"salaries\").load()\ngridDf.show()\n",
       "dateUpdated": "Jun 30, 2016 7:43:18 AM",
       "config": {
         "colWidth": 12.0,
@@ -99,12 +93,9 @@
       "id": "20160630-074259_1790002902",
       "result": {
         "code": "SUCCESS",
-        "type": "TEXT",
-        "msg": "+-------------+---------+--------+-------------------+-----+--------------------+-----+--------+-----------+------+---------+----------------+----+\n|       Agency|  BasePay|Benefits|       EmployeeName|   Id|            JobTitle|Notes|OtherPay|OvertimePay|Status| TotalPay|TotalPayBenefits|Year|\n+-------------+---------+--------+-------------------+-----+--------------------+-----+--------+-----------+------+---------+----------------+----+\n|San Francisco|116956.71|40080.59|  William A Wyckoff|75187|         Firefighter|     |12719.76|   39767.03|      | 169443.5|       209524.09|2013|\n|San Francisco|163674.05|44660.91|     Renee J Pagano|75005|        Lieutenant 3|     | 2501.52|     2278.0|      |168453.57|       213114.48|2013|\n|San Francisco|153859.48|43777.92| Michael L Williams|74853|Eng/Arch/Landscap...|     |18333.45|      517.2|      |172710.13|       216488.05|2013|\n|San Francisco|166406.64|51442.08|     Diane C Putney|74780|  Nurse Practitioner|     |   250.0|        0.0|      |166656.64|       218098.72|2013|\n|San Francisco| 166528.0|54199.06|     Bruce R Storrs|74638|          Manager VI|     |     0.0|        0.0|      | 166528.0|       220727.06|2013|\n|San Francisco|143289.09|41042.05|  Matthew E Rodgers|74527|          Sergeant 3|     |23948.35|   14438.93|      |181676.37|       222718.42|2013|\n|San Francisco|143289.02|40804.34|   Michelle D Craig|74420|          Sergeant 3|     | 7625.38|   33760.59|      |184674.99|       225479.33|2013|\n|San Francisco| 166528.1|55542.16|   Rafael J Centeno|74304|          Manager VI|     |  6451.0|        0.0|      | 172979.1|       228521.26|2013|\n|San Francisco|126233.99|43459.55|      Brian Y Kyono|74181|         Firefighter|     | 17807.6|   43096.47|      |187138.06|       230597.61|2013|\n|San Francisco|137749.49|37741.24|Celerina V Valiente|74050|    Registered Nurse|     |40932.37|   16749.14|      | 195431.0|       233172.24|2013|\n|San Francisco| 177916.8|49720.97| Mojgan  Yousefkhan|73920|Engineer/Architec...|     | 8245.91|        0.0|      |186162.71|       235883.68|2013|\n|San Francisco|178273.03|57281.07|       Joseph  John|73812|         Manager VII|     |  4000.0|        0.0|      |182273.03|        239554.1|2013|\n|San Francisco|116956.71| 41339.9|  Robert A Muhammad|73705|         Firefighter|     |16831.01|   69380.44|      |203168.16|       244508.06|2013|\n|San Francisco|143289.05|41603.75|   Michael J Browne|73561|          Sergeant 3|     |27901.19|   38515.66|      | 209705.9|       251309.65|2013|\n|San Francisco|143289.08|40813.34|       Damon M Hart|73489|          Sergeant 3|     |27731.29|    41904.6|      |212924.97|       253738.31|2013|\n|San Francisco|115893.48|41044.37|  Michael S Castain|73374|         Firefighter|     |19625.63|   84674.27|      |220193.38|       261237.75|2013|\n|San Francisco| 203710.0|54929.86| Timothy C Sinclair|73254|Senior Physician ...|     |10186.85|        0.0|      |213896.85|       268826.71|2013|\n|San Francisco|206820.01|53605.92|   Sharon  Ferrigno|73159|           Captain 3|     | 9774.44|    6132.04|      |222726.49|       276332.41|2013|\n|San Francisco|156585.18|50124.76|      Rick W Gering|73069|Captain, Fire Sup...|     |20924.01|   63547.24|      |241056.43|       291181.19|2013|\n|San Francisco| 155174.5|49073.13|  Joseph D Driscoll|72975|Captain, Fire Sup...|     |29079.97|   98112.27|      |282366.74|       331439.87|2013|\n+-------------+---------+--------+-------------------+-----+--------------------+-----+--------+-----------+------+---------+----------------+----+\nonly showing top 20 rows\n\n"
+        "type": "TEXT"
       },
       "dateCreated": "Jun 30, 2016 7:42:59 AM",
-      "dateStarted": "Jun 30, 2016 7:43:45 AM",
-      "dateFinished": "Jun 30, 2016 7:43:53 AM",
       "status": "READY",
       "progressUpdateIntervalMs": 500
     },
@@ -135,12 +126,9 @@
       "id": "20160630-074259_1611467628",
       "result": {
         "code": "SUCCESS",
-        "type": "TEXT",
-        "msg": ""
+        "type": "TEXT"
       },
       "dateCreated": "Jun 30, 2016 7:42:59 AM",
-      "dateStarted": "Jun 30, 2016 7:43:51 AM",
-      "dateFinished": "Jun 30, 2016 7:43:53 AM",
       "status": "READY",
       "progressUpdateIntervalMs": 500
     },
@@ -193,13 +181,8 @@
       "jobName": "paragraph_1467286979864_-113875605",
       "id": "20160630-074259_1310214641",
       "result": {
-        "code": "SUCCESS",
-        "type": "TABLE",
-        "msg": "JobTitle\tAveragePay\nChief of Police\t321552.11\nExecutive Contract Employee\t284379.02\nDept Head V\t246601.1\nAsst Chf of Dept (Fire Dept)\t246087.385\nPort Director\t241568.64\n"
       },
       "dateCreated": "Jun 30, 2016 7:42:59 AM",
-      "dateStarted": "Jun 30, 2016 7:43:53 AM",
-      "dateFinished": "Jun 30, 2016 7:44:02 AM",
       "status": "READY",
       "progressUpdateIntervalMs": 500
     },
@@ -230,8 +213,6 @@
         "type": "TEXT"
       },
       "dateCreated": "Jun 30, 2016 7:42:59 AM",
-      "dateStarted": "Jun 30, 2016 7:43:53 AM",
-      "dateFinished": "Jun 30, 2016 7:44:02 AM",
       "status": "READY",
       "progressUpdateIntervalMs": 500
     }
