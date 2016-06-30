@@ -64,6 +64,10 @@ object Launcher {
       copy(s"$examples", s"$output/quickstart/insightedge-examples.jar")
     }
 
+    run("Adding datasets") {
+      copy(s"$resources/data/", s"$output/data")
+    }
+
     run("Unpacking Gigaspaces datagrid") {
       unzip(grid, s"$output/datagrid", cutRootFolder = true)
     }
