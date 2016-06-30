@@ -2,12 +2,12 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
-import org.apache.spark.sql.insightedge.filter.{GeoIntersects}
+import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoWithin, GeoIntersects}
 import org.apache.spark.sql.sources._
 import org.openspaces.spatial.ShapeFactory.{circle, point}
 import org.scalatest.FunSpec
 
-class GigaSpacesAbstractRelationSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
+class DataFrameRelationQuerySpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
   it("should handle simple filters") {
     val unhandled = unsupportedFilters(Array(
@@ -93,8 +93,15 @@ class GigaSpacesAbstractRelationSpec extends FunSpec with GsConfig with GigaSpac
     assert(IsNotNull("key")
       gives("(key is not null)", Seq())
     )
+
     assert(GeoIntersects("key", circle(point(0, 0), 1))
       gives("(key spatial:intersects ?)", Seq(circle(point(0, 0), 1)))
+    )
+    assert(GeoWithin("key", circle(point(0, 0), 1))
+      gives("(key spatial:within ?)", Seq(circle(point(0, 0), 1)))
+    )
+    assert(GeoContains("key", circle(point(0, 0), 1))
+      gives("(key spatial:contains ?)", Seq(circle(point(0, 0), 1)))
     )
   }
 

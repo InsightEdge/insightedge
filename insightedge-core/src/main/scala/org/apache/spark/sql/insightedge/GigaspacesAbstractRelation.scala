@@ -81,6 +81,8 @@ object GigaspacesAbstractRelation {
       case _: StringEndsWith => false
       case _: StringContains => false
       case _: GeoIntersects => true
+      case _: GeoWithin => true
+      case _: GeoContains => true
       case other => false
     }
   }

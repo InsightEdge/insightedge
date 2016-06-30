@@ -1,4 +1,4 @@
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.model
 
 import com.gigaspaces.scala.annotation._
 import com.gigaspaces.spark.model.GridModel

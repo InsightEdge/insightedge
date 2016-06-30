@@ -11,11 +11,11 @@ import org.openspaces.spatial.{ShapeFactory => factory}
 import scala.collection.JavaConverters._
 
 object GeoUtils {
-  val pointId = 0
-  val circleId = 1
-  val rectangleId = 2
-  val polygonId = 3
-  val lineStringId = 4
+  val pointId = 0.0
+  val circleId = 1.0
+  val rectangleId = 2.0
+  val polygonId = 3.0
+  val lineStringId = 4.0
 
   lazy val defaultContext = createDefaultSpatialContext()
 
@@ -52,7 +52,7 @@ object GeoUtils {
   def unpackSpatialShape(anyData: Any, context: SpatialContext): SShape = {
     anyData match {
       case data: ArrayData =>
-        data.getInt(0) match {
+        data.getDouble(0) match {
           case this.pointId =>
             context.makePoint(data.getDouble(1), data.getDouble(2))
           case this.circleId =>
