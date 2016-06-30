@@ -9,25 +9,32 @@ import play.api.libs.json.{JsArray, JsObject, JsString}
 import scala.concurrent.duration._
 
 /**
-  * Verifies that Zeppelin Tutorial works in a demo mode
+  * Verifies that Zeppelin notebooks work in a demo mode
   *
   * @author Oleksiy_Dyagilev
   */
-class ZeppelinTutorialSpec extends FlatSpec with InsightedgeDemoModeDocker {
+class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
-  val TutorialId = "INSIGHTEDGE-BASIC"
+  val TutorialNotebookId = "INSIGHTEDGE-BASIC"
+  val PythonNotebookId = "INSIGHTEDGE-PYTHON"
 
-  "Zeppelin" should "have InsightEdge Basics tutorial" in {
+  "Zeppelin" should "have InsightEdge notebooks" in {
     val resp = wsClient.url(s"$zeppelinUrl/api/notebook").get()
     val notebookIds = jsonBody(resp) \\ "id"
 
-    assert(notebookIds.contains(JsString(TutorialId)))
+    assert(notebookIds.contains(JsString(TutorialNotebookId)))
+    assert(notebookIds.contains(JsString(PythonNotebookId)))
   }
 
-  it should "be possible to run InsightEdge Basics tutorial" in {
+  it should "be possible to run InsightEdge notebooks" in {
+    runNotebook(TutorialNotebookId)
+    runNotebook(PythonNotebookId)
+  }
 
+  def runNotebook(notebookId: String) = {
+    println(s"Running notebook $notebookId ...")
     def bindInterpreter() = {
-      val bindUrl = s"$zeppelinUrl/api/notebook/interpreter/bind/$TutorialId"
+      val bindUrl = s"$zeppelinUrl/api/notebook/interpreter/bind/$notebookId"
       val interpreters = wsClient.url(bindUrl).get()
       val interpreterIds = jsonBody(interpreters) \\ "id"
       val bindResp = wsClient.url(bindUrl).put(JsArray(interpreterIds))
@@ -36,7 +43,7 @@ class ZeppelinTutorialSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
     bindInterpreter()
 
-    val notebookJobUrl = s"$zeppelinUrl/api/notebook/job/$TutorialId"
+    val notebookJobUrl = s"$zeppelinUrl/api/notebook/job/$notebookId"
 
     val notebookBeforeRun = jsonBody(
       wsClient.url(notebookJobUrl).get()
