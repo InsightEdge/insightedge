@@ -50,46 +50,4 @@ class DataFrameNestedQuerySpec extends FlatSpec with GsConfig with GigaSpaces wi
     unwrapDf.printSchema()
   }
 
-  ignore should "support nested properties in udt [java]" taggedAs JavaSpaceClass in {
-    sc.parallelize(Seq(
-      new JDefinedPerson(null, "Paul", 30, new JDefinedAddress("Columbus", "OH")),
-      new JDefinedPerson(null, "Mike", 25, new JDefinedAddress("Buffalo", "NY")),
-      new JDefinedPerson(null, "John", 20, new JDefinedAddress("Charlotte", "NC")),
-      new JDefinedPerson(null, "Silvia", 27, new JDefinedAddress("Charlotte", "NC"))
-    )).saveToGrid()
-
-    val df = sql.read.grid.loadClass[JDefinedPerson]
-    df.printSchema()
-    assert(df.count() == 4)
-    assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
-
-    df.registerTempTable("people")
-
-    val unwrapDf = sql.sql("select address.city as city, address.state as state from people")
-    val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
-    assert(countByCity("Charlotte") == 2)
-    unwrapDf.printSchema()
-  }
-
-  it should "support nested properties in products [java]" taggedAs JavaSpaceClass in {
-    sc.parallelize(Seq(
-      new JProductPerson(null, "Paul", 30, new JProductAddress("Columbus", "OH")),
-      new JProductPerson(null, "Mike", 25, new JProductAddress("Buffalo", "NY")),
-      new JProductPerson(null, "John", 20, new JProductAddress("Charlotte", "NC")),
-      new JProductPerson(null, "Silvia", 27, new JProductAddress("Charlotte", "NC"))
-    )).saveToGrid()
-
-    val df = sql.read.grid.loadClass[JProductPerson]
-    df.printSchema()
-    assert(df.count() == 4)
-    assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
-
-    df.registerTempTable("people")
-
-    val unwrapDf = sql.sql("select address.city as city, address.state as state from people")
-    val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
-    assert(countByCity("Charlotte") == 2)
-    unwrapDf.printSchema()
-  }
-
 }

@@ -1,12 +1,13 @@
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.relation
 
 import java.beans.Introspector
 
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
+import org.apache.spark.sql.insightedge.InsightEdgeSourceOptions
 import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}
+import org.apache.spark.sql.insightedge.relation.GigaspacesAbstractRelation._
 import org.apache.spark.sql.insightedge.udt._
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.{DataType, StructField, StructType, UserDefinedType}

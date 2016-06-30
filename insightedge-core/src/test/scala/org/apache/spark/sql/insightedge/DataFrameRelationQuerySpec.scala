@@ -1,7 +1,8 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
+import org.apache.spark.sql.insightedge.relation.GigaspacesAbstractRelation
+import GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoWithin, GeoIntersects}
 import org.apache.spark.sql.sources._
 import org.openspaces.spatial.ShapeFactory.{circle, point}

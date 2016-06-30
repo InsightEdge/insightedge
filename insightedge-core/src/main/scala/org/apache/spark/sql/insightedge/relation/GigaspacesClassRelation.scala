@@ -1,4 +1,4 @@
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.relation
 
 import java.beans.Introspector
 
@@ -7,14 +7,11 @@ import com.gigaspaces.spark.rdd.GigaSpacesSqlRDD
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
 import org.apache.spark.sql.catalyst.expressions.AttributeReference
-import org.apache.spark.sql.catalyst.{JavaTypeInference, ScalaReflection}
-import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.enhanceWithUdts
+import org.apache.spark.sql.insightedge.InsightEdgeSourceOptions
 import org.apache.spark.sql.types._
 import org.apache.spark.util.Utils
 
 import scala.reflect.ClassTag
-import scala.reflect.runtime.universe
-import scala.util.Try
 
 private[insightedge] case class GigaspacesClassRelation(
                                                          context: SQLContext,
@@ -24,23 +21,8 @@ private[insightedge] case class GigaspacesClassRelation(
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
   lazy val structType: StructType = {
-    // we don't know if space class declared in Scala or Java. So we just try both. There might be a better way to infer that.
-    val struct = Try {
-      // try with Scala reflection
-      // this will fail if Scala class has embedded Java properties, e.g. Geospatial shapes
-      val reflectionType = universe.runtimeMirror(this.getClass.getClassLoader).classSymbol(clazz.runtimeClass).toType
-      val dataType = ScalaReflection.schemaFor(reflectionType).dataType
-      dataType
-    } getOrElse {
-      // fallback to Java
-      val (dataType, _) = JavaTypeInference.inferDataType(clazz.runtimeClass)
-      dataType
-    }
-
-    // apply custom UDTs for classes where annotating is not possible
-    val updatedStructType = enhanceWithUdts(struct, clazz.runtimeClass)
-
-    updatedStructType.asInstanceOf[StructType]
+    val schema = SchemaInference.schemaFor(clazz.runtimeClass, (c: Class[_]) => GigaspacesAbstractRelation.udtFor(c))
+    schema.dataType.asInstanceOf[StructType]
   }
 
   override def buildSchema(): StructType = structType

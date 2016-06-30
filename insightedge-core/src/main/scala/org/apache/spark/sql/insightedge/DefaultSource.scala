@@ -3,6 +3,7 @@ package org.apache.spark.sql.insightedge
 import com.gigaspaces.spark.model.GridModel
 import org.apache.spark.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
+import org.apache.spark.sql.insightedge.relation.{GigaspacesDocumentRelation, GigaspacesClassRelation, GigaspacesAbstractRelation}
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}

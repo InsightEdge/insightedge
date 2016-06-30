@@ -10,6 +10,7 @@ import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan
 import org.apache.spark.sql.catalyst.{InternalRow, expressions}
 import org.apache.spark.sql.execution.PhysicalRDD._
 import org.apache.spark.sql.execution.datasources.{DataSourceStrategy, LogicalRelation}
+import org.apache.spark.sql.insightedge.relation.GridPrunedFilteredScan
 import org.apache.spark.sql.sources._
 import org.openspaces.spatial.shapes.Shape
 
