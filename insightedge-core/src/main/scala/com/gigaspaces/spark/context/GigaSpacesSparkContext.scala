@@ -2,7 +2,7 @@ package com.gigaspaces.spark.context
 
 import com.gigaspaces.spark.mllib.MLModel
 import com.gigaspaces.spark.model.GridModel
-import com.gigaspaces.spark.rdd.{GigaSpacesBinaryRDD, GigaSpacesRDD, GigaSpacesSqlRDD}
+import com.gigaspaces.spark.rdd.{GigaSpacesRDD, GigaSpacesSqlRDD}
 import com.gigaspaces.spark.utils.GigaSpaceUtils.DefaultSplitCount
 import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory, GigaSpaceUtils}
 import org.apache.spark.SparkContext
@@ -36,13 +36,6 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     */
   def gridRdd[R <: GridModel : ClassTag](splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadRddBufferSize): GigaSpacesRDD[R] = {
     new GigaSpacesRDD[R](gsConfig, sc, splitCount, readRddBufferSize)
-  }
-
-  /**
-    * Experimental. TODO: cleanup
-    */
-  def gridBinaryRdd[R <: GridModel : ClassTag](splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = 100): GigaSpacesBinaryRDD[R] = {
-    new GigaSpacesBinaryRDD[R](gsConfig, sc, splitCount, readRddBufferSize)
   }
 
   /**
