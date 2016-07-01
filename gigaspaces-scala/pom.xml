@@ -18,6 +18,10 @@
             <groupId>org.gigaspaces</groupId>
             <artifactId>xap-openspaces</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.gigaspaces</groupId>
+            <artifactId>xap-spatial</artifactId>
+        </dependency>
         <!-- Scala -->
         <dependency>
             <groupId>org.scala-lang</groupId>
