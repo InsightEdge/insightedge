@@ -15,6 +15,7 @@ case class SpatialEmbeddedData(
                                 var id: String,
 
                                 @BeanProperty
+                                @SpaceSpatialIndex(path = "point")
                                 var location: Location
                               ) extends GridModel {
 
@@ -22,4 +23,4 @@ case class SpatialEmbeddedData(
 
 }
 
-case class Location(point: Point)
+case class Location(@BeanProperty point: Point)
