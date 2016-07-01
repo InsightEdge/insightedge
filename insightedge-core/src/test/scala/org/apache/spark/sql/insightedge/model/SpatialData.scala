@@ -20,7 +20,6 @@ case class SpatialData(
                         var routing: Long,
 
                         @BeanProperty
-                        @SpaceSpatialIndex
                         var circle: Circle,
 
                         @BeanProperty

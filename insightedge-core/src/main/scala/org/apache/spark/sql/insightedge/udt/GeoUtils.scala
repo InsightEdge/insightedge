@@ -6,7 +6,7 @@ import com.spatial4j.core.shape.{Shape => SShape}
 import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
 import org.openspaces.spatial.shapes.{Circle => XCircle, LineString => XLineString, Point => XPoint, Polygon => XPolygon, Rectangle => XRectangle, Shape => XShape}
 import org.openspaces.spatial.spatial4j.Spatial4jShapeProvider
-import org.openspaces.spatial.{ShapeFactory => factory}
+import org.openspaces.spatial.ShapeFactory
 
 import scala.collection.JavaConverters._
 
@@ -75,33 +75,33 @@ object GeoUtils {
 
   /** Unpacks Spark data into XAP point. */
   def unpackXapPoint(data: ArrayData): XPoint = {
-    factory.point(data.getDouble(1), data.getDouble(2))
+    ShapeFactory.point(data.getDouble(1), data.getDouble(2))
   }
 
   /** Unpacks Spark data into XAP circle. */
   def unpackXapCircle(data: ArrayData): XCircle = {
-    factory.circle(factory.point(data.getDouble(1), data.getDouble(2)), data.getDouble(3))
+    ShapeFactory.circle(ShapeFactory.point(data.getDouble(1), data.getDouble(2)), data.getDouble(3))
   }
 
   /** Unpacks Spark data into XAP rectangle. */
   def unpackXapRectangle(data: ArrayData): XRectangle = {
-    factory.rectangle(data.getDouble(1), data.getDouble(2), data.getDouble(3), data.getDouble(4))
+    ShapeFactory.rectangle(data.getDouble(1), data.getDouble(2), data.getDouble(3), data.getDouble(4))
   }
 
   /** Unpacks Spark data into XAP polygon. */
   def unpackXapPolygon(data: ArrayData): XPolygon = {
     // 0 - shape type, 1 - points count, so offset = 2
-    val xapPoints = (0 until data.getInt(1)).map(index => factory.point(data.getDouble(index * 2 + 2), data.getDouble(index * 2 + 3)))
+    val xapPoints = (0 until data.getInt(1)).map(index => ShapeFactory.point(data.getDouble(index * 2 + 2), data.getDouble(index * 2 + 3)))
 
-    factory.polygon(xapPoints.asJava)
+    ShapeFactory.polygon(xapPoints.asJava)
   }
 
   /** Unpacks Spark data into XAP line string. */
   def unpackXapLineString(data: ArrayData): XLineString = {
     // 0 - shape type, 1 - points count, so offset = 2
-    val xapPoints = (0 until data.getInt(1)).map(index => factory.point(data.getDouble(index * 2 + 2), data.getDouble(index * 2 + 3)))
+    val xapPoints = (0 until data.getInt(1)).map(index => ShapeFactory.point(data.getDouble(index * 2 + 2), data.getDouble(index * 2 + 3)))
 
-    factory.lineString(xapPoints.asJava)
+    ShapeFactory.lineString(xapPoints.asJava)
   }
 
 }

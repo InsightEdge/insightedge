@@ -10,7 +10,9 @@ import org.apache.spark.util.Utils
 import scala.collection.Map
 
 /**
-  * Converts scala, java or mixed types to dataframe schema
+  * Converts scala, java or mixed types to dataframe schema.
+  *
+  * Is extended version of {@link org.apache.spark.sql.catalyst.ScalaReflection}
   */
 object SchemaInference {
   /**
