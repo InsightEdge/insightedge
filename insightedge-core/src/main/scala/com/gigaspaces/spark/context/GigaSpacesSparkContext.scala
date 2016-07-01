@@ -52,16 +52,6 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   }
 
   /**
-    * Read `DataFrame` from Data Grid.
-    *
-    * @tparam R GigaSpaces space class
-    * @return `DataFrame` instance
-    */
-  def gridDataFrame[R <: GridModel : ClassTag](readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = {
-    gridSqlContext.read.option(DefaultSource.InsightEdgeReadBufferSizeProperty, readRddBufferSize.toString).grid.loadClass[R]
-  }
-
-  /**
     * Load MLlib model from Data Grid
     *
     * @param modelName name of MLModel
