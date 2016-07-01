@@ -39,7 +39,7 @@ class DefaultSource
                             schema: Option[StructType] = None
                            ): GigaspacesAbstractRelation = synchronized {
     if (!sqlContext.experimental.extraStrategies.contains(InsightEdgeSourceStrategy)) {
-      sqlContext.experimental.extraStrategies = (InsightEdgeSourceStrategy :: Nil) ++ sqlContext.experimental.extraStrategies
+      sqlContext.experimental.extraStrategies = InsightEdgeSourceStrategy +: sqlContext.experimental.extraStrategies
     }
 
     val readBufferSize = parameters.get(DefaultSource.InsightEdgeReadBufferSizeProperty).map(v => v.toInt).getOrElse(InsightEdgeReadBufferSizeDefault)
