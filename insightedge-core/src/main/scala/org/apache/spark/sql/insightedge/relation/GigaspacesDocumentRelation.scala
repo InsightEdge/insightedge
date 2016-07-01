@@ -1,4 +1,4 @@
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.relation
 
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
@@ -9,6 +9,7 @@ import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SaveMode._
 import org.apache.spark.sql._
+import org.apache.spark.sql.insightedge.{DataFrameSchema, InsightEdgeSourceOptions}
 import org.apache.spark.sql.types._
 
 import scala.collection.JavaConversions._

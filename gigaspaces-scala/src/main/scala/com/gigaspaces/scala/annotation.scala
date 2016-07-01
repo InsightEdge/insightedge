@@ -1,9 +1,9 @@
 package com.gigaspaces.scala
 
-
 object annotation {
 
   import com.gigaspaces.annotation.pojo
+  import org.openspaces.spatial
 
   import scala.annotation.meta.beanGetter
 
@@ -24,5 +24,7 @@ object annotation {
   type SpaceRouting = pojo.SpaceRouting@beanGetter
   type SpaceStorageType = pojo.SpaceStorageType@beanGetter
   type SpaceVersion = pojo.SpaceVersion@beanGetter
+  type SpaceSpatialIndex = spatial.SpaceSpatialIndex@beanGetter
+  type SpaceSpatialIndexes = spatial.SpaceSpatialIndexes@beanGetter
 
 }

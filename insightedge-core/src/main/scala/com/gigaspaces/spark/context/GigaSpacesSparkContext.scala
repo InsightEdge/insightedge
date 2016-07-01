@@ -3,7 +3,7 @@ package com.gigaspaces.spark.context
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.mllib.MLModel
 import com.gigaspaces.spark.model.GridModel
-import com.gigaspaces.spark.rdd.{GigaSpacesBinaryRDD, GigaSpacesRDD, GigaSpacesSqlRDD}
+import com.gigaspaces.spark.rdd.{GigaSpacesRDD, GigaSpacesSqlRDD}
 import com.gigaspaces.spark.utils.GigaSpaceUtils.DefaultSplitCount
 import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory, GigaSpaceUtils}
 import org.apache.spark.SparkContext
@@ -39,13 +39,6 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   }
 
   /**
-    * Experimental. TODO: cleanup
-    */
-  def gridBinaryRdd[R <: GridModel : ClassTag](splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = 100): GigaSpacesBinaryRDD[R] = {
-    new GigaSpacesBinaryRDD[R](gsConfig, sc, splitCount, readRddBufferSize)
-  }
-
-  /**
     * Read dataset from Data Grid with GigaSpaces SQL query
     *
     * @param sqlQuery          SQL query to be executed on Data Grid
@@ -55,17 +48,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @return
     */
   def gridSql[R <: GridModel : ClassTag](sqlQuery: String, queryParams: Seq[Any] = Seq(), readRddBufferSize: Int = DefaultReadRddBufferSize): GigaSpacesSqlRDD[R] = {
-    new GigaSpacesSqlRDD[R](gsConfig, sc, sqlQuery, queryParams, readRddBufferSize)
-  }
-
-  /**
-    * Read `DataFrame` from Data Grid.
-    *
-    * @tparam R GigaSpaces space class
-    * @return `DataFrame` instance
-    */
-  def gridDataFrame[R <: GridModel : ClassTag](readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = {
-    gridSqlContext.read.grid.loadClass[R]
+    new GigaSpacesSqlRDD[R](gsConfig, sc, sqlQuery, queryParams, Seq.empty[String], readRddBufferSize)
   }
 
   /**

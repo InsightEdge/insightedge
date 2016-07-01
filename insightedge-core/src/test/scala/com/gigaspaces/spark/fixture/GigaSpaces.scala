@@ -3,6 +3,7 @@ package com.gigaspaces.spark.fixture
 import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils.{GigaSpaceFactory, GigaSpaceUtils}
+import org.apache.commons.lang3.RandomStringUtils
 import org.openspaces.core.GigaSpace
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import org.springframework.context.support.ClassPathXmlApplicationContext
@@ -44,4 +45,12 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
     seq.foreach(data => data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount))
     seq
   }
+
+  protected def randomBucket(data: GridModel): GridModel = {
+    data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount)
+    data
+  }
+
+  protected def randomString() = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+
 }

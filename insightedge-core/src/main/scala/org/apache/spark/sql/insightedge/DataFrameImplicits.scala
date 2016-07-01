@@ -25,7 +25,7 @@ trait DataFrameImplicits {
   }
 
   implicit class DataFrameWriterWrapper(val writer: DataFrameWriter) {
-    def grid(collection:String) = {
+    def grid(collection: String) = {
       writer.format(GigaSpacesFormat).option("collection", collection)
     }
 
@@ -33,5 +33,6 @@ trait DataFrameImplicits {
       writer.format(GigaSpacesFormat)
     }
   }
+
 
 }

@@ -5,7 +5,7 @@ import com.gigaspaces.spark.mllib.MllibImplicits
 import com.gigaspaces.spark.rdd.SaveRddToGridExtension
 import com.gigaspaces.spark.streaming.StreamingImplicits
 import com.gigaspaces.spark.utils.LocalCache
-import org.apache.spark.sql.insightedge.DataFrameImplicits
+import org.apache.spark.sql.insightedge.{GeospatialImplicits, DataFrameImplicits}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 
@@ -26,10 +26,13 @@ object implicits {
 
   object dataframe extends DataFrameImplicits
 
+  object geospatial extends GeospatialImplicits
+
   object all extends BasicImplicits
     with MllibImplicits
     with StreamingImplicits
     with DataFrameImplicits
+    with GeospatialImplicits
 
 
   /** this is to not create a new instance of GigaSpacesSparkContext every time implicit conversion fired **/

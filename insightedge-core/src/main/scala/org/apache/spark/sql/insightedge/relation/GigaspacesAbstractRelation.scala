@@ -1,14 +1,20 @@
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.relation
+
+import java.beans.Introspector
 
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.insightedge.GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
+import org.apache.spark.sql.insightedge.InsightEdgeSourceOptions
+import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}
+import org.apache.spark.sql.insightedge.relation.GigaspacesAbstractRelation._
+import org.apache.spark.sql.insightedge.udt._
 import org.apache.spark.sql.sources._
-import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.types.{DataType, StructField, StructType, UserDefinedType}
 import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
 import org.apache.spark.{Logging, SparkContext}
 import org.openspaces.core.GigaSpace
+import org.openspaces.spatial.shapes._
 
 import scala.collection.mutable.ListBuffer
 
@@ -18,7 +24,7 @@ abstract class GigaspacesAbstractRelation(
                                          )
   extends BaseRelation
     with InsertableRelation
-    with PrunedFilteredScan
+    with GridPrunedFilteredScan
     with Logging
     with Serializable {
 
@@ -75,6 +81,9 @@ object GigaspacesAbstractRelation {
       case _: StringStartsWith => false
       case _: StringEndsWith => false
       case _: StringContains => false
+      case _: GeoIntersects => true
+      case _: GeoWithin => true
+      case _: GeoContains => true
       case other => false
     }
   }
@@ -129,6 +138,57 @@ object GigaspacesAbstractRelation {
 
       case f: Or =>
         builder -> "(" ->(f.left, params) -> ") or (" ->(f.right, params) -> ")"
+
+      case f: GeoIntersects =>
+        builder -> f.attribute -> " spatial:intersects ?"
+        params += f.value
+
+      case f: GeoContains =>
+        builder -> f.attribute -> " spatial:contains ?"
+        params += f.value
+
+      case f: GeoWithin =>
+        builder -> f.attribute -> " spatial:within ?"
+        params += f.value
+    }
+  }
+
+  def udtFor(clazz: Class[_]): Option[UserDefinedType[_]] = {
+    clazz match {
+      case c if classOf[Point].isAssignableFrom(c) => Some(new PointUDT())
+      case c if classOf[Circle].isAssignableFrom(c) => Some(new CircleUDT())
+      case c if classOf[Rectangle].isAssignableFrom(c) => Some(new RectangleUDT())
+      case c if classOf[Polygon].isAssignableFrom(c) => Some(new PolygonUDT())
+      case c if classOf[LineString].isAssignableFrom(c) => Some(new LineStringUDT())
+      case _ => None
+    }
+  }
+
+  def enhanceWithUdts(dataType: DataType, clazz: Class[_]): DataType = {
+    udtFor(clazz) match {
+      case Some(udt) =>
+        udt
+
+      case None =>
+        dataType match {
+          case struct: StructType =>
+            // Product bean info does not have any fields, for some reason
+            val fieldTypeMap: Map[String, Class[_]] = clazz match {
+              case c if classOf[Product].isAssignableFrom(c) =>
+                clazz.getDeclaredFields.map(f => f.getName -> f.getType).toMap
+              case _ =>
+                val beanInfo = Introspector.getBeanInfo(clazz)
+                beanInfo.getPropertyDescriptors.map(d => d.getName -> d.getPropertyType).toMap
+            }
+
+            StructType(
+              struct.fields.map(f => {
+                val maybeNewType = enhanceWithUdts(f.dataType, fieldTypeMap(f.name))
+                StructField(f.name, maybeNewType, f.nullable, f.metadata)
+              })
+            )
+          case other => other
+        }
     }
   }
 
@@ -144,3 +204,8 @@ object GigaspacesAbstractRelation {
   }
 
 }
+
+/**
+  * Used to apply grid filters with custom strategy
+  */
+trait GridPrunedFilteredScan extends PrunedFilteredScan {}

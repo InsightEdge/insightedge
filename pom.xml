@@ -64,6 +64,11 @@
                 <artifactId>xap-openspaces</artifactId>
                 <version>${xap.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.gigaspaces</groupId>
+                <artifactId>xap-spatial</artifactId>
+                <version>${xap.version}</version>
+            </dependency>
             <!-- Scala -->
             <dependency>
                 <groupId>org.scala-lang</groupId>
