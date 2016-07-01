@@ -48,7 +48,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @return
     */
   def gridSql[R <: GridModel : ClassTag](sqlQuery: String, queryParams: Seq[Any] = Seq(), readRddBufferSize: Int = DefaultReadRddBufferSize): GigaSpacesSqlRDD[R] = {
-    new GigaSpacesSqlRDD[R](gsConfig, sc, sqlQuery, queryParams, readRddBufferSize)
+    new GigaSpacesSqlRDD[R](gsConfig, sc, sqlQuery, queryParams, Seq.empty[String], readRddBufferSize)
   }
 
   /**
@@ -58,7 +58,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @return `DataFrame` instance
     */
   def gridDataFrame[R <: GridModel : ClassTag](readRddBufferSize: Int = DefaultReadRddBufferSize): DataFrame = {
-    gridSqlContext.read.grid.loadClass[R]
+    gridSqlContext.read.option(DefaultSource.InsightEdgeReadBufferSizeProperty, readRddBufferSize.toString).grid.loadClass[R]
   }
 
   /**

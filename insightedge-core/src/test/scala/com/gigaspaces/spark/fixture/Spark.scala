@@ -26,7 +26,7 @@ trait Spark extends BeforeAndAfterAll with BeforeAndAfterEach {
   override protected def beforeEach() = {
     val sparkConf = createSparkConf()
     sc = new SparkContext(sparkConf)
-    sql = sc.gridSqlContext
+    sql = new SQLContext(sc)
     super.beforeEach()
   }
 

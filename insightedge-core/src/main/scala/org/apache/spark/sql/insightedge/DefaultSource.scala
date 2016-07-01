@@ -3,9 +3,11 @@ package org.apache.spark.sql.insightedge
 import com.gigaspaces.spark.model.GridModel
 import org.apache.spark.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
+import org.apache.spark.sql.insightedge.relation.{GigaspacesDocumentRelation, GigaspacesClassRelation, GigaspacesAbstractRelation}
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
+import org.apache.spark.util.Utils
 
 import scala.reflect._
 
@@ -35,7 +37,11 @@ class DefaultSource
   private def buildRelation(sqlContext: SQLContext,
                             parameters: Map[String, String],
                             schema: Option[StructType] = None
-                           ): GigaspacesAbstractRelation = {
+                           ): GigaspacesAbstractRelation = synchronized {
+    if (!sqlContext.experimental.extraStrategies.contains(InsightEdgeSourceStrategy)) {
+      sqlContext.experimental.extraStrategies = InsightEdgeSourceStrategy +: sqlContext.experimental.extraStrategies
+    }
+
     val readBufferSize = parameters.get(DefaultSource.InsightEdgeReadBufferSizeProperty).map(v => v.toInt).getOrElse(InsightEdgeReadBufferSizeDefault)
     val options = InsightEdgeSourceOptions(readBufferSize, schema)
 
@@ -55,23 +61,7 @@ class DefaultSource
   }
 
   private def loadClass(path: String): ClassTag[Any] = {
-    loadClass(Thread.currentThread().getContextClassLoader, path)
-      .orElse(loadClass(this.getClass.getClassLoader, path))
-      .getOrElse {
-        throw new ClassNotFoundException(path)
-      }
-  }
-
-  private def loadClass(classLoader: ClassLoader, path: String): Option[ClassTag[Any]] = {
-    if (classLoader == null) {
-      None
-    }
-
-    try {
-      Some(ClassTag[Any](classLoader.loadClass(path)))
-    } catch {
-      case up: ClassNotFoundException => None
-    }
+    ClassTag[Any](Utils.classForName(path))
   }
 
 }

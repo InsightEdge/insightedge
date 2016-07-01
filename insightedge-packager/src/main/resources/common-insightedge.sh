@@ -11,6 +11,7 @@ get_libs() {
     result="$result$separator$(find $INSIGHTEDGE_HOME/lib -name "insightedge-core-*.jar")"
     result="$result$separator$(find $INSIGHTEDGE_HOME/lib -name "gigaspaces-scala-*.jar")"
     result="$result$separator$(echo $datagrid/lib/required/*.jar | tr ' ' $separator)"
+    result="$result$separator$(echo $datagrid/lib/optional/spatial/*.jar | tr ' ' $separator)"
     echo $result
 }
 

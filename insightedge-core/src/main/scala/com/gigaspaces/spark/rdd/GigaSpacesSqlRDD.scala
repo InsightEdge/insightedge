@@ -12,12 +12,13 @@ class GigaSpacesSqlRDD[R <: GridModel : ClassTag](
                                      sc: SparkContext,
                                      query: String,
                                      queryParams: Seq[Any],
+                                     queryFields: Seq[String],
                                      readRddBufferSize: Int
                                    ) extends GigaSpacesAbstractRDD[R](gsConfig, sc, None, readRddBufferSize) {
 
   @DeveloperApi
   override def compute(split: Partition, context: TaskContext): Iterator[R] = {
-    val gsQuery = createGigaSpacesQuery[R](bucketize(query, split), queryParams)
+    val gsQuery = createGigaSpacesQuery[R](bucketize(query, split), queryParams, queryFields)
     computeInternal[R](split, gsQuery, R => R, context)
   }
 
