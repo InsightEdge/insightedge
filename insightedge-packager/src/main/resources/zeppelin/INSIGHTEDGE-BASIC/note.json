@@ -230,7 +230,7 @@
     },
     {
       "title": "Loading DataFrames",
-      "text": "%spark\nval df \u003d sc.gridDataFrame[Product]()\ndf.printSchema()\ndf.registerTempTable(\"product\")\nval lowStock \u003d df.filter(df(\"quantity\") \u003c 5).count()",
+      "text": "%spark\nval df \u003d sqlContext.read.grid.loadClass[Product]\ndf.printSchema()\ndf.registerTempTable(\"product\")\nval lowStock \u003d df.filter(df(\"quantity\") \u003c 5).count()",
       "dateUpdated": "Apr 20, 2016 6:17:12 AM",
       "config": {
         "colWidth": 4.0,
