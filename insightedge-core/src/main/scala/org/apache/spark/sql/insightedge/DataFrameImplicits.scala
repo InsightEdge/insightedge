@@ -1,16 +1,20 @@
-package org.apache.spark.sql
+package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.model.GridModel
+import org.apache.spark.sql.{DataFrameWriter, DataFrame, DataFrameReader}
 
 import scala.reflect._
 
-package object insightedge {
+/**
+  * @author Danylo_Hurin.
+  */
+trait DataFrameImplicits {
 
   val GigaSpacesFormat = "org.apache.spark.sql.insightedge"
 
   def gridOptions(): Map[String, String] = Map()
 
-  implicit class DataFrameReaderWrapper(val reader: DataFrameReader) extends AnyVal {
+  implicit class DataFrameReaderWrapper(val reader: DataFrameReader) {
     def grid = {
       reader.format(GigaSpacesFormat)
     }
@@ -20,7 +24,7 @@ package object insightedge {
     }
   }
 
-  implicit class DataFrameWriterWrapper(val writer: DataFrameWriter) extends AnyVal {
+  implicit class DataFrameWriterWrapper(val writer: DataFrameWriter) {
     def grid(collection:String) = {
       writer.format(GigaSpacesFormat).option("collection", collection)
     }

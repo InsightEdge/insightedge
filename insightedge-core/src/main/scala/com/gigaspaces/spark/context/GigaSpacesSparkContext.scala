@@ -1,12 +1,12 @@
 package com.gigaspaces.spark.context
 
+import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.mllib.MLModel
 import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.{GigaSpacesBinaryRDD, GigaSpacesRDD, GigaSpacesSqlRDD}
 import com.gigaspaces.spark.utils.GigaSpaceUtils.DefaultSplitCount
 import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory, GigaSpaceUtils}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.insightedge._
 import org.apache.spark.sql.{DataFrame, SQLContext}
 
 import scala.reflect._
