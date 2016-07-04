@@ -1,41 +1,18 @@
-package org.apache.spark.sql
+package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.model.GridModel
 import org.apache.spark.sql.catalyst.expressions.Literal
+import org.apache.spark.sql.{ColumnName, Column}
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.insightedge.expression.{GeoContains, GeoIntersects, GeoWithin}
+import org.apache.spark.sql.insightedge.expression.{GeoWithin, GeoContains, GeoIntersects}
 import org.apache.spark.sql.types.{DataType, ObjectType}
 import org.openspaces.spatial.shapes.Shape
 
-import scala.reflect._
+/**
+  * @author Danylo_Hurin.
+  */
+trait GeospatialImplicits {
 
-package object insightedge {
-
-  val GigaSpacesFormat = "org.apache.spark.sql.insightedge"
-
-  def gridOptions(): Map[String, String] = Map()
-
-  implicit class DataFrameReaderWrapper(val reader: DataFrameReader) extends AnyVal {
-    def grid = {
-      reader.format(GigaSpacesFormat)
-    }
-
-    def loadClass[R <: GridModel : ClassTag]: DataFrame = {
-      reader.format(GigaSpacesFormat).option("class", classTag[R].runtimeClass.getName).load()
-    }
-  }
-
-  implicit class DataFrameWriterWrapper(val writer: DataFrameWriter) extends AnyVal {
-    def grid(collection: String) = {
-      writer.format(GigaSpacesFormat).option("collection", collection)
-    }
-
-    def grid = {
-      writer.format(GigaSpacesFormat)
-    }
-  }
-
-  implicit class ColumnWrapper(val column: Column) extends AnyVal {
+  implicit class ColumnWrapper(val column: Column) {
     def geoIntersects(other: Column): Column = new Column(GeoIntersects(column.expr, lit(other).expr))
 
     def geoIntersects(shape: Shape): Column = this.geoIntersects(typedLit(shape, new ObjectType(classOf[Shape])))
@@ -59,5 +36,6 @@ package object insightedge {
       Column(literalExpr)
     }
   }
+
 
 }

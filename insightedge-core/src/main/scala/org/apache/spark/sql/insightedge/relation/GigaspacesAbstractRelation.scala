@@ -3,7 +3,7 @@ package org.apache.spark.sql.insightedge.relation
 import java.beans.Introspector
 
 import com.gigaspaces.spark.context.GigaSpacesConfig
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.InsightEdgeSourceOptions
 import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}

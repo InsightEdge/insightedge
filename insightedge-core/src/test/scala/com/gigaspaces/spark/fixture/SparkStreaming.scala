@@ -1,6 +1,6 @@
 package com.gigaspaces.spark.fixture
 
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.scalatest.concurrent.Eventually

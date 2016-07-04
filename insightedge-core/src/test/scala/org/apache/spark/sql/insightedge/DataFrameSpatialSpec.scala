@@ -1,6 +1,7 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
+import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.utils._
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}

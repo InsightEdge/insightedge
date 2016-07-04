@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.apache.spark.sql.insightedge.model.{Address, Person}
 import org.scalatest.FlatSpec

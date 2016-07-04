@@ -1,7 +1,7 @@
 package com.gigaspaces.spark.rdd
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import com.gigaspaces.spark.implicits._
+import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.utils._
 import org.scalatest.FlatSpec
 
