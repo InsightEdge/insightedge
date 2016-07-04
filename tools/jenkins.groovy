@@ -69,7 +69,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     stage 'Package insightedge'
     distributions = "-Ddist.spark=$env.SPARK_DIST"
     distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
-    distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples.jar"
+    distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
     premiumDist   = "$distributions -Ddist.xap=$env.XAP12_PREMIUM_DIST"
     communityDist = "$distributions -Ddist.xap=$env.XAP12_COMMUNITY_DIST"
     sh "mvn package -pl insightedge-packager -P package-premium   -DskipTests=true $premiumDist   -Dlast.commit.hash=$commitHash"
