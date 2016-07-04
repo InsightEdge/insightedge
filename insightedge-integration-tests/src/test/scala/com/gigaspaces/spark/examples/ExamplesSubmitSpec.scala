@@ -53,5 +53,16 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
     assert(exitCode != 0)
   }
 
+  "insightedge-submit.sh " should "submit sf_salaries.py python example" in {
+    val containerId = runningContainerId()
+    val command =
+      s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
+          |--master spark://127.0.0.1:7077
+          |/opt/gigaspaces-insightedge/quickstart/python/sf_salaries.py""".stripMargin
+
+    val exitCode = dockerExec(containerId, command)
+    assert(exitCode == 0)
+  }
+
 
 }
