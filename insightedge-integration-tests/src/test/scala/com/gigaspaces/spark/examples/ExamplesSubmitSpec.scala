@@ -29,7 +29,7 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
         s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
           |--class $fullClassName
           |--master spark://127.0.0.1:7077
-          |/opt/gigaspaces-insightedge/quickstart/insightedge-examples.jar""".stripMargin
+          |/opt/gigaspaces-insightedge/quickstart/scala/insightedge-examples.jar""".stripMargin
 
       val exitCode = dockerExec(containerId, command)
       assert(exitCode == 0)
@@ -43,7 +43,7 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
       s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
           |--class com.gigaspaces.insightedge.examples.basic.SaveRdd
           |--master spark://127.0.0.1:7077
-          |/opt/gigaspaces-insightedge/quickstart/insightedge-examples.jar
+          |/opt/gigaspaces-insightedge/quickstart/scala/insightedge-examples.jar
           |spark://127.0.0.1:7077
           |$spaceName
           |insightedge
