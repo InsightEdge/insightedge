@@ -4,8 +4,10 @@ import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.utils._
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}
 import org.openspaces.spatial.ShapeFactory._
+import org.openspaces.spatial.shapes.Point
 import org.scalatest.FlatSpec
 
 class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
@@ -83,7 +85,19 @@ class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with S
     zeroPointCheck(pdf, "location.point")
   }
 
-  def zeroPointCheck(df:DataFrame, attribute: String) = {
+  it should "work with new columns via udf" in {
+    spaceProxy.write(randomBucket(SpatialData(id = null, routing = 1, null, null, point(1, 1))))
+
+    val df = sql.read.grid.loadClass[SpatialData]
+    val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)
+    val unwrappedDf = df.withColumn("locationX", toPointX(df("point")))
+    unwrappedDf.printSchema()
+    val row = unwrappedDf.first()
+
+    assert(row.getAs[Double]("locationX") == 1)
+  }
+
+  def zeroPointCheck(df: DataFrame, attribute: String) = {
     assert(df.filter(df(attribute) geoWithin rectangle(-1, 1, -1, 1)).count() == 1)
   }
 
