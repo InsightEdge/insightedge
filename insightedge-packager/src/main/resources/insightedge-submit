@@ -22,7 +22,7 @@ process_args(){
         done
     if [[ ! $ARGUMENTS =~ .*--jars.* ]]
     then
-       ARGUMENTS=" --jars $INSIGHTEDGE_JARS $ARGUMENTS"
+       ARGUMENTS="$ARGUMENTS --jars $INSIGHTEDGE_JARS"
     fi
     echo $ARGUMENTS
 }
