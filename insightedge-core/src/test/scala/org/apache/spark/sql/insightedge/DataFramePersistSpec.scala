@@ -1,5 +1,6 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.rdd.{Data, JData}
@@ -106,6 +107,25 @@ class DataFramePersistSpec extends FlatSpec with GsConfig with GigaSpaces with S
     df.write.grid.mode(SaveMode.Overwrite).save(table)
     // persist with modified schema again
     df.select("id").write.grid.mode(SaveMode.Overwrite).save(table)
+  }
+
+  it should "recreate space type with different schema" in {
+    val types = spaceProxy.getTypeManager
+
+    val typeName = randomString()
+
+    val firstType = new SpaceTypeDescriptorBuilder(typeName)
+      .addFixedProperty("id", classOf[String])
+      .addFixedProperty("name", classOf[String])
+      .create()
+
+    val secondType = new SpaceTypeDescriptorBuilder(typeName)
+      .addFixedProperty("id", classOf[String])
+      .addFixedProperty("surname", classOf[String])
+      .create()
+
+    types.registerTypeDescriptor(firstType)
+    types.registerTypeDescriptor(secondType)
   }
 
 }
