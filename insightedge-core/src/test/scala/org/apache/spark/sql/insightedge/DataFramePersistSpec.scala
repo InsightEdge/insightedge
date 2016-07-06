@@ -1,10 +1,12 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
+import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.SaveMode
 import org.scalatest.FlatSpec
 
@@ -109,10 +111,17 @@ class DataFramePersistSpec extends FlatSpec with GsConfig with GigaSpaces with S
     df.select("id").write.grid.mode(SaveMode.Overwrite).save(table)
   }
 
-  it should "recreate space type with different schema" in {
+  /**
+    * This is not supported in current XAP release.
+    * This will enable converting the dataframes schema into space type descriptor save is executed.
+    * Right now schema is stored as DataFrameSchema object in space.
+    */
+  ignore should "recreate space type with different schema" in {
+    import collection.JavaConversions._
+
     val types = spaceProxy.getTypeManager
 
-    val typeName = randomString()
+    val typeName = "aaabbb"
 
     val firstType = new SpaceTypeDescriptorBuilder(typeName)
       .addFixedProperty("id", classOf[String])
@@ -124,8 +133,16 @@ class DataFramePersistSpec extends FlatSpec with GsConfig with GigaSpaces with S
       .addFixedProperty("surname", classOf[String])
       .create()
 
+    val firstEntity = new SpaceDocument(typeName, Map("id" -> "111", "name" -> "Joe"))
+
+    val secondEntity = new SpaceDocument(typeName, Map("id" -> "222", "surname" -> "Wind"))
+
     types.registerTypeDescriptor(firstType)
+    spaceProxy.write(firstEntity)
+    spaceProxy.takeMultiple(new SQLQuery[SpaceDocument](typeName, "", Seq()).setProjections(""))
+
     types.registerTypeDescriptor(secondType)
+    spaceProxy.write(secondEntity)
   }
 
 }

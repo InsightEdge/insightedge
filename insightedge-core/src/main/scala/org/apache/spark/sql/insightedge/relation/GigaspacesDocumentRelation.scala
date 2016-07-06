@@ -11,6 +11,7 @@ import org.apache.spark.sql.SaveMode._
 import org.apache.spark.sql._
 import org.apache.spark.sql.insightedge.{DataFrameSchema, InsightEdgeSourceOptions}
 import org.apache.spark.sql.types._
+import org.apache.spark.util.Utils
 
 import scala.collection.JavaConversions._
 
@@ -23,8 +24,28 @@ private[insightedge] case class GigaspacesDocumentRelation(
 
   override def buildSchema(): StructType = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
-      case null => new StructType()
+      case null => inferFromSpaceDescriptor(collection)
       case storedSchema => storedSchema.schema
+    }
+  }
+
+  def inferFromSpaceDescriptor(collection: String): StructType = {
+    gs.getTypeManager.getTypeDescriptor(collection) match {
+      case null => new StructType()
+      case descriptor =>
+        val fields = descriptor.getPropertiesNames
+          .zip(descriptor.getPropertiesTypes)
+          .filter(tuple => {
+            val (name, _) = tuple
+            !name.equals("_spaceId")
+          })
+          .map(tuple => {
+            val (name, clazzName) = tuple
+            val clazz = Utils.classForName(clazzName)
+            val schema = SchemaInference.schemaFor(clazz, (c: Class[_]) => GigaspacesAbstractRelation.udtFor(c))
+            StructField(name, schema.dataType, schema.nullable)
+          })
+        new StructType(fields)
     }
   }
 
@@ -33,7 +54,9 @@ private[insightedge] case class GigaspacesDocumentRelation(
       gs.takeMultiple(new SQLQuery[SpaceDocument](collection, "", Seq()).setProjections(""))
     }
 
-    gs.getTypeManager.registerTypeDescriptor(new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true).create())
+    if (gs.getTypeManager.getTypeDescriptor(collection) == null) {
+      gs.getTypeManager.registerTypeDescriptor(new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true).create())
+    }
 
     data.rdd.map(row => {
       new SpaceDocument(collection, row.getValuesMap(schema.fieldNames))

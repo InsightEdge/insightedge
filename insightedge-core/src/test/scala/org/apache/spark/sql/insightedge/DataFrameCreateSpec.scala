@@ -1,9 +1,13 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.document.SpaceDocument
+import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
+import org.apache.spark.sql.SaveMode
+import org.apache.spark.sql.types.{IntegerType, StringType}
 import org.scalatest.FlatSpec
 
 class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
@@ -91,6 +95,60 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
 
     val fromGrid2 = sql.read.format("org.apache.spark.sql.insightedge").load(collectionName)
     assert(fromGrid2.count() == 1000)
+  }
+
+  it should "load dataframe from existing space documents" in {
+    import org.apache.spark.sql.functions._
+
+    import collection.JavaConversions._
+    val collectionName = randomString()
+
+    spaceProxy.getTypeManager.registerTypeDescriptor(
+      new SpaceTypeDescriptorBuilder(collectionName)
+        .addFixedProperty("name", classOf[String])
+        .addFixedProperty("surname", classOf[String])
+        .addFixedProperty("age", classOf[Integer])
+        .create()
+    )
+
+    spaceProxy.writeMultiple(Array(
+      new SpaceDocument(collectionName, Map("name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32))),
+      new SpaceDocument(collectionName, Map("name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20)))
+    ))
+
+    val df = sql.read.grid.load(collectionName)
+    df.printSchema()
+
+    // check schema
+    val s = df.schema
+
+    assert(s.fieldNames.contains("name"))
+    assert(s.fieldNames.contains("surname"))
+    assert(s.fieldNames.contains("age"))
+
+    assert(s.get(s.getFieldIndex("name").get).dataType == StringType)
+    assert(s.get(s.getFieldIndex("surname").get).dataType == StringType)
+    assert(s.get(s.getFieldIndex("age").get).dataType == IntegerType)
+
+    assert(df.filter(df("name") equalTo "John").count() == 1)
+    assert(df.filter(df("age") < 30).count() == 1)
+
+    // check if dataframe can be persisted
+    val tableName = randomString()
+    df.write.grid.save(tableName)
+    assert(sql.read.grid.load(tableName).count() == 2)
+
+    // check if we can write more objects to the same collection
+    val savingDf = df
+      .withColumn("name", udf { name: String => name + "!" }.apply(df("name")))
+      .withColumn("surname", udf { name: String => name + "?" }.apply(df("surname")))
+      .withColumn("age", udf { age: Integer => age + 100 }.apply(df("age")))
+    savingDf.printSchema()
+    savingDf.write.grid.mode(SaveMode.Append).save(collectionName)
+
+    val newDf = sql.read.grid.load(collectionName)
+    assert(newDf.count() == 4)
+    assert(newDf.filter(newDf("name") endsWith "!").count() == 2)
   }
 
 }
