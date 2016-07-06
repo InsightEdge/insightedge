@@ -57,6 +57,8 @@ object Launcher {
       copy(s"$resources/insightedge-submit", s"$output/bin/insightedge-submit")
       copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
       copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
+      copy(s"$resources/shell-init.py", s"$output/bin/shell-init.py")
+      copy(s"$resources/insightedge-pyspark.sh", s"$output/bin/insightedge-pyspark.sh")
       copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
     }
 
