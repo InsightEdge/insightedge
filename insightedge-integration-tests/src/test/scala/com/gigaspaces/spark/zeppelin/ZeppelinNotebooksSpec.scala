@@ -17,6 +17,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   val TutorialNotebookId = "INSIGHTEDGE-BASIC"
   val PythonNotebookId = "INSIGHTEDGE-PYTHON"
+  val GeospatialNotebookId = "INSIGHTEDGE-GEOSPATIAL"
 
   "Zeppelin" should "have InsightEdge notebooks" in {
     val resp = wsClient.url(s"$zeppelinUrl/api/notebook").get()
@@ -24,11 +25,13 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
     assert(notebookIds.contains(JsString(TutorialNotebookId)))
     assert(notebookIds.contains(JsString(PythonNotebookId)))
+    assert(notebookIds.contains(JsString(GeospatialNotebookId)))
   }
 
   it should "be possible to run InsightEdge notebooks" in {
     runNotebook(TutorialNotebookId)
     runNotebook(PythonNotebookId)
+    runNotebook(GeospatialNotebookId)
   }
 
   def runNotebook(notebookId: String) = {
