@@ -23,7 +23,7 @@ object Launcher {
     val spark = parameter("Spark distribution" -> "dist.spark")
     val grid = parameter("Xap distribution" -> "dist.xap")
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
-    val examples = parameter("Examples jar" -> "dist.examples")
+    val examples = parameter("Examples zip" -> "dist.examples")
     val resources = s"$project/insightedge-packager/src/main/resources"
     val templates = s"datagrid/deploy/templates"
 
@@ -63,7 +63,7 @@ object Launcher {
     }
 
     run("Adding examples") {
-      copy(s"$examples", s"$output/quickstart/insightedge-examples.jar")
+      unzip(s"$examples", s"$output/quickstart", cutRootFolder = false)
     }
 
     run("Adding datasets") {
