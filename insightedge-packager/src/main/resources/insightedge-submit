@@ -22,7 +22,12 @@ process_args(){
         done
     if [[ ! $ARGUMENTS =~ .*--jars.* ]]
     then
-       ARGUMENTS="$ARGUMENTS --jars $INSIGHTEDGE_JARS"
+       # pyspark-shell arguments order is different
+      if [[ $0 == "pyspark-shell-main" ]]; then
+        ARGUMENTS="$ARGUMENTS --jars $INSIGHTEDGE_JARS"
+      else
+        ARGUMENTS=" --jars $INSIGHTEDGE_JARS $ARGUMENTS"
+      fi
     fi
     echo $ARGUMENTS
 }
