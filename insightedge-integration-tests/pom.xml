@@ -141,6 +141,26 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>build-maven-install-image</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>insightedge-maven-install:${project.version}</imageName>
+                            <dockerDirectory>
+                                ${main.basedir}/insightedge-integration-tests/src/test/resources/docker/maven-install
+                            </dockerDirectory>
+                            <resources>
+                                <resource>
+                                    <targetPath>/</targetPath>
+                                    <directory>${main.basedir}/insightedge-packager/target/${dist.edition}</directory>
+                                    <include>*.zip</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
