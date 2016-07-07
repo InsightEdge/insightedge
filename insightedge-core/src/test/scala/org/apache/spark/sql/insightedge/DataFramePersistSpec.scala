@@ -113,7 +113,7 @@ class DataFramePersistSpec extends FlatSpec with GsConfig with GigaSpaces with S
 
   /**
     * This is not supported in current XAP release.
-    * This will enable converting the dataframes schema into space type descriptor save is executed.
+    * This will enable converting the dataframes schema into space type descriptor when save is executed.
     * Right now schema is stored as DataFrameSchema object in space.
     */
   ignore should "recreate space type with different schema" in {
@@ -121,7 +121,7 @@ class DataFramePersistSpec extends FlatSpec with GsConfig with GigaSpaces with S
 
     val types = spaceProxy.getTypeManager
 
-    val typeName = "aaabbb"
+    val typeName = randomString()
 
     val firstType = new SpaceTypeDescriptorBuilder(typeName)
       .addFixedProperty("id", classOf[String])
