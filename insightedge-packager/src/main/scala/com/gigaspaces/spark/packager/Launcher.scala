@@ -85,11 +85,13 @@ object Launcher {
       copy(s"$resources/$edition/", s"$output/sbin/")
       copy(s"$resources/stop-datagrid-master.sh", s"$output/sbin/stop-datagrid-master.sh")
     }
-    run("Adding template space configuration") {
-      copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
-    }
-    run("Adding geospatial jars to pu-common") {
-      copy(s"$output/datagrid/lib/optional/spatial", s"$output/datagrid/lib/optional/pu-common")
+    if (edition.equals("community")) {
+      run("Adding template space configuration (community only)") {
+        copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
+      }
+      run("Adding geospatial jars to pu-common (community only)") {
+        copy(s"$output/datagrid/lib/optional/spatial", s"$output/datagrid/lib/optional/pu-common")
+      }
     }
 
     run("Unpacking Zeppelin") {
