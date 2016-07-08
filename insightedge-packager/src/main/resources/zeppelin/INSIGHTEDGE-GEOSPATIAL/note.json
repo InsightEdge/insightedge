@@ -1,0 +1,245 @@
+{
+  "paragraphs": [
+    {
+      "text": "%md\n\u003e If you see \u0027Interpreter binding\u0027 above, just hit `Save` without deselecting any interpreters.\n\n## Welcome to InsightEdge Geospatial API example.\n\n##### This example shows geospatial features of InsightEdge:\n* building model with geospatial location field and index\n* saving RDDs with geospatial shapes to Data Grid\n* loading dataframes with geospatial queries from Data Grid\n\n##### This is a live tutorial, you can run the code yourself. _(click `Run` button in each paragraph from top to bottom)_",
+      "dateUpdated": "Jul 5, 2016 6:06:24 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1458738770688_121330753",
+      "id": "20160323-091250_333199915",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003cblockquote\u003e\u003cp\u003eIf you see \u0027Interpreter binding\u0027 above, just hit \u003ccode\u003eSave\u003c/code\u003e without deselecting any interpreters.\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003ch2\u003eWelcome to InsightEdge Geospatial API example.\u003c/h2\u003e\n\u003ch5\u003eThis example shows geospatial features of InsightEdge:\u003c/h5\u003e\n\u003cul\u003e\n\u003cli\u003ebuilding model with geospatial location field and index\u003c/li\u003e\n\u003cli\u003esaving RDDs with geospatial shapes to Data Grid\u003c/li\u003e\n\u003cli\u003eloading dataframes with geospatial queries from Data Grid\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch5\u003eThis is a live tutorial, you can run the code yourself. \u003cem\u003e(click \u003ccode\u003eRun\u003c/code\u003e button in each paragraph from top to bottom)\u003c/em\u003e\u003c/h5\u003e\n"
+      },
+      "dateCreated": "Mar 23, 2016 9:12:50 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "School Model",
+      "text": "%define\npackage model.v1\n\nimport com.gigaspaces.scala.annotation._\nimport com.gigaspaces.spark.model.GridModel\nimport org.openspaces.spatial.shapes._\n\nimport scala.beans.{BeanProperty, BooleanBeanProperty}\n\ncase class School(\n\n                    @BeanProperty\n                    @SpaceId(autoGenerate \u003d true)\n                    var id: String,\n\n                    @BeanProperty\n                    var name: String,\n\n                    @BeanProperty\n                    @SpaceIndex\n                    var category: String,\n                    \n                    @BeanProperty\n                    var city: String,\n\n                    @BeanProperty\n                    var address: String,\n                    \n                    @BeanProperty\n                    var phone: String,\n                    \n                    @BeanProperty\n                    @SpaceSpatialIndex\n                    var location: Point\n\n                  ) extends GridModel {\n\n  def this() \u003d this(null, null, null, null, null, null, null)\n\n}",
+      "dateUpdated": "Jul 5, 2016 10:43:20 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467645890782_-38357420",
+      "id": "20160704-112450_898388772",
+      "dateCreated": "Jul 4, 2016 11:24:50 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Importing Data To Data Grid",
+      "text": "%spark\nimport model.v1._\nimport com.gigaspaces.spark.implicits.all._\nimport org.openspaces.spatial.ShapeFactory._\n\nval home \u003d scala.sys.env(\"INSIGHTEDGE_HOME\")\n\nval schoolsData \u003d sqlContext.read.json(s\"$home/data/montgomery_schools.json\")\nschoolsData.show()\n\nval schoolsRdd \u003d schoolsData.rdd.map(row \u003d\u003e new School(\n    id \u003d null,\n    row.getAs[String](\"name\"),\n    row.getAs[String](\"category\"),\n    row.getAs[String](\"city\"),\n    row.getAs[String](\"address\"),\n    row.getAs[String](\"phone\"),\n    point(row.getAs[Double](\"longitude\"), row.getAs[Double](\"latitude\"))\n))\n\nschoolsRdd.saveToGrid()",
+      "dateUpdated": "Jul 5, 2016 11:01:17 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467651482509_113195300",
+      "id": "20160704-125802_640294113",
+      "dateCreated": "Jul 4, 2016 12:58:02 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Searching For Schools Near User",
+      "text": "%spark\nimport com.spatial4j.core.distance.DistanceUtils\nimport org.openspaces.spatial.shapes._\n\nval searchRadius \u003d 3; // km\nval userLocation \u003d point(-77.024470, 39.032506)\nval searchArea \u003d circle(userLocation, DistanceUtils.KM_TO_DEG * searchRadius)\n\nval schools \u003d sqlContext.read.grid.loadClass[School]\nval nearestSchools \u003d schools.filter(schools(\"location\") geoWithin searchArea)\nval nearestSchoolsCount \u003d nearestSchools.count()",
+      "dateUpdated": "Jul 6, 2016 4:58:23 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "title": true,
+        "lineNumbers": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467711980727_-1299433564",
+      "id": "20160705-054620_2017268789",
+      "dateCreated": "Jul 5, 2016 5:46:20 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Appending Column With Distance",
+      "text": "import org.apache.spark.sql.functions._\n\nval toDistance \u003d udf { point:Point \u003d\u003e\n    val d2r \u003d DistanceUtils.DEGREES_TO_RADIANS\n    val r2km \u003d DistanceUtils.RADIANS_TO_DEGREES * DistanceUtils.DEG_TO_KM\n    DistanceUtils.distHaversineRAD(point.getY()*d2r, point.getX()*d2r, userLocation.getY()*d2r, userLocation.getX()*d2r) * r2km\n}\n\nnearestSchools\n    .withColumn(\"distance\", toDistance(nearestSchools(\"location\")))\n    .registerTempTable(\"nearestSchools\")",
+      "dateUpdated": "Jul 6, 2016 4:58:29 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1467795195352_-997558313",
+      "id": "20160706-045315_669627569",
+      "dateCreated": "Jul 6, 2016 4:53:15 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Investigating Data",
+      "text": "%sql\nselect category, distance, name, city, address, phone, location\nfrom nearestSchools\nwhere category \u003d \"${category\u003dMIDDLE SCHOOLS,ELEMENTARY SCHOOLS|MIDDLE SCHOOLS|HIGH SCHOOLS}\"\norder by distance",
+      "dateUpdated": "Jul 6, 2016 4:59:31 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "category",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "distance",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "category",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "distance",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "enabled": true,
+        "title": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {
+          "category": "ELEMENTARY SCHOOLS",
+          "categorySearch": "\"ELEMENTARY SCHOOLS\"",
+          "CategorySearch": "ELEMENTARY SCHOOLS"
+        },
+        "forms": {
+          "category": {
+            "name": "category",
+            "defaultValue": "MIDDLE SCHOOLS",
+            "options": [
+              {
+                "value": "ELEMENTARY SCHOOLS"
+              },
+              {
+                "value": "MIDDLE SCHOOLS"
+              },
+              {
+                "value": "HIGH SCHOOLS"
+              }
+            ],
+            "hidden": false
+          }
+        }
+      },
+      "jobName": "paragraph_1467717936897_-1940350328",
+      "id": "20160705-072536_127327667",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "category\tdistance\tname\tcity\taddress\tphone\tlocation\nELEMENTARY SCHOOLS\t0.3611248895918994\tForest Knolls ES\tSilver Spring\t10830 Eastwood Ave\t301-649-8060\tPOINT (-77.0204193723 39.0333104381)\nELEMENTARY SCHOOLS\t1.0957942572140882\tGlen Haven ES\tSilver Spring\t10900 Inwood Ave\t301-649-8051\tPOINT (-77.0370393611 39.0338425388)\nELEMENTARY SCHOOLS\t1.3940089694528275\tKemp Mill ES\tSilver Spring\t411 Sisson St\t301-649-8046\tPOINT (-77.0170471225 39.0436381558)\nELEMENTARY SCHOOLS\t1.940795246568356\tArcola ES\tSilver Spring\t1820 Franwall Ave\t301-649-8590\tPOINT (-77.0393881959 39.0455588679)\nELEMENTARY SCHOOLS\t2.089813520673789\tPine Crest ES\tSilver Spring\t201 Woodmoor Dr\t301-649-8066\tPOINT (-77.0050375472 39.0213110705)\nELEMENTARY SCHOOLS\t2.1089328972947596\tBurnt Mills ES\tSilver Spring\t11211 Childs St\t301-649-8192\tPOINT (-77.0017610753 39.0394753102)\nELEMENTARY SCHOOLS\t2.876399419085897\tOakland Terrace ES\tSilver Spring\t2720 Plyers Mill Rd\t301-929-2161\tPOINT (-77.0573923387 39.0286194203)\nELEMENTARY SCHOOLS\t2.9953230000721742\tDowncounty Consortium ES (2012)\tSilver Spring\t2600 Hayden Dr\t301-309-6277\tPOINT (-77.0545584109 39.0191171311)\n"
+      },
+      "dateCreated": "Jul 5, 2016 7:25:36 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "InsightEdge Geospatial API",
+  "id": "INSIGHTEDGE-GEOSPATIAL",
+  "angularObjects": {
+    "2BS49VT35": [],
+    "2BSNA1GB8": []
+  },
+  "config": {
+    "looknfeel": "default"
+  },
+  "info": {}
+}
