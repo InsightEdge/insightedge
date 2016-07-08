@@ -48,10 +48,10 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     def restartInterpreters() = {
       val settingsUrl = s"$zeppelinUrl/api/interpreter/setting"
       val interpreterIds = (jsonBody(wsClient.url(settingsUrl).get()) \\ "id").map(value => value.toString().replace("\"", ""))
-      interpreterIds.foreach(interpreterId => {
+      interpreterIds.foreach { interpreterId =>
         val restartUrl = s"$zeppelinUrl/api/interpreter/setting/restart/$interpreterId"
         jsonBody(wsClient.url(restartUrl).withMethod("PUT").execute(), timeout = 1.minute)
-      })
+      }
     }
 
     bindInterpreters()
@@ -74,7 +74,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     )
 
     // eventually all paragraphs should be in FINISHED status
-    eventually(timeout(3.minutes), interval(5.second))  {
+    eventually(timeout(3.minutes), interval(5.second)) {
       val jobStatus = jsonBody(
         wsClient.url(notebookJobUrl).get()
       )
