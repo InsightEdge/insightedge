@@ -7,8 +7,12 @@ import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.apache.spark.sql.SaveMode
-import org.apache.spark.sql.types.{IntegerType, StringType}
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.insightedge.model.Address
+import org.apache.spark.sql.types.{StructType, IntegerType, StringType}
 import org.scalatest.FlatSpec
+
+import scala.collection.JavaConversions._
 
 class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
 
@@ -98,9 +102,6 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
   }
 
   it should "load dataframe from existing space documents" in {
-    import org.apache.spark.sql.functions._
-
-    import collection.JavaConversions._
     val collectionName = randomString()
 
     spaceProxy.getTypeManager.registerTypeDescriptor(
@@ -108,12 +109,20 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
         .addFixedProperty("name", classOf[String])
         .addFixedProperty("surname", classOf[String])
         .addFixedProperty("age", classOf[Integer])
+        .addFixedProperty("address", classOf[Address])
+        .addFixedProperty("jaddress", classOf[JAddress])
         .create()
     )
 
     spaceProxy.writeMultiple(Array(
-      new SpaceDocument(collectionName, Map("name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32))),
-      new SpaceDocument(collectionName, Map("name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20)))
+      new SpaceDocument(collectionName, Map(
+        "name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32),
+        "address" -> Address("New York", "NY"), "jaddress" -> new JAddress("New York", "NY")
+      )),
+      new SpaceDocument(collectionName, Map(
+        "name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20),
+        "address" -> Address("Charlotte", "NC"), "jaddress" -> new JAddress("Charlotte", "NC")
+      ))
     ))
 
     val df = sql.read.grid.load(collectionName)
@@ -125,13 +134,19 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
     assert(s.fieldNames.contains("name"))
     assert(s.fieldNames.contains("surname"))
     assert(s.fieldNames.contains("age"))
+    assert(s.fieldNames.contains("address"))
+    assert(s.fieldNames.contains("jaddress"))
 
     assert(s.get(s.getFieldIndex("name").get).dataType == StringType)
     assert(s.get(s.getFieldIndex("surname").get).dataType == StringType)
     assert(s.get(s.getFieldIndex("age").get).dataType == IntegerType)
+    assert(s.get(s.getFieldIndex("address").get).dataType.isInstanceOf[StructType])
+    assert(s.get(s.getFieldIndex("jaddress").get).dataType.isInstanceOf[StructType])
 
     assert(df.filter(df("name") equalTo "John").count() == 1)
     assert(df.filter(df("age") < 30).count() == 1)
+    assert(df.filter(df("address.state") equalTo "NY").count() == 1)
+    assert(df.filter(df("jaddress.city") equalTo "Charlotte").count() == 1)
 
     // check if dataframe can be persisted
     val tableName = randomString()

@@ -1,10 +1,10 @@
 package org.apache.spark.sql.insightedge.relation
 
 import com.gigaspaces.document.SpaceDocument
-import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
+import com.gigaspaces.metadata.{SpaceTypeDescriptor, SpaceTypeDescriptorBuilder}
 import com.gigaspaces.query.IdQuery
 import com.gigaspaces.spark.implicits.basic._
-import com.gigaspaces.spark.rdd.GigaSpacesDocumentDataFrameRDD
+import com.gigaspaces.spark.rdd.GigaSpacesDocumentRDD
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SaveMode._
@@ -22,30 +22,28 @@ private[insightedge] case class GigaspacesDocumentRelation(
                                                           )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  override def buildSchema(): StructType = {
+  lazy val (structType: StructType, typeDescriptor: Option[SpaceTypeDescriptor]) = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
       case null => inferFromSpaceDescriptor(collection)
-      case storedSchema => storedSchema.schema
+      case storedSchema => (storedSchema.schema, None)
     }
   }
 
-  def inferFromSpaceDescriptor(collection: String): StructType = {
+  override protected def buildSchema(): StructType = structType
+
+  def inferFromSpaceDescriptor(collection: String): (StructType, Option[SpaceTypeDescriptor]) = {
     gs.getTypeManager.getTypeDescriptor(collection) match {
-      case null => new StructType()
+      case null => (new StructType(), None)
       case descriptor =>
         val fields = descriptor.getPropertiesNames
           .zip(descriptor.getPropertiesTypes)
-          .filter(tuple => {
-            val (name, _) = tuple
-            !name.equals("_spaceId")
-          })
-          .map(tuple => {
-            val (name, clazzName) = tuple
+          .filter { case (name, _) => !name.equals("_spaceId") }
+          .map { case (name, clazzName) =>
             val clazz = Utils.classForName(clazzName)
             val schema = SchemaInference.schemaFor(clazz, (c: Class[_]) => GigaspacesAbstractRelation.udtFor(c))
             StructField(name, schema.dataType, schema.nullable)
-          })
-        new StructType(fields)
+          }
+        (new StructType(fields), Some(descriptor))
     }
   }
 
@@ -100,7 +98,11 @@ private[insightedge] case class GigaspacesDocumentRelation(
   }
 
   override def buildScan(query: String, params: Seq[Any], fields: Seq[String]): RDD[Row] = {
-    new GigaSpacesDocumentDataFrameRDD(gsConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
+    val clazzName = classOf[SpaceDocument].getName
+
+    val rdd = new GigaSpacesDocumentRDD(gsConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
+
+    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields, typeDescriptor) }
   }
 
 }

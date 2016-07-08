@@ -26,5 +26,3 @@ case class Person(
   def this() = this(null, null, -1, null)
 
 }
-
-case class Address(city: String, state: String)
