@@ -1,8 +1,11 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.document.{DocumentProperties, SpaceDocument}
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
+import com.j_spaces.core.client.SQLQuery
+import org.apache.spark.sql.Row
 import org.apache.spark.sql.insightedge.model.{Address, Person}
 import org.scalatest.FlatSpec
 
@@ -48,6 +51,23 @@ class DataFrameNestedQuerySpec extends FlatSpec with GsConfig with GigaSpaces wi
     val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
     assert(countByCity("Charlotte") == 2)
     unwrapDf.printSchema()
+  }
+
+  it should "save nested properties as document properties" taggedAs ScalaSpaceClass in {
+    sc.parallelize(Seq(
+      new Person(id = null, name = "Paul", age = 30, address = new Address(city = "Columbus", state = "OH")),
+      new Person(id = null, name = "Mike", age = 25, address = new Address(city = "Buffalo", state = "NY")),
+      new Person(id = null, name = "John", age = 20, address = new Address(city = "Charlotte", state = "NC")),
+      new Person(id = null, name = "Silvia", age = 27, address = new Address(city = "Charlotte", state = "NC"))
+    )).saveToGrid()
+
+    val collectionName = randomString()
+    sql.read.grid.loadClass[Person].write.grid(collectionName).save()
+
+    val person = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
+    assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
+    assert(person.getProperty[Any]("age").isInstanceOf[Integer])
+    assert(person.getProperty[Any]("name").isInstanceOf[String])
   }
 
 }
