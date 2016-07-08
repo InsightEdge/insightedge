@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge.model
 
 import com.gigaspaces.scala.annotation._
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.model.BucketedGridModel
 import org.openspaces.spatial.shapes.Point
 
 import scala.beans.BeanProperty
@@ -17,7 +17,7 @@ case class SpatialEmbeddedData(
                                 @BeanProperty
                                 @SpaceSpatialIndex(path = "point")
                                 var location: Location
-                              ) extends GridModel {
+                              ) {
 
   def this() = this(null, null)
 

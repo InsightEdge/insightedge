@@ -8,7 +8,7 @@ import scala.beans.{BeanProperty, BooleanBeanProperty}
 /**
  * Space class for tests
  */
-case class Data(
+case class BucketedData(
                  @BeanProperty
                  @SpaceId(autoGenerate = true)
                  var id: String,
@@ -23,7 +23,8 @@ case class Data(
 
                  @BooleanBeanProperty
                  var flag: Boolean
-                 ) {
+                 ) extends BucketedGridModel {
+
   def this(routing: Long, data: String) = this(null, routing, data, false)
 
   def this() = this(-1, null)

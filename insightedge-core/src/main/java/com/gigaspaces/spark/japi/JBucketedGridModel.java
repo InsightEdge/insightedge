@@ -1,16 +1,16 @@
 package com.gigaspaces.spark.japi;
 
 import com.gigaspaces.annotation.pojo.SpaceIndex;
-import com.gigaspaces.spark.model.GridModel;
+import com.gigaspaces.spark.model.BucketedGridModel;
 
 import java.io.Serializable;
 
 /**
- * A port of {@link GridModel} for Java API.
+ * A port of {@link BucketedGridModel} for Java API.
  *
  * @author Oleksiy_Dyagilev
  */
-public class JGridModel implements GridModel, Serializable {
+public class JBucketedGridModel implements BucketedGridModel, Serializable {
 
     private Integer metaBucketId;
 

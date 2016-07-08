@@ -4,7 +4,8 @@ import java.lang.Math.max
 
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.impl.GigaSpacesPartition
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.model.BucketedGridModel
+import com.gigaspaces.spark.utils.GigaSpaceConstants.{BucketsCount, DefaultSplitCount}
 import com.j_spaces.core.IJSpace
 import org.apache.spark.Logging
 import org.openspaces.core.space.UrlSpaceConfigurer
@@ -17,8 +18,6 @@ import scala.reflect._
  * @author Oleksiy_Dyagilev
  */
 private[spark] object GigaSpaceUtils extends Logging {
-  val BucketsCount = 128
-  val DefaultSplitCount = 4
 
   def createSpace(gsConfig: GigaSpacesConfig): IJSpace = {
     val spaceUri = s"jini://*/*/${gsConfig.spaceName}"
@@ -62,7 +61,6 @@ private[spark] object GigaSpaceUtils extends Logging {
   }
 
   def splitPartitionsByBuckets(gridPartitions: Seq[GigaSpacesPartition], optionalSplitCount: Option[Int]): Seq[GigaSpacesPartition] = {
-    val gridNodesCount = gridPartitions.size
     val splitCount = max(1, optionalSplitCount.getOrElse(DefaultSplitCount))
     val sparkPartitions = gridPartitions.flatMap(splitPartitionByBuckets(_, splitCount))
     assignPartitionIds(sparkPartitions)
