@@ -4,6 +4,7 @@ import com.gigaspaces.client.iterator.IteratorScope
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.impl.{GigaSpacesPartition, GigaSpacesQueryIterator, ProfilingIterator}
+import com.gigaspaces.spark.model.BucketedGridModel
 import com.gigaspaces.spark.utils.{GigaSpaceFactory, GigaSpaceUtils, Profiler}
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
@@ -15,7 +16,7 @@ import scala.reflect._
 abstract class GigaSpacesAbstractRDD[R: ClassTag](
                                                    gsConfig: GigaSpacesConfig,
                                                    sc: SparkContext,
-                                                   partitions: Option[Int],
+                                                   splitCount: Option[Int],
                                                    readRddBufferSize: Int
                                                  ) extends RDD[R](sc, deps = Nil) {
 
@@ -56,7 +57,9 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   /**
     * @return if RDD implementation supports bucketing or not
     */
-  protected def supportsBuckets(): Boolean = false
+  private[rdd] def supportsBuckets(): Boolean = {
+    classOf[BucketedGridModel].isAssignableFrom(classTag[R].runtimeClass)
+  }
 
   /**
     * Create GigaSpaces Query
@@ -115,14 +118,14 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     * Wraps given query into (...) and appends 'and `bucketQuery`' in the end.
     *
     * @param query given query
-    * @param split given partition
+    * @param partition given partition
     * @return query appended with bucket ids
     */
-  protected def bucketize(query: String, split: Partition): String = {
+  protected def bucketize(query: String, partition: Partition): String = {
     if (query.trim.isEmpty) {
-      bucketQuery(split)
+      bucketQuery(partition)
     } else {
-      s"($query) and ${bucketQuery(split)}"
+      s"($query) and ${bucketQuery(partition)}"
     }
   }
 
@@ -133,7 +136,7 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     */
   override protected def getPartitions: Array[Partition] = {
     profileWithInfo("getPartitions") {
-      val dataGridPartitions = GigaSpaceUtils.buildGigaSpacePartitions[R](gsConfig, partitions, supportsBuckets())
+      val dataGridPartitions = GigaSpaceUtils.buildGigaSpacePartitions[R](gsConfig, splitCount, supportsBuckets())
       logInfo(s"Found data grid partitions $dataGridPartitions")
 
       dataGridPartitions.toArray

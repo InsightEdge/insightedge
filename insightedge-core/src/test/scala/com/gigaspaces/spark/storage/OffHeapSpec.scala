@@ -1,6 +1,7 @@
 package com.gigaspaces.spark.storage
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, OffHeap, Spark}
+import com.gigaspaces.spark.rdd.JData
 import com.gigaspaces.spark.utils._
 import org.apache.spark.storage.StorageLevel
 import org.scalatest.FlatSpec
@@ -18,7 +19,8 @@ class OffHeapSpec extends FlatSpec with GsConfig with GigaSpaces with Spark with
   }
 
   it should "work with GigaSpaces Off-Heap [java]" taggedAs JavaSpaceClass in {
-    val rdd = sc.parallelize(jDataSeq(100))
+    val dataSeqFn = () => (1 to 100).map(i => new JData(i.toLong, "data" + i) with Serializable)
+    val rdd = parallelizeJavaSeq(sc, dataSeqFn)
     assert(rdd.count == 100)
     rdd.persist(StorageLevel.OFF_HEAP)
     assert(rdd.count == 100)

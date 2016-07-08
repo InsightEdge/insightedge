@@ -1,14 +1,11 @@
 package org.apache.spark.sql.insightedge;
 
 import com.gigaspaces.annotation.pojo.SpaceId;
-import com.gigaspaces.spark.japi.JGridModel;
-
-import java.io.Serializable;
 
 /**
  * @author Oleksiy_Dyagilev
  */
-public class JPerson extends JGridModel {
+public class JPerson {
 
     private String id;
     private String name;

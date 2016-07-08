@@ -3,14 +3,13 @@ package org.apache.spark.sql.insightedge;
 import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 import com.gigaspaces.annotation.pojo.SpaceRouting;
-import com.gigaspaces.spark.japi.JGridModel;
 import org.openspaces.spatial.shapes.Point;
 
 /**
  * Space class for tests
  */
 @SpaceClass
-public class JSpatialData extends JGridModel {
+public class JSpatialData {
     private String id;
     private Long routing;
     private Point point;

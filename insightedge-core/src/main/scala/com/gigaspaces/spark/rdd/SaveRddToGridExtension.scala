@@ -1,7 +1,7 @@
 package com.gigaspaces.spark.rdd
 
 import com.gigaspaces.spark.context.GigaSpacesConfig
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.model.BucketedGridModel
 import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory}
 import org.apache.spark.rdd.RDD
 
@@ -25,7 +25,7 @@ class SaveRddToGridExtension[T: ClassTag](rdd: RDD[T]) extends Serializable {
     * Saves values from given RDD into Data Grid
     */
   def saveToGrid(saveBatchSize: Int = DefaultWriteBatchSize) = {
-    val assignBucketId = classOf[GridModel].isAssignableFrom(classTag[T].runtimeClass)
+    val assignBucketId = classOf[BucketedGridModel].isAssignableFrom(classTag[T].runtimeClass)
     val bucketIdSeq = new BucketIdSeq()
 
     rdd.foreachPartition { partition =>
@@ -37,7 +37,7 @@ class SaveRddToGridExtension[T: ClassTag](rdd: RDD[T]) extends Serializable {
 
         if (assignBucketId) {
           batchArray.foreach { bean =>
-            val model = bean.asInstanceOf[GridModel]
+            val model = bean.asInstanceOf[BucketedGridModel]
             model.metaBucketId = bucketIdSeq.next()
           }
         }
