@@ -25,7 +25,6 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     *
     * @param split         partition
     * @param dataGridQuery Data Grid query to read data
-    * @param convertFunc   convert function to be applied on read Data Grid data
     * @tparam T type of Data Grid query
     * @return iterator over Data Grid
     */
@@ -54,11 +53,8 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     iterator
   }
 
-  /**
-    * @return if RDD implementation supports bucketing or not
-    */
-  private[rdd] def supportsBuckets(): Boolean = {
-    classOf[BucketedGridModel].isAssignableFrom(classTag[R].runtimeClass)
+  protected def createDirectProxy(gsPartition: GigaSpacesPartition): GigaSpace = {
+    GigaSpaceFactory.getOrCreateDirect(gsPartition, gsConfig)
   }
 
   /**
@@ -99,6 +95,21 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   }
 
   /**
+    * Wraps given query into (...) and appends 'and `bucketQuery`' in the end.
+    *
+    * @param query     given query
+    * @param partition given partition
+    * @return query appended with bucket ids
+    */
+  protected def bucketize(query: String, partition: Partition): String = {
+    if (query.trim.isEmpty) {
+      bucketQuery(partition)
+    } else {
+      s"($query) and ${bucketQuery(partition)}"
+    }
+  }
+
+  /**
     * Create a query by metaBucketId for given bucketed partition or empty query for non-bucketed partition
     *
     * @param split the partition bean
@@ -112,21 +123,6 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     } yield s"metaBucketId >= $bottom and metaBucketId < $top"
 
     rangeQuery.getOrElse("")
-  }
-
-  /**
-    * Wraps given query into (...) and appends 'and `bucketQuery`' in the end.
-    *
-    * @param query given query
-    * @param partition given partition
-    * @return query appended with bucket ids
-    */
-  protected def bucketize(query: String, partition: Partition): String = {
-    if (query.trim.isEmpty) {
-      bucketQuery(partition)
-    } else {
-      s"($query) and ${bucketQuery(partition)}"
-    }
   }
 
   /**
@@ -144,6 +140,15 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
   }
 
   /**
+    * @return if RDD implementation supports bucketing or not
+    */
+  private[rdd] def supportsBuckets(): Boolean = {
+    classOf[BucketedGridModel].isAssignableFrom(classTag[R].runtimeClass)
+  }
+
+  protected def profileWithInfo[T](message: String)(block: => T): T = Profiler.profile(message)(logInfo(_))(block)
+
+  /**
     * Gets preferred locations for the given partition.
     *
     * @param split Split partition.
@@ -157,13 +162,6 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
       Seq(preferredHost)
     }
   }
-
-  protected def createDirectProxy(gsPartition: GigaSpacesPartition): GigaSpace = {
-    GigaSpaceFactory.getOrCreateDirect(gsPartition, gsConfig)
-  }
-
-
-  protected def profileWithInfo[T](message: String)(block: => T): T = Profiler.profile(message)(logInfo(_))(block)
 
 }
 
