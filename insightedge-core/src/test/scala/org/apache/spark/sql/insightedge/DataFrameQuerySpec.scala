@@ -79,11 +79,5 @@ class DataFrameQuerySpec extends FlatSpec with GsConfig with GigaSpaces with Spa
     assert(thrown.getMessage equals "non.existing.Class")
   }
 
-  it should "fail to work with class that is not GridModel" taggedAs ScalaSpaceClass in {
-    val thrown = intercept[IllegalArgumentException] {
-      sql.read.grid.option("class", classOf[NotGridModel].getName).load()
-    }
-    assert(thrown.getMessage equals "'class' must extend com.gigaspaces.spark.model.GridModel")
-  }
 
 }

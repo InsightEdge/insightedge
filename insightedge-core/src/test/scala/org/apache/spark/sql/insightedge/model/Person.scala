@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge.model
 
 import com.gigaspaces.scala.annotation._
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.model.BucketedGridModel
 
 import scala.beans.BeanProperty
 
@@ -21,7 +21,7 @@ case class Person(
 
                    @BeanProperty
                    var address: Address
-                 ) extends GridModel {
+                 ) {
 
   def this() = this(null, null, -1, null)
 

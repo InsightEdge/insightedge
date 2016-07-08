@@ -13,7 +13,7 @@ class BucketIdSeq extends Serializable {
 
   def next(): Int = {
     bucketId += 1
-    if (bucketId >= GigaSpaceUtils.BucketsCount) {
+    if (bucketId >= GigaSpaceConstants.BucketsCount) {
       bucketId = 0
     }
     bucketId

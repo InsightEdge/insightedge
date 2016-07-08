@@ -1,21 +1,17 @@
 package com.gigaspaces.spark.context
 
-import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.mllib.MLModel
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.model.BucketedGridModel
 import com.gigaspaces.spark.rdd.{GigaSpacesRDD, GigaSpacesSqlRDD}
-import com.gigaspaces.spark.utils.GigaSpaceUtils.DefaultSplitCount
 import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory, GigaSpaceUtils}
+import com.gigaspaces.spark.utils.GigaSpaceConstants._
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{DataFrame, SQLContext}
+import org.apache.spark.sql.SQLContext
 
 import scala.reflect._
 import scala.util.Random
 
 class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializable {
-
-  val DefaultReadRddBufferSize = 1000
-  val DefaultDriverWriteBatchSize = 1000
 
   lazy val gridSqlContext = new SQLContext(sc)
 
@@ -30,11 +26,11 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * Read dataset from GigaSpaces Data Grid.
     *
     * @tparam R GigaSpaces space class
-    * @param splitCount        number of spark partitions per datagrid partition; defaults to x4
+    * @param splitCount        only applicable for BucketedGridModel, number of spark partitions per datagrid partition, defaults to x4. For non-bucketed types this parameter is ignored.
     * @param readRddBufferSize buffer size of the underlying iterator that reads from the grid
     * @return GigaSpaces RDD
     */
-  def gridRdd[R <: GridModel : ClassTag](splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadRddBufferSize): GigaSpacesRDD[R] = {
+  def gridRdd[R : ClassTag](splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadBufferSize): GigaSpacesRDD[R] = {
     new GigaSpacesRDD[R](gsConfig, sc, splitCount, readRddBufferSize)
   }
 
@@ -42,13 +38,14 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * Read dataset from Data Grid with GigaSpaces SQL query
     *
     * @param sqlQuery          SQL query to be executed on Data Grid
-    * @param readRddBufferSize buffer size of the underlying iterator that reads from the grid
     * @param queryParams       params for SQL quey
+    * @param splitCount        only applicable for BucketedGridModel, number of spark partitions per datagrid partition, defaults to x4. For non-bucketed types this parameter is ignored.
+    * @param readRddBufferSize buffer size of the underlying iterator that reads from the grid
     * @tparam R GigaSpaces space class
     * @return
     */
-  def gridSql[R <: GridModel : ClassTag](sqlQuery: String, queryParams: Seq[Any] = Seq(), readRddBufferSize: Int = DefaultReadRddBufferSize): GigaSpacesSqlRDD[R] = {
-    new GigaSpacesSqlRDD[R](gsConfig, sc, sqlQuery, queryParams, Seq.empty[String], readRddBufferSize)
+  def gridSql[R : ClassTag](sqlQuery: String, queryParams: Seq[Any] = Seq(), splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadBufferSize): GigaSpacesSqlRDD[R] = {
+    new GigaSpacesSqlRDD[R](gsConfig, sc, sqlQuery, queryParams, Seq.empty[String], splitCount, readRddBufferSize)
   }
 
   /**
@@ -75,8 +72,8 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @tparam R type of object
     */
   def saveToGrid[R: ClassTag](value: R): Unit = {
-    if (classOf[GridModel].isAssignableFrom(classTag[R].runtimeClass)) {
-      value.asInstanceOf[GridModel].metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount)
+    if (classOf[BucketedGridModel].isAssignableFrom(classTag[R].runtimeClass)) {
+      value.asInstanceOf[BucketedGridModel].metaBucketId = Random.nextInt(BucketsCount)
     }
     gigaSpace.write(value)
   }
@@ -91,7 +88,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @tparam R type of object
     */
   def saveMultipleToGrid[R: ClassTag](values: Iterable[R], batchSize: Int = DefaultDriverWriteBatchSize): Unit = {
-    val assignBucketId = classOf[GridModel].isAssignableFrom(classTag[R].runtimeClass)
+    val assignBucketId = classOf[BucketedGridModel].isAssignableFrom(classTag[R].runtimeClass)
     val bucketIdSeq = new BucketIdSeq()
 
     val batches = values.grouped(batchSize)
@@ -100,7 +97,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
 
       if (assignBucketId) {
         batchArray.foreach { bean =>
-          bean.asInstanceOf[GridModel].metaBucketId = bucketIdSeq.next()
+          bean.asInstanceOf[BucketedGridModel].metaBucketId = bucketIdSeq.next()
         }
       }
 

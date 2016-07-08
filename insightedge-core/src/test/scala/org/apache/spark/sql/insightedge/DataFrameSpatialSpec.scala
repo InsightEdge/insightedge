@@ -16,7 +16,7 @@ class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with S
     val searchedCircle = circle(point(0, 0), 1.0)
     val searchedRect = rectangle(0, 2, 0, 2)
     val searchedPoint = point(1, 1)
-    spaceProxy.write(randomBucket(SpatialData(id = null, routing = 1, searchedCircle, searchedRect, searchedPoint)))
+    spaceProxy.write(SpatialData(id = null, routing = 1, searchedCircle, searchedRect, searchedPoint))
 
     def asserts(df: DataFrame): Unit = {
       assert(df.count() == 1)
@@ -60,7 +60,7 @@ class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with S
   }
 
   it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in {
-    spaceProxy.write(randomBucket(new JSpatialData(1L, point(0, 0))))
+    spaceProxy.write(new JSpatialData(1L, point(0, 0)))
 
     // pushed down to XAP
     val df = sql.read.grid.loadClass[JSpatialData]
@@ -73,7 +73,7 @@ class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with S
   }
 
   it should "work with shapes embedded on second level" taggedAs ScalaSpaceClass in {
-    spaceProxy.write(randomBucket(SpatialEmbeddedData(id = null, Location(point(0, 0)))))
+    spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
 
     // pushed down to XAP
     val df = sql.read.grid.loadClass[SpatialEmbeddedData]
@@ -86,7 +86,7 @@ class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with S
   }
 
   it should "work with new columns via udf" in {
-    spaceProxy.write(randomBucket(SpatialData(id = null, routing = 1, null, null, point(1, 1))))
+    spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
 
     val df = sql.read.grid.loadClass[SpatialData]
     val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)

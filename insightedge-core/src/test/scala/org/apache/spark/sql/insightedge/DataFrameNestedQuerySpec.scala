@@ -30,7 +30,7 @@ class DataFrameNestedQuerySpec extends FlatSpec with GsConfig with GigaSpaces wi
   }
 
   it should "support nested properties [java]" taggedAs JavaSpaceClass in {
-    sc.parallelize(Seq(
+    parallelizeJavaSeq(sc, () => Seq(
       new JPerson(null, "Paul", 30, new JAddress("Columbus", "OH")),
       new JPerson(null, "Mike", 25, new JAddress("Buffalo", "NY")),
       new JPerson(null, "John", 20, new JAddress("Charlotte", "NC")),

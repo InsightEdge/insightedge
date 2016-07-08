@@ -93,7 +93,6 @@ class StringCompilerSpec extends FunSpec with BeforeAndAfterEach{
         |package generated.code
         |
         |import com.gigaspaces.scala.annotation._
-        |import com.gigaspaces.spark.model.GridModel
         |
         |import scala.beans.BeanProperty
         |
@@ -110,7 +109,7 @@ class StringCompilerSpec extends FunSpec with BeforeAndAfterEach{
         |
         |                   @BeanProperty
         |                   var address: Address
-        |                 ) extends GridModel {
+        |                 ) {
         |
         |  def this() = this(null, null, -1, null)
         |

@@ -1,13 +1,15 @@
 package com.gigaspaces.spark.fixture
 
-import com.gigaspaces.spark.model.GridModel
-import com.gigaspaces.spark.rdd.{Data, JData}
-import com.gigaspaces.spark.utils.{GigaSpaceFactory, GigaSpaceUtils}
+import com.gigaspaces.spark.model.BucketedGridModel
+import com.gigaspaces.spark.rdd.{BucketedData, Data, JBucketedData, JData}
+import com.gigaspaces.spark.utils.{GigaSpaceConstants, GigaSpaceFactory, GigaSpaceUtils}
 import org.apache.commons.lang3.RandomStringUtils
+import org.apache.spark.SparkContext
 import org.openspaces.core.GigaSpace
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import org.springframework.context.support.ClassPathXmlApplicationContext
 
+import scala.reflect.ClassTag
 import scala.util.Random
 
 /**
@@ -17,6 +19,9 @@ import scala.util.Random
   */
 trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
   self: Suite with GsConfig =>
+
+  // see configuration in cluster-test-config.xml
+  val NumberOfGridPartitions = 2
 
   var spaceProxy: GigaSpace = _
 
@@ -31,26 +36,42 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
     super.afterEach()
   }
 
-  protected def dataSeq(count: Int): Seq[Data] = (1L to count).map(i => new Data(i, "data" + i))
+  def dataSeq(count: Int): Seq[Data] = (1L to count).map(i => new Data(i, "data" + i))
 
-  protected def jDataSeq(count: Int): Seq[JData] = (1L to count).map(i => new JData(i, "data" + i))
+  def jDataSeq(count: Int): Seq[JData] = (1L to count).map(i => new JData(i, "data" + i))
 
-  protected def writeDataSeqToDataGrid(data: Seq[GridModel]): Unit = spaceProxy.writeMultiple(randomBucket(data).toArray)
+  def bucketedDataSeq(count: Int): Seq[BucketedData] = (1L to count).map(i => new BucketedData(i, "data" + i))
 
-  protected def writeDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(dataSeq(count))
+  def bucketedJDataSeq(count: Int): Seq[JBucketedData] = (1L to count).map(i => new JBucketedData(i, "data" + i))
 
-  protected def writeJDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(jDataSeq(count))
+  def writeDataSeqToDataGrid(data: Seq[AnyRef]): Unit = spaceProxy.writeMultiple(bucketizeIfPossible(data).toArray)
 
-  protected def randomBucket(seq: Seq[GridModel]): Seq[GridModel] = {
-    seq.foreach(data => data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount))
-    seq
+  def writeDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(dataSeq(count))
+
+  def writeBucketedDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(bucketedDataSeq(count))
+
+  def writeJBucketedDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(bucketedJDataSeq(count))
+
+  def writeJDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(jDataSeq(count))
+
+  def parallelizeJavaSeq[T : ClassTag](sc: SparkContext, createSeqFn: () => Seq[T]) = {
+    // our test java models are not Serializable
+    // we cannot sc.parallelize() non serializable objects, so we create them on executor
+    sc.parallelize(Seq(1)).flatMap(_ => createSeqFn())
   }
 
-  protected def randomBucket(data: GridModel): GridModel = {
-    data.metaBucketId = Random.nextInt(GigaSpaceUtils.BucketsCount)
+  def bucketizeIfPossible(seq: Seq[AnyRef]): Seq[AnyRef] = {
+    seq.map {
+      case data: BucketedGridModel => bucketize(data)
+      case any => any
+    }
+  }
+
+  def bucketize(data: BucketedGridModel): BucketedGridModel = {
+    data.metaBucketId = Random.nextInt(GigaSpaceConstants.BucketsCount)
     data
   }
 
-  protected def randomString() = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+  def randomString() = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
 
 }
