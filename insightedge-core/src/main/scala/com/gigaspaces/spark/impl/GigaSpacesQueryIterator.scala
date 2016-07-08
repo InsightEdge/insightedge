@@ -2,11 +2,10 @@ package com.gigaspaces.spark.impl
 
 import com.j_spaces.core.client.GSIterator
 
-private[spark] class GigaSpacesQueryIterator[T, R](cur: GSIterator, convertFunc: T => R) extends Iterator[R] {
+private[spark] class GigaSpacesQueryIterator[T](cur: GSIterator) extends Iterator[T] {
 
   override def hasNext: Boolean = cur.hasNext
 
-  override def next(): R = {
-    convertFunc(cur.next().asInstanceOf[T])
-  }
+  override def next(): T = cur.next().asInstanceOf[T]
+
 }

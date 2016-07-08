@@ -3,7 +3,7 @@ package org.apache.spark.sql.insightedge.relation
 import java.beans.Introspector
 import java.lang.reflect.Method
 
-import com.gigaspaces.document.{DocumentProperties, SpaceDocument}
+import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptor
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits.basic._
@@ -191,7 +191,7 @@ object GigaspacesAbstractRelation {
       .map { f => schemaFieldsMap(f) }
       .map { f => AttributeReference(f.name, f.dataType, f.nullable)() }
 
-    val fieldToType = descriptor match {
+    val descriptorTypes = descriptor match {
       case Some(d) =>
         d.getPropertiesNames
           .zip(d.getPropertiesTypes)
@@ -199,6 +199,8 @@ object GigaspacesAbstractRelation {
       case None =>
         Map.empty[String, String]
     }
+
+    val anyNestedClass = classOf[Row].getName
 
     // Map of "elementName" -> (returnClassName, functionToExtract)
     val extractorsByClass = clazz match {
@@ -208,15 +210,15 @@ object GigaspacesAbstractRelation {
         attributeNames
           .map(a => a -> getterToClassAndExtractor(c.getMethod(a))).toMap
 
-      // Getters for SpaceDocuments are document.getProperty(name), type is extracted from type descriptor
+      // Getters for SpaceDocuments are document.getProperty[T](name), type is extracted from type descriptor
       case c if classOf[SpaceDocument].isAssignableFrom(clazz) =>
         attributeNames
-          .map(a => a ->(fieldToType.getOrElse(a, classOf[Object].getName), (e: Any) => e.asInstanceOf[SpaceDocument].getProperty[Any](a))).toMap
+          .map(a => a ->(descriptorTypes.getOrElse(a, anyNestedClass), (e: Any) => e.asInstanceOf[SpaceDocument].getProperty[Any](a))).toMap
 
-      // Getters for DocumentProperties are document.getProperty(name)
-      case c if classOf[DocumentProperties].isAssignableFrom(clazz) =>
+      // Getters for Row are document.getAs[T](name)
+      case c if classOf[Row].isAssignableFrom(clazz) =>
         attributeNames
-          .map(a => a ->(classOf[Object].getName, (e: Any) => e.asInstanceOf[DocumentProperties].getProperty[Any](a))).toMap
+          .map(a => a ->(anyNestedClass, (e: Any) => e.asInstanceOf[Row].getAs[Any](a))).toMap
 
       // Getters for Java classes are from bean info, which is not serializable so we must rediscover it remotely for each partition
       case _ =>

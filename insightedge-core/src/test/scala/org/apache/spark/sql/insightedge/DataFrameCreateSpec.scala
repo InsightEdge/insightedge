@@ -6,10 +6,9 @@ import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
-import org.apache.spark.sql.SaveMode
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.insightedge.model.Address
-import org.apache.spark.sql.types.{StructType, IntegerType, StringType}
+import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
 import org.scalatest.FlatSpec
 
 import scala.collection.JavaConversions._
@@ -125,6 +124,14 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
       ))
     ))
 
+    val dfAsserts = (dataFrame: DataFrame) => {
+      assert(dataFrame.count() == 2)
+      assert(dataFrame.filter(dataFrame("name") equalTo "John").count() == 1)
+      assert(dataFrame.filter(dataFrame("age") < 30).count() == 1)
+      assert(dataFrame.filter(dataFrame("address.state") equalTo "NY").count() == 1)
+      assert(dataFrame.filter(dataFrame("jaddress.city") equalTo "Charlotte").count() == 1)
+    }
+
     val df = sql.read.grid.load(collectionName)
     df.printSchema()
 
@@ -143,27 +150,13 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
     assert(s.get(s.getFieldIndex("address").get).dataType.isInstanceOf[StructType])
     assert(s.get(s.getFieldIndex("jaddress").get).dataType.isInstanceOf[StructType])
 
-    assert(df.filter(df("name") equalTo "John").count() == 1)
-    assert(df.filter(df("age") < 30).count() == 1)
-    assert(df.filter(df("address.state") equalTo "NY").count() == 1)
-    assert(df.filter(df("jaddress.city") equalTo "Charlotte").count() == 1)
+    // check content
+    dfAsserts(df)
 
     // check if dataframe can be persisted
     val tableName = randomString()
     df.write.grid.save(tableName)
-    assert(sql.read.grid.load(tableName).count() == 2)
-
-    // check if we can write more objects to the same collection
-    val savingDf = df
-      .withColumn("name", udf { name: String => name + "!" }.apply(df("name")))
-      .withColumn("surname", udf { name: String => name + "?" }.apply(df("surname")))
-      .withColumn("age", udf { age: Integer => age + 100 }.apply(df("age")))
-    savingDf.printSchema()
-    savingDf.write.grid.mode(SaveMode.Append).save(collectionName)
-
-    val newDf = sql.read.grid.load(collectionName)
-    assert(newDf.count() == 4)
-    assert(newDf.filter(newDf("name") endsWith "!").count() == 2)
+    dfAsserts(sql.read.grid.load(tableName))
   }
 
 }

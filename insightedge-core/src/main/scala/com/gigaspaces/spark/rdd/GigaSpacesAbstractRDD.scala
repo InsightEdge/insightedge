@@ -28,7 +28,7 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
     * @tparam T type of Data Grid query
     * @return iterator over Data Grid
     */
-  protected def computeInternal[T](split: Partition, dataGridQuery: SQLQuery[T], convertFunc: T => R, context: TaskContext): Iterator[R] = {
+  protected def computeInternal[T](split: Partition, dataGridQuery: SQLQuery[T], context: TaskContext): Iterator[T] = {
     val startTime = System.currentTimeMillis()
     val gsPartition = split.asInstanceOf[GigaSpacesPartition]
     logInfo(s"Reading partition $gsPartition")
@@ -41,7 +41,7 @@ abstract class GigaSpacesAbstractRDD[R: ClassTag](
       .iteratorScope(IteratorScope.CURRENT)
 
     val iterator = profileWithInfo("createIterator") {
-      new ProfilingIterator(new GigaSpacesQueryIterator[T, R](iteratorBuilder.iterate(), convertFunc))
+      new ProfilingIterator(new GigaSpacesQueryIterator[T](iteratorBuilder.iterate()))
     }
 
     context.addTaskCompletionListener { _ =>

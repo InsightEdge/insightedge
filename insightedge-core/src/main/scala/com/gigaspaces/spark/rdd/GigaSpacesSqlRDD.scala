@@ -19,7 +19,7 @@ class GigaSpacesSqlRDD[R <: GridModel : ClassTag](
   @DeveloperApi
   override def compute(split: Partition, context: TaskContext): Iterator[R] = {
     val gsQuery = createGigaSpacesQuery[R](bucketize(query, split), queryParams, queryFields)
-    computeInternal[R](split, gsQuery, R => R, context)
+    computeInternal[R](split, gsQuery, context)
   }
 
   @DeveloperApi

@@ -19,7 +19,7 @@ class GigaSpacesDocumentRDD(
   override def compute(split: Partition, context: TaskContext): Iterator[SpaceDocument] = {
     val gsQuery = createDocumentGigaSpacesQuery(typeName, query, queryParams, queryFields)
 
-    computeInternal[SpaceDocument](split, gsQuery, d => d, context)
+    computeInternal[SpaceDocument](split, gsQuery, context)
   }
 
 }
