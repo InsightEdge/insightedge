@@ -3,8 +3,8 @@ package com.gigaspaces.spark.context
 import com.gigaspaces.spark.mllib.MLModel
 import com.gigaspaces.spark.model.BucketedGridModel
 import com.gigaspaces.spark.rdd.{GigaSpacesRDD, GigaSpacesSqlRDD}
-import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory, GigaSpaceUtils}
 import com.gigaspaces.spark.utils.GigaSpaceConstants._
+import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 
