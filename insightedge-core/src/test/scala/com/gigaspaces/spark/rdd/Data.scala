@@ -6,27 +6,27 @@ import com.gigaspaces.spark.model.BucketedGridModel
 import scala.beans.{BeanProperty, BooleanBeanProperty}
 
 /**
- * Space class for tests
- */
-case class Data(
-                 @BeanProperty
-                 @SpaceId(autoGenerate = true)
-                 var id: String,
+  * Space class for tests
+  */
+case class Data @SpaceClassConstructor()(
+                                          @BeanProperty
+                                          @SpaceId(autoGenerate = true)
+                                          var id: String,
 
-                 @BeanProperty
-                 @SpaceRouting
-                 @SpaceProperty(nullValue = "-1")
-                 var routing: Long,
+                                          @BeanProperty
+                                          @SpaceRouting
+                                          @SpaceProperty(nullValue = "-1")
+                                          routing: Long,
 
-                 @BeanProperty
-                 var data: String,
+                                          @BeanProperty
+                                          data: String,
 
-                 @BooleanBeanProperty
-                 var flag: Boolean
-                 ) {
+                                          @BooleanBeanProperty
+                                          flag: Boolean
+                                        ) {
   def this(routing: Long, data: String) = this(null, routing, data, false)
 
-  def this() = this(-1, null)
+  def this() = this(-1L, null)
 
   def this(routing: Long) = this(routing, null)
 }

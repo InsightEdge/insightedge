@@ -10,15 +10,11 @@ import scala.beans.BeanProperty
  *
  * @author Oleksiy_Dyagilev
  */
-case class BucketedGridString(
+case class BucketedGridString @SpaceClassConstructor()(
                        @BeanProperty
                        @SpaceId(autoGenerate = true)
                        var id: String,
 
                        @BeanProperty
-                       var string: String
-                       ) extends BucketedGridModel {
-  def this() = this(null, null)
-
-  def this(string: String) = this(null, string)
-}
+                       string: String
+                       ) extends BucketedGridModel

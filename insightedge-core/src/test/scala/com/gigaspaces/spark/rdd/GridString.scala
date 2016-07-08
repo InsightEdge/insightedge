@@ -9,15 +9,13 @@ import scala.beans.BeanProperty
  *
  * @author Oleksiy_Dyagilev
  */
-case class GridString(
+case class GridString @SpaceClassConstructor()(
                        @BeanProperty
                        @SpaceId(autoGenerate = true)
                        var id: String,
 
                        @BeanProperty
-                       var string: String
+                       string: String
                        ) {
-  def this() = this(null, null)
-
   def this(string: String) = this(null, string)
 }
