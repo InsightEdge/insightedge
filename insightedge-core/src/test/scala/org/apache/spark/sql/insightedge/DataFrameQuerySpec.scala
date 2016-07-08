@@ -4,7 +4,6 @@ import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.rdd.{Data, JData}
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
-import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.AnalysisException
 import org.apache.spark.sql.insightedge.model.NotGridModel
 import org.scalatest.FlatSpec
@@ -50,7 +49,6 @@ class DataFrameQuerySpec extends FlatSpec with GsConfig with GigaSpaces with Spa
 
   it should "group by field" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
-    SQLQuery
 
     val df = sql.read.grid.loadClass[Data]
     val count = df.groupBy("routing").count().count()
