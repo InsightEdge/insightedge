@@ -16,6 +16,4 @@ case class GridString @SpaceClassConstructor()(
 
                        @BeanProperty
                        string: String
-                       ) {
-  def this(string: String) = this(null, string)
-}
+                       )

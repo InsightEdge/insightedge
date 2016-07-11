@@ -18,6 +18,8 @@ import scala.util.Random
   */
 class GigaSpacesStreamingSpec extends FunSpec with GsConfig with GigaSpaces with SparkStreaming {
 
+  val emptyDataTemplate = new Data(-1, null)
+
   it("should save single object from Spark driver") {
     val sc = ssc.sparkContext
 
@@ -32,7 +34,7 @@ class GigaSpacesStreamingSpec extends FunSpec with GsConfig with GigaSpaces with
     ssc.start()
 
     eventually {
-      val savedData = spaceProxy.readMultiple(new Data())
+      val savedData = spaceProxy.readMultiple(emptyDataTemplate)
       assert(savedData.length == 1)
     }(timeout(2))
   }
@@ -51,7 +53,7 @@ class GigaSpacesStreamingSpec extends FunSpec with GsConfig with GigaSpaces with
     ssc.start()
 
     eventually {
-      val savedData = spaceProxy.readMultiple(new Data())
+      val savedData = spaceProxy.readMultiple(emptyDataTemplate)
       assert(savedData.nonEmpty)
     }(timeout(2))
   }
@@ -68,7 +70,7 @@ class GigaSpacesStreamingSpec extends FunSpec with GsConfig with GigaSpaces with
     ssc.start()
 
     eventually {
-      val savedData = spaceProxy.readMultiple(new Data())
+      val savedData = spaceProxy.readMultiple(emptyDataTemplate)
       assert(savedData.nonEmpty)
     }(timeout(2))
   }

@@ -22,6 +22,7 @@ case class BucketedData @SpaceClassConstructor()(
                  data: String,
 
                  @BooleanBeanProperty
+                 @SpaceProperty(nullValue = "false")
                  flag: Boolean
                  ) extends BucketedGridModel {
 
