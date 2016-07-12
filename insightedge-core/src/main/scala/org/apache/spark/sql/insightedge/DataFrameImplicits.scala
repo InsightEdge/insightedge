@@ -1,7 +1,8 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.model.BucketedGridModel
-import org.apache.spark.sql.{DataFrameWriter, DataFrame, DataFrameReader}
+import org.apache.spark.sql.insightedge.relation.{GigaspacesAbstractRelation, SchemaInference}
+import org.apache.spark.sql.types.{Metadata, MetadataBuilder, StructType}
+import org.apache.spark.sql.{DataFrame, DataFrameReader, DataFrameWriter}
 
 import scala.reflect._
 
@@ -14,12 +15,20 @@ trait DataFrameImplicits {
 
   def gridOptions(): Map[String, String] = Map()
 
+  def nestedClass[R: ClassTag]: Metadata = {
+    nestedClassName(classTag[R].runtimeClass.getName)
+  }
+
+  def nestedClassName(clazz: String): Metadata = {
+    new MetadataBuilder().putString("class", clazz).build()
+  }
+
   implicit class DataFrameReaderWrapper(val reader: DataFrameReader) {
     def grid = {
       reader.format(GigaSpacesFormat)
     }
 
-    def loadClass[R : ClassTag]: DataFrame = {
+    def loadClass[R: ClassTag]: DataFrame = {
       reader.format(GigaSpacesFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
   }
@@ -33,6 +42,5 @@ trait DataFrameImplicits {
       writer.format(GigaSpacesFormat)
     }
   }
-
 
 }

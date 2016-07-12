@@ -1,7 +1,5 @@
 package org.apache.spark.sql.insightedge.relation
 
-import java.beans.Introspector
-
 import com.gigaspaces.spark.rdd.GigaSpacesSqlRDD
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
@@ -17,12 +15,10 @@ private[insightedge] case class GigaspacesClassRelation(
                                                        )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  lazy val structType: StructType = {
+  override lazy val inferedSchema: StructType = {
     val schema = SchemaInference.schemaFor(clazz.runtimeClass, (c: Class[_]) => GigaspacesAbstractRelation.udtFor(c))
     schema.dataType.asInstanceOf[StructType]
   }
-
-  override def buildSchema(): StructType = structType
 
   override def insert(data: DataFrame, overwrite: Boolean): Unit = throw new UnsupportedOperationException("saving classes is unsupported")
 
@@ -33,7 +29,7 @@ private[insightedge] case class GigaspacesClassRelation(
 
     val rdd = new GigaSpacesSqlRDD(gsConfig, sc, query, params, fields, options.splitCount, options.readBufferSize)(clazz)
 
-    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields, None) }
+    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields) }
   }
 
 }

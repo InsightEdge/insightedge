@@ -8,7 +8,7 @@ import com.gigaspaces.spark.rdd.{BucketedData, Data, JBucketedData, JData}
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.insightedge.model.Address
-import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
+import org.apache.spark.sql.types._
 import org.scalatest.FlatSpec
 
 import scala.collection.JavaConversions._
@@ -124,31 +124,30 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
     assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
 
-  it should "load dataframe from existing space documents" in {
+  it should "load dataframe from existing space documents with provided schema" in {
     val collectionName = randomString()
 
     spaceProxy.getTypeManager.registerTypeDescriptor(
       new SpaceTypeDescriptorBuilder(collectionName)
-        .addFixedProperty("name", classOf[String])
-        .addFixedProperty("surname", classOf[String])
-        .addFixedProperty("age", classOf[Integer])
-        .addFixedProperty("address", classOf[Address])
-        .addFixedProperty("jaddress", classOf[JAddress])
+        .idProperty("personId")
+        .routingProperty("name")
         .create()
     )
 
     spaceProxy.writeMultiple(Array(
       new SpaceDocument(collectionName, Map(
+        "personId" -> "111",
         "name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32),
         "address" -> Address("New York", "NY"), "jaddress" -> new JAddress("New York", "NY")
       )),
       new SpaceDocument(collectionName, Map(
+        "personId" -> "222",
         "name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20),
         "address" -> Address("Charlotte", "NC"), "jaddress" -> new JAddress("Charlotte", "NC")
       ))
     ))
 
-    val dfAsserts = (dataFrame: DataFrame) => {
+    val dataFrameAsserts = (dataFrame: DataFrame) => {
       assert(dataFrame.count() == 2)
       assert(dataFrame.filter(dataFrame("name") equalTo "John").count() == 1)
       assert(dataFrame.filter(dataFrame("age") < 30).count() == 1)
@@ -156,31 +155,63 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
       assert(dataFrame.filter(dataFrame("jaddress.city") equalTo "Charlotte").count() == 1)
     }
 
-    val df = sql.read.grid.load(collectionName)
+    val schemaAsserts = (schema: StructType) => {
+      assert(schema.fieldNames.contains("name"))
+      assert(schema.fieldNames.contains("surname"))
+      assert(schema.fieldNames.contains("age"))
+      assert(schema.fieldNames.contains("address"))
+      assert(schema.fieldNames.contains("jaddress"))
+
+      assert(schema.get(schema.getFieldIndex("name").get).dataType == StringType)
+      assert(schema.get(schema.getFieldIndex("surname").get).dataType == StringType)
+      assert(schema.get(schema.getFieldIndex("age").get).dataType == IntegerType)
+      assert(schema.get(schema.getFieldIndex("address").get).dataType.isInstanceOf[StructType])
+      assert(schema.get(schema.getFieldIndex("jaddress").get).dataType.isInstanceOf[StructType])
+    }
+
+    val addressType = StructType(Seq(
+      StructField("state", StringType, nullable = true),
+      StructField("city", StringType, nullable = true)
+    ))
+
+    val df = sql.read.grid.schema(
+      StructType(Seq(
+        StructField("personId", StringType, nullable = false),
+        StructField("name", StringType, nullable = true),
+        StructField("surname", StringType, nullable = true),
+        StructField("age", IntegerType, nullable = false),
+        StructField("address", addressType.copy(), nullable = true, nestedClass[Address]),
+        StructField("jaddress", addressType.copy(), nullable = true, nestedClass[JAddress])
+      ))
+    ).load(collectionName)
     df.printSchema()
 
     // check schema
-    val s = df.schema
-
-    assert(s.fieldNames.contains("name"))
-    assert(s.fieldNames.contains("surname"))
-    assert(s.fieldNames.contains("age"))
-    assert(s.fieldNames.contains("address"))
-    assert(s.fieldNames.contains("jaddress"))
-
-    assert(s.get(s.getFieldIndex("name").get).dataType == StringType)
-    assert(s.get(s.getFieldIndex("surname").get).dataType == StringType)
-    assert(s.get(s.getFieldIndex("age").get).dataType == IntegerType)
-    assert(s.get(s.getFieldIndex("address").get).dataType.isInstanceOf[StructType])
-    assert(s.get(s.getFieldIndex("jaddress").get).dataType.isInstanceOf[StructType])
-
+    schemaAsserts(df.schema)
     // check content
-    dfAsserts(df)
+    dataFrameAsserts(df)
 
     // check if dataframe can be persisted
     val tableName = randomString()
     df.write.grid.save(tableName)
-    dfAsserts(sql.read.grid.load(tableName))
+    dataFrameAsserts(sql.read.grid.load(tableName))
+  }
+
+  it should "load dataframe from existing space documents with empty schema" in {
+    val collectionName = randomString()
+
+    spaceProxy.getTypeManager.registerTypeDescriptor(
+      new SpaceTypeDescriptorBuilder(collectionName).create()
+    )
+
+    spaceProxy.writeMultiple(Array(
+      new SpaceDocument(collectionName, Map("name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32))),
+      new SpaceDocument(collectionName, Map("name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20)))
+    ))
+
+    val df = sql.read.grid.load(collectionName)
+    assert(df.count() == 2)
+    assert(df.schema.fields.length == 0)
   }
 
 }

@@ -44,11 +44,11 @@ abstract class GigaspacesAbstractRelation(
     if (options.schema.nonEmpty) {
       options.schema.get
     } else {
-      buildSchema()
+      inferedSchema
     }
   }
 
-  protected def buildSchema(): StructType
+  def inferedSchema: StructType
 
   override def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
     val fields = if (requiredColumns.nonEmpty) requiredColumns else schema.fieldNames
@@ -184,8 +184,8 @@ object GigaspacesAbstractRelation {
   /**
     * Converts an iterator of Beans to Row using the provided class & schema.
     */
-  def beansToRows(data: Iterator[_], clazzName: String, schema: StructType, fields: Seq[String], descriptor: Option[SpaceTypeDescriptor]): Iterator[Row] = {
-    val converter = buildBeanToRowConverter(clazzName, schema, fields, descriptor)
+  def beansToRows(data: Iterator[_], clazzName: String, schema: StructType, fields: Seq[String]): Iterator[Row] = {
+    val converter = buildBeanToRowConverter(clazzName, schema, fields)
     data.map { element => converter(element) }
   }
 
@@ -194,7 +194,7 @@ object GigaspacesAbstractRelation {
     *
     * Recursive for embedded properties (StructType).
     */
-  def buildBeanToRowConverter(clazzName: String, schema: StructType, fields: Seq[String], descriptor: Option[SpaceTypeDescriptor]): (Any => Row) = {
+  def buildBeanToRowConverter(clazzName: String, schema: StructType, fields: Seq[String]): (Any => Row) = {
     val clazz = Utils.classForName(clazzName)
 
     val attributeNames = if (fields.isEmpty) schema.fields.map(f => f.name).toSeq else fields
@@ -202,15 +202,6 @@ object GigaspacesAbstractRelation {
     val attributeRefs = attributeNames
       .map { f => schemaFieldsMap(f) }
       .map { f => AttributeReference(f.name, f.dataType, f.nullable)() }
-
-    val descriptorTypes = descriptor match {
-      case Some(d) =>
-        d.getPropertiesNames
-          .zip(d.getPropertiesTypes)
-          .map { case (name, className) => name -> className }.toMap
-      case None =>
-        Map.empty[String, String]
-    }
 
     val anyNestedClass = classOf[DocumentProperties].getName
 
@@ -225,7 +216,11 @@ object GigaspacesAbstractRelation {
       // Getters for SpaceDocuments are document.getProperty[T](name), type is extracted from type descriptor
       case c if classOf[SpaceDocument].isAssignableFrom(clazz) =>
         attributeNames
-          .map(a => a ->(descriptorTypes.getOrElse(a, anyNestedClass), (e: Any) => e.asInstanceOf[SpaceDocument].getProperty[Any](a))).toMap
+          .map { a =>
+            val meta = schemaFieldsMap(a).metadata
+            val nestedClassName = if (meta.contains("class")) meta.getString("class") else anyNestedClass
+            a ->(nestedClassName, (e: Any) => e.asInstanceOf[SpaceDocument].getProperty[Any](a))
+          }.toMap
 
       // Getters for DocumentProperties are document.getProperty[T](name)
       case c if classOf[DocumentProperties].isAssignableFrom(clazz) =>
@@ -244,7 +239,7 @@ object GigaspacesAbstractRelation {
       .map(attribute => attribute.dataType match {
         case dataType: StructType =>
           val (clazz, extractor) = extractorsByClass(attribute.name)
-          val converter = buildBeanToRowConverter(clazz, dataType, Seq.empty[String], None)
+          val converter = buildBeanToRowConverter(clazz, dataType, Seq.empty[String])
           element: Any => converter(extractor(element))
         case _ =>
           val (_, extractor) = extractorsByClass(attribute.name)
