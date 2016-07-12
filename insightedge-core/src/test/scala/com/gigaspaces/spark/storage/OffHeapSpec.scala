@@ -16,6 +16,7 @@ class OffHeapSpec extends FlatSpec with GsConfig with GigaSpaces with Spark with
     assert(rdd.count == 100)
     rdd.persist(StorageLevel.OFF_HEAP)
     assert(rdd.count == 100)
+    fail("wip")
   }
 
   it should "work with GigaSpaces Off-Heap [java]" taggedAs JavaSpaceClass in {
@@ -24,6 +25,7 @@ class OffHeapSpec extends FlatSpec with GsConfig with GigaSpaces with Spark with
     assert(rdd.count == 100)
     rdd.persist(StorageLevel.OFF_HEAP)
     assert(rdd.count == 100)
+    fail("wip")
   }
 
 }
