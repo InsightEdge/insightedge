@@ -15,7 +15,7 @@ private[insightedge] case class GigaspacesClassRelation(
                                                        )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  override lazy val inferedSchema: StructType = {
+  override lazy val inferredSchema: StructType = {
     val schema = SchemaInference.schemaFor(clazz.runtimeClass, (c: Class[_]) => GigaspacesAbstractRelation.udtFor(c))
     schema.dataType.asInstanceOf[StructType]
   }

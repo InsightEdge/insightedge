@@ -44,11 +44,11 @@ abstract class GigaspacesAbstractRelation(
     if (options.schema.nonEmpty) {
       options.schema.get
     } else {
-      inferedSchema
+      inferredSchema
     }
   }
 
-  def inferedSchema: StructType
+  def inferredSchema: StructType
 
   override def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
     val fields = if (requiredColumns.nonEmpty) requiredColumns else schema.fieldNames
