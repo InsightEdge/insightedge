@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge.relation
 
 import com.gigaspaces.document.SpaceDocument
-import com.gigaspaces.metadata.{SpaceTypeDescriptor, SpaceTypeDescriptorBuilder}
+import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.gigaspaces.query.IdQuery
 import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.rdd.GigaSpacesDocumentRDD
@@ -11,7 +11,6 @@ import org.apache.spark.sql.SaveMode._
 import org.apache.spark.sql._
 import org.apache.spark.sql.insightedge.{DataFrameSchema, InsightEdgeSourceOptions}
 import org.apache.spark.sql.types._
-import org.apache.spark.util.Utils
 
 import scala.collection.JavaConversions._
 
@@ -22,28 +21,10 @@ private[insightedge] case class GigaspacesDocumentRelation(
                                                           )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  lazy val (structType: StructType, typeDescriptor: Option[SpaceTypeDescriptor]) = {
+  lazy val inferedSchema: StructType = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
-      case null => inferFromSpaceDescriptor(collection)
-      case storedSchema => (storedSchema.schema, None)
-    }
-  }
-
-  override protected def buildSchema(): StructType = structType
-
-  def inferFromSpaceDescriptor(collection: String): (StructType, Option[SpaceTypeDescriptor]) = {
-    gs.getTypeManager.getTypeDescriptor(collection) match {
-      case null => (new StructType(), None)
-      case descriptor =>
-        val fields = descriptor.getPropertiesNames
-          .zip(descriptor.getPropertiesTypes)
-          .filter { case (name, _) => !name.equals("_spaceId") }
-          .map { case (name, clazzName) =>
-            val clazz = Utils.classForName(clazzName)
-            val schema = SchemaInference.schemaFor(clazz, (c: Class[_]) => GigaspacesAbstractRelation.udtFor(c))
-            StructField(name, schema.dataType, schema.nullable)
-          }
-        (new StructType(fields), Some(descriptor))
+      case null => new StructType()
+      case storedSchema => storedSchema.schema
     }
   }
 
@@ -60,7 +41,17 @@ private[insightedge] case class GigaspacesDocumentRelation(
       new SpaceDocument(collection, row.getValuesMap(schema.fieldNames))
     }).saveToGrid()
 
-    gs.write(new DataFrameSchema(collection, schema))
+    def removeMetadata(s: StructType): StructType = {
+      StructType(s.fields.map { f =>
+        f.copy(metadata = Metadata.empty, dataType = f.dataType match {
+          case dt: StructType => removeMetadata(dt)
+          case dt => dt
+        })
+      })
+    }
+
+    val metalessSchema = removeMetadata(schema)
+    gs.write(new DataFrameSchema(collection, metalessSchema))
   }
 
   override def insert(data: DataFrame, mode: SaveMode): Unit = {
@@ -102,7 +93,7 @@ private[insightedge] case class GigaspacesDocumentRelation(
 
     val rdd = new GigaSpacesDocumentRDD(gsConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
 
-    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields, typeDescriptor) }
+    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields) }
   }
 
 }

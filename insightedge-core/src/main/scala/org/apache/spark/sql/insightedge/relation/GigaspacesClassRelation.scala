@@ -15,7 +15,7 @@ private[insightedge] case class GigaspacesClassRelation(
                                                        )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  override def buildSchema(): StructType = {
+  override lazy val inferedSchema: StructType = {
     val schema = SchemaInference.schemaFor(clazz.runtimeClass, (c: Class[_]) => GigaspacesAbstractRelation.udtFor(c))
     schema.dataType.asInstanceOf[StructType]
   }
@@ -29,7 +29,7 @@ private[insightedge] case class GigaspacesClassRelation(
 
     val rdd = new GigaSpacesSqlRDD(gsConfig, sc, query, params, fields, options.splitCount, options.readBufferSize)(clazz)
 
-    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields, None) }
+    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields) }
   }
 
 }
