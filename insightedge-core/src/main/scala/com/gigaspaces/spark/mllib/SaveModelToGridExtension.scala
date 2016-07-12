@@ -9,7 +9,7 @@ import org.apache.spark.mllib.util.Saveable
 class SaveModelToGridExtension(model: Saveable) {
 
   def saveToGrid(sc: GigaSpacesSparkContext, name: String) = {
-    sc.gigaSpace.write(MLModel(name, model))
+    sc.gigaSpace.write(MllibModelHolder(name, model))
   }
 
 }

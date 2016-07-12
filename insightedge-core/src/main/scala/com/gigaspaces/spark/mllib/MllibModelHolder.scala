@@ -6,7 +6,7 @@ import org.apache.spark.mllib.util.Saveable
 
 import scala.beans.BeanProperty
 
-case class MLModel(
+case class MllibModelHolder(
                     @BeanProperty
                     @SpaceId
                     var id: String,
