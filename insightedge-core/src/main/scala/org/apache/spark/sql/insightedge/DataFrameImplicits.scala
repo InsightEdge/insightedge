@@ -1,6 +1,6 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.model.BucketedGridModel
 import org.apache.spark.sql.{DataFrameWriter, DataFrame, DataFrameReader}
 
 import scala.reflect._
@@ -19,7 +19,7 @@ trait DataFrameImplicits {
       reader.format(GigaSpacesFormat)
     }
 
-    def loadClass[R <: GridModel : ClassTag]: DataFrame = {
+    def loadClass[R : ClassTag]: DataFrame = {
       reader.format(GigaSpacesFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
   }

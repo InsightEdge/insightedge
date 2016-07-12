@@ -1,9 +1,11 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.model.GridModel
+import com.gigaspaces.spark.model.BucketedGridModel
+import com.gigaspaces.spark.utils.GigaSpaceConstants
+import com.gigaspaces.spark.utils.GigaSpaceConstants._
 import org.apache.spark.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
-import org.apache.spark.sql.insightedge.relation.{GigaspacesDocumentRelation, GigaspacesClassRelation, GigaspacesAbstractRelation}
+import org.apache.spark.sql.insightedge.relation.{GigaspacesAbstractRelation, GigaspacesClassRelation, GigaspacesDocumentRelation}
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
@@ -42,15 +44,13 @@ class DefaultSource
       sqlContext.experimental.extraStrategies = InsightEdgeSourceStrategy +: sqlContext.experimental.extraStrategies
     }
 
-    val readBufferSize = parameters.get(DefaultSource.InsightEdgeReadBufferSizeProperty).map(v => v.toInt).getOrElse(InsightEdgeReadBufferSizeDefault)
-    val options = InsightEdgeSourceOptions(readBufferSize, schema)
+    val readBufferSize = parameters.get(InsightEdgeReadBufferSizeProperty).map(_.toInt).getOrElse(DefaultReadBufferSize)
+    val splitCount = parameters.get(InsightEdgeSplitCountProperty).map(_.toInt)
+    val options = InsightEdgeSourceOptions(splitCount, readBufferSize, schema)
 
     if (parameters.contains(InsightEdgeClassProperty)) {
-      val tag = loadClass(parameters(InsightEdgeClassProperty))
-      if (!classOf[GridModel].isAssignableFrom(tag.runtimeClass)) {
-        throw new IllegalArgumentException(s"'class' must extend ${classOf[GridModel].getName}")
-      }
-      new GigaspacesClassRelation(sqlContext, tag.asInstanceOf[ClassTag[GridModel]], options)
+      val tag = loadClass(parameters(InsightEdgeClassProperty)).asInstanceOf[ClassTag[AnyRef]]
+      new GigaspacesClassRelation(sqlContext, tag, options)
     } else if (parameters.contains(InsightEdgeCollectionProperty) || parameters.contains("path")) {
       val collection = parameters.getOrElse(InsightEdgeCollectionProperty, parameters("path"))
       new GigaspacesDocumentRelation(sqlContext, collection, options)
@@ -67,6 +67,7 @@ class DefaultSource
 }
 
 case class InsightEdgeSourceOptions(
+                                     splitCount: Option[Int],
                                      readBufferSize: Int,
                                      schema: Option[StructType]
                                    )
@@ -75,5 +76,5 @@ object DefaultSource {
   val InsightEdgeClassProperty = "class"
   val InsightEdgeCollectionProperty = "collection"
   val InsightEdgeReadBufferSizeProperty = "readBufferSize"
-  val InsightEdgeReadBufferSizeDefault = 1000
+  val InsightEdgeSplitCountProperty = "splitCount"
 }

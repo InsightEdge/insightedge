@@ -57,6 +57,8 @@ object Launcher {
       copy(s"$resources/insightedge-submit", s"$output/bin/insightedge-submit")
       copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
       copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
+      copy(s"$resources/shell-init.py", s"$output/bin/shell-init.py")
+      copy(s"$resources/insightedge-pyspark", s"$output/bin/insightedge-pyspark")
       copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
     }
 
@@ -85,8 +87,13 @@ object Launcher {
       copy(s"$resources/$edition/", s"$output/sbin/")
       copy(s"$resources/stop-datagrid-master.sh", s"$output/sbin/stop-datagrid-master.sh")
     }
-    run("Adding template space configuration") {
-      copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
+    if (edition.equals("community")) {
+      run("Adding template space configuration (community only)") {
+        copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
+      }
+      run("Adding geospatial jars to pu-common (community only)") {
+        copy(s"$output/datagrid/lib/optional/spatial", s"$output/datagrid/lib/optional/pu-common")
+      }
     }
 
     run("Unpacking Zeppelin") {

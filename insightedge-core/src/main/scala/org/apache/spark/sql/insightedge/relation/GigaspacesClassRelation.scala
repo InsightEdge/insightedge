@@ -2,7 +2,6 @@ package org.apache.spark.sql.insightedge.relation
 
 import java.beans.Introspector
 
-import com.gigaspaces.spark.model.GridModel
 import com.gigaspaces.spark.rdd.GigaSpacesSqlRDD
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
@@ -15,7 +14,7 @@ import scala.reflect.ClassTag
 
 private[insightedge] case class GigaspacesClassRelation(
                                                          context: SQLContext,
-                                                         clazz: ClassTag[GridModel],
+                                                         clazz: ClassTag[AnyRef],
                                                          options: InsightEdgeSourceOptions
                                                        )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
@@ -34,7 +33,7 @@ private[insightedge] case class GigaspacesClassRelation(
   override def buildScan(query: String, params: Seq[Any], fields: Seq[String]): RDD[Row] = {
     val clazzName = clazz.runtimeClass.getName
 
-    val rdd = new GigaSpacesSqlRDD(gsConfig, sc, query, params, fields, options.readBufferSize)(clazz)
+    val rdd = new GigaSpacesSqlRDD(gsConfig, sc, query, params, fields, options.splitCount, options.readBufferSize)(clazz)
 
     rdd.mapPartitions { data => beansToRows(data, clazzName, schema, fields) }
   }
@@ -58,8 +57,9 @@ private[insightedge] case class GigaspacesClassRelation(
     val beanInfo = Introspector.getBeanInfo(clazz)
 
     val attributeNames = if (fields.isEmpty) schema.fields.map(f => f.name).toSeq else fields
-    val attributeRefs = schema.fields
-      .filter { f => attributeNames.contains(f.name) }
+    val schemaFieldsMap = schema.fields.map(f => (f.name, f)).toMap
+    val attributeRefs = attributeNames
+      .map { f => schemaFieldsMap(f) }
       .map { f => AttributeReference(f.name, f.dataType, f.nullable)() }
 
     // Getter methods for Product (case classes) have same names as attributes

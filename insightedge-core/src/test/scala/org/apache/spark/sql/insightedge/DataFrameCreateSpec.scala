@@ -2,7 +2,7 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
-import com.gigaspaces.spark.rdd.{Data, JData}
+import com.gigaspaces.spark.rdd.{BucketedData, Data, JBucketedData, JData}
 import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.FlatSpec
 
@@ -16,6 +16,7 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
       .option("class", classOf[Data].getName)
       .load()
     assert(df.count() == 1000)
+    assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
   it should "create dataframe with gigaspaces format [java]" taggedAs JavaSpaceClass in {
@@ -26,6 +27,7 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
       .option("class", classOf[JData].getName)
       .load()
     assert(df.count() == 1000)
+    assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
   it should "fail to create dataframe with gigaspaces format without class or collection provided" taggedAs ScalaSpaceClass in {
@@ -91,6 +93,28 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
 
     val fromGrid2 = sql.read.format("org.apache.spark.sql.insightedge").load(collectionName)
     assert(fromGrid2.count() == 1000)
+  }
+
+  it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in {
+    writeBucketedDataSeqToDataGrid(1000)
+
+    val df = sql.read.grid
+      .option("class", classOf[BucketedData].getName)
+      .option("splitCount", "4")
+      .load()
+    assert(df.count() == 1000)
+    assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
+  }
+
+  it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in {
+    writeJBucketedDataSeqToDataGrid(1000)
+
+    val df = sql.read.grid
+      .option("class", classOf[JBucketedData].getName)
+      .option("splitCount", "4")
+      .load()
+    assert(df.count() == 1000)
+    assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
 
 }
