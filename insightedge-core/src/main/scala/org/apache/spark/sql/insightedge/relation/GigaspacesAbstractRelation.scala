@@ -1,17 +1,21 @@
 package org.apache.spark.sql.insightedge.relation
 
 import java.beans.Introspector
+import java.lang.reflect.Method
 
+import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.catalyst.expressions.AttributeReference
 import org.apache.spark.sql.insightedge.InsightEdgeSourceOptions
 import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}
 import org.apache.spark.sql.insightedge.relation.GigaspacesAbstractRelation._
 import org.apache.spark.sql.insightedge.udt._
 import org.apache.spark.sql.sources._
-import org.apache.spark.sql.types.{DataType, StructField, StructType, UserDefinedType}
+import org.apache.spark.sql.types.{StructType, UserDefinedType}
 import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
+import org.apache.spark.util.Utils
 import org.apache.spark.{Logging, SparkContext}
 import org.openspaces.core.GigaSpace
 import org.openspaces.spatial.shapes._
@@ -38,11 +42,11 @@ abstract class GigaspacesAbstractRelation(
     if (options.schema.nonEmpty) {
       options.schema.get
     } else {
-      buildSchema()
+      inferredSchema
     }
   }
 
-  protected def buildSchema(): StructType
+  def inferredSchema: StructType
 
   override def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
     val fields = if (requiredColumns.nonEmpty) requiredColumns else schema.fieldNames
@@ -164,32 +168,76 @@ object GigaspacesAbstractRelation {
     }
   }
 
-  def enhanceWithUdts(dataType: DataType, clazz: Class[_]): DataType = {
-    udtFor(clazz) match {
-      case Some(udt) =>
-        udt
+  /**
+    * Converts an iterator of Beans to Row using the provided class & schema.
+    */
+  def beansToRows(data: Iterator[_], clazzName: String, schema: StructType, fields: Seq[String]): Iterator[Row] = {
+    val converter = buildBeanToRowConverter(clazzName, schema, fields)
+    data.map { element => converter(element) }
+  }
 
-      case None =>
-        dataType match {
-          case struct: StructType =>
-            // Product bean info does not have any fields, for some reason
-            val fieldTypeMap: Map[String, Class[_]] = clazz match {
-              case c if classOf[Product].isAssignableFrom(c) =>
-                clazz.getDeclaredFields.map(f => f.getName -> f.getType).toMap
-              case _ =>
-                val beanInfo = Introspector.getBeanInfo(clazz)
-                beanInfo.getPropertyDescriptors.map(d => d.getName -> d.getPropertyType).toMap
-            }
+  /**
+    * Returns a converter that converts any bean with given schema to the Row.
+    *
+    * Recursive for embedded properties (StructType).
+    */
+  def buildBeanToRowConverter(clazzName: String, schema: StructType, fields: Seq[String]): (Any => Row) = {
+    val clazz = Utils.classForName(clazzName)
 
-            StructType(
-              struct.fields.map(f => {
-                val maybeNewType = enhanceWithUdts(f.dataType, fieldTypeMap(f.name))
-                StructField(f.name, maybeNewType, f.nullable, f.metadata)
-              })
-            )
-          case other => other
-        }
+    val attributeNames = if (fields.isEmpty) schema.fields.map(f => f.name).toSeq else fields
+    val schemaFieldsMap = schema.fields.map(f => (f.name, f)).toMap
+    val attributeRefs = attributeNames
+      .map { f => schemaFieldsMap(f) }
+      .map { f => AttributeReference(f.name, f.dataType, f.nullable)() }
+
+    val anyNestedClass = classOf[Row].getName
+
+    // Map of "elementName" -> (returnClassName, functionToExtract)
+    val extractorsByClass = clazz match {
+
+      // Getter methods for Product (case classes) have same names as attributes
+      case c if classOf[Product].isAssignableFrom(clazz) =>
+        attributeNames
+          .map(a => a -> getterToClassAndExtractor(c.getMethod(a))).toMap
+
+      // Getters for SpaceDocuments are document.getProperty[T](name), type is extracted from type descriptor
+      case c if classOf[SpaceDocument].isAssignableFrom(clazz) =>
+        attributeNames
+          .map { a =>
+            val meta = schemaFieldsMap(a).metadata
+            val nestedClassName = if (meta.contains("class")) meta.getString("class") else anyNestedClass
+            a ->(nestedClassName, (e: Any) => e.asInstanceOf[SpaceDocument].getProperty[Any](a))
+          }.toMap
+
+      // Getters for Row are document.getAs[T](name)
+      case c if classOf[Row].isAssignableFrom(clazz) =>
+        attributeNames
+          .map(a => a ->(anyNestedClass, (e: Any) => e.asInstanceOf[Row].getAs[Any](a))).toMap
+
+      // Getters for Java classes are from bean info, which is not serializable so we must rediscover it remotely for each partition
+      case _ =>
+        val beanInfo = Introspector.getBeanInfo(clazz)
+        beanInfo.getPropertyDescriptors
+          .filter(f => attributeNames.contains(f.getName))
+          .map(f => f.getName -> getterToClassAndExtractor(f.getReadMethod)).toMap
     }
+
+    val converters = attributeRefs
+      .map(attribute => attribute.dataType match {
+        case dataType: StructType =>
+          val (clazz, extractor) = extractorsByClass(attribute.name)
+          val converter = buildBeanToRowConverter(clazz, dataType, Seq.empty[String])
+          element: Any => converter(extractor(element))
+        case _ =>
+          val (_, extractor) = extractorsByClass(attribute.name)
+          element: Any => extractor(element)
+      })
+
+    (element: Any) => if (element == null) null else Row.fromSeq(converters.map { converter => converter(element) })
+  }
+
+  def getterToClassAndExtractor(getter: Method): (String, Any => Any) = {
+    (getter.getReturnType.getName, (e: Any) => getter.invoke(e))
   }
 
   implicit class BuilderExtension(val builder: StringBuilder) {

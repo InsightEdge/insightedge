@@ -2,6 +2,7 @@ package org.apache.spark.sql.insightedge.relation
 
 import java.beans.Introspector
 
+import com.gigaspaces.spark.implicits.dataframe._
 import com.google.common.reflect.TypeToken
 import org.apache.spark.sql.catalyst.ScalaReflectionLock
 import org.apache.spark.sql.types._
@@ -37,9 +38,13 @@ object SchemaInference {
   case class Schema(dataType: DataType, nullable: Boolean)
 
   /**
+    * @param clazz          class from which the shema will be inferred
+    * @param udtResolver    a method that returns a UDT for the given class, used internally for not annotated UDTs
     * @return datatype for a class
     */
-  def schemaFor(clazz: Class[_], udtResolver: Class[_] => Option[UserDefinedType[_]]): Schema = schemaFor(classToType(clazz), udtResolver)
+  def schemaFor(clazz: Class[_], udtResolver: Class[_] => Option[UserDefinedType[_]]): Schema = {
+    schemaFor(classToType(clazz), udtResolver)
+  }
 
   /**
     * @return datatype for a given root or embedded type
