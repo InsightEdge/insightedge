@@ -21,7 +21,7 @@ private[insightedge] case class GigaspacesDocumentRelation(
                                                           )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  lazy val inferedSchema: StructType = {
+  lazy val inferredSchema: StructType = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
       case null => new StructType()
       case storedSchema => storedSchema.schema
