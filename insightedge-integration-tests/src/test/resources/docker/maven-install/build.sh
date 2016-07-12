@@ -6,4 +6,4 @@
 
 VER=0.4.0-SNAPSHOT
 
-docker build -t insightedge-maven-install:$VER .
+docker build -t insightedge-tests-maven-install:$VER .
