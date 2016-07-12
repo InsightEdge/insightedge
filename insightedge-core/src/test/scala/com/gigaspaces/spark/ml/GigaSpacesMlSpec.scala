@@ -9,6 +9,8 @@ import org.apache.spark.ml.feature.{HashingTF, Tokenizer}
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.sql.Row
 
+import com.gigaspaces.spark.implicits.all._
+
 
 /**
   * @author Oleksiy_Dyagilev
@@ -40,6 +42,13 @@ class GigaSpacesMlSpec extends FunSpec with GsConfig with GigaSpaces with Spark 
     // Fit the pipeline to training documents.
     val model = pipeline.fit(training)
 
+    val modelHolder = PipelineModelHolder("abc", model)
+    sc.gigaSpace.write(modelHolder)
+
+    val loadedModel = sc.gigaSpace.read(PipelineModelHolder("abc", null)).pipelineModel
+
+
+
     // now we can optionally save the fitted pipeline to disk
 //    model.save("/tmp/spark-logistic-regression-model")
 
@@ -58,7 +67,7 @@ class GigaSpacesMlSpec extends FunSpec with GsConfig with GigaSpaces with Spark 
     )).toDF("id", "text")
 
     // Make predictions on test documents.
-    model.transform(test)
+    loadedModel.transform(test)
       .select("id", "text", "probability", "prediction")
       .collect()
       .foreach { case Row(id: Long, text: String, prob: Vector, prediction: Double) =>
