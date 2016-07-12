@@ -40,6 +40,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     try {
         load 'tools/build.groovy'
     } finally {
+        echo "Publishing test results"
         step([$class: 'JUnitResultArchiver', testResults: 'insightedge-core/target/surefire-reports/TEST-*.xml'])
     }
 
