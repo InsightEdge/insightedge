@@ -18,7 +18,7 @@ import org.scalatest.FunSpec
   */
 class GigaSpacesMlSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
-  it("should store and load ML Pipeline Model") {
+  it("should store and load ML Pipeline Model (Tokenizer, HashingTF, LogisticRegression)") {
     val training = sql.createDataFrame(Seq(
       (0L, "a b c d e spark", 1.0),
       (1L, "b d", 0.0),

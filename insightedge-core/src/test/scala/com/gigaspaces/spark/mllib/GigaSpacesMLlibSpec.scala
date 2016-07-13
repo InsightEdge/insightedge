@@ -15,10 +15,10 @@ import org.scalatest._
 
 class GigaSpacesMLlibSpec extends FunSpec with GsConfig with GigaSpaces with Spark {
 
-  it("should successfully store MLlib model to Data Grid") {
+  it("should successfully store DecisionTreeModel MLlib model to Data Grid") {
     val testDataRDD = loadDataFromFile().map(_.features)
     val testDataArray = testDataRDD.collect()
-    val model = createModel()
+    val model = createDecisionTreeModel()
     val prediction = model.predict(testDataRDD).collect()
     model.saveToGrid(sc, "model")
 
@@ -37,8 +37,8 @@ class GigaSpacesMLlibSpec extends FunSpec with GsConfig with GigaSpaces with Spa
     assert(prediction sameElements loadedModelPrediction)
   }
 
-  it("should fail if there is no such MLlib model int DataGrid") {
-    val model = createModel()
+  it("should load nothing if there is no such MLlib model int DataGrid") {
+    val model = createDecisionTreeModel()
     model.saveToGrid(sc, "model")
     assert(None === sc.loadMLInstance[DecisionTreeModel]("model2"))
     assert(None === sc.loadMLInstance[GradientBoostedTreesModel]("model"))
@@ -49,7 +49,7 @@ class GigaSpacesMLlibSpec extends FunSpec with GsConfig with GigaSpaces with Spa
     MLUtils.loadLibSVMFile(sc, path)
   }
 
-  private def createModel(): DecisionTreeModel = {
+  private def createDecisionTreeModel(): DecisionTreeModel = {
     val data = loadDataFromFile()
     val splits = data.randomSplit(Array(0.7, 0.3))
     val (trainingData, testData) = (splits(0), splits(1))
