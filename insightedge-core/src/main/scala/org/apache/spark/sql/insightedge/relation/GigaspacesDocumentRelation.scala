@@ -37,9 +37,9 @@ private[insightedge] case class GigaspacesDocumentRelation(
       gs.getTypeManager.registerTypeDescriptor(new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true).create())
     }
 
-    data.rdd.map(row => {
-      new SpaceDocument(collection, row.getValuesMap(schema.fieldNames))
-    }).saveToGrid()
+    data.rdd.mapPartitions { rows =>
+      GigaspacesAbstractRelation.rowsToDocuments(rows, schema).map(document => new SpaceDocument(collection, document))
+    }.saveToGrid()
 
     def removeMetadata(s: StructType): StructType = {
       StructType(s.fields.map { f =>

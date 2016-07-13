@@ -3,7 +3,8 @@ package org.apache.spark.sql.insightedge.relation
 import java.beans.Introspector
 import java.lang.reflect.Method
 
-import com.gigaspaces.document.SpaceDocument
+import com.gigaspaces.document.{DocumentProperties, SpaceDocument}
+import com.gigaspaces.metadata.SpaceTypeDescriptor
 import com.gigaspaces.spark.context.GigaSpacesConfig
 import com.gigaspaces.spark.implicits.basic._
 import org.apache.spark.rdd.RDD
@@ -20,6 +21,7 @@ import org.apache.spark.{Logging, SparkContext}
 import org.openspaces.core.GigaSpace
 import org.openspaces.spatial.shapes._
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 abstract class GigaspacesAbstractRelation(
@@ -157,6 +159,17 @@ object GigaspacesAbstractRelation {
     }
   }
 
+  implicit class BuilderExtension(val builder: StringBuilder) {
+    def ->(any: Any): StringBuilder = {
+      builder.append(any)
+    }
+
+    def ->(filter: Filter, params: ListBuffer[Any]): StringBuilder = {
+      appendFilter(filter, builder, params)
+      builder
+    }
+  }
+
   def udtFor(clazz: Class[_]): Option[UserDefinedType[_]] = {
     clazz match {
       case c if classOf[Point].isAssignableFrom(c) => Some(new PointUDT())
@@ -190,7 +203,7 @@ object GigaspacesAbstractRelation {
       .map { f => schemaFieldsMap(f) }
       .map { f => AttributeReference(f.name, f.dataType, f.nullable)() }
 
-    val anyNestedClass = classOf[Row].getName
+    val anyNestedClass = classOf[DocumentProperties].getName
 
     // Map of "elementName" -> (returnClassName, functionToExtract)
     val extractorsByClass = clazz match {
@@ -209,10 +222,10 @@ object GigaspacesAbstractRelation {
             a ->(nestedClassName, (e: Any) => e.asInstanceOf[SpaceDocument].getProperty[Any](a))
           }.toMap
 
-      // Getters for Row are document.getAs[T](name)
-      case c if classOf[Row].isAssignableFrom(clazz) =>
+      // Getters for DocumentProperties are document.getProperty[T](name)
+      case c if classOf[DocumentProperties].isAssignableFrom(clazz) =>
         attributeNames
-          .map(a => a ->(anyNestedClass, (e: Any) => e.asInstanceOf[Row].getAs[Any](a))).toMap
+          .map(a => a ->(anyNestedClass, (e: Any) => e.asInstanceOf[DocumentProperties].getProperty[Any](a))).toMap
 
       // Getters for Java classes are from bean info, which is not serializable so we must rediscover it remotely for each partition
       case _ =>
@@ -240,15 +253,31 @@ object GigaspacesAbstractRelation {
     (getter.getReturnType.getName, (e: Any) => getter.invoke(e))
   }
 
-  implicit class BuilderExtension(val builder: StringBuilder) {
-    def ->(any: Any): StringBuilder = {
-      builder.append(any)
-    }
+  /**
+    * Converts an iterator of Rows to Document Properties using the provided schema.
+    */
+  def rowsToDocuments(data: Iterator[Row], schema: StructType): Iterator[DocumentProperties] = {
+    val converter = buildRowToDocumentConverter(schema)
+    data.map { element => converter(element) }
+  }
 
-    def ->(filter: Filter, params: ListBuffer[Any]): StringBuilder = {
-      appendFilter(filter, builder, params)
-      builder
-    }
+  /**
+    * Returns a converter that converts any row with given schema to the DocumentProperties.
+    *
+    * Recursive for embedded properties (StructType).
+    */
+  def buildRowToDocumentConverter(schema: StructType): (Row => DocumentProperties) = {
+    // List of tuples (fieldName, converter)
+    val converters = schema.fields
+      .map(field => field.dataType match {
+        case dataType: StructType =>
+          val converter = buildRowToDocumentConverter(dataType)
+          field.name -> ((row: Row) => converter(row.getAs[Row](field.name)))
+        case _ =>
+          field.name -> ((row: Row) => row.getAs[AnyRef](field.name))
+      })
+
+    (row: Row) => if (row == null) null else new DocumentProperties(converters.map { case (name, converter) => name -> converter(row) }.toMap)
   }
 
 }
