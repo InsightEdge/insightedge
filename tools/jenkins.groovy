@@ -37,7 +37,11 @@ env.PATH = "${tool 'sbt-0.13.11'}/bin:$env.PATH"
 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insightedge-dev', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
 
     stage 'Build insightedge'
-    load 'tools/build.groovy'
+    try {
+        load 'tools/build.groovy'
+    } finally {
+        step([$class: 'JUnitResultArchiver', testResults: 'insightedge-core/target/surefire-reports/TEST-*.xml'])
+    }
 
 
     stage 'Checkout zeppelin'
@@ -70,7 +74,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     distributions = "-Ddist.spark=$env.SPARK_DIST"
     distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
-    premiumDist   = "$distributions -Ddist.xap=$env.XAP12_PREMIUM_DIST"
+    premiumDist = "$distributions -Ddist.xap=$env.XAP12_PREMIUM_DIST"
     communityDist = "$distributions -Ddist.xap=$env.XAP12_COMMUNITY_DIST"
     sh "mvn package -pl insightedge-packager -P package-premium   -DskipTests=true $premiumDist   -Dlast.commit.hash=$commitHash"
     sh "mvn package -pl insightedge-packager -P package-community -DskipTests=true $communityDist -Dlast.commit.hash=$commitHash"
@@ -88,14 +92,22 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     // lock with 15 minutes timeout - expected time for integration tests to be finished
     sh "tools/lock.sh /tmp/integration-tests.lock 900 30 \"$lockMessage\""
 
+    try {
+        try {
+            stage 'Run integration tests (community)'
+            sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community -e"
+        } finally {
+            step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+        }
 
-    stage 'Run integration tests (community)'
-    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community -e"
-
-
-    stage 'Run integration tests (premium)'
-    sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
-
-
-    sh "tools/unlock.sh /tmp/integration-tests.lock \"$lockMessage\""
+        try {
+            stage 'Run integration tests (premium)'
+            sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
+        } finally {
+            step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+        }
+    } finally {
+        // if tests fail - unlock the lock anyway
+        sh "tools/unlock.sh /tmp/integration-tests.lock \"$lockMessage\""
+    }
 }
