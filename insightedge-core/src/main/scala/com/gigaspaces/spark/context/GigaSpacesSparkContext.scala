@@ -51,14 +51,14 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   /**
     * Load ml/mllib instance (model, pipeline, etc) from the Data Grid
     *
-    * @param instanceName name of ml/mllib instance
+    * @param name name of ml/mllib instance
     * @tparam R instance class
     * @return loaded instance
     */
-  def loadMLInstance[R: ClassTag](instanceName: String): Option[R] = {
-    val mlModel = gigaSpace.readById(classOf[MLInstance], instanceName)
+  def loadMLInstance[R: ClassTag](name: String): Option[R] = {
+    val mlModel = gigaSpace.readById(classOf[MLInstance], name)
     mlModel match {
-      case MLInstance(name, instance: R) => Some(instance)
+      case MLInstance(id, instance: R) => Some(instance)
       case _ => None
     }
   }
