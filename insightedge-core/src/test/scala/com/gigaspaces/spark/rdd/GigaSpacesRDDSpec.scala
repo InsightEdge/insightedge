@@ -17,10 +17,6 @@ class GigaSpacesRDDSpec extends FlatSpec with GsConfig with GigaSpaces with Spar
     val rdd: RDD[Data] = sc.parallelize(dataSeq(1000))
     rdd.saveToGrid()
 
-    for (x <- rdd) {
-      print(x)
-    }
-
     val dataCount = spaceProxy.count(new Data())
     assert(dataCount == 1000, "Data objects weren't written to the space")
     for (i <- 1 to 1000) {
