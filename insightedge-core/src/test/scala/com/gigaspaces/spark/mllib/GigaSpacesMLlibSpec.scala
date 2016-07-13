@@ -27,7 +27,7 @@ class GigaSpacesMLlibSpec extends FunSpec with GsConfig with GigaSpaces with Spa
 
     sc = new SparkContext(createSparkConf())
 
-    val loadedModel = sc.loadMLModel[DecisionTreeModel]("model").get
+    val loadedModel = sc.loadMLInstance[DecisionTreeModel]("model").get
     assert(model.depth === loadedModel.depth)
     assert(model.numNodes === loadedModel.numNodes)
     assert(model.algo === loadedModel.algo)
@@ -40,8 +40,8 @@ class GigaSpacesMLlibSpec extends FunSpec with GsConfig with GigaSpaces with Spa
   it("should fail if there is no such MLlib model int DataGrid") {
     val model = createModel()
     model.saveToGrid(sc, "model")
-    assert(None === sc.loadMLModel[DecisionTreeModel]("model2"))
-    assert(None === sc.loadMLModel[GradientBoostedTreesModel]("model"))
+    assert(None === sc.loadMLInstance[DecisionTreeModel]("model2"))
+    assert(None === sc.loadMLInstance[GradientBoostedTreesModel]("model"))
   }
 
   private def loadDataFromFile(): RDD[LabeledPoint] = {

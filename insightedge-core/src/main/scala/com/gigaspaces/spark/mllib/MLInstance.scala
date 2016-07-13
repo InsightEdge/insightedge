@@ -6,14 +6,17 @@ import org.apache.spark.mllib.util.Saveable
 
 import scala.beans.BeanProperty
 
-case class MllibModelHolder(
+/**
+  * A holder for MLlib and ML instances (models, pipelines, etc)
+  */
+case class MLInstance(
                     @BeanProperty
                     @SpaceId
                     var id: String,
 
                     @BeanProperty
                     @SpaceStorageType(storageType = StorageType.BINARY)
-                    var model: Saveable
+                    var instance: AnyRef
                   ) {
   def this() = this(null, null)
 

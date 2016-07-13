@@ -1,14 +1,16 @@
 package com.gigaspaces.spark
 
 import com.gigaspaces.spark.context.{GigaSpacesConfig, GigaSpacesSparkContext}
-import com.gigaspaces.spark.mllib.MllibImplicits
+import com.gigaspaces.spark.ml.MLImplicits
+import com.gigaspaces.spark.mllib.MLlibImplicits
 import com.gigaspaces.spark.rdd.SaveRddToGridExtension
 import com.gigaspaces.spark.streaming.StreamingImplicits
 import com.gigaspaces.spark.utils.LocalCache
-import org.apache.spark.sql.insightedge.{GeospatialImplicits, DataFrameImplicits}
+import org.apache.spark.sql.insightedge.{DataFrameImplicits, GeospatialImplicits}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 
+import scala.language.implicitConversions
 import scala.reflect.ClassTag
 
 /**
@@ -22,14 +24,17 @@ object implicits {
 
   object streaming extends StreamingImplicits
 
-  object mllib extends MllibImplicits
+  object mllib extends MLlibImplicits
+
+  object ml extends MLImplicits
 
   object dataframe extends DataFrameImplicits
 
   object geospatial extends GeospatialImplicits
 
   object all extends BasicImplicits
-    with MllibImplicits
+    with MLlibImplicits
+    with MLImplicits
     with StreamingImplicits
     with DataFrameImplicits
     with GeospatialImplicits
@@ -54,6 +59,8 @@ object implicits {
         sparkConf
       }
     }
+
   }
+
 }
 
