@@ -82,7 +82,7 @@ object Launcher {
       copy(s"$resources/sbin/$edition/", s"$output/sbin/")
       copy(s"$resources/sbin/stop-datagrid-master.sh", s"$output/sbin/stop-datagrid-master.sh")
     }
-    if (edition.equals("sbin/community")) {
+    if (edition.equals("community")) {
       run("Adding template space configuration (community only)") {
         copy(s"$resources/sbin/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
       }
