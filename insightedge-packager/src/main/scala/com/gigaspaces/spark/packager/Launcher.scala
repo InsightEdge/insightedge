@@ -107,6 +107,10 @@ object Launcher {
       copy(s"$resources/zeppelin/notes", s"$output/zeppelin/notebook")
     }
 
+    run("Adding Hadoop winutils") {
+      unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$output/winutils", cutRootFolder = true)
+    }
+
     run("Removing spark R integration") {
       remove(s"$output/R")
       remove(s"$output/bin/sparkR")
