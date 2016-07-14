@@ -55,6 +55,8 @@ object Launcher {
       copy(s"$resources/common-insightedge.sh", s"$output/sbin/common-insightedge.sh")
       copy(s"$resources/insightedge-shell", s"$output/bin/insightedge-shell")
       copy(s"$resources/insightedge-submit", s"$output/bin/insightedge-submit")
+      copy(s"$resources/insightedge-submit.cmd", s"$output/bin/insightedge-submit.cmd")
+      copy(s"$resources/insightedge-submit2.cmd", s"$output/bin/insightedge-submit2.cmd")
       copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
       copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
       copy(s"$resources/shell-init.py", s"$output/bin/shell-init.py")
