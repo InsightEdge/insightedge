@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-#TODO rename file
-
 function add_insightedge_libs_to_repo() {
+    EXPECTED_PROJECTS_COUNT=11
     /opt/gigaspaces-insightedge/sbin/insightedge-maven.sh | tee $HOME/insightedge-maven.out
     projects_count=`grep "BUILD SUCCESS" $HOME/insightedge-maven.out | wc -l`
     if [[ $projects_count == $EXPECTED_PROJECTS_COUNT ]]; then
@@ -19,25 +18,30 @@ function println() {
     echo ""
 }
 
-println "------ Testing Insighetde maven installation script"
+println "------ Testing Insighetde maven libs installation script"
 echo "-- Logged as "`whoami`
-echo "-- Maven version "
+echo "-- Java version"
+java -version
+echo "-- Maven version"
 mvn --version
+echo "-- Scala version"
+scala -version
 echo "-- SBT version "
 sbt sbtVersion
 
-HOME="/home/ie-user"
-EXPECTED_PROJECTS_COUNT=10
+HOME="/root"
+#HOME="/home/ie-user"
 
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
 cd $HOME/insightedge-examples
+git checkout ie-100_check_build
 
 println "------ Maven build should fail"
 rm -rf $HOME/.m2
 mvn clean test package | tee $HOME/insightedge-examples-mvn-fail.out
 maven_failed=`grep "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-fail.out | wc -l`
-if [[ $maven_failed == 1 ]]; then
+if [[ $maven_failed > 0 ]]; then
     println "------ OK: Maven build failed"
 else
     println "------ ERROR: Maven build should have failed"
@@ -48,8 +52,8 @@ println "------ Maven build should succeed"
 rm -rf $HOME/.m2
 add_insightedge_libs_to_repo
 mvn clean test package | tee $HOME/insightedge-examples-mvn-success.out
-maven_succeed=`grep "\[INFO\] BUILD SUCCESS" $HOME/insightedge-examples-mvn-success.out | wc -l`
-if [[ $maven_succeed == 1 ]]; then
+maven_failed=`grep "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-success.out | wc -l`
+if [[ $maven_failed == 0 ]]; then
     println "------ OK: Maven build succeeded"
 else
     println "------ ERROR: Maven build failed"
@@ -58,9 +62,9 @@ fi
 
 println "------ SBT build should fail"
 rm -rf $HOME/.m2
-sbt clean test assembly | tee $HOME/insightedge-examples-sbt-fail.out
-sbt_failed=`grep "\[error\]" $HOME/insightedge-examples-sbt-fail.out | wc -l`
-if [[ $sbt_failed < 1 ]]; then
+sbt clean test assembly -no-colors | tee $HOME/insightedge-examples-sbt-fail.out
+sbt_failed=`grep -c "\[error\]" $HOME/insightedge-examples-sbt-fail.out`
+if [[ $sbt_failed > 0 ]]; then
     println "---- OK: SBT build failed"
 else
     println "---- ERROR: SBT build should have failed"
@@ -70,9 +74,9 @@ fi
 println "------ SBT build should succeed"
 rm -rf $HOME/.m2
 add_insightedge_libs_to_repo
-sbt clean test assembly | tee $HOME/insightedge-examples-sbt-success.out
-sbt_succeed=`grep "[success]" $HOME/insightedge-examples-sbt-success.out | wc -l`
-if [[ $sbt_succeed < 1 ]]; then
+sbt clean test assembly -no-colors | tee $HOME/insightedge-examples-sbt-success.out
+sbt_failed=`grep -c "\[error\]" $HOME/insightedge-examples-sbt-success.out`
+if [[ $sbt_failed == 0 ]]; then
     println "---- OK: SBT build succeeded"
 else
     println "---- ERROR SBT build failed"

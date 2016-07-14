@@ -36,6 +36,7 @@ mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POM
 mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-datagrid/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-datagrid.jar
 mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-openspaces/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-openspaces.jar -Dsources="${XAP_HOME}/lib/optional/openspaces/xap-openspaces-sources.jar"
 mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_EXT_POMS}/xap-jms/pom.xml -Dfile=${XAP_HOME}/lib/optional/jms/xap-jms.jar
+mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_EXT_POMS}/xap-spatial/pom.xml -Dfile=${XAP_HOME}/lib/optional/spatial/xap-spatial.jar
 
 
 echo "Installing InsightEdge $INSIGHTEDGE_VER artifacts"

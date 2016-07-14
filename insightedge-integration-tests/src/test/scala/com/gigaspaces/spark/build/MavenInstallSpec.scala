@@ -13,9 +13,9 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
 class MavenInstallSpec extends FlatSpec with BeforeAndAfter {
 
   val PackagerDirName = "insightedge-packager"
-  val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install").getFile
+  val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
-  "maven-install.sh" should "install libs into local maven repo" in {
+  "maven-install-libs.sh" should "install libs into local maven repo" in {
     val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
     val edition = Option(System.getProperty("dist.edition")).getOrElse("")
     println(s"Edition: $edition")

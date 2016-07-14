@@ -141,17 +141,16 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <!--TODO rename-->
                     <execution>
-                        <id>build-maven-install-image</id>
+                        <id>build-maven-install-libs-image</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>build</goal>
                         </goals>
                         <configuration>
-                            <imageName>insightedge-tests-maven-install:${project.version}</imageName>
+                            <imageName>insightedge-tests-maven-install-libs:${project.version}</imageName>
                             <dockerDirectory>
-                                ${main.basedir}/insightedge-integration-tests/src/test/resources/docker/maven-install
+                                ${main.basedir}/insightedge-integration-tests/src/test/resources/docker/maven-install-libs
                             </dockerDirectory>
                             <resources>
                                 <resource>
@@ -245,7 +244,7 @@
                                 <phase>none</phase>
                             </execution>
                             <execution>
-                                <id>build-maven-install-image</id>
+                                <id>build-maven-install-libs-image</id>
                                 <phase>none</phase>
                             </execution>
                         </executions>
