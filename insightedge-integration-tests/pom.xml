@@ -191,16 +191,16 @@
 
     <profiles>
         <profile>
-            <id>run-integration-tests-community</id>
+            <id>run-integration-tests-sbin.community</id>
             <properties>
-                <dist.edition>community</dist.edition>
+                <dist.edition>sbin.community</dist.edition>
             </properties>
         </profile>
 
         <profile>
-            <id>run-integration-tests-premium</id>
+            <id>run-integration-tests-sbin.premium</id>
             <properties>
-                <dist.edition>premium</dist.edition>
+                <dist.edition>sbin.premium</dist.edition>
             </properties>
         </profile>
 
