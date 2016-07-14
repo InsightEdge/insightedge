@@ -4,7 +4,7 @@ import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.gigaspaces.query.IdQuery
 import com.gigaspaces.spark.implicits.basic._
-import com.gigaspaces.spark.rdd.GigaSpacesDocumentDataFrameRDD
+import com.gigaspaces.spark.rdd.GigaSpacesDocumentRDD
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SaveMode._
@@ -21,7 +21,7 @@ private[insightedge] case class GigaspacesDocumentRelation(
                                                           )
   extends GigaspacesAbstractRelation(context, options) with Serializable {
 
-  override def buildSchema(): StructType = {
+  lazy val inferredSchema: StructType = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
       case null => new StructType()
       case storedSchema => storedSchema.schema
@@ -33,13 +33,25 @@ private[insightedge] case class GigaspacesDocumentRelation(
       gs.takeMultiple(new SQLQuery[SpaceDocument](collection, "", Seq()).setProjections(""))
     }
 
-    gs.getTypeManager.registerTypeDescriptor(new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true).create())
+    if (gs.getTypeManager.getTypeDescriptor(collection) == null) {
+      gs.getTypeManager.registerTypeDescriptor(new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true).create())
+    }
 
-    data.rdd.map(row => {
-      new SpaceDocument(collection, row.getValuesMap(schema.fieldNames))
-    }).saveToGrid()
+    data.rdd.mapPartitions { rows =>
+      GigaspacesAbstractRelation.rowsToDocuments(rows, schema).map(document => new SpaceDocument(collection, document))
+    }.saveToGrid()
 
-    gs.write(new DataFrameSchema(collection, schema))
+    def removeMetadata(s: StructType): StructType = {
+      StructType(s.fields.map { f =>
+        f.copy(metadata = Metadata.empty, dataType = f.dataType match {
+          case dt: StructType => removeMetadata(dt)
+          case dt => dt
+        })
+      })
+    }
+
+    val metalessSchema = removeMetadata(schema)
+    gs.write(new DataFrameSchema(collection, metalessSchema))
   }
 
   override def insert(data: DataFrame, mode: SaveMode): Unit = {
@@ -77,7 +89,11 @@ private[insightedge] case class GigaspacesDocumentRelation(
   }
 
   override def buildScan(query: String, params: Seq[Any], fields: Seq[String]): RDD[Row] = {
-    new GigaSpacesDocumentDataFrameRDD(gsConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
+    val clazzName = classOf[SpaceDocument].getName
+
+    val rdd = new GigaSpacesDocumentRDD(gsConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
+
+    rdd.mapPartitions { data => GigaspacesAbstractRelation.beansToRows(data, clazzName, schema, fields) }
   }
 
 }

@@ -1,13 +1,15 @@
 package org.apache.spark.sql.insightedge
 
+import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.all._
 import com.gigaspaces.spark.utils._
-import org.apache.spark.sql.DataFrame
+import com.j_spaces.core.client.SQLQuery
+import org.apache.spark.sql.{Row, DataFrame}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}
 import org.openspaces.spatial.ShapeFactory._
-import org.openspaces.spatial.shapes.Point
+import org.openspaces.spatial.shapes.{Rectangle, Circle, Point}
 import org.scalatest.FlatSpec
 
 class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
@@ -95,6 +97,19 @@ class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with S
     val row = unwrappedDf.first()
 
     assert(row.getAs[Double]("locationX") == 1)
+  }
+
+  it should "persist shapes as shapes" taggedAs ScalaSpaceClass in {
+    spaceProxy.write(SpatialData(id = null, routing = 1, circle(point(0, 0), 1.0), rectangle(0, 2, 0, 2), point(1, 1)))
+
+    val collectionName = randomString()
+    sql.read.grid.loadClass[SpatialData].write.grid(collectionName).save()
+
+    val data = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
+    assert(data.getProperty[Any]("routing").isInstanceOf[Long])
+    assert(data.getProperty[Any]("circle").isInstanceOf[Circle])
+    assert(data.getProperty[Any]("rect").isInstanceOf[Rectangle])
+    assert(data.getProperty[Any]("point").isInstanceOf[Point])
   }
 
   def zeroPointCheck(df: DataFrame, attribute: String) = {

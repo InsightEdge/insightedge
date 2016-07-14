@@ -1,6 +1,6 @@
 package com.gigaspaces.spark.context
 
-import com.gigaspaces.spark.mllib.MLModel
+import com.gigaspaces.spark.mllib.MLInstance
 import com.gigaspaces.spark.model.BucketedGridModel
 import com.gigaspaces.spark.rdd.{GigaSpacesRDD, GigaSpacesSqlRDD}
 import com.gigaspaces.spark.utils.GigaSpaceConstants._
@@ -49,16 +49,16 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
   }
 
   /**
-    * Load MLlib model from Data Grid
+    * Load ml/mllib instance (model, pipeline, etc) from the Data Grid
     *
-    * @param modelName name of MLModel
-    * @tparam R MLlib model class
-    * @return MLlib model
+    * @param name name of ml/mllib instance
+    * @tparam R instance class
+    * @return loaded instance
     */
-  def loadMLModel[R: ClassTag](modelName: String): Option[R] = {
-    val mlModel = gigaSpace.readById(classOf[MLModel], modelName)
+  def loadMLInstance[R: ClassTag](name: String): Option[R] = {
+    val mlModel = gigaSpace.readById(classOf[MLInstance], name)
     mlModel match {
-      case MLModel(name, model: R) => Some(model)
+      case MLInstance(id, instance: R) => Some(instance)
       case _ => None
     }
   }

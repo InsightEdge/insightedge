@@ -199,11 +199,14 @@
                             <goal>test</goal>
                         </goals>
                         <phase>integration-test</phase>
-                        <configuration>
-                            <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version}</argLine>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version}</argLine>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <junitxml>.</junitxml>
+                    <filereports>scalatest.txt</filereports>
+                </configuration>
             </plugin>
         </plugins>
     </build>
