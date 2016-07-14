@@ -104,7 +104,7 @@ object Launcher {
       copy(s"$resources/sbin/stop-zeppelin.sh", s"$output/sbin/stop-zeppelin.sh")
     }
     run("Adding Zeppelin notes") {
-      copy(s"$resources/zeppelin", s"$output/zeppelin/notebook")
+      copy(s"$resources/zeppelin/notes", s"$output/zeppelin/notebook")
     }
 
     run("Removing spark R integration") {
