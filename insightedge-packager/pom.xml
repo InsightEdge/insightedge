@@ -100,7 +100,7 @@
                                         <jvmArg>-Doutput.exploded.directory=${project.build.directory}/contents-community</jvmArg>
                                         <!-- Final compressed file location and name -->
                                         <jvmArg>
-                                            -Doutput.compressed.file=${project.build.directory}/community/gigaspaces-insightedge-${project.version}-sbin.community.zip
+                                            -Doutput.compressed.file=${project.build.directory}/community/gigaspaces-insightedge-${project.version}-community.zip
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
