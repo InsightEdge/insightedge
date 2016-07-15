@@ -53,8 +53,8 @@ object Launcher {
 
     run("Adding integration scripts") {
       copy(s"$resources/bin", s"$output/bin")
-      copy(s"$resources/sbin/common-insightedge.sh", s"$output/sbin/common-insightedge.sh")
-      copy(s"$resources/sbin/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
+      copy(s"$resources/sbin/common/", s"$output/sbin/")
+      copy(s"$resources/sbin/$edition/", s"$output/sbin/")
     }
 
     run("Adding examples") {
@@ -78,10 +78,6 @@ object Launcher {
       remove(s"$output/datagrid/tools/scala")
       remove(s"$output/datagrid/tools/xap-font.json")
     }
-    run("Adding Datagrid scripts") {
-      copy(s"$resources/sbin/$edition/", s"$output/sbin/")
-      copy(s"$resources/sbin/stop-datagrid-master.sh", s"$output/sbin/stop-datagrid-master.sh")
-    }
     if (edition.equals("community")) {
       run("Adding template space configuration (community only)") {
         copy(s"$resources/sbin/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
@@ -98,10 +94,6 @@ object Launcher {
       copy(s"$resources/zeppelin/config/zeppelin-site.xml", s"$output/zeppelin/conf/zeppelin-site.xml")
       copy(s"$resources/zeppelin/config/zeppelin-env.sh", s"$output/zeppelin/conf/zeppelin-env.sh")
       remove(s"$output/zeppelin/interpreter/spark/dep")
-    }
-    run("Adding Zeppelin scripts") {
-      copy(s"$resources/sbin/start-zeppelin.sh", s"$output/sbin/start-zeppelin.sh")
-      copy(s"$resources/sbin/stop-zeppelin.sh", s"$output/sbin/stop-zeppelin.sh")
     }
     run("Adding Zeppelin notes") {
       copy(s"$resources/zeppelin/notes", s"$output/zeppelin/notebook")
