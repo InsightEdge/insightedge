@@ -21,7 +21,7 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 String branchName = "$env.BRANCH_NAME"
 
 String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
-String zeppelinDefaultBranchName = "branch-0.5.6"
+String zeppelinDefaultBranchName = "branch-0.6"
 
 String examplesRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-examples.git"
 String examplesDefaultBranchName = "master"
