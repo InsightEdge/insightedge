@@ -72,7 +72,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
     stage 'Package insightedge'
     distributions = "-Ddist.spark=$env.SPARK_DIST"
-    distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
+    distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.6.1-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
     premiumDist = "$distributions -Ddist.xap=$env.XAP12_PREMIUM_DIST"
     communityDist = "$distributions -Ddist.xap=$env.XAP12_COMMUNITY_DIST"
