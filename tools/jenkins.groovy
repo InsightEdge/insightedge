@@ -21,7 +21,7 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 String branchName = "$env.BRANCH_NAME"
 
 String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
-String zeppelinDefaultBranchName = "branch-0.5.6"
+String zeppelinDefaultBranchName = "branch-0.6"
 
 String examplesRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-examples.git"
 String examplesDefaultBranchName = "master"
@@ -72,7 +72,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
     stage 'Package insightedge'
     distributions = "-Ddist.spark=$env.SPARK_DIST"
-    distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.5.7-incubating-SNAPSHOT.tar.gz"
+    distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.6.1-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
     premiumDist = "$distributions -Ddist.xap=$env.XAP12_PREMIUM_DIST"
     communityDist = "$distributions -Ddist.xap=$env.XAP12_COMMUNITY_DIST"
