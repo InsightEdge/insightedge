@@ -24,7 +24,8 @@ if "x%MODE%"=="xdemo" (
   echo --- Starting Spark master at 127.0.0.1
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start spark-master bin\spark-class org.apache.spark.deploy.master.Master --ip 127.0.0.1
   echo --- Spark master started
-  
+
+  rem prints a newline
   echo.
   echo --- Stopping Spark worker
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-worked
