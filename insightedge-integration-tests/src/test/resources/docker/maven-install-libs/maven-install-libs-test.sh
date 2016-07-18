@@ -34,7 +34,7 @@ HOME="/home/ie-user"
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
 cd $HOME/insightedge-examples
-git checkout ie-100_check_build
+git checkout ie-100_check_build # TODO should be master
 
 println "------ Maven build should fail"
 rm -rf $HOME/.m2
