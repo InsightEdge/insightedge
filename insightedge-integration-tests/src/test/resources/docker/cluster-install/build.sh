@@ -4,6 +4,6 @@
 # Auto-test builds the image with maven plugin.
 #
 
-VER=0.4.0-SNAPSHOT
+VER=1.0.0
 
 docker build -t insightedge-tests-cluster-install:$VER .

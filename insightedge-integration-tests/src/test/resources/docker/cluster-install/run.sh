@@ -3,7 +3,7 @@
 # Starts a cluster of containers and installs InsightEdge there.
 #
 
-VER=0.4.0-SNAPSHOT
+VER=1.0.0
 
 if [ "$#" -ne 2 ]; then
     echo "Illegal number of parameters."
