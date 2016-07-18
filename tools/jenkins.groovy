@@ -110,7 +110,13 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
         // TODO
 //        if (branchName.equals("master")) {
         echo "Current branch: $branchName"
+        if (branchName.equalsIgnoreCase("ie-100_maven_test")) {
+            echo "equalsIgnoreCase"
+        }
         if (branchName.equals("ie-100_maven_test")) {
+            echo "equals"
+        }
+        if (branchName.equalsIgnoreCase("ie-100_maven_test")) {
             try {
                 stage 'Run long integration tests (community)'
                 sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e"
