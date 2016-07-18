@@ -19,6 +19,8 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 
 
 String branchName = "$env.BRANCH_NAME"
+//TODO
+println(branchName.getClass())
 
 String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
 String zeppelinDefaultBranchName = "branch-0.5.6"
@@ -93,29 +95,24 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     sh "tools/lock.sh /tmp/integration-tests.lock 900 30 \"$lockMessage\""
 
     try {
-//        try {
-//            stage 'Run integration tests (community)'
-//            sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community -e"
-//        } finally {
-//            step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
-//        }
-//
-//        try {
-//            stage 'Run integration tests (premium)'
-//            sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
-//        } finally {
-//            step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
-//        }
+        try {
+            stage 'Run integration tests (community)'
+            sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community -e"
+        } finally {
+            step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+        }
+
+        try {
+            stage 'Run integration tests (premium)'
+            sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium -e"
+        } finally {
+            step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+        }
 
         // TODO
-//        if (branchName.equals("master")) {
-        echo "Current branch: $branchName"
-        if (branchName.equalsIgnoreCase("ie-100_maven_test")) {
-            echo "equalsIgnoreCase"
-        }
-        if (branchName.equals("ie-100_maven_test")) {
-            echo "equals"
-        }
+        echo "Before long tests"
+        println(branchName.getClass())
+//        if (branchName.equalsIgnoreCase("master")) {
         if (branchName.equalsIgnoreCase("ie-100_maven_test")) {
             try {
                 stage 'Run long integration tests (community)'
