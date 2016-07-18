@@ -52,7 +52,7 @@ if "x%MODE%"=="xstart" (
   )
 
   set OLDPIDS=
-  for /f "tokens=1,2" %%a in ('tasklist ^| findstr java.exe') do (
+  for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
     set OLDPIDS=%%b-!OLDPIDS!
   )
   
@@ -65,7 +65,7 @@ if "x%MODE%"=="xstart" (
   timeout 1 > NUL
   
   set PIDS=
-  for /f "tokens=1,2" %%a in ('tasklist ^| findstr java.exe') do (
+  for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
     if "x!OLDPIDS:%%b=!"=="x!OLDPIDS!" (
 	  if "x!PIDS!"=="x" (
 	    set PIDS=%%b
