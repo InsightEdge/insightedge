@@ -28,9 +28,9 @@ main() {
         log_file="$log_template-${parsed_instance//,/_}.log"
         instance=${parsed_instance//,/ }
         `nohup   $IE_PATH/datagrid/bin/pu-instance.sh \
+                    -path $IE_PATH/datagrid/deploy/templates/insightedge-datagrid \
                     -cluster schema=partitioned-sync2backup total_members=$TOPOLOGY $instance \
-                    -properties space embed://dataGridName=$SPACE_NAME \
-                    $IE_PATH/datagrid/deploy/templates/insightedge-datagrid > $log_file 2>&1 &`
+                    -properties space embed://dataGridName=$SPACE_NAME > $log_file 2>&1 &`
         sleep 3
         echo "Datagrid instance started (log: $log_file)"
     done
