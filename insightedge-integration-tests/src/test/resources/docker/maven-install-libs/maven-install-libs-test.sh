@@ -20,17 +20,16 @@ function println() {
 
 println "------ Testing Insighetde maven libs installation script"
 echo "-- Logged as "`whoami`
+echo "-- Environment"
+env
 echo "-- Java version"
 java -version
 echo "-- Maven version"
 mvn --version
-echo "-- Scala version"
-scala -version
 echo "-- SBT version "
-sbt sbtVersion
+sbt sbtVersion # it fails sometimes
 
-HOME="/root"
-#HOME="/home/ie-user"
+HOME="/home/ie-user"
 
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git

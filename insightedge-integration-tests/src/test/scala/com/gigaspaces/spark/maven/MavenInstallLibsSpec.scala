@@ -2,6 +2,7 @@ package com.gigaspaces.spark.maven
 
 import java.io.File
 
+import com.gigaspaces.spark.utils.LongRunningTest
 import com.gigaspaces.spark.utils.ProcessUtils._
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
@@ -13,7 +14,7 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
   val PackagerDirName = "insightedge-packager"
   val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
-  "maven-install-libs.sh" should "install libs into local maven repo" in {
+  "maven-install-libs.sh" should "install libs into local maven repo" taggedAs LongRunningTest in {
     val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
     val edition = Option(System.getProperty("dist.edition")).getOrElse("")
     val version = Option(System.getProperty("dist.version")).getOrElse("")

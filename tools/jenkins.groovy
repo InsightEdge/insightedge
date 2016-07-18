@@ -106,6 +106,23 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
         } finally {
             step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
         }
+
+        if (branchName.equals("master")) {
+            try {
+                stage 'Run long integration tests (community)'
+                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e"
+            } finally {
+                step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+            }
+
+            try {
+                stage 'Run long integration tests (premium)'
+                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium,only-long-running-test -e"
+            } finally {
+                step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+            }
+        }
+
     } finally {
         // if tests fail - unlock the lock anyway
         sh "tools/unlock.sh /tmp/integration-tests.lock \"$lockMessage\""
