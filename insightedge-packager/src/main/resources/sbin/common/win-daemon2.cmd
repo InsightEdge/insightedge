@@ -10,6 +10,7 @@ if "x%2"=="x" (
   exit /b 1
 )
 
+rem first token will be written to %%a, second to %%b and remaining string to %%c
 for /f "tokens=1,2,*" %%a in ("%*") do (
   set MODE=%%a
   set TITLE=%%b
@@ -33,7 +34,8 @@ if "x%MODE%"=="xstart" (
   if not exist %LOG_DIR% (
     mkdir %LOG_DIR%
   )
-  
+
+  rem check if process is already running and exit
   if exist %PID_FILE% (
     set /p RAW_COMMA_PIDS=<%PID_FILE%
 	rem removes the spaces from RAW_PID
@@ -51,8 +53,10 @@ if "x%MODE%"=="xstart" (
 	)
   )
 
+  rem remember PIDs of all currently running processes
   set OLDPIDS=
   for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
+    rem build dash-separated string, the separator does not matter in script
     set OLDPIDS=%%b-!OLDPIDS!
   )
   
@@ -63,9 +67,12 @@ if "x%MODE%"=="xstart" (
   
   rem waiting is risky, but java.exe process cannot spawn instantly, so we have to wait at least some time
   timeout 1 > NUL
-  
+
+  rem read all tasks and write all new processes PIDs to a comma-separated string
   set PIDS=
   for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
+    rem check if OLDPIDS contains PID by replacing it in OLDPIDS with nothing and comparing to old value
+    rem syntax: %MYSTRING:OLD_PART=NEW_PART% or !MYSTRING:OLD_PART=NEW_PART!
     if "x!OLDPIDS:%%b=!"=="x!OLDPIDS!" (
 	  if "x!PIDS!"=="x" (
 	    set PIDS=%%b
@@ -74,12 +81,15 @@ if "x%MODE%"=="xstart" (
 	  )
 	)
   )
+  rem write PIDs to a temp file
   echo !PIDS! 1>%PID_FILE%
   echo Started "%TITLE%" with pid: !PIDS!
-      
+
+  rem wait before exiting so output can catch up
   timeout 1 > NUL
   exit /b
 )
+
 
 if "x%MODE%"=="xstop" (
   if not exist %PID_FILE% (
@@ -109,6 +119,7 @@ if "x%MODE%"=="xstop" (
   )
   exit /b
 )
+
 
 echo Invalid mode: %MODE%, expected start^|stop
 exit /b 1

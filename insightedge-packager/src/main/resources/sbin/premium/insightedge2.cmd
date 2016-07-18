@@ -11,9 +11,11 @@ set INSIGHTEDGE_HOME=%~dp0..
 set XAP_LOOKUP_LOCATORS=127.0.0.1:4174
 set XAP_LOOKUP_GROUPS=insightedge
 set NIC_ADDR=127.0.0.1
+rem sets HADOOP_HOME if not specified by user - fixed NPE due to missing winutils
 if "x%HADOOP_HOME%"=="x" (
   set HADOOP_HOME=%INSIGHTEDGE_HOME%\winutils
 )
+
 
 if "x%MODE%"=="xdemo" (
   echo --- Stopping Spark master
@@ -68,6 +70,7 @@ if "x%MODE%"=="xdemo" (
   exit /b
 )
 
+
 if "x%MODE%"=="xshutdown" (
   echo --- Stopping Spark master
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-master
@@ -94,6 +97,7 @@ if "x%MODE%"=="xshutdown" (
   echo --- Zeppelin server stopped
   exit /b
 )
+
 
 echo Invalid mode: %MODE%, expected demo^|shutdown
 exit /b 1
