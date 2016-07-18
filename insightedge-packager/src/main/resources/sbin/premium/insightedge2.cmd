@@ -16,21 +16,33 @@ if "x%HADOOP_HOME%"=="x" (
 )
 
 if "x%MODE%"=="xdemo" (
+  echo --- Stopping Spark master
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-master
+  echo --- Spark master stopped
   echo --- Starting Spark master at 127.0.0.1
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start spark-master bin\spark-class org.apache.spark.deploy.master.Master --ip 127.0.0.1
   echo --- Spark master started
   
   echo.
+  echo --- Stopping Spark worker
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-worked
+  echo --- Spark worker stopped
   echo --- Starting Spark worker targetting spark://127.0.0.1:7077
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start spark-slave bin\spark-class org.apache.spark.deploy.worker.Worker spark://127.0.0.1:7077 --ip 127.0.0.1
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start spark-worker bin\spark-class org.apache.spark.deploy.worker.Worker spark://127.0.0.1:7077 --ip 127.0.0.1
   echo --- Spark worker started
     
   echo.
+  echo --- Stopping Datagrid master
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-master
+  echo --- Datagrid master stopped
   echo --- Starting Gigaspaces datagrid management node ^(locator: 127.0.0.1:4174, group: insightedge^)
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-master datagrid\bin\gs-agent.bat gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1
   echo --- Gigaspaces datagrid management node started
   
   echo.
+  echo --- Stopping Datagrid slave
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-slave
+  echo --- Datagrid slave stopped
   echo --- Starting Gigaspaces datagrid node ^(locator: 127.0.0.1:4174, group: insightedge, containers: 2^)
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-slave datagrid\bin\gs-agent.bat gsa.gsc 2 gsa.global.gsm 0 gsa.global.lus 0
   echo --- Gigaspaces datagrid node started
@@ -41,6 +53,9 @@ if "x%MODE%"=="xdemo" (
   echo --- Done deploying space: insightedge-space
   
   echo.
+  echo --- Stopping Zeppelin server
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop zeppelin
+  echo --- Zeppelin server stopped
   echo --- Starting Zeppelin server
   rem %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start zeppelin <WIP>
   echo --- Zeppelin server can be accessed at http://127.0.0.1:8090
@@ -60,7 +75,7 @@ if "x%MODE%"=="xshutdown" (
   
   echo.
   echo --- Stopping Spark worker
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-slave
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-worker
   echo --- Spark worker stopped
   
   echo.

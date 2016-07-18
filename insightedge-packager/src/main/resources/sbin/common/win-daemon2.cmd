@@ -6,7 +6,7 @@ set INSIGHTEDGE_HOME=%~dp0..
 
 rem Test that an argument was given
 if "x%2"=="x" (
-  echo Usage: win-daemon.cmd ^(start^|stop^|status^) ^<win-title^> ^<win-command^> ^<args...^>
+  echo Usage: win-daemon.cmd ^(start^|stop^) ^<win-title^> ^<win-command^> ^<args...^>
   exit /b 1
 )
 
@@ -33,87 +33,82 @@ if "x%MODE%"=="xstart" (
   if not exist %LOG_DIR% (
     mkdir %LOG_DIR%
   )
-  set PID=
+  
   if exist %PID_FILE% (
-    set /p RAW_PID=<%PID_FILE%
+    set /p RAW_COMMA_PIDS=<%PID_FILE%
 	rem removes the spaces from RAW_PID
-	set PID=!RAW_PID: =!
-    for /f "tokens=1,2" %%a in ('tasklist ^| findstr !PID!') do (
-      if "x%%b"=="x!PID!" (
-		echo Process "%TITLE%" is already running, pid: !PID!
-		echo You can stop it by calling: win-daemon.cmd stop %TITLE%
-		exit /b 1
-	  )
-    )
+	set PIDS=!RAW_COMMA_PIDS: =!
+	rem iterates over pids
+	for %%i in (!PIDS!) do (
+	  set PID=%%i
+	  for /f "tokens=1,2" %%a in ('tasklist ^| findstr !PID!') do (
+        if "x%%b"=="x!PID!" (
+		  echo Process "%TITLE%" is already running, pid: !PIDS!
+		  echo You can stop it by calling: win-daemon.cmd stop %TITLE%
+		  exit /b 1
+	    )
+      )
+	)
   )
 
   set OLDPIDS=
-  for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
+  for /f "tokens=1,2" %%a in ('tasklist ^| findstr java.exe') do (
     set OLDPIDS=%%b-!OLDPIDS!
   )
   
   set LOG_FILE=!LOG_DIR!\!TITLE!-%RANDOM%.log
   echo Starting "%TITLE%", logs: !LOG_FILE!
-  echo %INSIGHTEDGE_HOME%\%COMMAND%
+  echo ^> %INSIGHTEDGE_HOME%\%COMMAND%
   start /b %~dp0win-daemon3.cmd !LOG_FILE! %INSIGHTEDGE_HOME%\%COMMAND% ^& exit /b
   
   rem waiting is risky, but java.exe process cannot spawn instantly, so we have to wait at least some time
   timeout 1 > NUL
   
-  for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
+  set PIDS=
+  for /f "tokens=1,2" %%a in ('tasklist ^| findstr java.exe') do (
     if "x!OLDPIDS:%%b=!"=="x!OLDPIDS!" (
-	  set PID=%%b
-	  echo %%b 1>%PID_FILE%
+	  if "x!PIDS!"=="x" (
+	    set PIDS=%%b
+	  ) else (
+	    set PIDS=!PIDS!,%%b
+	  )
 	)
   )
-  
-  echo Started "%TITLE%" with pid: !PID!
+  echo !PIDS! 1>%PID_FILE%
+  echo Started "%TITLE%" with pid: !PIDS!
       
   timeout 1 > NUL
   exit /b
 )
 
 if "x%MODE%"=="xstop" (
-  set PID=
   if not exist %PID_FILE% (
 	echo PID file not found: %PID_FILE%
+    exit /b 1
   )
-  
-  set /p RAW_PID=<%PID_FILE%
+    
+  set TERMINATED=false
+  set /p RAW_COMMA_PIDS=<%PID_FILE%
   rem removes the spaces from RAW_PID
-  set PID=!RAW_PID: =!
-  for /f "tokens=1,2" %%a in ('tasklist ^| findstr !PID!') do (
-    if "x%%b"=="x!PID!" (
-	  echo Stopping "%TITLE%", pid: !PID!
-	  taskkill /F /PID !PID!
-      exit /b
-	)
+  set PIDS=!RAW_COMMA_PIDS: =!
+  rem iterates over pids
+  for %%i in (!PIDS!) do (
+    set PID=%%i
+    for /f "tokens=1,2" %%a in ('tasklist ^| findstr !PID!') do (
+      if "x%%b"=="x!PID!" (
+        echo Stopping "%TITLE%", pid: !PID!
+        taskkill /F /PID !PID!
+		set TERMINATED=true
+      )
+    )
   )
   
-  echo Process "%TITLE%" not found, pid: !PID!
-  exit /b 1
-)
-
-if "x%MODE%"=="xstatus" (
-  set PID=
-  if not exist %PID_FILE% (
-	echo PID file not found: %PID_FILE%
-	echo Process "%TITLE%" is not running
+  if "x!TERMINATED!"=="xfalse" (
+    echo Process "%TITLE%" not found, pid: !PIDS!
+    exit /b 1
   )
-  
-  set /p RAW_PID=<%PID_FILE%
-  rem removes the spaces from RAW_PID
-  set PID=!RAW_PID: =!
-  for /f "tokens=1,2" %%a in ('tasklist ^| findstr !PID!') do (
-    if "x%%b"=="x!PID!" (
-	  echo Process "%TITLE%" is running, pid: !PID!
-      exit /b
-	)
-  )
-  
-  echo Process "%TITLE%" is not running
   exit /b
 )
 
-echo Invalid mode: %MODE%, expected start^|stop^|status
+echo Invalid mode: %MODE%, expected start^|stop
 exit /b 1
