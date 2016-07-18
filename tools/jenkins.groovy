@@ -109,6 +109,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
 
         // TODO
 //        if (branchName.equals("master")) {
+        echo "Current branch: $branchName"
         if (branchName.equals("ie-100_maven_test")) {
             try {
                 stage 'Run long integration tests (community)'
