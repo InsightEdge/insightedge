@@ -15,7 +15,24 @@ rem sets HADOOP_HOME if not specified by user - fixed NPE due to missing winutil
 if "x%HADOOP_HOME%"=="x" (
   set HADOOP_HOME=%INSIGHTEDGE_HOME%\winutils
 )
-
+for /f "tokens=1,2" %%a in (%INSIGHTEDGE_HOME%\VERSION) do (
+  if "x%%a"=="xVersion:" (
+    set VERSION=%%b
+  )
+  if "x%%a"=="xEdition:" (
+    set EDITION=%%b
+  )
+)
+ 
+echo    _____           _       _     _   ______    _            
+echo   ^|_   _^|         ^(_^)     ^| ^|   ^| ^| ^|  ____^|  ^| ^|           
+echo     ^| ^|  _ __  ___ _  __ _^| ^|__ ^| ^|_^| ^|__   __^| ^| __ _  ___ 
+echo     ^| ^| ^| '_ \/ __^| ^|/ _` ^| '_ \^| __^|  __^| / _` ^|/ _` ^|/ _ \
+echo    _^| ^|_^| ^| ^| \__ \ ^| ^(_^| ^| ^| ^| ^| ^|_^| ^|___^| ^(_^| ^| ^(_^| ^|  __/
+echo   ^|_____^|_^| ^|_^|___/_^|\__, ^|_^| ^|_^|\__^|______\__,_^|\__, ^|\___^|
+echo                       __/ ^|                       __/ ^|     
+echo                      ^|___/                       ^|___/   version: %VERSION%
+echo                                                          edition: %EDITION%
 
 if "x%MODE%"=="xdemo" (
   echo --- Stopping Spark master
