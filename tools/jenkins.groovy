@@ -107,8 +107,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
             step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
         }
 
-//        if (branchName.equals("master")) {
-        if (branchName.equals("ie-100_maven_test")) {
+        if (branchName.equals("master")) {
             try {
                 stage 'Run long integration tests (community)'
                 sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e"
