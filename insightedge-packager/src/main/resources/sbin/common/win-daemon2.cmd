@@ -65,9 +65,9 @@ if "x%MODE%"=="xstart" (
   echo ^> %INSIGHTEDGE_HOME%\%COMMAND%
   start /b %~dp0win-daemon3.cmd !LOG_FILE! %INSIGHTEDGE_HOME%\%COMMAND% ^& exit /b
   
-  rem waiting is risky, but java.exe process cannot spawn instantly, so we have to wait at least some time
-  timeout 1 > NUL
-
+  set TIMEOUT=5
+  set CURRENT_TIME=0
+  :READ_PIDS
   rem read all tasks and write all new processes PIDs to a comma-separated string
   set PIDS=
   for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
@@ -81,6 +81,19 @@ if "x%MODE%"=="xstart" (
 	  )
 	)
   )
+
+  rem waiting is risky, but java.exe process cannot spawn instantly, so we sometimes have to wait some time before it starts
+  if "x!PIDS!"=="x" (
+	set /a CURRENT_TIME=!CURRENT_TIME!+1
+	if !CURRENT_TIME! gtr !TIMEOUT! (
+	  echo Timeout reached for the "%TITLE%" to start
+	  exit /b 1
+	)
+	echo Waiting for "%TITLE%" process to start ^(!CURRENT_TIME!/!TIMEOUT!^)...
+    timeout 1 > NUL
+	goto :READ_PIDS
+  )
+
   rem write PIDs to a temp file
   echo !PIDS! 1>%PID_FILE%
   echo Started "%TITLE%" with pid: !PIDS!
