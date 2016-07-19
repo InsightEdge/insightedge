@@ -13,6 +13,6 @@ set SEPARATOR=%~2
 set INSIGHTEDGE_JARS=
 for %%d in (%INSIGHTEDGE_HOME%\lib\insightedge-core-*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
 for %%d in (%INSIGHTEDGE_HOME%\lib\gigaspaces-scala-*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
-for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\required\*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
-for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
+set INSIGHTEDGE_JARS=%INSIGHTEDGE_JARS%%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\required\*%SEPARATOR%
+set INSIGHTEDGE_JARS=%INSIGHTEDGE_JARS%%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*%SEPARATOR%
 exit /b
