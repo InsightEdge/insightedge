@@ -7,14 +7,14 @@ if "x%INSIGHTEDGE_HOME%"=="x" (
 )
 
 set XAP_HOME=%INSIGHTEDGE_HOME%\datagrid
-echo "Data Grid home %XAP_HOME%"
+echo Data Grid home %XAP_HOME%
 
 set POMS_DIR=%XAP_HOME%\tools\maven\poms
 set XAP_DATAGRID_POMS_DIR=%POMS_DIR%\xap-datagrid
 set XAP_DATAGRID_CORE_POMS=%XAP_DATAGRID_POMS_DIR%\xap-core
 set XAP_DATAGRID_EXT_POMS=%XAP_DATAGRID_POMS_DIR%\xap-extensions
 
-echo "Installing Data Grid %DATA_GRID_VERSION% artifacts"
+echo Installing Data Grid %DATA_GRID_VERSION% artifacts
 
 rem GigaSpaces Jars
 call mvn install:install-file -DcreateChecksum=true -DpomFile=%XAP_DATAGRID_POMS_DIR%\pom.xml -Dfile=%XAP_DATAGRID_POMS_DIR%\pom.xml
@@ -29,7 +29,7 @@ call mvn install:install-file -DcreateChecksum=true -DpomFile=%XAP_DATAGRID_EXT_
 call mvn install:install-file -DcreateChecksum=true -DpomFile=%XAP_DATAGRID_EXT_POMS%\xap-spatial\pom.xml -Dfile=%XAP_HOME%\lib\optional\spatial\xap-spatial.jar
 
 
-echo "Installing InsightEdge %INSIGHTEDGE_VER% artifacts"
+echo Installing InsightEdge %INSIGHTEDGE_VER% artifacts
 
 call mvn install:install-file ^
     -Dpackaging=pom ^
