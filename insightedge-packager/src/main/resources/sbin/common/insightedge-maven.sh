@@ -11,13 +11,6 @@ fi
 XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
 echo "Data Grid home $XAP_HOME"
 
-if [ -z "${JAVA_HOME}" ]; then
-	export JAVACMD=java
-else
-	export JAVACMD="${JAVA_HOME}/bin/java"
-fi
-
-
 POMS_DIR="${XAP_HOME}/tools/maven/poms"
 XAP_DATAGRID_POMS_DIR="${POMS_DIR}/xap-datagrid"
 XAP_DATAGRID_CORE_POMS="${XAP_DATAGRID_POMS_DIR}/xap-core"
