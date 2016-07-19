@@ -237,7 +237,6 @@
                         <configuration>
                             <tagsToExclude>_</tagsToExclude> <!-- Workaround to reset previous value-->
                             <tagsToInclude>com.gigaspaces.spark.utils.LongRunningTest</tagsToInclude>
-
                         </configuration>
                     </plugin>
                     <plugin>

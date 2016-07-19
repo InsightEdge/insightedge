@@ -3,6 +3,6 @@
 # Stops and removes all containers
 #
 
-docker kill maven-intall-libs-test-image
+docker kill maven-install-libs-test-image
 
-docker rm maven-intall-libs-test-image
+docker rm maven-install-libs-test-image

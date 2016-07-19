@@ -78,7 +78,7 @@ sbt_failed=`grep -c "\[error\]" $HOME/insightedge-examples-sbt-success.out`
 if [[ $sbt_failed == 0 ]]; then
     println "---- OK: SBT build succeeded"
 else
-    println "---- ERROR SBT build failed"
+    println "---- ERROR: SBT build failed"
     exit 1
 fi
 
