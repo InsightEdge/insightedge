@@ -9,12 +9,6 @@ if "x%INSIGHTEDGE_HOME%"=="x" (
 set XAP_HOME=%INSIGHTEDGE_HOME%\datagrid
 echo "Data Grid home %XAP_HOME%"
 
-if "x%JAVA_HOME%"=="x" (
-    set JAVACMD=java
-) else (
-    set JAVACMD=%JAVA_HOME%\bin\java
-)
-
 set POMS_DIR=%XAP_HOME%\tools\maven\poms
 set XAP_DATAGRID_POMS_DIR=%POMS_DIR%\xap-datagrid
 set XAP_DATAGRID_CORE_POMS=%XAP_DATAGRID_POMS_DIR%\xap-core
