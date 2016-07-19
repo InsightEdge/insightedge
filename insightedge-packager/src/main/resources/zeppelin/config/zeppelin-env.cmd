@@ -48,14 +48,14 @@ REM set SPARK_APP_NAME                         REM (optional) The name of spark 
 
 rem setlocal enableextensions enabledelayedexpansion
 
-rem if "x%INSIGHTEDGE_HOME%"=="x" (
-rem  set INSIGHTEDGE_HOME=!~dp0!..
-rem )
+if "x%INSIGHTEDGE_HOME%"=="x" (
+   set INSIGHTEDGE_HOME=%~dp0..
+)
 
-rem call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS ";"
+call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS "," "false"
 
-rem set SPARK_HOME=%INSIGHTEDGE_HOME%
-rem set SPARK_SUBMIT_OPTIONS="--jars %INSIGHTEDGE_JARS%"
+set SPARK_HOME=%INSIGHTEDGE_HOME%
+set SPARK_SUBMIT_OPTIONS=--jars %INSIGHTEDGE_JARS%
 
 REM Use embedded spark binaries
 REM without SPARK_HOME defined, Zeppelin still able to run spark interpreter process using embedded spark binaries.
