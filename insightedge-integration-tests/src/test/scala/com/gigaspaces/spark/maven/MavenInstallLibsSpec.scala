@@ -4,6 +4,7 @@ import java.io.File
 
 import com.gigaspaces.spark.utils.LongRunningTest
 import com.gigaspaces.spark.utils.ProcessUtils._
+import com.gigaspaces.spark.utils.FsUtils._
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
 /**
@@ -15,7 +16,7 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
   val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
   "maven-install-libs.sh" should "install libs into local maven repo" taggedAs LongRunningTest in {
-    val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+    val packagerDir = findPackagerDir(new File("."), PackagerDirName).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
     val edition = Option(System.getProperty("dist.edition")).getOrElse("")
     val version = Option(System.getProperty("dist.version")).getOrElse("")
     println(s"Package dir: $packagerDir")
@@ -37,27 +38,5 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
   after {
     execAssertSucc(s"$scriptsDir/stop.sh")
   }
-
-  /**
-    * Looks for `packager` directory no matter where this test executed from ... command line, IDE, etc
-    */
-  def findPackagerDir(findFrom: File): Option[File] = {
-    def log(s: File) = println(s"Looking for $PackagerDirName ... checking $s")
-    log(findFrom)
-
-    findFrom.getName match {
-      case "" => None
-      case PackagerDirName => Some(findFrom)
-      case _ =>
-        val parent = new File(findFrom.getAbsoluteFile.getParent)
-        parent
-          .listFiles()
-          .filter(_.isDirectory)
-          .find(dir => {log(dir); dir.getName == PackagerDirName})
-          .orElse(findPackagerDir(parent))
-
-    }
-  }
-
 
 }

@@ -5,6 +5,7 @@ import java.io.File
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
 import com.gigaspaces.spark.utils.ProcessUtils._
+import com.gigaspaces.spark.utils.FsUtils._
 
 /**
   * Setup a cluster of empty docker containers and install InsightEdge there remotely from another container(named Client).
@@ -18,7 +19,7 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
   val scriptsDir = getClass.getClassLoader.getResource("docker/cluster-install/").getFile
 
   "insightedge.sh" should "install cluster" in {
-    val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+    val packagerDir = findPackagerDir(new File("."), PackagerDirName).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
     val edition = Option(System.getProperty("dist.edition")).getOrElse("")
 
     println(s"Package dir: $packagerDir")
@@ -38,27 +39,5 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
   after {
     execAssertSucc(s"$scriptsDir/stop.sh")
   }
-
-  /**
-    * Looks for `packager` directory no matter where this test executed from ... command line, IDE, etc
-    */
-  def findPackagerDir(findFrom: File): Option[File] = {
-    def log(s: File) = println(s"Looking for $PackagerDirName ... checking $s")
-    log(findFrom)
-
-    findFrom.getName match {
-      case "" => None
-      case PackagerDirName => Some(findFrom)
-      case _ =>
-        val parent = new File(findFrom.getAbsoluteFile.getParent)
-        parent
-          .listFiles()
-          .filter(_.isDirectory)
-          .find(dir => {log(dir); dir.getName == PackagerDirName})
-          .orElse(findPackagerDir(parent))
-
-    }
-  }
-
 
 }
