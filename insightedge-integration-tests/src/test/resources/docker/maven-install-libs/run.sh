@@ -3,7 +3,7 @@
 # Starts a docker image with pre-installed Maven/Sbt and runs tests.
 #
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 2 ]; then
     echo "Illegal number of parameters."
     echo "Usage: run.sh <dir with InsightEdge zip> <distribution version>"
     exit 1
