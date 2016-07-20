@@ -8,35 +8,35 @@ if [ -z "${INSIGHTEDGE_HOME}" ]; then
   INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 fi
 
-XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
-echo "Data Grid home $XAP_HOME"
+#XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
+#echo "Data Grid home $XAP_HOME"
 
-if [ -z "${JAVA_HOME}" ]; then
-	export JAVACMD=java
-else
-	export JAVACMD="${JAVA_HOME}/bin/java"
-fi
-
-
-POMS_DIR="${XAP_HOME}/tools/maven/poms"
-XAP_DATAGRID_POMS_DIR="${POMS_DIR}/xap-datagrid"
-XAP_DATAGRID_CORE_POMS="${XAP_DATAGRID_POMS_DIR}/xap-core"
-XAP_DATAGRID_EXT_POMS="${XAP_DATAGRID_POMS_DIR}/xap-extensions"
+#if [ -z "${JAVA_HOME}" ]; then
+#	export JAVACMD=java
+#else
+#	export JAVACMD="${JAVA_HOME}/bin/java"
+#fi
 
 
-echo "Installing Data Grid $DATA_GRID_VERSION artifacts"
+#POMS_DIR="${XAP_HOME}/tools/maven/poms"
+#XAP_DATAGRID_POMS_DIR="${POMS_DIR}/xap-datagrid"
+#XAP_DATAGRID_CORE_POMS="${XAP_DATAGRID_POMS_DIR}/xap-core"
+#XAP_DATAGRID_EXT_POMS="${XAP_DATAGRID_POMS_DIR}/xap-extensions"
+
+
+#echo "Installing Data Grid $DATA_GRID_VERSION artifacts"
 
 # GigaSpaces Jars
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_POMS_DIR}/pom.xml -Dfile=${XAP_DATAGRID_POMS_DIR}/pom.xml
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_POMS_DIR}/pom.xml -Dfile=${XAP_DATAGRID_POMS_DIR}/pom.xml
 
 # open core modules
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-common/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-common.jar
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-trove/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-trove.jar
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-asm/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-asm.jar
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-datagrid/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-datagrid.jar
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-openspaces/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-openspaces.jar -Dsources="${XAP_HOME}/lib/optional/openspaces/xap-openspaces-sources.jar"
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_EXT_POMS}/xap-jms/pom.xml -Dfile=${XAP_HOME}/lib/optional/jms/xap-jms.jar
-mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_EXT_POMS}/xap-spatial/pom.xml -Dfile=${XAP_HOME}/lib/optional/spatial/xap-spatial.jar
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-common/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-common.jar
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-trove/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-trove.jar
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-asm/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-asm.jar
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-datagrid/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-datagrid.jar
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_CORE_POMS}/xap-openspaces/pom.xml -Dfile=${XAP_HOME}/lib/required/xap-openspaces.jar -Dsources="${XAP_HOME}/lib/optional/openspaces/xap-openspaces-sources.jar"
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_EXT_POMS}/xap-jms/pom.xml -Dfile=${XAP_HOME}/lib/optional/jms/xap-jms.jar
+#mvn install:install-file -DcreateChecksum=true -DpomFile=${XAP_DATAGRID_EXT_POMS}/xap-spatial/pom.xml -Dfile=${XAP_HOME}/lib/optional/spatial/xap-spatial.jar
 
 
 echo "Installing InsightEdge $INSIGHTEDGE_VER artifacts"
