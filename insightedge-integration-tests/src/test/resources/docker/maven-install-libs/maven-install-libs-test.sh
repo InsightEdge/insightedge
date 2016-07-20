@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 
 function add_insightedge_libs_to_repo() {
+    println "------ Installing libraries"
     EXPECTED_PROJECTS_COUNT=11
     /opt/gigaspaces-insightedge/sbin/insightedge-maven.sh | tee $HOME/insightedge-maven.out
-    projects_count=`grep "BUILD SUCCESS" $HOME/insightedge-maven.out | wc -l`
-    if [[ $projects_count == $EXPECTED_PROJECTS_COUNT ]]; then
-        echo "Was installed $projects_count projects"
+    local failed_builds=`grep -c "\[INFO\] BUILD FAILURE" $HOME/insightedge-maven.out`
+    if [[ $failed_builds == 0 ]]; then
+        println "------ OK: All libraries installed successfully"
     else
-        echo "Wrong maven projects count. Expected $EXPECTED_PROJECTS_COUNT, result $projects_count"
+        println "------ ERROR: Some libraries were not installed"
+        exit 1
+    fi
+
+    local projects_count=`grep -c "\[INFO\] BUILD SUCCESS" $HOME/insightedge-maven.out`
+    if [[ $projects_count == $EXPECTED_PROJECTS_COUNT ]]; then
+        println "------ OK: Was installed $projects_count projects"
+    else
+        println "------ ERROR: Wrong maven projects count. Expected $EXPECTED_PROJECTS_COUNT, result $projects_count"
         exit 1
     fi
 }
@@ -29,8 +38,6 @@ mvn --version
 echo "-- SBT version "
 sbt sbtVersion # it fails sometimes
 
-HOME="/home/ie-user"
-
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
 cd $HOME/insightedge-examples
@@ -38,7 +45,7 @@ cd $HOME/insightedge-examples
 println "------ Maven build should fail"
 rm -rf $HOME/.m2
 mvn clean test package | tee $HOME/insightedge-examples-mvn-fail.out
-maven_failed=`grep "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-fail.out | wc -l`
+maven_failed=`grep -c "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-fail.out`
 if [[ $maven_failed > 0 ]]; then
     println "------ OK: Maven build failed"
 else
@@ -50,7 +57,7 @@ println "------ Maven build should succeed"
 rm -rf $HOME/.m2
 add_insightedge_libs_to_repo
 mvn clean test package | tee $HOME/insightedge-examples-mvn-success.out
-maven_failed=`grep "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-success.out | wc -l`
+maven_failed=`grep -c "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-success.out`
 if [[ $maven_failed == 0 ]]; then
     println "------ OK: Maven build succeeded"
 else

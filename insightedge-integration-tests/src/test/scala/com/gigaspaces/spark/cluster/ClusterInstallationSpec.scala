@@ -15,11 +15,10 @@ import com.gigaspaces.spark.utils.FsUtils._
   */
 class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
 
-  val PackagerDirName = "insightedge-packager"
   val scriptsDir = getClass.getClassLoader.getResource("docker/cluster-install/").getFile
 
   "insightedge.sh" should "install cluster" in {
-    val packagerDir = findPackagerDir(new File("."), PackagerDirName).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+    val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
     val edition = Option(System.getProperty("dist.edition")).getOrElse("")
 
     println(s"Package dir: $packagerDir")

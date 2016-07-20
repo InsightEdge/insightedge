@@ -12,11 +12,10 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
   */
 class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
 
-  val PackagerDirName = "insightedge-packager"
   val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
   "maven-install-libs.sh" should "install libs into local maven repo" taggedAs LongRunningTest in {
-    val packagerDir = findPackagerDir(new File("."), PackagerDirName).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+    val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
     val edition = Option(System.getProperty("dist.edition")).getOrElse("")
     val version = Option(System.getProperty("dist.version")).getOrElse("")
     println(s"Package dir: $packagerDir")
@@ -32,7 +31,7 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
     // run installation
-    execAssertSucc(s"$scriptsDir/run.sh $zipDir $edition $version")
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir $version")
   }
 
   after {

@@ -40,7 +40,6 @@ RUN alternatives --install /usr/bin/mvn mvn /usr/local/maven/apache-maven-$MVN_V
 # sbt
 # '-1' is for yum
 ENV SBT_VERSION "0.13.9-1"
-ENV SBT_OPTS "-Xms512M -Xmx4096M -Xss1M -XX:+CMSClassUnloadingEnabled"
 RUN curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo
 RUN yum -y install sbt-$SBT_VERSION
 RUN runuser -l ie-user -c 'sbt -mem 4096 sbtVersion'

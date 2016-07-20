@@ -7,23 +7,25 @@ import java.io.File
   */
 object FsUtils {
 
+  val PackagerDirName = "insightedge-packager"
+
   /**
     * Looks for `packager` directory no matter where this test executed from ... command line, IDE, etc
     */
-  def findPackagerDir(findFrom: File, packagerDirName: String): Option[File] = {
-    def log(s: File) = println(s"Looking for $packagerDirName ... checking $s")
+  def findPackagerDir(findFrom: File): Option[File] = {
+    def log(s: File) = println(s"Looking for $PackagerDirName ... checking $s")
     log(findFrom)
 
     findFrom.getName match {
       case "" => None
-      case `packagerDirName` => Some(findFrom)
+      case PackagerDirName => Some(findFrom)
       case _ =>
         val parent = new File(findFrom.getAbsoluteFile.getParent)
         parent
           .listFiles()
           .filter(_.isDirectory)
-          .find(dir => {log(dir); dir.getName == packagerDirName})
-          .orElse(findPackagerDir(parent, packagerDirName))
+          .find(dir => {log(dir); dir.getName == PackagerDirName})
+          .orElse(findPackagerDir(parent))
 
     }
   }

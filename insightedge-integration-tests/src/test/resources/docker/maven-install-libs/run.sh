@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 #
-# Starts a cluster of containers and installs InsightEdge there.
+# Starts a docker image with pre-installed Maven/Sbt and runs tests.
 #
 
 if [ "$#" -ne 3 ]; then
     echo "Illegal number of parameters."
-    echo "Usage: run.sh <dir with InsightEdge zip> <distribution edition> <distribution version>"
+    echo "Usage: run.sh <dir with InsightEdge zip> <distribution version>"
     exit 1
 fi
 
 LOCAL_DOWNLOAD_DIR=$1
-EDITION=$2
-VERSION=$3
+VERSION=$2
 echo "Local download dir: $LOCAL_DOWNLOAD_DIR"
-echo "Edition: $EDITION"
 echo "Version: $VERSION"
 
 # Stop if anything is running
