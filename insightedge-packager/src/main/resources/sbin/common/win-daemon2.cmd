@@ -17,7 +17,7 @@ for /f "tokens=1,2,*" %%a in ("%*") do (
   set COMMAND=%%c
 )
 
-set PROCESSNAME=java.exe
+set PROCESSNAME=cmd.exe
 set PID_DIR=%TEMP%\win-daemon
 set PID_FILE=%PID_DIR%\%TITLE%.pid
 set LOG_DIR=%INSIGHTEDGE_HOME%\logs
@@ -53,8 +53,8 @@ if "x%MODE%"=="xstart" (
 	)
   )
 
-  rem remember PIDs of all currently running processes
-  set OLDPIDS=
+  rem remember PIDs of all currently running processes, init to non-empty string to make string replacement work
+  set OLDPIDS=-
   for /f "tokens=1,2" %%a in ('tasklist ^| findstr %PROCESSNAME%') do (
     rem build dash-separated string, the separator does not matter in script
     set OLDPIDS=%%b-!OLDPIDS!
@@ -120,7 +120,7 @@ if "x%MODE%"=="xstop" (
     for /f "tokens=1,2" %%a in ('tasklist ^| findstr !PID!') do (
       if "x%%b"=="x!PID!" (
         echo Stopping "%TITLE%", pid: !PID!
-        taskkill /F /PID !PID!
+        taskkill /F /T /PID !PID!
 		set TERMINATED=true
       )
     )
