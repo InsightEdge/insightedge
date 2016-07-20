@@ -38,6 +38,9 @@ mvn --version
 echo "-- SBT version "
 sbt sbtVersion # it fails sometimes
 
+#TODO
+tree /opt/gigaspaces-insightedge/datagrid
+
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
 cd $HOME/insightedge-examples

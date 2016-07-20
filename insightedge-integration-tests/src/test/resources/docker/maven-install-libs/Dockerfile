@@ -63,5 +63,8 @@ ADD maven-install-libs-test.sh /home/ie-user/maven-install-libs-test.sh
 RUN chmod +x /home/ie-user/maven-install-libs-test.sh
 RUN chown ie-user /home/ie-user/maven-install-libs-test.sh
 
+#TODO
+RUN yum -y install tree
+
 # Keep image running
 CMD ["/etc/bootstrap.sh", "-d"]
