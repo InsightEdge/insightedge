@@ -11,7 +11,7 @@ THIS_SCRIPT_NAME=`basename "$0"`
 VERSION=`grep "Version" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 EDITION=`grep "Edition" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 ARTIFACT="gigaspaces-insightedge-$VERSION-$EDITION"
-ARTIFACT_EC2="https://s3.amazonaws.com/insightedge/builds/gigaspaces-insightedge-0.4.0-SNAPSHOT.zip"
+ARTIFACT_EC2="https://s3.amazonaws.com/insightedge/builds/$ARTIFACT.zip"
 
 # override this variable with custom command if you want your distribution to be downloaded from custom location
 # for customization, call before insightedge.sh:
