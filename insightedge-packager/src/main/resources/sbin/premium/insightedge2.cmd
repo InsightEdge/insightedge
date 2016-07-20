@@ -45,7 +45,7 @@ if "x%MODE%"=="xdemo" (
   rem prints a newline
   echo.
   echo --- Stopping Spark worker
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-worked
+  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-worker
   echo --- Spark worker stopped
   echo --- Starting Spark worker targetting spark://127.0.0.1:7077
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start spark-worker bin\spark-class org.apache.spark.deploy.worker.Worker spark://127.0.0.1:7077 --ip 127.0.0.1
