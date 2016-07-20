@@ -5,12 +5,11 @@ set INSIGHTEDGE_HOME=%~dp0..
 rem disable randomized hash for string in Python 3.3+
 set PYTHONHASHSEED=0
 
-set SEPARATOR=,
+rem build INSIGHTEDGE_JARS string
 set INSIGHTEDGE_JARS=
-for %%d in (%INSIGHTEDGE_HOME%\lib\insightedge-core-*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
-for %%d in (%INSIGHTEDGE_HOME%\lib\gigaspaces-scala-*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
-for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\required\*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
-for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
+call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS "," "false"
+
+call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" SET_HADOOP_HOME
 
 rem do not remove empty lines after "set NEWLINE=^"!
 set NEWLINE=^

@@ -93,6 +93,7 @@ object Launcher {
     run("Configuring Zeppelin") {
       copy(s"$resources/zeppelin/config/zeppelin-site.xml", s"$output/zeppelin/conf/zeppelin-site.xml")
       copy(s"$resources/zeppelin/config/zeppelin-env.sh", s"$output/zeppelin/conf/zeppelin-env.sh")
+      copy(s"$resources/zeppelin/config/zeppelin-env.cmd", s"$output/zeppelin/conf/zeppelin-env.cmd")
       remove(s"$output/zeppelin/interpreter/spark/dep")
     }
     run("Adding Zeppelin notes") {
