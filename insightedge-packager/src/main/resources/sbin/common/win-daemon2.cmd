@@ -125,6 +125,8 @@ if "x%MODE%"=="xstop" (
       )
     )
   )
+
+  del %PID_FILE%
   
   if "x!TERMINATED!"=="xfalse" (
     echo Process "%TITLE%" not found, pid: !PIDS!
