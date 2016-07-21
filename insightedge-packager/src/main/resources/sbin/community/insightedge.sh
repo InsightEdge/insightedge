@@ -423,10 +423,9 @@ describe_topology_allocation() {
         hosts="$hosts,host_$i"
     done
     echo "Allocated topology for $hosts_count hosts, topology $topology"
-    IE_PATH="/code/insightedge/insightedge-packager/target/contents-sbin.community"
-    instances=`java -cp "$IE_PATH/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$topology" "$hosts"`
-    for ins in $instances; do
-        echo $ins
+    instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$topology" "$hosts"`
+    for instance in $instances; do
+        echo $instance
     done
 }
 
