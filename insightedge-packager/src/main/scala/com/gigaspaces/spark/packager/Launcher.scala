@@ -52,14 +52,9 @@ object Launcher {
     }
 
     run("Adding integration scripts") {
-      copy(s"$resources/common-insightedge.sh", s"$output/sbin/common-insightedge.sh")
-      copy(s"$resources/insightedge-shell", s"$output/bin/insightedge-shell")
-      copy(s"$resources/insightedge-submit", s"$output/bin/insightedge-submit")
-      copy(s"$resources/insightedge-class", s"$output/bin/insightedge-class")
-      copy(s"$resources/shell-init.scala", s"$output/bin/shell-init.scala")
-      copy(s"$resources/shell-init.py", s"$output/bin/shell-init.py")
-      copy(s"$resources/insightedge-pyspark", s"$output/bin/insightedge-pyspark")
-      copy(s"$resources/insightedge-maven.sh", s"$output/sbin/insightedge-maven.sh")
+      copy(s"$resources/bin", s"$output/bin")
+      copy(s"$resources/sbin/common/", s"$output/sbin/")
+      copy(s"$resources/sbin/$edition/", s"$output/sbin/")
     }
 
     run("Adding examples") {
@@ -83,13 +78,9 @@ object Launcher {
       remove(s"$output/datagrid/tools/scala")
       remove(s"$output/datagrid/tools/xap-font.json")
     }
-    run("Adding Datagrid scripts") {
-      copy(s"$resources/$edition/", s"$output/sbin/")
-      copy(s"$resources/stop-datagrid-master.sh", s"$output/sbin/stop-datagrid-master.sh")
-    }
     if (edition.equals("community")) {
       run("Adding template space configuration (community only)") {
-        copy(s"$resources/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
+        copy(s"$resources/sbin/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
       }
       run("Adding geospatial jars to pu-common (community only)") {
         copy(s"$output/datagrid/lib/optional/spatial", s"$output/datagrid/lib/optional/pu-common")
@@ -100,16 +91,17 @@ object Launcher {
       untgz(zeppelin, s"$output/zeppelin", cutRootFolder = true)
     }
     run("Configuring Zeppelin") {
-      copy(s"$resources/zeppelin-site.xml", s"$output/zeppelin/conf/zeppelin-site.xml")
-      copy(s"$resources/zeppelin-env.sh", s"$output/zeppelin/conf/zeppelin-env.sh")
+      copy(s"$resources/zeppelin/config/zeppelin-site.xml", s"$output/zeppelin/conf/zeppelin-site.xml")
+      copy(s"$resources/zeppelin/config/zeppelin-env.sh", s"$output/zeppelin/conf/zeppelin-env.sh")
+      copy(s"$resources/zeppelin/config/zeppelin-env.cmd", s"$output/zeppelin/conf/zeppelin-env.cmd")
       remove(s"$output/zeppelin/interpreter/spark/dep")
     }
-    run("Adding Zeppelin scripts") {
-      copy(s"$resources/start-zeppelin.sh", s"$output/sbin/start-zeppelin.sh")
-      copy(s"$resources/stop-zeppelin.sh", s"$output/sbin/stop-zeppelin.sh")
-    }
     run("Adding Zeppelin notes") {
-      copy(s"$resources/zeppelin", s"$output/zeppelin/notebook")
+      copy(s"$resources/zeppelin/notes", s"$output/zeppelin/notebook")
+    }
+
+    run("Adding Hadoop winutils") {
+      unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$output/winutils", cutRootFolder = true)
     }
 
     run("Removing spark R integration") {
