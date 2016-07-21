@@ -18,7 +18,7 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 }
 
 
-String branchName = "$env.BRANCH_NAME"
+String branchName = "$env.BRANCH_NAME".toString()
 
 String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
 String zeppelinDefaultBranchName = "branch-0.6"
@@ -106,6 +106,25 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
         } finally {
             step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
         }
+
+        if (branchName.equals("master")) {
+            try {
+                stage 'Run long integration tests (community)'
+                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e"
+            } finally {
+                step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+            }
+
+            try {
+                stage 'Run long integration tests (premium)'
+                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium,only-long-running-test -e"
+            } finally {
+                step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
+            }
+        } else {
+            echo 'Skip long running integration tests'
+        }
+
     } finally {
         // if tests fail - unlock the lock anyway
         sh "tools/unlock.sh /tmp/integration-tests.lock \"$lockMessage\""

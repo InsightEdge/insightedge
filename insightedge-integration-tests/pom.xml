@@ -141,6 +141,28 @@
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>build-maven-install-libs-image</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <imageName>insightedge-tests-maven-install-libs:${project.version}</imageName>
+                            <dockerDirectory>
+                                ${main.basedir}/insightedge-integration-tests/src/test/resources/docker/maven-install-libs
+                            </dockerDirectory>
+                            <resources>
+                                <resource>
+                                    <targetPath>/</targetPath>
+                                    <directory>
+                                        ${main.basedir}/insightedge-packager/target/${dist.edition}
+                                    </directory>
+                                    <include>*.zip</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -180,10 +202,11 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <argLine>-Ddist.edition=${dist.edition}</argLine>
+                    <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version}</argLine>
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <junitxml>.</junitxml>
                     <filereports>scalatest.txt</filereports>
+                    <tagsToExclude>com.gigaspaces.spark.utils.LongRunningTest</tagsToExclude>
                 </configuration>
             </plugin>
         </plugins>
@@ -202,6 +225,43 @@
             <properties>
                 <dist.edition>premium</dist.edition>
             </properties>
+        </profile>
+
+        <profile>
+            <id>only-long-running-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.scalatest</groupId>
+                        <artifactId>scalatest-maven-plugin</artifactId>
+                        <configuration>
+                            <tagsToExclude>_</tagsToExclude> <!-- Workaround to reset previous value-->
+                            <tagsToInclude>com.gigaspaces.spark.utils.LongRunningTest</tagsToInclude>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <executions>
+                            <!--Images to build-->
+                            <execution>
+                                <id>build-maven-install-libs-image</id>
+                                <phase>pre-integration-test</phase>
+                            </execution>
+
+                            <!--Images to exclude -->
+                            <execution>
+                                <id>build-demo-mode-image</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>build-cluster-install-image</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <!-- Turns off execution if no profile is specified -->
