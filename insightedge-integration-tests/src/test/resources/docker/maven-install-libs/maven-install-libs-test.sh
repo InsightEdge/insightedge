@@ -36,10 +36,7 @@ java -version
 echo "-- Maven version"
 mvn --version
 echo "-- SBT version "
-sbt sbtVersion # it fails sometimes
-
-#TODO
-tree /opt/gigaspaces-insightedge/datagrid
+sbt sbtVersion # TODO it fails sometimes
 
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
