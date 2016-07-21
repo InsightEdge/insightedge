@@ -80,7 +80,7 @@ if "x%MODE%"=="xdemo" (
   rem add spark, datagrid and InsightEdge JARs to Zeppelin classpath
   call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS ";" "true"
   for %%d in (%INSIGHTEDGE_HOME%\lib\spark-assembly-*.jar) do (
-    set ZEPPELIN_CLASSPATH_OVERRIDES=!INSIGHTEDGE_JARS!%%d
+    @set ZEPPELIN_CLASSPATH_OVERRIDES=!INSIGHTEDGE_JARS!%%d
   )
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start zeppelin zeppelin\bin\zeppelin.cmd
   echo --- Zeppelin server can be accessed at http://127.0.0.1:8090
