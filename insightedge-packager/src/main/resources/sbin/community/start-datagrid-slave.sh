@@ -68,8 +68,8 @@ define_defaults() {
     IE_PATH=$EMPTY
     CLUSTER_MASTER=$EMPTY
     SPACE_NAME="insightedge-space"
-    TOPOLOGY="2,0"
-    INSTANCES="id=1;id=2"
+    TOPOLOGY=$EMPTY
+    INSTANCES=$EMPTY
     GRID_LOCATOR=$EMPTY
     GRID_GROUP="insightedge"
     GSC_SIZE="1G"
@@ -122,12 +122,12 @@ check_options() {
       display_usage
     fi
 
-    if [[ "$TOPOLOGY" != "$EMPTY"  && "$INSTANCES" == "$EMPTY" ]]; then
+    if [[ "$INSTANCES" == "$EMPTY" ]]; then
       echo "Error: --instances instances must be specified"
       display_usage
     fi
 
-    if [[ "$TOPOLOGY" == "$EMPTY"  && "$INSTANCES" != "$EMPTY" ]]; then
+    if [[ "$TOPOLOGY" == "$EMPTY" ]]; then
       echo "Error: --topology must be specified"
       display_usage
     fi
