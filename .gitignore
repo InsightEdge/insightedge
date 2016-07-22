@@ -50,6 +50,7 @@ target/
 #gigaspaces
 gigaspaces/*
 transaction.log
+xap/*
 =======
 ### Scala template
 *.class
