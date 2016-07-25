@@ -63,17 +63,6 @@
                 <groupId>org.gigaspaces</groupId>
                 <artifactId>xap-openspaces</artifactId>
                 <version>${xap.version}</version>
-                <exclusions>
-                    <!-- These dependencies do not get resolved by SBT builds (insightedge-examples) -->
-                    <exclusion>
-                        <groupId>javax.jms</groupId>
-                        <artifactId>jms</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.aopalliance</groupId>
-                        <artifactId>com.springsource.org.aopalliance</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.gigaspaces</groupId>
