@@ -33,7 +33,7 @@ mvn install:install-file \
  -Dpackaging=jar \
  -Dfile=${INSIGHTEDGE_HOME}/lib/gigaspaces-scala-${INSIGHTEDGE_VER}.jar
 
-# Install javax.jms and spring.aopalliance to local maven repo (fixes SBT builds)
+# Install spring.aopalliance to local maven repo (fixes SBT builds)
 mvn dependency:get \
  -Dartifact=org.aopalliance:com.springsource.org.aopalliance:1.0.0 \
  -DremoteRepositories=http://repository.springsource.com/maven/bundles/external/
