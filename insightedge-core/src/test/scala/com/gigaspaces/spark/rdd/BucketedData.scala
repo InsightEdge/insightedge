@@ -15,7 +15,6 @@ case class BucketedData(
 
                  @BeanProperty
                  @SpaceRouting
-                 @SpaceProperty(nullValue = "-1")
                  var routing: Long,
 
                  @BeanProperty

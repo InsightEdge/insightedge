@@ -16,7 +16,6 @@ case class SpatialData(
 
                         @BeanProperty
                         @SpaceRouting
-                        @SpaceProperty(nullValue = "-1")
                         var routing: Long,
 
                         @BeanProperty

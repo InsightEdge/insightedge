@@ -4,6 +4,7 @@ import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
 import com.gigaspaces.spark.implicits.basic._
 import com.gigaspaces.spark.utils.GigaSpaceConstants.DefaultSplitCount
 import com.gigaspaces.spark.utils._
+import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.JSpatialData
 import org.apache.spark.sql.insightedge.model.SpatialData
@@ -17,11 +18,10 @@ class GigaSpacesRDDSpec extends FlatSpec with GsConfig with GigaSpaces with Spar
     val rdd: RDD[Data] = sc.parallelize(dataSeq(1000))
     rdd.saveToGrid()
 
-    val dataCount = spaceProxy.count(new Data())
+    val dataCount = spaceProxy.readMultiple(dataQuery()).length
     assert(dataCount == 1000, "Data objects weren't written to the space")
     for (i <- 1 to 1000) {
-      val template = new Data(routing = i)
-      assert(spaceProxy.read(template).data == "data" + i, "Data objects weren't written to the space")
+      assert(spaceProxy.read(dataQuery(s"routing = $i")).data == "data" + i, "Data objects weren't written to the space")
     }
   }
 
