@@ -2,7 +2,8 @@ package com.gigaspaces.spark.fixture
 
 import com.gigaspaces.spark.model.BucketedGridModel
 import com.gigaspaces.spark.rdd.{BucketedData, Data, JBucketedData, JData}
-import com.gigaspaces.spark.utils.{GigaSpaceConstants, GigaSpaceFactory, GigaSpaceUtils}
+import com.gigaspaces.spark.utils.{GigaSpaceConstants, GigaSpaceFactory}
+import com.j_spaces.core.client.SQLQuery
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.spark.SparkContext
 import org.openspaces.core.GigaSpace
@@ -54,7 +55,7 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
 
   def writeJDataSeqToDataGrid(count: Int): Unit = writeDataSeqToDataGrid(jDataSeq(count))
 
-  def parallelizeJavaSeq[T : ClassTag](sc: SparkContext, createSeqFn: () => Seq[T]) = {
+  def parallelizeJavaSeq[T: ClassTag](sc: SparkContext, createSeqFn: () => Seq[T]) = {
     // our test java models are not Serializable
     // we cannot sc.parallelize() non serializable objects, so we create them on executor
     sc.parallelize(Seq(1)).flatMap(_ => createSeqFn())
@@ -71,6 +72,8 @@ trait GigaSpaces extends BeforeAndAfterAll with BeforeAndAfterEach {
     data.metaBucketId = Random.nextInt(GigaSpaceConstants.BucketsCount)
     data
   }
+
+  def dataQuery(query: String = "", params: Seq[Object] = Seq()): SQLQuery[Data] = new SQLQuery[Data](classOf[Data], query, params.toArray)
 
   def randomString() = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
 
