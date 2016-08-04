@@ -1,5 +1,6 @@
 package com.gigaspaces.spark.model
 
+import com.gigaspaces.metadata.index.SpaceIndexType
 import com.gigaspaces.scala.annotation._
 
 import scala.beans.BeanProperty
@@ -12,6 +13,6 @@ import scala.beans.BeanProperty
  */
 trait BucketedGridModel {
   @BeanProperty
-  @SpaceIndex
+  @SpaceIndex(`type` = SpaceIndexType.EXTENDED)
   var metaBucketId: Integer = null
 }

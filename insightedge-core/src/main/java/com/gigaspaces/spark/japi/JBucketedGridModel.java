@@ -1,6 +1,7 @@
 package com.gigaspaces.spark.japi;
 
 import com.gigaspaces.annotation.pojo.SpaceIndex;
+import com.gigaspaces.metadata.index.SpaceIndexType;
 import com.gigaspaces.spark.model.BucketedGridModel;
 
 import java.io.Serializable;
@@ -18,7 +19,7 @@ public class JBucketedGridModel implements BucketedGridModel, Serializable {
         return metaBucketId;
     }
 
-    @SpaceIndex
+    @SpaceIndex(type = SpaceIndexType.EXTENDED)
     public Integer getMetaBucketId() {
         return metaBucketId;
     }
