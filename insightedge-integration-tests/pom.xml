@@ -7,7 +7,7 @@
     <description>InsightEdge Integration Tests</description>
 
     <parent>
-        <groupId>com.gigaspaces.insightedge</groupId>
+        <groupId>org.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
         <version>1.0.0</version>
     </parent>
@@ -19,7 +19,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.gigaspaces.insightedge</groupId>
+            <groupId>org.gigaspaces.insightedge</groupId>
             <artifactId>insightedge-packager</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -206,7 +206,7 @@
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <junitxml>.</junitxml>
                     <filereports>scalatest.txt</filereports>
-                    <tagsToExclude>com.gigaspaces.spark.utils.LongRunningTest</tagsToExclude>
+                    <tagsToExclude>org.insightedge.spark.utils.LongRunningTest</tagsToExclude>
                 </configuration>
             </plugin>
         </plugins>
@@ -236,7 +236,7 @@
                         <artifactId>scalatest-maven-plugin</artifactId>
                         <configuration>
                             <tagsToExclude>_</tagsToExclude> <!-- Workaround to reset previous value-->
-                            <tagsToInclude>com.gigaspaces.spark.utils.LongRunningTest</tagsToInclude>
+                            <tagsToInclude>org.insightedge.spark.utils.LongRunningTest</tagsToInclude>
                         </configuration>
                     </plugin>
                     <plugin>

@@ -1,18 +1,19 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.document.SpaceDocument
-import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import com.gigaspaces.spark.implicits.all._
-import com.gigaspaces.spark.utils._
 import com.j_spaces.core.client.SQLQuery
-import org.apache.spark.sql.{Row, DataFrame}
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}
+import org.insightedge.spark.fixture.{InsightEdge, IEConfig, Spark}
+import org.insightedge.spark.implicits
+import org.insightedge.spark.implicits.all._
+import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.openspaces.spatial.ShapeFactory._
-import org.openspaces.spatial.shapes.{Rectangle, Circle, Point}
+import org.openspaces.spatial.shapes.{Circle, Point, Rectangle}
 import org.scalatest.FlatSpec
 
-class DataFrameSpatialSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
+class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with Spark {
 
   it should "find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in {
     val searchedCircle = circle(point(0, 0), 1.0)

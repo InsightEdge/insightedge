@@ -398,9 +398,9 @@ start_grid_master() {
     local size=$4
 
     echo ""
-    step_title "--- Starting Gigaspaces datagrid management node (locator: $locator, group: $group, heap: $size)"
+    step_title "--- Starting datagrid management node (locator: $locator, group: $group, heap: $size)"
     $home/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
-    step_title "--- Gigaspaces datagrid management node started"
+    step_title "--- Datagrid management node started"
 }
 
 stop_grid_master() {
@@ -421,9 +421,9 @@ start_grid_slave() {
     local size=$6
 
     echo ""
-    step_title "--- Starting Gigaspaces datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
+    step_title "--- Starting datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
     $home/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
-    step_title "--- Gigaspaces datagrid node started"
+    step_title "--- Datagrid node started"
 }
 
 stop_grid_slave() {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Stops the Gigaspaces Datagrid slave on the machine this script is executed on.
+# Stops the Datagrid slave on the machine this script is executed on.
 
 main() {
     pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`

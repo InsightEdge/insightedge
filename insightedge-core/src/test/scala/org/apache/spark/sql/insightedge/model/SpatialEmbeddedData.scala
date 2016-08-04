@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge.model
 
-import com.gigaspaces.scala.annotation._
-import com.gigaspaces.spark.model.BucketedGridModel
+import org.insightedge.spark.annotation
+import annotation._
 import org.openspaces.spatial.shapes.Point
 
 import scala.beans.BeanProperty

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Deploys the Gigaspaces Datagrid space on specified cluster.
+# Deploys the Datagrid space on specified cluster.
 
 if [ -z "${INSIGHTEDGE_HOME}" ]; then
   export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"

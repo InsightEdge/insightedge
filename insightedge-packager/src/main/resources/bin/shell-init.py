@@ -45,9 +45,9 @@ if os.environ.get("SPARK_EXECUTOR_URI"):
 
 # InsightEdge configuration
 conf = SparkConf()
-conf.set("spark.gigaspaces.space.name", "insightedge-space")
-conf.set("spark.gigaspaces.space.lookup.group", "insightedge")
-conf.set("spark.gigaspaces.space.lookup.locator", "127.0.0.1:4174")
+conf.set("spark.insightedge.space.name", "insightedge-space")
+conf.set("spark.insightedge.space.lookup.group", "insightedge")
+conf.set("spark.insightedge.space.lookup.locator", "127.0.0.1:4174")
 
 sc = SparkContext(pyFiles=add_files, conf=conf)
 atexit.register(lambda: sc.stop())

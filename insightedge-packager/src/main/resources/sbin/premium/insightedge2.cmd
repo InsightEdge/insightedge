@@ -55,17 +55,17 @@ if "x%MODE%"=="xdemo" (
   echo --- Stopping Datagrid master
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-master
   echo --- Datagrid master stopped
-  echo --- Starting Gigaspaces datagrid management node ^(locator: 127.0.0.1:4174, group: insightedge^)
+  echo --- Starting datagrid management node ^(locator: 127.0.0.1:4174, group: insightedge^)
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-master datagrid\bin\gs-agent.bat gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1
-  echo --- Gigaspaces datagrid management node started
+  echo --- Datagrid management node started
   
   echo.
   echo --- Stopping Datagrid slave
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-slave
   echo --- Datagrid slave stopped
-  echo --- Starting Gigaspaces datagrid node ^(locator: 127.0.0.1:4174, group: insightedge, containers: 2^)
+  echo --- Starting datagrid node ^(locator: 127.0.0.1:4174, group: insightedge, containers: 2^)
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-slave datagrid\bin\gs-agent.bat gsa.gsc 2 gsa.global.gsm 0 gsa.global.lus 0
-  echo --- Gigaspaces datagrid node started
+  echo --- Datagrid node started
   
   echo.
   echo --- Deploying space: insightedge-space [2,0]  ^(locator: 127.0.0.1:4174, group: insightedge^)

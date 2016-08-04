@@ -2,7 +2,7 @@
 
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.gigaspaces.insightedge</groupId>
+    <groupId>org.gigaspaces.insightedge</groupId>
     <artifactId>insightedge-package</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
@@ -34,24 +34,18 @@
         <module>insightedge-core</module>
         <module>insightedge-packager</module>
         <module>insightedge-integration-tests</module>
-        <module>gigaspaces-scala</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <!-- our modules -->
             <dependency>
-                <groupId>com.gigaspaces.insightedge</groupId>
-                <artifactId>gigaspaces-scala</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.gigaspaces.insightedge</groupId>
+                <groupId>org.gigaspaces.insightedge</groupId>
                 <artifactId>insightedge-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.gigaspaces.insightedge</groupId>
+                <groupId>org.gigaspaces.insightedge</groupId>
                 <artifactId>insightedge-core</artifactId>
                 <type>test-jar</type>
                 <scope>test</scope>

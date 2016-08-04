@@ -1,7 +1,6 @@
 package org.apache.spark.sql.insightedge
 
-import org.apache.spark.sql.insightedge.relation.{GigaspacesAbstractRelation, SchemaInference}
-import org.apache.spark.sql.types.{Metadata, MetadataBuilder, StructType}
+import org.apache.spark.sql.types.{Metadata, MetadataBuilder}
 import org.apache.spark.sql.{DataFrame, DataFrameReader, DataFrameWriter}
 
 import scala.reflect._
@@ -11,7 +10,7 @@ import scala.reflect._
   */
 trait DataFrameImplicits {
 
-  val GigaSpacesFormat = "org.apache.spark.sql.insightedge"
+  val InsightEdgeFormat = "org.apache.spark.sql.insightedge"
 
   def gridOptions(): Map[String, String] = Map()
 
@@ -25,21 +24,21 @@ trait DataFrameImplicits {
 
   implicit class DataFrameReaderWrapper(val reader: DataFrameReader) {
     def grid = {
-      reader.format(GigaSpacesFormat)
+      reader.format(InsightEdgeFormat)
     }
 
     def loadClass[R: ClassTag]: DataFrame = {
-      reader.format(GigaSpacesFormat).option("class", classTag[R].runtimeClass.getName).load()
+      reader.format(InsightEdgeFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
   }
 
   implicit class DataFrameWriterWrapper(val writer: DataFrameWriter) {
     def grid(collection: String) = {
-      writer.format(GigaSpacesFormat).option("collection", collection)
+      writer.format(InsightEdgeFormat).option("collection", collection)
     }
 
     def grid = {
-      writer.format(GigaSpacesFormat)
+      writer.format(InsightEdgeFormat)
     }
   }
 

@@ -47,7 +47,7 @@ else
 fi
 
 ### smoke test
-$IE_HOME/bin/insightedge-submit --class com.gigaspaces.insightedge.examples.basic.SaveRdd --master spark://$MASTER_IP:7077 $IE_HOME/quickstart/scala/insightedge-examples.jar spark://$MASTER_IP:7077 insightedge-space insightedge $MASTER_IP:4174
+$IE_HOME/bin/insightedge-submit --class org.insightedge.examples.basic.SaveRdd --master spark://$MASTER_IP:7077 $IE_HOME/quickstart/scala/insightedge-examples.jar spark://$MASTER_IP:7077 insightedge-space insightedge $MASTER_IP:4174
 
 
 
