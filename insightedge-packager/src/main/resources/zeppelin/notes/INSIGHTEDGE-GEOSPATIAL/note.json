@@ -65,7 +65,7 @@
     },
     {
       "title": "Importing Data To Data Grid",
-      "text": "%spark\nimport model.v1._\nimport com.gigaspaces.spark.implicits.all._\nimport org.openspaces.spatial.ShapeFactory._\n\nval home \u003d scala.sys.env(\"INSIGHTEDGE_HOME\")\n\nval schoolsData \u003d sqlContext.read.json(s\"$home/data/montgomery_schools.json\")\nschoolsData.show()\n\nval schoolsRdd \u003d schoolsData.rdd.map(row \u003d\u003e new School(\n    id \u003d null,\n    row.getAs[String](\"name\"),\n    row.getAs[String](\"category\"),\n    row.getAs[String](\"city\"),\n    row.getAs[String](\"address\"),\n    row.getAs[String](\"phone\"),\n    point(row.getAs[Double](\"longitude\"), row.getAs[Double](\"latitude\"))\n))\n\nschoolsRdd.saveToGrid()",
+      "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.openspaces.spatial.ShapeFactory._\n\nval home \u003d scala.sys.env(\"INSIGHTEDGE_HOME\")\n\nval schoolsData \u003d sqlContext.read.json(s\"$home/data/montgomery_schools.json\")\nschoolsData.show()\n\nval schoolsRdd \u003d schoolsData.rdd.map(row \u003d\u003e new School(\n    id \u003d null,\n    row.getAs[String](\"name\"),\n    row.getAs[String](\"category\"),\n    row.getAs[String](\"city\"),\n    row.getAs[String](\"address\"),\n    row.getAs[String](\"phone\"),\n    point(row.getAs[Double](\"longitude\"), row.getAs[Double](\"latitude\"))\n))\n\nschoolsRdd.saveToGrid()",
       "dateUpdated": "Jul 5, 2016 11:01:17 AM",
       "config": {
         "colWidth": 12.0,

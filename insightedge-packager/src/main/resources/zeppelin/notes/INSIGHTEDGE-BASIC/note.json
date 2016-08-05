@@ -568,7 +568,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%md\n#### You can make code nicer with simplified syntax by adding `import com.gigaspaces.spark.implicits.all._`",
+      "text": "%md\n#### You can make code nicer with simplified syntax by adding `import org.insightedge.spark.implicits.all._`",
       "dateUpdated": "Apr 20, 2016 8:33:21 AM",
       "config": {
         "colWidth": 12.0,
@@ -594,7 +594,7 @@
       "result": {
         "code": "SUCCESS",
         "type": "HTML",
-        "msg": "\u003ch4\u003eYou can make code nicer with simplified syntax by adding \u003ccode\u003eimport com.gigaspaces.spark.implicits.all._\u003c/code\u003e\u003c/h4\u003e\n"
+        "msg": "\u003ch4\u003eYou can make code nicer with simplified syntax by adding \u003ccode\u003eimport org.insightedge.spark.implicits.all._\u003c/code\u003e\u003c/h4\u003e\n"
       },
       "dateCreated": "Apr 20, 2016 8:31:58 AM",
       "status": "READY",
