@@ -14,13 +14,22 @@ call mvn install:install-file ^
     -DpomFile=%INSIGHTEDGE_HOME%\tools\maven\poms\insightedge-package\pom.xml
 
 call mvn install:install-file ^
- -DgroupId=org.insightedge ^
+ -DgroupId=org.gigaspaces.insightedge ^
  -DcreateChecksum=true ^
  -DartifactId=insightedge-core ^
  -Dversion=%INSIGHTEDGE_VER% ^
  -DpomFile=%INSIGHTEDGE_HOME%\tools\maven\poms\insightedge-core\pom.xml ^
  -Dpackaging=jar ^
  -Dfile=%INSIGHTEDGE_HOME%\lib\insightedge-core-%INSIGHTEDGE_VER%.jar
+
+call mvn install:install-file ^
+ -DgroupId=org.gigaspaces.insightedge ^
+ -DcreateChecksum=true ^
+ -DartifactId=insightedge-scala ^
+ -Dversion=%INSIGHTEDGE_VER% ^
+ -DpomFile=%INSIGHTEDGE_HOME%\tools\maven\poms\insightedge-scala\pom.xml ^
+ -Dpackaging=jar ^
+ -Dfile=%INSIGHTEDGE_HOME%\lib\insightedge-scala-%INSIGHTEDGE_VER%.jar
 
 rem Install spring.aopalliance to local maven repo (fixes SBT builds)
 call mvn dependency:get ^

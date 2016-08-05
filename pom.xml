@@ -32,6 +32,7 @@
 
     <modules>
         <module>insightedge-core</module>
+        <module>insightedge-scala</module>
         <module>insightedge-packager</module>
         <module>insightedge-integration-tests</module>
     </modules>
@@ -39,6 +40,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- our modules -->
+            <dependency>
+                <groupId>org.gigaspaces.insightedge</groupId>
+                <artifactId>insightedge-scala</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.gigaspaces.insightedge</groupId>
                 <artifactId>insightedge-core</artifactId>

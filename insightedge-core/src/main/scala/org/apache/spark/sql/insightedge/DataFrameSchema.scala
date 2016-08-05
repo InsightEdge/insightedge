@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.metadata.StorageType
-import org.insightedge.spark.annotation
+import org.insightedge.scala.annotation
 import annotation._
 import org.apache.spark.sql.types.StructType
 

@@ -1,4 +1,4 @@
-package org.insightedge.spark
+package org.insightedge.scala
 
 object annotation {
 

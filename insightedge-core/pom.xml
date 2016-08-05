@@ -13,6 +13,10 @@
     </parent>
 
     <dependencies>
+        <dependency>
+            <groupId>org.gigaspaces.insightedge</groupId>
+            <artifactId>insightedge-scala</artifactId>
+        </dependency>
         <!-- GigaSpaces -->
         <dependency>
             <groupId>org.gigaspaces</groupId>

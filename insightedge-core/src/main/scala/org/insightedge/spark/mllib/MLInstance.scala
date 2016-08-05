@@ -1,7 +1,7 @@
 package org.insightedge.spark.mllib
 
 import com.gigaspaces.metadata.StorageType
-import org.insightedge.spark.annotation
+import org.insightedge.scala.annotation
 import annotation._
 
 import scala.beans.BeanProperty

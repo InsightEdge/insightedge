@@ -1,7 +1,7 @@
 package org.insightedge.spark.model
 
 import com.gigaspaces.metadata.index.SpaceIndexType
-import org.insightedge.spark.annotation
+import org.insightedge.scala.annotation
 import annotation._
 
 import scala.beans.BeanProperty

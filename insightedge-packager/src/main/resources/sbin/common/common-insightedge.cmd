@@ -14,6 +14,7 @@ rem populates INSIGHTEDGE_JARS variable with a list of InsightEdge jars
   set USE_WILDCARDS=%~3
   set INSIGHTEDGE_JARS=
   for %%d in (%INSIGHTEDGE_HOME%\lib\insightedge-core-*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
+  for %%d in (%INSIGHTEDGE_HOME%\lib\insightedge-scala-*.jar) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
   if "%USE_WILDCARDS%"=="true" (
     set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\required\*%SEPARATOR%
     set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*%SEPARATOR%

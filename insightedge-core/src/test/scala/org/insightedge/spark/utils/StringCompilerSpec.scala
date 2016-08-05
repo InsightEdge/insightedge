@@ -92,7 +92,7 @@ class StringCompilerSpec extends FunSpec with BeforeAndAfterEach{
       """
         |package generated.code
         |
-        |import org.insightedge.spark.annotation._
+        |import org.insightedge.scala.annotation._
         |
         |import scala.beans.BeanProperty
         |

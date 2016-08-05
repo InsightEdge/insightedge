@@ -1,6 +1,6 @@
 package org.insightedge.spark.rdd
 
-import org.insightedge.spark.annotation
+import org.insightedge.scala.annotation
 import annotation._
 import org.insightedge.spark.model.BucketedGridModel
 

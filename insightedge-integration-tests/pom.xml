@@ -17,13 +17,15 @@
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.gigaspaces.insightedge</groupId>
+            <artifactId>insightedge-scala</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
             <artifactId>insightedge-packager</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <!-- Scala -->
         <dependency>
             <groupId>org.scala-lang</groupId>

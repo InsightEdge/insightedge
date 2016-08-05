@@ -1,6 +1,6 @@
 package org.apache.spark.sql.insightedge.model
 
-import org.insightedge.spark.annotation
+import org.insightedge.scala.annotation
 import annotation._
 
 import scala.beans.BeanProperty
