@@ -1,14 +1,15 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import org.apache.spark.sql.insightedge.relation.GigaspacesAbstractRelation
-import GigaspacesAbstractRelation.{filtersToSql, unsupportedFilters}
+import org.insightedge.spark.fixture.{InsightEdge, IEConfig}
+import org.apache.spark.sql.insightedge.relation.InsightEdgeAbstractRelation
+import InsightEdgeAbstractRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoWithin, GeoIntersects}
 import org.apache.spark.sql.sources._
+import org.insightedge.spark.fixture.Spark
 import org.openspaces.spatial.ShapeFactory.{circle, point}
 import org.scalatest.FunSpec
 
-class DataFrameRelationQuerySpec extends FunSpec with GsConfig with GigaSpaces with Spark {
+class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge with Spark {
 
   it("should handle simple filters") {
     val unhandled = unsupportedFilters(Array(

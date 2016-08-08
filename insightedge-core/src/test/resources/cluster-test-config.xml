@@ -14,7 +14,7 @@
 
   <os-events:annotation-support/>
 
-  <bean id="space-cluster" class="com.gigaspaces.TestCluster" init-method="init">
+  <bean id="space-cluster" class="org.insightedge.TestCluster" init-method="init">
     <property name="configPath" value="classpath:cluster-member-config.xml"/>
     <property name="schema" value="partitioned-sync2backup"/>
     <property name="numberOfInstances" value="2" />

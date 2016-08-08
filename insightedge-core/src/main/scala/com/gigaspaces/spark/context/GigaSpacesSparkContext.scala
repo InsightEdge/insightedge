@@ -1,26 +1,26 @@
-package com.gigaspaces.spark.context
+package org.insightedge.spark.context
 
-import com.gigaspaces.spark.mllib.MLInstance
-import com.gigaspaces.spark.model.BucketedGridModel
-import com.gigaspaces.spark.rdd.{GigaSpacesRDD, GigaSpacesSqlRDD}
-import com.gigaspaces.spark.utils.GigaSpaceConstants._
-import com.gigaspaces.spark.utils.{BucketIdSeq, GigaSpaceFactory}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
+import org.insightedge.spark.mllib.MLInstance
+import org.insightedge.spark.model.BucketedGridModel
+import org.insightedge.spark.rdd.{InsightEdgeRDD, InsightEdgeSqlRDD}
+import org.insightedge.spark.utils.InsightEdgeConstants._
+import org.insightedge.spark.utils.{BucketIdSeq, GridProxyFactory}
 
 import scala.reflect._
 import scala.util.Random
 
-class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializable {
+class InsightEdgeSparkContext(@transient val sc: SparkContext) extends Serializable {
 
   lazy val gridSqlContext = new SQLContext(sc)
 
-  val gsConfig = {
+  val ieConfig = {
     val sparkConf = sc.getConf
-    GigaSpacesConfig.fromSparkConf(sparkConf)
+    InsightEdgeConfig.fromSparkConf(sparkConf)
   }
 
-  def gigaSpace = GigaSpaceFactory.getOrCreateClustered(gsConfig)
+  def grid = GridProxyFactory.getOrCreateClustered(ieConfig)
 
   /**
     * Read dataset from GigaSpaces Data Grid.
@@ -28,10 +28,10 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @tparam R GigaSpaces space class
     * @param splitCount        only applicable for BucketedGridModel, number of spark partitions per datagrid partition, defaults to x4. For non-bucketed types this parameter is ignored.
     * @param readRddBufferSize buffer size of the underlying iterator that reads from the grid
-    * @return GigaSpaces RDD
+    * @return InsightEdge RDD
     */
-  def gridRdd[R : ClassTag](splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadBufferSize): GigaSpacesRDD[R] = {
-    new GigaSpacesRDD[R](gsConfig, sc, splitCount, readRddBufferSize)
+  def gridRdd[R: ClassTag](splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadBufferSize): InsightEdgeRDD[R] = {
+    new InsightEdgeRDD[R](ieConfig, sc, splitCount, readRddBufferSize)
   }
 
   /**
@@ -44,8 +44,8 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @tparam R GigaSpaces space class
     * @return
     */
-  def gridSql[R : ClassTag](sqlQuery: String, queryParams: Seq[Any] = Seq(), splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadBufferSize): GigaSpacesSqlRDD[R] = {
-    new GigaSpacesSqlRDD[R](gsConfig, sc, sqlQuery, queryParams, Seq.empty[String], splitCount, readRddBufferSize)
+  def gridSql[R: ClassTag](sqlQuery: String, queryParams: Seq[Any] = Seq(), splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadBufferSize): InsightEdgeSqlRDD[R] = {
+    new InsightEdgeSqlRDD[R](ieConfig, sc, sqlQuery, queryParams, Seq.empty[String], splitCount, readRddBufferSize)
   }
 
   /**
@@ -56,7 +56,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     * @return loaded instance
     */
   def loadMLInstance[R: ClassTag](name: String): Option[R] = {
-    val mlModel = gigaSpace.readById(classOf[MLInstance], name)
+    val mlModel = grid.readById(classOf[MLInstance], name)
     mlModel match {
       case MLInstance(id, instance: R) => Some(instance)
       case _ => None
@@ -75,7 +75,7 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
     if (classOf[BucketedGridModel].isAssignableFrom(classTag[R].runtimeClass)) {
       value.asInstanceOf[BucketedGridModel].metaBucketId = Random.nextInt(BucketsCount)
     }
-    gigaSpace.write(value)
+    grid.write(value)
   }
 
   /**
@@ -101,14 +101,14 @@ class GigaSpacesSparkContext(@transient val sc: SparkContext) extends Serializab
         }
       }
 
-      gigaSpace.writeMultiple(batchArray)
+      grid.writeMultiple(batchArray)
     }
   }
 
   /**
     * Stops internal Spark context and cleans all resources (connections to Data Grid, etc)
     */
-  def stopGigaSpacesContext() = {
+  def stopInsightEdgeContext() = {
     sc.stop()
   }
 

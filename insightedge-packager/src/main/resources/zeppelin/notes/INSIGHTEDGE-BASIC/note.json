@@ -68,7 +68,7 @@
     },
     {
       "title": "Product model",
-      "text": "%define\npackage model.v1\n\nimport com.gigaspaces.scala.annotation._\nimport scala.beans.{BeanProperty, BooleanBeanProperty}\n\ncase class Product(\n\n                    @BeanProperty\n                    @SpaceId\n                    var id: Long,\n\n                    @BeanProperty\n                    var description: String,\n\n                    @BeanProperty\n                    var quantity: Int,\n\n                    @BooleanBeanProperty\n                    var featuredProduct: Boolean\n\n                  ) {\n\n  def this() \u003d this(-1, null, -1, false)\n\n}",
+      "text": "%define\npackage model.v1\n\nimport org.insightedge.scala.annotation._\nimport scala.beans.{BeanProperty, BooleanBeanProperty}\n\ncase class Product(\n\n                    @BeanProperty\n                    @SpaceId\n                    var id: Long,\n\n                    @BeanProperty\n                    var description: String,\n\n                    @BeanProperty\n                    var quantity: Int,\n\n                    @BooleanBeanProperty\n                    var featuredProduct: Boolean\n\n                  ) {\n\n  def this() \u003d this(-1, null, -1, false)\n\n}",
       "dateUpdated": "Apr 25, 2016 6:12:20 AM",
       "config": {
         "colWidth": 12.0,
@@ -568,7 +568,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%md\n#### You can make code nicer with simplified syntax by adding `import com.gigaspaces.spark.implicits.all._`",
+      "text": "%md\n#### You can make code nicer with simplified syntax by adding `import org.insightedge.spark.implicits.all._`",
       "dateUpdated": "Apr 20, 2016 8:33:21 AM",
       "config": {
         "colWidth": 12.0,
@@ -594,7 +594,7 @@
       "result": {
         "code": "SUCCESS",
         "type": "HTML",
-        "msg": "\u003ch4\u003eYou can make code nicer with simplified syntax by adding \u003ccode\u003eimport com.gigaspaces.spark.implicits.all._\u003c/code\u003e\u003c/h4\u003e\n"
+        "msg": "\u003ch4\u003eYou can make code nicer with simplified syntax by adding \u003ccode\u003eimport org.insightedge.spark.implicits.all._\u003c/code\u003e\u003c/h4\u003e\n"
       },
       "dateCreated": "Apr 20, 2016 8:31:58 AM",
       "status": "READY",
