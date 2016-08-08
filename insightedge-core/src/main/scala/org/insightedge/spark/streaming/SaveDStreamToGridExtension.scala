@@ -1,8 +1,8 @@
 package org.insightedge.spark.streaming
 
+import org.apache.spark.streaming.dstream.DStream
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.utils.GridProxyFactory
-import org.apache.spark.streaming.dstream.DStream
 
 import scala.reflect.ClassTag
 
@@ -15,7 +15,7 @@ class SaveDStreamToGridExtension[T: ClassTag](@transient dStream: DStream[T]) ex
 
   /**
     * Saves DStream to Data Grid
- *
+    *
     * @param writeBatchSize batch size for grid write operations
     */
   def saveToGrid(writeBatchSize: Int = 1000) = {

@@ -5,7 +5,7 @@ import org.insightedge.spark.impl.InsightEdgePartition
 import org.openspaces.core.GigaSpace
 
 /**
- * Ensures single InsightEdge instance per JVM (Spark worker)
+ * Ensures single GigaSpaces instance per JVM (Spark worker)
  *
  * @author Oleksiy_Dyagilev
  */

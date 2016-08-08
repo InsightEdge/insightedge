@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Stops the space instances on the machine this script is executed on.
+# Stops the Gigaspaces space instances on the machine this script is executed on.
 
 main() {
     echo "Trying to stop space instances"

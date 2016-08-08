@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Stops the Datagrid master on the machine this script is executed on.
+# Stops the Gigaspaces Datagrid master on the machine this script is executed on.
 
 main() {
     pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`

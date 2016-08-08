@@ -23,9 +23,9 @@ class InsightEdgeSparkContext(@transient val sc: SparkContext) extends Serializa
   def grid = GridProxyFactory.getOrCreateClustered(ieConfig)
 
   /**
-    * Read dataset from InsightEdge Data Grid.
+    * Read dataset from GigaSpaces Data Grid.
     *
-    * @tparam R InsightEdge space class
+    * @tparam R GigaSpaces space class
     * @param splitCount        only applicable for BucketedGridModel, number of spark partitions per datagrid partition, defaults to x4. For non-bucketed types this parameter is ignored.
     * @param readRddBufferSize buffer size of the underlying iterator that reads from the grid
     * @return InsightEdge RDD
@@ -35,13 +35,13 @@ class InsightEdgeSparkContext(@transient val sc: SparkContext) extends Serializa
   }
 
   /**
-    * Read dataset from Data Grid with InsightEdge SQL query
+    * Read dataset from Data Grid with GigaSpaces SQL query
     *
     * @param sqlQuery          SQL query to be executed on Data Grid
     * @param queryParams       params for SQL quey
     * @param splitCount        only applicable for BucketedGridModel, number of spark partitions per datagrid partition, defaults to x4. For non-bucketed types this parameter is ignored.
     * @param readRddBufferSize buffer size of the underlying iterator that reads from the grid
-    * @tparam R InsightEdge space class
+    * @tparam R GigaSpaces space class
     * @return
     */
   def gridSql[R: ClassTag](sqlQuery: String, queryParams: Seq[Any] = Seq(), splitCount: Option[Int] = Some(DefaultSplitCount), readRddBufferSize: Int = DefaultReadBufferSize): InsightEdgeSqlRDD[R] = {

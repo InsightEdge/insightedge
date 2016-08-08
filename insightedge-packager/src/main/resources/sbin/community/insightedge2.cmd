@@ -55,19 +55,19 @@ if "x%MODE%"=="xdemo" (
   echo --- Stopping Datagrid master
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-master
   echo --- Datagrid master stopped
-  echo --- Starting datagrid management node ^(locator: 127.0.0.1:4174, group: insightedge^)
+  echo --- Starting Gigaspaces datagrid management node ^(locator: 127.0.0.1:4174, group: insightedge^)
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-master datagrid\bin\lookup-service.bat
-  echo --- Datagrid management node started
+  echo --- Gigaspaces datagrid management node started
 
   echo.
   echo --- Stopping Datagrid slave
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-slave1
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-slave2
   echo --- Datagrid slave stopped
-  echo --- Starting datagrid node ^(locator: 127.0.0.1:4174, group: insightedge, containers: 2^)
+  echo --- Starting Gigaspaces datagrid node ^(locator: 127.0.0.1:4174, group: insightedge, containers: 2^)
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-slave1 datagrid\bin\pu-instance.bat -path %INSIGHTEDGE_HOME%\datagrid\deploy\templates\insightedge-datagrid -cluster schema=partitioned-sync2backup total_members=2,0 id=1 -properties space embed://dataGridName=insightedge-space
   %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-slave2 datagrid\bin\pu-instance.bat -path %INSIGHTEDGE_HOME%\datagrid\deploy\templates\insightedge-datagrid -cluster schema=partitioned-sync2backup total_members=2,0 id=2 -properties space embed://dataGridName=insightedge-space
-  echo --- Datagrid node started
+  echo --- Gigaspaces datagrid node started
 
   echo.
   echo --- Stopping Zeppelin server

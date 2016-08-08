@@ -61,13 +61,13 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
   }
 
   /**
-    * Create InsightEdge Query
+    * Create GigaSpaces Query
     *
     * @param sqlQuery query statement
     * @param params   bounded parameters
     * @param fields   projected fields
     * @tparam T type of query
-    * @return InsightEdge sql query
+    * @return GigaSpaces sql query
     */
   protected def createInsightEdgeQuery[T: ClassTag](sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[T] = {
     val clazz = classTag[T].runtimeClass
@@ -80,13 +80,13 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
   }
 
   /**
-    * Create InsightEdge Query for SpaceDocuments
+    * Create GigaSpaces Query for SpaceDocuments
     *
     * @param typeName name of the documents type
     * @param sqlQuery query statement
     * @param params   bounded parameters
     * @param fields   projected fields
-    * @return InsightEdge sql query
+    * @return GigaSpaces sql query
     */
   protected def createDocumentInsightEdgeQuery(typeName: String, sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[SpaceDocument] = {
     val query = new SQLQuery[SpaceDocument](typeName, sqlQuery)
