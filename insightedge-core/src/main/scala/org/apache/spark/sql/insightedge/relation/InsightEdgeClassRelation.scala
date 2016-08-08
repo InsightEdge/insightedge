@@ -27,7 +27,7 @@ private[insightedge] case class InsightEdgeClassRelation(
   override def buildScan(query: String, params: Seq[Any], fields: Seq[String]): RDD[Row] = {
     val clazzName = clazz.runtimeClass.getName
 
-    val rdd = new InsightEdgeSqlRDD(gsConfig, sc, query, params, fields, options.splitCount, options.readBufferSize)(clazz)
+    val rdd = new InsightEdgeSqlRDD(ieConfig, sc, query, params, fields, options.splitCount, options.readBufferSize)(clazz)
 
     rdd.mapPartitions { data => InsightEdgeAbstractRelation.beansToRows(data, clazzName, schema, fields) }
   }

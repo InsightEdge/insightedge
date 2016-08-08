@@ -54,8 +54,8 @@ object implicits {
     }
 
     implicit class SparkConfExtension(sparkConf: SparkConf) {
-      def setInsightEdgeConfig(gsConfig: InsightEdgeConfig): SparkConf = {
-        gsConfig.populateSparkConf(sparkConf)
+      def setInsightEdgeConfig(ieConfig: InsightEdgeConfig): SparkConf = {
+        ieConfig.populateSparkConf(sparkConf)
         sparkConf
       }
     }

@@ -34,13 +34,13 @@ object InsightEdgeConfig {
     * instantiate `InsightEdgeConfig` from `SparkConf`
     */
   def fromSparkConf(sparkConf: SparkConf): InsightEdgeConfig = {
-    val gsConfig = for {
+    val ieConfig = for {
       spaceName <- sparkConf.getOption(SpaceNameKey)
       lookupGroups = sparkConf.getOption(LookupGroupKey)
       lookupLocator = sparkConf.getOption(LookupLocatorKey)
     } yield InsightEdgeConfig(spaceName, lookupGroups, lookupLocator)
 
-    gsConfig.getOrElse(throw new RuntimeException("Unable to read InsightEdgeConfig from SparkConf. Use sparkConf.setInsightEdgeConfig(gsConfig) to set config"))
+    ieConfig.getOrElse(throw new RuntimeException("Unable to read InsightEdgeConfig from SparkConf. Use sparkConf.setInsightEdgeConfig(ieConfig) to set config"))
   }
 
 

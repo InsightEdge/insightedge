@@ -20,11 +20,11 @@ class SaveDStreamToGridExtension[T: ClassTag](@transient dStream: DStream[T]) ex
     */
   def saveToGrid(writeBatchSize: Int = 1000) = {
     val sparkConfig = dStream.context.sparkContext.getConf
-    val gsConfig = InsightEdgeConfig.fromSparkConf(sparkConfig)
+    val ieConfig = InsightEdgeConfig.fromSparkConf(sparkConfig)
 
     dStream.foreachRDD { rdd =>
       rdd.foreachPartition { partitionOfRecords =>
-        val gridProxy = GridProxyFactory.getOrCreateClustered(gsConfig)
+        val gridProxy = GridProxyFactory.getOrCreateClustered(ieConfig)
         val batches = partitionOfRecords.grouped(writeBatchSize)
 
         batches.foreach { batch =>

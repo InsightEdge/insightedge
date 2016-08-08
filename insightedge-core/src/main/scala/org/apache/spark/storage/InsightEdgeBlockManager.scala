@@ -23,8 +23,8 @@ private[spark] class InsightEdgeBlockManager extends ExternalBlockManager with L
     super.init(blockManager, executorId)
     val sparkConf = blockManager.conf
 
-    val gsConfig = InsightEdgeConfig.fromSparkConf(sparkConf)
-    clusteredProxy = GridProxyFactory.getOrCreateClustered(gsConfig)
+    val ieConfig = InsightEdgeConfig.fromSparkConf(sparkConf)
+    clusteredProxy = GridProxyFactory.getOrCreateClustered(ieConfig)
 
     val appName = sparkConf.get(ExternalBlockStore.FOLD_NAME)
 

@@ -7,14 +7,14 @@ import org.insightedge.spark.context.InsightEdgeConfig
 import scala.reflect.ClassTag
 
 class InsightEdgeSqlRDD[R: ClassTag](
-                                     gsConfig: InsightEdgeConfig,
-                                     sc: SparkContext,
-                                     query: String,
-                                     queryParams: Seq[Any],
-                                     queryFields: Seq[String],
-                                     splitCount: Option[Int],
-                                     readRddBufferSize: Int
-                                   ) extends InsightEdgeAbstractRDD[R](gsConfig, sc, splitCount, readRddBufferSize) {
+                                      ieConfig: InsightEdgeConfig,
+                                      sc: SparkContext,
+                                      query: String,
+                                      queryParams: Seq[Any],
+                                      queryFields: Seq[String],
+                                      splitCount: Option[Int],
+                                      readRddBufferSize: Int
+                                   ) extends InsightEdgeAbstractRDD[R](ieConfig, sc, splitCount, readRddBufferSize) {
 
   @DeveloperApi
   override def compute(partition: Partition, context: TaskContext): Iterator[R] = {

@@ -6,14 +6,14 @@ import org.apache.spark.{Partition, SparkContext, TaskContext}
 import org.insightedge.spark.context.InsightEdgeConfig
 
 class InsightEdgeDocumentRDD(
-                             gsConfig: InsightEdgeConfig,
-                             sc: SparkContext,
-                             typeName: String,
-                             query: String,
-                             queryParams: Seq[Any],
-                             queryFields: Seq[String],
-                             readRddBufferSize: Int
-                           ) extends InsightEdgeAbstractRDD[SpaceDocument](gsConfig, sc, None, readRddBufferSize) {
+                              ieConfig: InsightEdgeConfig,
+                              sc: SparkContext,
+                              typeName: String,
+                              query: String,
+                              queryParams: Seq[Any],
+                              queryFields: Seq[String],
+                              readRddBufferSize: Int
+                           ) extends InsightEdgeAbstractRDD[SpaceDocument](ieConfig, sc, None, readRddBufferSize) {
 
   @DeveloperApi
   override def compute(split: Partition, context: TaskContext): Iterator[SpaceDocument] = {

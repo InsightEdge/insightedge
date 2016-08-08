@@ -18,35 +18,35 @@ import scala.reflect._
  */
 private[spark] object GridProxyUtils extends Logging {
 
-  def createSpace(gsConfig: InsightEdgeConfig): IJSpace = {
-    val spaceUri = s"jini://*/*/${gsConfig.spaceName}"
+  def createSpace(ieConfig: InsightEdgeConfig): IJSpace = {
+    val spaceUri = s"jini://*/*/${ieConfig.spaceName}"
     val urlSpaceConfigurer = new UrlSpaceConfigurer(spaceUri)
-    gsConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
-    gsConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
+    ieConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
+    ieConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
     urlSpaceConfigurer.space()
   }
 
-  def createGridProxy(gsConfig: InsightEdgeConfig): GigaSpace = {
+  def createGridProxy(ieConfig: InsightEdgeConfig): GigaSpace = {
     profileWithInfo("createClusteredProxy") {
-      new GigaSpaceConfigurer(this.createSpace(gsConfig)).create()
+      new GigaSpaceConfigurer(this.createSpace(ieConfig)).create()
     }
   }
 
-  def createDirectProxy(gsPartition: InsightEdgePartition, gsConfig: InsightEdgeConfig): GigaSpace = {
+  def createDirectProxy(gsPartition: InsightEdgePartition, ieConfig: InsightEdgeConfig): GigaSpace = {
     profileWithInfo("createDirectProxy") {
-      val spaceName = gsConfig.spaceName
+      val spaceName = ieConfig.spaceName
       val url = s"jini://*/${gsPartition.gridContainerName}/$spaceName"
       val urlSpaceConfigurer = new UrlSpaceConfigurer(url)
-      gsConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
-      gsConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
+      ieConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
+      ieConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
       new GigaSpaceConfigurer(urlSpaceConfigurer.space()).clustered(false).create()
     }
   }
 
 
-  def buildGridPartitions[R : ClassTag](gsConfig: InsightEdgeConfig, splitCount: Option[Int], supportsBuckets: Boolean): Seq[InsightEdgePartition] = {
+  def buildGridPartitions[R : ClassTag](ieConfig: InsightEdgeConfig, splitCount: Option[Int], supportsBuckets: Boolean): Seq[InsightEdgePartition] = {
     profileWithInfo("lookupInsightEdgePartitions") {
-      val gs = GridProxyFactory.getOrCreateClustered(gsConfig)
+      val gs = GridProxyFactory.getOrCreateClustered(ieConfig)
       val asyncResult = gs.execute(new LookupPartitionTask)
       val gsPartitions = asyncResult.get().map(_.toList).map {
         case List(hostName: String, containerName: String, id: String) => InsightEdgePartition(id.toInt, hostName, containerName)

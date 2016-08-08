@@ -90,7 +90,7 @@ private[insightedge] case class InsightEdgeDocumentRelation(
   override def buildScan(query: String, params: Seq[Any], fields: Seq[String]): RDD[Row] = {
     val clazzName = classOf[SpaceDocument].getName
 
-    val rdd = new InsightEdgeDocumentRDD(gsConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
+    val rdd = new InsightEdgeDocumentRDD(ieConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
 
     rdd.mapPartitions { data => InsightEdgeAbstractRelation.beansToRows(data, clazzName, schema, fields) }
   }

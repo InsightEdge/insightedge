@@ -14,10 +14,10 @@ import org.openspaces.core.{GigaSpace, IteratorBuilder}
 import scala.reflect._
 
 abstract class InsightEdgeAbstractRDD[R: ClassTag](
-                                                   gsConfig: InsightEdgeConfig,
-                                                   sc: SparkContext,
-                                                   splitCount: Option[Int],
-                                                   readRddBufferSize: Int
+                                                    ieConfig: InsightEdgeConfig,
+                                                    sc: SparkContext,
+                                                    splitCount: Option[Int],
+                                                    readRddBufferSize: Int
                                                  ) extends RDD[R](sc, deps = Nil) {
 
   /**
@@ -135,7 +135,7 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     */
   override protected def getPartitions: Array[Partition] = {
     profileWithInfo("getPartitions") {
-      val dataGridPartitions = GridProxyUtils.buildGridPartitions[R](gsConfig, splitCount, supportsBuckets())
+      val dataGridPartitions = GridProxyUtils.buildGridPartitions[R](ieConfig, splitCount, supportsBuckets())
       logInfo(s"Found data grid partitions $dataGridPartitions")
 
       dataGridPartitions.toArray
@@ -158,7 +158,7 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
   }
 
   protected def createDirectProxy(gsPartition: InsightEdgePartition): GigaSpace = {
-    GridProxyFactory.getOrCreateDirect(gsPartition, gsConfig)
+    GridProxyFactory.getOrCreateDirect(gsPartition, ieConfig)
   }
 
 

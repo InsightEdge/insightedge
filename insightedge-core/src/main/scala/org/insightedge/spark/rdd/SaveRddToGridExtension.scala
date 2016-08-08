@@ -16,7 +16,7 @@ class SaveRddToGridExtension[T: ClassTag](rdd: RDD[T]) extends Serializable {
 
   val DefaultWriteBatchSize = 1000
 
-  val gsConfig = {
+  val ieConfig = {
     val sparkConf = rdd.sparkContext.getConf
     InsightEdgeConfig.fromSparkConf(sparkConf)
   }
@@ -29,7 +29,7 @@ class SaveRddToGridExtension[T: ClassTag](rdd: RDD[T]) extends Serializable {
     val bucketIdSeq = new BucketIdSeq()
 
     rdd.foreachPartition { partition =>
-      val space = GridProxyFactory.getOrCreateClustered(gsConfig)
+      val space = GridProxyFactory.getOrCreateClustered(ieConfig)
       val batches = partition.grouped(saveBatchSize)
 
       batches.foreach { batch =>
