@@ -59,7 +59,7 @@ class InsightEdgeRDDFunctions[T: ClassTag](rdd: RDD[T]) extends Serializable {
     * @tparam U type of items SQL query executed on
     * @return a new RDD with the tuple (element, query result items)
     */
-  def zipWithGridSqlData[U: ClassTag](query: String, queryParamsConstructor: T => Seq[Any], projections: Option[Seq[String]]): RDD[(T, Seq[U])] = {
+  def zipWithGridSql[U: ClassTag](query: String, queryParamsConstructor: T => Seq[Any], projections: Option[Seq[String]]): RDD[(T, Seq[U])] = {
     rdd.mapPartitions { partition =>
       val space = GridProxyFactory.getOrCreateClustered(ieConfig)
       partition.map { item =>

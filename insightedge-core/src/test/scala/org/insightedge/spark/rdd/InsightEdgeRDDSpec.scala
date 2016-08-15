@@ -166,7 +166,7 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     val query = "string = ?"
     val params = (d: Data) => Seq(d.data)
     val projections = Some(Seq("string"))
-    val result = rdd.zipWithGridSqlData[GridString](query, params, projections)
+    val result = rdd.zipWithGridSql[GridString](query, params, projections)
     val resultArr = result.collect()
     assert(resultArr.length == rdd.count())
     resultArr.foreach { case (data, Seq(gridStr1, gridStr2)) =>
