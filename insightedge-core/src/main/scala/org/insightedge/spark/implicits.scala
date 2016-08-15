@@ -6,7 +6,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.insightedge.spark.context.{InsightEdgeConfig, InsightEdgeSparkContext}
 import org.insightedge.spark.ml.MLImplicits
 import org.insightedge.spark.mllib.MLlibImplicits
-import org.insightedge.spark.rdd.SaveRddToGridExtension
+import org.insightedge.spark.rdd.InsightEdgeRDDFunctions
 import org.insightedge.spark.streaming.StreamingImplicits
 import org.insightedge.spark.utils.LocalCache
 
@@ -49,8 +49,8 @@ object implicits {
       insightEdgeSparkContextCache.getOrElseUpdate(sc, new InsightEdgeSparkContext(sc))
     }
 
-    implicit def saveToDataGridExtension[R: ClassTag](rdd: RDD[R]): SaveRddToGridExtension[R] = {
-      new SaveRddToGridExtension[R](rdd)
+    implicit def saveToDataGridExtension[R: ClassTag](rdd: RDD[R]): InsightEdgeRDDFunctions[R] = {
+      new InsightEdgeRDDFunctions[R](rdd)
     }
 
     implicit class SparkConfExtension(sparkConf: SparkConf) {

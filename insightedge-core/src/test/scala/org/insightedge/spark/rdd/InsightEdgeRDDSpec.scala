@@ -157,4 +157,23 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     assert(sc.gridSql[JSpatialData]("point spatial:within ?", Seq(rectangle(1, 2, -1, 1))).count() == 0)
   }
 
+  it should "zip with Grid SQL Data" taggedAs ScalaSpaceClass in {
+    val rdd: RDD[Data] = sc.parallelize(dataSeq(1000))
+    rdd.cache()
+    rdd.saveToGrid()
+    rdd.flatMap(d => Seq(new GridString(d.data), new GridString(d.data))).saveToGrid()
+
+    val query = "string = ?"
+    val params = (d: Data) => Seq(d.data)
+    val projections = Some(Seq("data"))
+    val result = rdd.zipWithGridSqlData[GridString](query, params, projections)
+    val resultArr = result.collect()
+    assert(resultArr.length == rdd.count())
+    resultArr.foreach { case (data, Seq(gridStr1, gridStr2)) =>
+      assert(data.data == gridStr1.string)
+      assert(data.data == gridStr2.string)
+    }
+
+  }
+
 }
