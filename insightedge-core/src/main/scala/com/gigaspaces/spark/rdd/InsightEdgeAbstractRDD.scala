@@ -35,7 +35,7 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     val directProxy = createDirectProxy(gsPartition)
 
     val iterator = profileWithInfo("createIterator") {
-      new ProfilingIterator(new InsightEdgeQueryIterator[T](directProxy.iterator(dataGridQuery)))
+      new ProfilingIterator(new InsightEdgeQueryIterator[T](directProxy.iterator(dataGridQuery, readRddBufferSize)))
     }
 
     context.addTaskCompletionListener { _ =>
