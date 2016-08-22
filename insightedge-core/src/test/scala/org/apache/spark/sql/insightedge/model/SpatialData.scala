@@ -1,7 +1,7 @@
 package org.apache.spark.sql.insightedge.model
 
-import com.gigaspaces.scala.annotation._
-import com.gigaspaces.spark.model.BucketedGridModel
+import org.insightedge.scala.annotation
+import annotation._
 import org.openspaces.spatial.shapes.{Circle, Point, Rectangle}
 
 import scala.beans.BeanProperty
@@ -16,7 +16,6 @@ case class SpatialData(
 
                         @BeanProperty
                         @SpaceRouting
-                        @SpaceProperty(nullValue = "-1")
                         var routing: Long,
 
                         @BeanProperty

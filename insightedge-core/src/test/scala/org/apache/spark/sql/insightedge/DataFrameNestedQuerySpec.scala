@@ -1,14 +1,14 @@
 package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.document.{DocumentProperties, SpaceDocument}
-import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import com.gigaspaces.spark.implicits.all._
-import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.insightedge.model.{Address, Person}
+import org.insightedge.spark.fixture.{InsightEdge, IEConfig, Spark}
+import org.insightedge.spark.implicits.all._
+import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.FlatSpec
 
-class DataFrameNestedQuerySpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
+class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge with Spark {
 
   it should "support nested properties" taggedAs ScalaSpaceClass in {
     sc.parallelize(Seq(

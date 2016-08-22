@@ -109,7 +109,7 @@ display_usage() {
     echo "        on slave |  installs insightedge to home folder"
     echo ""
     echo " $script --mode remote-slave --hosts 10.0.0.2 \\"
-    echo "   --user insightedge --key ~/.shh/dev-env.pem \\"
+    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
     echo "   --install --path ~/$ARTIFACT --master 10.0.0.1"
     echo ""
     echo " Cluster restart |  connects to cluster members via ssh"
@@ -119,10 +119,10 @@ display_usage() {
     echo " SLAVES=10.0.0.2,10.0.0.3,10.0.0.4"
     echo " IEPATH=~/$ARTIFACT"
     echo " $script --mode remote-master --hosts \$MASTER \\"
-    echo "   --user insightedge --key ~/.shh/dev-env.pem \\"
+    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
     echo "   --path \$IEPATH --master \$MASTER --group dev-env --size 2G"
     echo " $script --mode remote-slave --hosts \$SLAVES \\"
-    echo "   --user insightedge --key ~/.shh/dev-env.pem \\"
+    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
     echo "   --path \$IEPATH --master \$MASTER --group dev-env --size 2G --container 4"
     echo ""
     echo "  Show grid topology allocation for specified topology"
@@ -295,7 +295,7 @@ local_slave() {
     local instances=${11}
 
     if [[ -z $instances ]]; then
-        instances=`java -cp "$home/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$topology" ""`
+        instances=`java -cp "$home/lib/*" org.insightedge.spark.utils.GridTopologyAllocator "$topology" ""`
         if [[ $instances == ERROR* ]]; then
             error_line "$instances"
             exit 1
@@ -333,7 +333,7 @@ remote_slave() {
     local user=$2
     local key=$3
 
-    hosts_to_instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$SPACE_TOPOLOGY" "$hosts"`
+    hosts_to_instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" org.insightedge.spark.utils.GridTopologyAllocator "$SPACE_TOPOLOGY" "$hosts"`
     if [[ $hosts_to_instances == ERROR* ]]; then
         error_line "$hosts_to_instances"
         exit 1
@@ -423,7 +423,7 @@ describe_topology_allocation() {
         hosts="$hosts,host_$i"
     done
     echo "Allocated topology for $hosts_count hosts, topology $topology"
-    instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" com.gigaspaces.spark.utils.GridTopologyAllocator "$topology" "$hosts"`
+    instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" org.insightedge.spark.utils.GridTopologyAllocator "$topology" "$hosts"`
     for instance in $instances; do
         echo $instance
     done

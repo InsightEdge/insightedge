@@ -1,10 +1,10 @@
-package com.gigaspaces.spark.packager
+package org.insightedge.spark.packager
 
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-import com.gigaspaces.spark.packager.Utils._
+import org.insightedge.spark.packager.Utils._
 import org.apache.commons.io.filefilter.TrueFileFilter
 
 /**
@@ -42,13 +42,13 @@ object Launcher {
 
     run("Adding integration libs") {
       copy(s"$project/insightedge-core/target", s"$output/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
-      copy(s"$project/gigaspaces-scala/target", s"$output/lib", nameFilter(n => n.startsWith("gigaspaces-scala") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
+      copy(s"$project/insightedge-scala/target", s"$output/lib", nameFilter(n => n.startsWith("insightedge-scala") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
     }
 
     run("Adding poms of integration libs") {
       copy(s"$project/pom.xml", s"$output/tools/maven/poms/insightedge-package/pom.xml")
       copy(s"$project/insightedge-core/pom.xml", s"$output/tools/maven/poms/insightedge-core/pom.xml")
-      copy(s"$project/gigaspaces-scala/pom.xml", s"$output/tools/maven/poms/gigaspaces-scala/pom.xml")
+      copy(s"$project/insightedge-scala/pom.xml", s"$output/tools/maven/poms/insightedge-scala/pom.xml")
     }
 
     run("Adding integration scripts") {
@@ -65,10 +65,10 @@ object Launcher {
       copy(s"$resources/data/", s"$output/data")
     }
 
-    run("Unpacking Gigaspaces datagrid") {
+    run("Unpacking datagrid") {
       unzip(grid, s"$output/datagrid", cutRootFolder = true)
     }
-    run("Removing Gigaspaces datagrid folders") {
+    run("Removing datagrid folders") {
       remove(s"$output/datagrid/docs")
       remove(s"$output/datagrid/examples")
       remove(s"$output/datagrid/tools/alert-integration")

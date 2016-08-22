@@ -2,7 +2,8 @@ package org.apache.spark.sql.insightedge.relation
 
 import java.beans.Introspector
 
-import com.gigaspaces.spark.implicits.dataframe._
+import org.insightedge.spark.implicits
+import implicits.dataframe._
 import com.google.common.reflect.TypeToken
 import org.apache.spark.sql.catalyst.ScalaReflectionLock
 import org.apache.spark.sql.types._

@@ -21,7 +21,7 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 String branchName = "$env.BRANCH_NAME".toString()
 
 String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
-String zeppelinDefaultBranchName = "branch-0.6"
+String zeppelinDefaultBranchName = "master"
 
 String examplesRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-examples.git"
 String examplesDefaultBranchName = "master"
@@ -74,8 +74,8 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     distributions = "-Ddist.spark=$env.SPARK_DIST"
     distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.6.1-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
-    premiumDist = "$distributions -Ddist.xap=/shared/xap/gigaspaces-xap-premium-12.0.0-ga-b16000.zip"
-    communityDist = "$distributions -Ddist.xap=/shared/xap/gigaspaces-xap-open-12.0.0-ga-b16000.zip"
+    premiumDist = "$distributions -Ddist.xap=$env.XAP_DIST_HOME/gigaspaces-xap-premium-12.0.0-ga-b16000.zip"
+    communityDist = "$distributions -Ddist.xap=$env.XAP_DIST_HOME/gigaspaces-xap-open-12.0.0-ga-b16000.zip"
     sh "mvn package -pl insightedge-packager -P package-premium   -DskipTests=true $premiumDist   -Dlast.commit.hash=$commitHash"
     sh "mvn package -pl insightedge-packager -P package-community -DskipTests=true $communityDist -Dlast.commit.hash=$commitHash"
 
@@ -107,7 +107,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
             step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
         }
 
-        if (branchName.equals("master")) {
+        if (branchName.equals("master") || branchName.startsWith("branch-")) {
             try {
                 stage 'Run long integration tests (community)'
                 sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e"

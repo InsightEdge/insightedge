@@ -2,20 +2,23 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
-import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import com.gigaspaces.spark.implicits.all._
-import com.gigaspaces.spark.rdd.{BucketedData, Data, JBucketedData, JData}
-import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
+import org.insightedge.spark.fixture.{InsightEdge, IEConfig}
+import org.insightedge.spark.implicits.all._
+import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData}
+import org.insightedge.spark.utils.JavaSpaceClass
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.insightedge.model.Address
 import org.apache.spark.sql.types._
+import org.insightedge.spark.fixture.Spark
+import org.insightedge.spark.rdd.JData
+import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.FlatSpec
 
 import scala.collection.JavaConversions._
 
-class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
+class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with Spark {
 
-  it should "create dataframe with gigaspaces format" taggedAs ScalaSpaceClass in {
+  it should "create dataframe with insightedge format" taggedAs ScalaSpaceClass in {
     writeDataSeqToDataGrid(1000)
 
     val df = sql.read
@@ -26,7 +29,7 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
-  it should "create dataframe with gigaspaces format [java]" taggedAs JavaSpaceClass in {
+  it should "create dataframe with insightedge format [java]" taggedAs JavaSpaceClass in {
     writeJDataSeqToDataGrid(1000)
 
     val df = sql.read
@@ -37,7 +40,7 @@ class DataFrameCreateSpec extends FlatSpec with GsConfig with GigaSpaces with Sp
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
-  it should "fail to create dataframe with gigaspaces format without class or collection provided" taggedAs ScalaSpaceClass in {
+  it should "fail to create dataframe with insightedge format without class or collection provided" taggedAs ScalaSpaceClass in {
     val thrown = intercept[IllegalArgumentException] {
       val df = sql.read
         .format("org.apache.spark.sql.insightedge")

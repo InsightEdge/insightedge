@@ -1,15 +1,13 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.model.BucketedGridModel
-import com.gigaspaces.spark.utils.GigaSpaceConstants
-import com.gigaspaces.spark.utils.GigaSpaceConstants._
 import org.apache.spark.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
-import org.apache.spark.sql.insightedge.relation.{GigaspacesAbstractRelation, GigaspacesClassRelation, GigaspacesDocumentRelation}
+import org.apache.spark.sql.insightedge.relation.{InsightEdgeAbstractRelation, InsightEdgeClassRelation, InsightEdgeDocumentRelation}
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 import org.apache.spark.util.Utils
+import org.insightedge.spark.utils.InsightEdgeConstants._
 
 import scala.reflect._
 
@@ -39,7 +37,7 @@ class DefaultSource
   private def buildRelation(sqlContext: SQLContext,
                             parameters: Map[String, String],
                             schema: Option[StructType] = None
-                           ): GigaspacesAbstractRelation = synchronized {
+                           ): InsightEdgeAbstractRelation = synchronized {
     if (!sqlContext.experimental.extraStrategies.contains(InsightEdgeSourceStrategy)) {
       sqlContext.experimental.extraStrategies = InsightEdgeSourceStrategy +: sqlContext.experimental.extraStrategies
     }
@@ -50,10 +48,10 @@ class DefaultSource
 
     if (parameters.contains(InsightEdgeClassProperty)) {
       val tag = loadClass(parameters(InsightEdgeClassProperty)).asInstanceOf[ClassTag[AnyRef]]
-      new GigaspacesClassRelation(sqlContext, tag, options)
+      new InsightEdgeClassRelation(sqlContext, tag, options)
     } else if (parameters.contains(InsightEdgeCollectionProperty) || parameters.contains("path")) {
       val collection = parameters.getOrElse(InsightEdgeCollectionProperty, parameters("path"))
-      new GigaspacesDocumentRelation(sqlContext, collection, options)
+      new InsightEdgeDocumentRelation(sqlContext, collection, options)
 
     } else {
       throw new IllegalArgumentException("'path', 'collection' or 'class' must be specified")

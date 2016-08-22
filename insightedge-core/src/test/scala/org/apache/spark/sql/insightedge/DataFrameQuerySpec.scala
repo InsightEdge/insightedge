@@ -1,14 +1,13 @@
 package org.apache.spark.sql.insightedge
 
-import com.gigaspaces.spark.fixture.{GigaSpaces, GsConfig, Spark}
-import com.gigaspaces.spark.implicits.all._
-import com.gigaspaces.spark.rdd.{Data, JData}
-import com.gigaspaces.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.apache.spark.sql.AnalysisException
-import org.apache.spark.sql.insightedge.model.NotGridModel
+import org.insightedge.spark.fixture.{InsightEdge, IEConfig, Spark}
+import org.insightedge.spark.implicits.all._
+import org.insightedge.spark.rdd.{Data, JData}
+import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.FlatSpec
 
-class DataFrameQuerySpec extends FlatSpec with GsConfig with GigaSpaces with Spark {
+class DataFrameQuerySpec extends FlatSpec with IEConfig with InsightEdge with Spark {
 
   it should "read empty classes" taggedAs ScalaSpaceClass in {
     sql.sql(
