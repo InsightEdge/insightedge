@@ -21,7 +21,7 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 String branchName = "$env.BRANCH_NAME".toString()
 
 String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
-String zeppelinDefaultBranchName = "branch-0.6"
+String zeppelinDefaultBranchName = "master"
 
 String examplesRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-examples.git"
 String examplesDefaultBranchName = "master"
@@ -107,7 +107,7 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
             step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
         }
 
-        if (branchName.equals("master")) {
+        if (branchName.equals("master") || branchName.startsWith("branch-")) {
             try {
                 stage 'Run long integration tests (community)'
                 sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e"
