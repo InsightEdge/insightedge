@@ -1,6 +1,5 @@
 package org.insightedge.spark.rdd
 
-import com.gigaspaces.client.iterator.IteratorScope
 import com.gigaspaces.document.SpaceDocument
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
@@ -9,7 +8,7 @@ import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.impl.{InsightEdgePartition, InsightEdgeQueryIterator, ProfilingIterator}
 import org.insightedge.spark.model.BucketedGridModel
 import org.insightedge.spark.utils.{GridProxyFactory, GridProxyUtils, Profiler}
-import org.openspaces.core.{GigaSpace, IteratorBuilder}
+import org.openspaces.core.GigaSpace
 
 import scala.reflect._
 
@@ -35,13 +34,8 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
 
     val directProxy = createDirectProxy(gsPartition)
 
-    val iteratorBuilder = new IteratorBuilder(directProxy)
-      .addTemplate(dataGridQuery)
-      .bufferSize(readRddBufferSize)
-      .iteratorScope(IteratorScope.CURRENT)
-
     val iterator = profileWithInfo("createIterator") {
-      new ProfilingIterator(new InsightEdgeQueryIterator[T](iteratorBuilder.iterate()))
+      new ProfilingIterator(new InsightEdgeQueryIterator[T](directProxy.iterator(dataGridQuery, readRddBufferSize)))
     }
 
     context.addTaskCompletionListener { _ =>
