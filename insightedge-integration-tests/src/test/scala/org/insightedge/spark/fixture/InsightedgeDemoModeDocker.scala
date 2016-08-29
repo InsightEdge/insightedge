@@ -27,7 +27,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
   protected var containerId: String = _
   private val docker = DefaultDockerClient.fromEnv().build()
-  private var containerInfo: ContainerInfo = _
+  private var zeppelinMappedPort: String = _
 
   val wsClient = NingWSClient()
 
@@ -51,7 +51,10 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     // Start container
     docker.startContainer(containerId)
 
-    containerInfo = docker.inspectContainer(containerId)
+    val containerInfo = docker.inspectContainer(containerId)
+    val bindings = containerInfo.networkSettings().ports().get(ZeppelinPort + "/tcp")
+    val binding = bindings.asScala.head
+    zeppelinMappedPort = binding.hostPort()
 
     if (!awaitImageStarted()) {
       println("image start failed with timeout ... cleaning up")
@@ -75,10 +78,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   }
 
   def zeppelinUrl = {
-    val bindings = containerInfo.networkSettings().ports().get(ZeppelinPort + "/tcp")
-    val binding = bindings.asScala.head
-    val port = binding.hostPort()
-    s"http://127.0.0.1:$port"
+    s"http://127.0.0.1:$zeppelinMappedPort"
   }
 
   private def awaitImageStarted(): Boolean = {
