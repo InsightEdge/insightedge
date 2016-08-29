@@ -3,6 +3,7 @@ package org.insightedge.spark.cluster
 import java.io.File
 
 import org.insightedge.spark.utils.BuildUtils
+import org.insightedge.spark.utils.BuildUtils.BuildEdition
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.insightedge.spark.utils.ProcessUtils._
 import org.insightedge.spark.utils.FsUtils._
@@ -21,7 +22,7 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
     val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
 
     println(s"Package dir: $packagerDir")
-    val zipDir = s"$packagerDir/target/${BuildUtils.BuildEdition}"
+    val zipDir = s"$packagerDir/target/$BuildEdition"
     println(s"Zip dir: $zipDir")
 
     println(s"Scripts dir: $scriptsDir")
@@ -31,7 +32,7 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
     // run installation
-    execAssertSucc(s"$scriptsDir/run.sh $zipDir ${BuildUtils.BuildEdition}")
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir $BuildEdition")
   }
 
   after {
