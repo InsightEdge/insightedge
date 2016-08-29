@@ -12,7 +12,6 @@ import org.scalatest.FlatSpec
 class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   "insightedge-submit.sh " should "submit examples from insightedge-examples.jar" in {
-    val containerId = runningContainerId()
     val exampleClassNames = Seq(
       "basic.SaveRdd",
       "basic.LoadRdd",
@@ -37,7 +36,6 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
   }
 
   "insightedge-submit.sh " should "fail with wrong space name" in {
-    val containerId = runningContainerId()
     val spaceName = "non-existing-space"
     val command =
       s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
@@ -54,7 +52,6 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
   }
 
   "insightedge-submit.sh " should "submit sf_salaries.py python example" in {
-    val containerId = runningContainerId()
     val command =
       s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
           |--master spark://127.0.0.1:7077
