@@ -30,7 +30,7 @@ mvn clean package -P package-community -DskipTests=true -Ddist.spark=<path to sp
 mvn clean package -P package-premium   -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.zip>
 # you can also run both profiles at the same time using '-P package-community,package-premium'
 
-# run integration tests with Docker (depends on running Docker daemon tcp://127.0.0.1:2375 and built zip distribution file)
+# run integration tests with Docker (depends on built zip distribution file; on Mac export DOCKER_HOST=unix:///var/run/docker.sock)
 mvn clean verify -P run-integration-tests-community -pl insightedge-integration-tests
 mvn clean verify -P run-integration-tests-premium   -pl insightedge-integration-tests
 # you cannot run both profiles simultaneously
