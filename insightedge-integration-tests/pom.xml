@@ -52,11 +52,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Overcast used to run Docker image -->
         <dependency>
-            <groupId>com.xebialabs.cloud</groupId>
-            <artifactId>overcast</artifactId>
-            <version>2.4.0</version>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+            <version>3.5.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
