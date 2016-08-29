@@ -2,7 +2,8 @@ package org.insightedge.spark.fixture
 
 import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.messages.{ContainerConfig, ContainerInfo, HostConfig, PortBinding}
-import org.insightedge.spark.utils.Constants.BuildVersion
+import org.insightedge.spark.utils.BuildUtils
+import org.insightedge.spark.utils.BuildUtils.BuildVersion
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.libs.ws.ning.NingWSClient
 
@@ -22,10 +23,10 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
   private val DockerImageStartTimeout = 3.minutes
   private val ZeppelinPort = "8090"
-  private val ImageName = s"insightedge-tests-demo-mode:$BuildVersion"
+  private val ImageName = s"insightedge-tests-demo-mode:${BuildUtils.BuildVersion}"
 
-  private val docker = DefaultDockerClient.fromEnv().build()
   protected var containerId: String = _
+  private val docker = DefaultDockerClient.fromEnv().build()
   private var containerInfo: ContainerInfo = _
 
   val wsClient = NingWSClient()

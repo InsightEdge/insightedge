@@ -1,9 +1,10 @@
 package org.insightedge.spark.maven
 
 import java.io.File
+
 import org.insightedge.spark.utils.ProcessUtils._
 import org.insightedge.spark.utils.FsUtils._
-import org.insightedge.spark.utils.LongRunningTest
+import org.insightedge.spark.utils.{BuildUtils, LongRunningTest}
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
 /**
@@ -15,13 +16,11 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
 
   "maven-install-libs.sh" should "install libs into local maven repo" taggedAs LongRunningTest in {
     val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
-    val edition = Option(System.getProperty("dist.edition")).getOrElse("")
-    val version = Option(System.getProperty("dist.version")).getOrElse("")
     println(s"Package dir: $packagerDir")
-    println(s"Edition: $edition")
-    println(s"Version: $version")
+    println(s"Edition: ${BuildUtils.BuildEdition}")
+    println(s"Version: ${BuildUtils.BuildVersion}")
 
-    val zipDir = s"$packagerDir/target/$edition"
+    val zipDir = s"$packagerDir/target/${BuildUtils.BuildEdition}"
     println(s"Zip dir: $zipDir")
 
     println(s"Scripts dir: $scriptsDir")
@@ -30,7 +29,7 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
     // run installation
-    execAssertSucc(s"$scriptsDir/run.sh $zipDir $version")
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir ${BuildUtils.BuildVersion}")
   }
 
   after {
