@@ -26,7 +26,7 @@ class RectangleUDT extends UserDefinedType[Rectangle] with Serializable {
 
   override def userClass: Class[Rectangle] = classOf[Rectangle]
 
-  override def serialize(obj: Any): ArrayData = GeoUtils.pack(obj)
+  override def serialize(obj: Rectangle): ArrayData = GeoUtils.pack(obj)
 
   override def deserialize(datum: Any): Rectangle = GeoUtils.unpackXapRectangle(datum.asInstanceOf[ArrayData])
 
