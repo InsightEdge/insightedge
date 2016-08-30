@@ -26,7 +26,7 @@ class PolygonUDT extends UserDefinedType[Polygon] with Serializable {
 
   override def userClass: Class[Polygon] = classOf[Polygon]
 
-  override def serialize(obj: Any): ArrayData = GeoUtils.pack(obj)
+  override def serialize(obj: Polygon): ArrayData = GeoUtils.pack(obj)
 
   override def deserialize(datum: Any): Polygon = GeoUtils.unpackXapPolygon(datum.asInstanceOf[ArrayData])
 

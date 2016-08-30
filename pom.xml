@@ -9,9 +9,9 @@
     <description>InsightEdge Package</description>
 
     <properties>
-        <xap.version>12.1.0-m9-16708-358</xap.version>
-        <spark.version>1.6.0</spark.version>
-        <scala.version>2.10.4</scala.version>
+        <xap.version>12.0.0</xap.version>
+        <spark.version>2.0.0</spark.version>
+        <scala.version>2.11.8</scala.version>
         <scalatest.version>2.2.4</scalatest.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -89,11 +89,11 @@
             <!-- Spark -->
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-core_2.10</artifactId>
+                <artifactId>spark-core_2.11</artifactId>
                 <version>${spark.version}</version>
                 <exclusions>
                     <exclusion>
-                        <!-- make sure org.scala-lang:scalap:jar:2.10.0 is not pulled in -->
+                        <!-- make sure org.scala-lang:scalap:jar is not pulled in -->
                         <groupId>org.scala-lang</groupId>
                         <artifactId>scalap</artifactId>
                     </exclusion>
@@ -101,23 +101,23 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-sql_2.10</artifactId>
+                <artifactId>spark-sql_2.11</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-streaming_2.10</artifactId>
+                <artifactId>spark-streaming_2.11</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-mllib_2.10</artifactId>
+                <artifactId>spark-mllib_2.11</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <!-- Test dependencies -->
             <dependency>
                 <groupId>org.scalatest</groupId>
-                <artifactId>scalatest_2.10</artifactId>
+                <artifactId>scalatest_2.11</artifactId>
                 <version>${scalatest.version}</version>
                 <scope>test</scope>
                 <exclusions>

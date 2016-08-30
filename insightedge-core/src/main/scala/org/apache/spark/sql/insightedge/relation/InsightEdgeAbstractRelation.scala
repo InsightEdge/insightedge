@@ -20,6 +20,8 @@ import java.beans.Introspector
 import java.lang.reflect.Method
 
 import com.gigaspaces.document.{DocumentProperties, SpaceDocument}
+import org.apache.spark.SparkContext
+import org.apache.spark.internal.Logging
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.catalyst.expressions.AttributeReference
 import org.apache.spark.sql.insightedge.InsightEdgeSourceOptions
@@ -30,7 +32,6 @@ import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.{StructType, UserDefinedType}
 import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
 import org.apache.spark.util.Utils
-import org.apache.spark.{Logging, SparkContext}
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.implicits.basic._
 import org.openspaces.core.GigaSpace

@@ -20,6 +20,7 @@ import org.apache.spark.streaming.dstream.DStream
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.utils.GridProxyFactory
 
+import scala.annotation.meta.param
 import scala.reflect.ClassTag
 
 /**
@@ -27,6 +28,7 @@ import scala.reflect.ClassTag
   *
   * @author Oleksiy_Dyagilev
   */
+// compilation warning is due to https://issues.scala-lang.org/browse/SI-8813
 class SaveDStreamToGridExtension[T: ClassTag](@transient dStream: DStream[T]) extends Serializable {
 
   /**
