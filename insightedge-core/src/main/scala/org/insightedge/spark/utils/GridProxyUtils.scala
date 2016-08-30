@@ -3,7 +3,6 @@ package org.insightedge.spark.utils
 import java.lang.Math._
 
 import com.j_spaces.core.IJSpace
-import org.apache.spark.Logging
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.impl.InsightEdgePartition
 import org.insightedge.spark.utils.InsightEdgeConstants.{BucketsCount, DefaultSplitCount}
@@ -16,7 +15,7 @@ import scala.reflect._
 /**
  * @author Oleksiy_Dyagilev
  */
-private[spark] object GridProxyUtils extends Logging {
+private[spark] object GridProxyUtils {
 
   def createSpace(ieConfig: InsightEdgeConfig): IJSpace = {
     val spaceUri = s"jini://*/*/${ieConfig.spaceName}"
@@ -27,13 +26,13 @@ private[spark] object GridProxyUtils extends Logging {
   }
 
   def createGridProxy(ieConfig: InsightEdgeConfig): GigaSpace = {
-    profileWithInfo("createClusteredProxy") {
+    profileWithPrintln("createClusteredProxy") {
       new GigaSpaceConfigurer(this.createSpace(ieConfig)).create()
     }
   }
 
   def createDirectProxy(gsPartition: InsightEdgePartition, ieConfig: InsightEdgeConfig): GigaSpace = {
-    profileWithInfo("createDirectProxy") {
+    profileWithPrintln("createDirectProxy") {
       val spaceName = ieConfig.spaceName
       val url = s"jini://*/${gsPartition.gridContainerName}/$spaceName"
       val urlSpaceConfigurer = new UrlSpaceConfigurer(url)
@@ -45,7 +44,7 @@ private[spark] object GridProxyUtils extends Logging {
 
 
   def buildGridPartitions[R : ClassTag](ieConfig: InsightEdgeConfig, splitCount: Option[Int], supportsBuckets: Boolean): Seq[InsightEdgePartition] = {
-    profileWithInfo("lookupInsightEdgePartitions") {
+    profileWithPrintln("lookupInsightEdgePartitions") {
       val gs = GridProxyFactory.getOrCreateClustered(ieConfig)
       val asyncResult = gs.execute(new LookupPartitionTask)
       val gsPartitions = asyncResult.get().map(_.toList).map {
@@ -103,6 +102,6 @@ private[spark] object GridProxyUtils extends Logging {
     })
   }
 
-  private def profileWithInfo[T](message: String)(block: => T): T = Profiler.profile(message)(logInfo(_))(block)
+  private def profileWithPrintln[T](message: String)(block: => T): T = Profiler.profile(message)(println(_))(block)
 
 }

@@ -4,7 +4,7 @@ import com.spatial4j.core.context.SpatialContext
 import com.spatial4j.core.shape.{Shape => SpatialShape}
 import org.apache.lucene.spatial.query.SpatialOperation
 import org.apache.spark.sql.catalyst.expressions._
-import org.apache.spark.sql.catalyst.expressions.codegen.{CodeGenContext, GeneratedExpressionCode}
+import org.apache.spark.sql.catalyst.expressions.codegen.{CodegenContext, ExprCode}
 import org.apache.spark.sql.insightedge.udt.GeoUtils
 
 /**
@@ -24,7 +24,7 @@ abstract class GeoExpression(left: Expression, right: Expression) extends Binary
     operation.evaluate(firstShape, secondShape)
   }
 
-  override def genCode(ctx: CodeGenContext, ev: GeneratedExpressionCode): String = {
+  override def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
     val utilClass = GeoUtils.getClass.getName
     val contextClass = classOf[SpatialContext].getName
     val shapeClass = classOf[SpatialShape].getName

@@ -10,7 +10,7 @@ class CircleUDT extends UserDefinedType[Circle] with Serializable {
 
   override def userClass: Class[Circle] = classOf[Circle]
 
-  override def serialize(obj: Any): ArrayData = GeoUtils.pack(obj)
+  override def serialize(obj: Circle): ArrayData = GeoUtils.pack(obj)
 
   override def deserialize(datum: Any): Circle = GeoUtils.unpackXapCircle(datum.asInstanceOf[ArrayData])
 

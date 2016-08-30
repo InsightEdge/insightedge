@@ -1,6 +1,6 @@
 package org.apache.spark.sql.insightedge
 
-import org.apache.spark.Logging
+import org.apache.spark.internal.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
 import org.apache.spark.sql.insightedge.relation.{InsightEdgeAbstractRelation, InsightEdgeClassRelation, InsightEdgeDocumentRelation}
 import org.apache.spark.sql.sources._
@@ -48,10 +48,10 @@ class DefaultSource
 
     if (parameters.contains(InsightEdgeClassProperty)) {
       val tag = loadClass(parameters(InsightEdgeClassProperty)).asInstanceOf[ClassTag[AnyRef]]
-      new InsightEdgeClassRelation(sqlContext, tag, options)
+      InsightEdgeClassRelation(sqlContext, tag, options)
     } else if (parameters.contains(InsightEdgeCollectionProperty) || parameters.contains("path")) {
       val collection = parameters.getOrElse(InsightEdgeCollectionProperty, parameters("path"))
-      new InsightEdgeDocumentRelation(sqlContext, collection, options)
+      InsightEdgeDocumentRelation(sqlContext, collection, options)
 
     } else {
       throw new IllegalArgumentException("'path', 'collection' or 'class' must be specified")

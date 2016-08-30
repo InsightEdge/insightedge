@@ -10,7 +10,7 @@ class PointUDT extends UserDefinedType[Point] with Serializable {
 
   override def userClass: Class[Point] = classOf[Point]
 
-  override def serialize(obj: Any): ArrayData = GeoUtils.pack(obj)
+  override def serialize(obj: Point): ArrayData = GeoUtils.pack(obj)
 
   override def deserialize(datum: Any): Point = GeoUtils.unpackXapPoint(datum.asInstanceOf[ArrayData])
 

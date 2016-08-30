@@ -4,6 +4,7 @@ import com.gigaspaces.metadata.index.SpaceIndexType
 import org.insightedge.scala.annotation
 import annotation._
 
+import scala.annotation.meta.{beanGetter, getter}
 import scala.beans.BeanProperty
 
 /**
@@ -12,8 +13,12 @@ import scala.beans.BeanProperty
  *
  * @author Leonid_Poliakov
  */
+
 trait BucketedGridModel {
+
+  // TODO: check if index is applied
+  // compilation warning is due to https://issues.scala-lang.org/browse/SI-8813
   @BeanProperty
   @SpaceIndex(`type` = SpaceIndexType.EXTENDED)
-  var metaBucketId: Integer = null
+  var metaBucketId: Integer = _
 }

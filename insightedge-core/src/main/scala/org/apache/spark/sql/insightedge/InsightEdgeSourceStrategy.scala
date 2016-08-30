@@ -1,14 +1,14 @@
 package org.apache.spark.sql.insightedge
 
-import org.apache.spark.Logging
+import org.apache.spark.internal.Logging
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
 import org.apache.spark.sql.catalyst.CatalystTypeConverters._
-import org.apache.spark.sql.catalyst.expressions._
+import org.apache.spark.sql.catalyst.expressions.{AttributeSet, _}
 import org.apache.spark.sql.catalyst.planning.PhysicalOperation
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan
 import org.apache.spark.sql.catalyst.{InternalRow, expressions}
-import org.apache.spark.sql.execution.PhysicalRDD._
+import org.apache.spark.sql.execution.DataSourceScanExec._
 import org.apache.spark.sql.execution.datasources.{DataSourceStrategy, LogicalRelation}
 import org.apache.spark.sql.insightedge.relation.GridPrunedFilteredScan
 import org.apache.spark.sql.sources._
@@ -25,7 +25,7 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
     * Catches GridPrunedFilteredScan which is implemented by dataframe extension for grid datasource.
     */
   def apply(plan: LogicalPlan): Seq[execution.SparkPlan] = plan match {
-    case PhysicalOperation(projects, filters, relation@LogicalRelation(t: GridPrunedFilteredScan, _)) =>
+    case PhysicalOperation(projects, filters, relation@LogicalRelation(t: GridPrunedFilteredScan, _, _)) =>
       pruneFilterProject(
         relation,
         projects,
@@ -47,9 +47,9 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
     }
   }
 
-
+  //
   // Code below is copied as-is from the DataSourceStrategy
-
+  //
 
   // Based on Public API.
   protected def pruneFilterProject(
@@ -89,11 +89,9 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
     val projectSet = AttributeSet(projects.flatMap(_.references))
     val filterSet = AttributeSet(filterPredicates.flatMap(_.references))
 
-    val candidatePredicates = filterPredicates.map {
-      _ transform {
-        case a: AttributeReference => relation.attributeMap(a) // Match original case of attributes.
-      }
-    }
+    val candidatePredicates = filterPredicates.map { _ transform {
+      case a: AttributeReference => relation.attributeMap(a) // Match original case of attributes.
+    }}
 
     val (unhandledPredicates, pushedFilters) =
       selectFilters(relation.relation, candidatePredicates)
@@ -118,11 +116,6 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
         pairs += (PUSHED_FILTERS -> pushedFilters.mkString("[", ", ", "]"))
       }
 
-      relation.relation match {
-        case r: HadoopFsRelation => pairs += INPUT_PATHS -> r.paths.mkString(", ")
-        case _ =>
-      }
-
       pairs.toMap
     }
 
@@ -140,22 +133,22 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
         // Don't request columns that are only referenced by pushed filters.
         .filterNot(handledSet.contains)
 
-      val scan = execution.PhysicalRDD.createFromDataSource(
+      val scan = execution.DataSourceScanExec.create(
         projects.map(_.toAttribute),
         scanBuilder(requestedColumns, candidatePredicates, pushedFilters),
-        relation.relation, metadata)
-      filterCondition.map(execution.Filter(_, scan)).getOrElse(scan)
+        relation.relation, metadata, relation.metastoreTableIdentifier)
+      filterCondition.map(execution.FilterExec(_, scan)).getOrElse(scan)
     } else {
       // Don't request columns that are only referenced by pushed filters.
       val requestedColumns =
-        (projectSet ++ filterSet -- handledSet).map(relation.attributeMap).toSeq
+      (projectSet ++ filterSet -- handledSet).map(relation.attributeMap).toSeq
 
-      val scan = execution.PhysicalRDD.createFromDataSource(
+      val scan = execution.DataSourceScanExec.create(
         requestedColumns,
         scanBuilder(requestedColumns, candidatePredicates, pushedFilters),
-        relation.relation, metadata)
-      execution.Project(
-        projects, filterCondition.map(execution.Filter(_, scan)).getOrElse(scan))
+        relation.relation, metadata, relation.metastoreTableIdentifier)
+      execution.ProjectExec(
+        projects, filterCondition.map(execution.FilterExec(_, scan)).getOrElse(scan))
     }
   }
 
@@ -225,5 +218,12 @@ object InsightEdgeSourceStrategy extends Strategy with Logging {
     } else {
       rdd.asInstanceOf[RDD[InternalRow]]
     }
+  }
+
+  /**
+    * Convert RDD of Row into RDD of InternalRow with objects in catalyst types
+    */
+  private[this] def toCatalystRDD(relation: LogicalRelation, rdd: RDD[Row]): RDD[InternalRow] = {
+    toCatalystRDD(relation, relation.output, rdd)
   }
 }
