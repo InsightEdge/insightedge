@@ -17,7 +17,7 @@ import org.scalatest.FunSpec
 class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spark {
 
   it("should store and load ML Pipeline Model (Tokenizer, HashingTF, LogisticRegression)") {
-    val training = sql.createDataFrame(Seq(
+    val training = spark.createDataFrame(Seq(
       (0L, "a b c d e spark", 1.0),
       (1L, "b d", 0.0),
       (2L, "spark f g h", 1.0),
@@ -48,7 +48,7 @@ class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spar
       (6L, "mapreduce spark"),
       (7L, "apache hadoop")
     )
-    val testDf = sql.createDataFrame(testSeq).toDF("id", "text")
+    val testDf = spark.createDataFrame(testSeq).toDF("id", "text")
 
     val predictions = model.transform(testDf)
       .select("id", "text", "probability", "prediction")
@@ -63,9 +63,9 @@ class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spar
     printPredictions(predictions)
 
     // stop Spark context and create it again to make sure we can load in another context
-    sc.stopInsightEdgeContext()
-    sc = new SparkContext(createSparkConf())
-    sql = new SQLContext(sc)
+    // TODO: stop IE context
+    spark.stop()
+    spark = createSpark()
 
     // load model from grid
     val loadedModel = sc.loadMLInstance[PipelineModel]("testPipelineModel").get
