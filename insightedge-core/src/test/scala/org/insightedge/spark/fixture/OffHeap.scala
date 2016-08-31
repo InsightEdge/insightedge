@@ -17,6 +17,7 @@
 package org.insightedge.spark.fixture
 
 import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
 import org.scalatest.Suite
 
 /**
@@ -27,9 +28,13 @@ import org.scalatest.Suite
 trait OffHeap extends Spark {
   self: Suite with IEConfig with InsightEdge =>
 
-  override def createSparkConf(): SparkConf = {
-    val sparkConf = super.createSparkConf()
-    sparkConf.set("spark.externalBlockStore.blockManager", "org.apache.spark.storage.InsightEdgeBlockManager")
+  override def createSpark(): SparkSession = {
+    SparkSession
+      .builder()
+      .appName("insightedge-test")
+      .config("spark.externalBlockStore.blockManager", "org.apache.spark.storage.InsightEdgeBlockManager")
+      .master("local[2]")
+      .getOrCreate()
   }
 
 }

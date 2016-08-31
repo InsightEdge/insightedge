@@ -38,10 +38,12 @@ class InsightEdgeMLlibSpec extends FunSpec with IEConfig with InsightEdge with S
     val prediction = model.predict(testDataRDD).collect()
     model.saveToGrid(sc, "model")
 
+    // TODO:
     // stop Spark context and create it again to make sure we can load in another context
-    sc.stopInsightEdgeContext()
+//    sc.stopInsightEdgeContext()
+    spark.stop()
 
-    sc = new SparkContext(createSparkConf())
+    spark = createSpark()
 
     val loadedModel = sc.loadMLInstance[DecisionTreeModel]("model").get
     assert(model.depth === loadedModel.depth)

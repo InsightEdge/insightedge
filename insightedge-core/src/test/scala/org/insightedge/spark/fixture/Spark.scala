@@ -16,7 +16,7 @@
 
 package org.insightedge.spark.fixture
 
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.insightedge.spark.implicits.basic._
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
@@ -29,25 +29,28 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 trait Spark extends BeforeAndAfterAll with BeforeAndAfterEach {
   self: Suite with IEConfig with InsightEdge =>
 
+  var spark: SparkSession = _
   var sc: SparkContext = _
-  var sql: SQLContext = _
 
-  def createSparkConf(): SparkConf = {
-    new SparkConf()
-      .setAppName("insightedge-test")
-      .setMaster("local[2]")
-      .setInsightEdgeConfig(ieConfig)
+  def createSpark(): SparkSession = {
+    SparkSession
+      .builder()
+      .appName("insightedge-test")
+      .master("local[2]")
+      .insightEdgeConfig(ieConfig)
+      .getOrCreate()
   }
 
   override protected def beforeEach() = {
-    val sparkConf = createSparkConf()
-    sc = new SparkContext(sparkConf)
-    sql = new SQLContext(sc)
+    spark = createSpark()
+    sc = spark.sparkContext
     super.beforeEach()
   }
 
   override protected def afterEach() = {
-    sc.stopInsightEdgeContext()
+    spark.stop()
+    // TODO: move stopInsightEdgeContext() to SparkSession
+    //    sc.stopInsightEdgeContext()
     super.afterEach()
   }
 

@@ -69,7 +69,7 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     }
 
     // pushed down to XAP
-    val df = sql.read.grid.loadClass[SpatialData]
+    val df = spark.read.grid.loadClass[SpatialData]
     df.printSchema()
     asserts(df)
 
@@ -82,7 +82,7 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     spaceProxy.write(new JSpatialData(1L, point(0, 0)))
 
     // pushed down to XAP
-    val df = sql.read.grid.loadClass[JSpatialData]
+    val df = spark.read.grid.loadClass[JSpatialData]
     df.printSchema()
     zeroPointCheck(df, "point")
 
@@ -95,7 +95,7 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
 
     // pushed down to XAP
-    val df = sql.read.grid.loadClass[SpatialEmbeddedData]
+    val df = spark.read.grid.loadClass[SpatialEmbeddedData]
     df.printSchema()
     zeroPointCheck(df, "location.point")
 
@@ -107,7 +107,7 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
   it should "work with new columns via udf" in {
     spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
 
-    val df = sql.read.grid.loadClass[SpatialData]
+    val df = spark.read.grid.loadClass[SpatialData]
     val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)
     val unwrappedDf = df.withColumn("locationX", toPointX(df("point")))
     unwrappedDf.printSchema()
@@ -120,7 +120,7 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     spaceProxy.write(SpatialData(id = null, routing = 1, circle(point(0, 0), 1.0), rectangle(0, 2, 0, 2), point(1, 1)))
 
     val collectionName = randomString()
-    sql.read.grid.loadClass[SpatialData].write.grid(collectionName).save()
+    spark.read.grid.loadClass[SpatialData].write.grid(collectionName).save()
 
     val data = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(data.getProperty[Any]("routing").isInstanceOf[Long])
