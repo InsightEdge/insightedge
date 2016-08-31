@@ -17,6 +17,7 @@
 package org.insightedge.spark.context
 
 import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
 import org.insightedge.spark.context.InsightEdgeConfig._
 
 /**
@@ -34,6 +35,13 @@ case class InsightEdgeConfig(
     sparkConf.set(SpaceNameKey, spaceName)
     lookupGroups.foreach(group => sparkConf.set(LookupGroupKey, group))
     lookupLocators.foreach(locator => sparkConf.set(LookupLocatorKey, locator))
+    sparkConf
+  }
+
+  def populateSparkSessionBuilder(builder: SparkSession.Builder) = {
+    builder.config(SpaceNameKey, spaceName)
+    lookupGroups.foreach(group => builder.config(LookupGroupKey, group))
+    lookupLocators.foreach(locator => builder.config(LookupLocatorKey, locator))
   }
 
 }

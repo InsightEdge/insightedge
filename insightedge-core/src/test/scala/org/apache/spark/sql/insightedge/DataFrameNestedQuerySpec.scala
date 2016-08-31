@@ -34,14 +34,14 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
       new Person(id = null, name = "Silvia", age = 27, address = new Address(city = "Charlotte", state = "NC"))
     )).saveToGrid()
 
-    val df = sql.read.grid.loadClass[Person]
+    val df = spark.read.grid.loadClass[Person]
     df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
 
     df.registerTempTable("people")
 
-    val unwrapDf = sql.sql("select address.city as city, address.state as state from people")
+    val unwrapDf = spark.sql("select address.city as city, address.state as state from people")
     val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
     assert(countByCity("Charlotte") == 2)
     unwrapDf.printSchema()
@@ -55,14 +55,14 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
       new JPerson(null, "Silvia", 27, new JAddress("Charlotte", "NC"))
     )).saveToGrid()
 
-    val df = sql.read.grid.loadClass[JPerson]
+    val df = spark.read.grid.loadClass[JPerson]
     df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
 
     df.registerTempTable("people")
 
-    val unwrapDf = sql.sql("select address.city as city, address.state as state from people")
+    val unwrapDf = spark.sql("select address.city as city, address.state as state from people")
     val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
     assert(countByCity("Charlotte") == 2)
     unwrapDf.printSchema()
@@ -77,14 +77,14 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     )).saveToGrid()
 
     val collectionName = randomString()
-    sql.read.grid.loadClass[Person].write.grid(collectionName).save()
+    spark.read.grid.loadClass[Person].write.grid(collectionName).save()
 
     val person = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
     assert(person.getProperty[Any]("age").isInstanceOf[Integer])
     assert(person.getProperty[Any]("name").isInstanceOf[String])
 
-    val df = sql.read.grid.load(collectionName)
+    val df = spark.read.grid.load(collectionName)
     assert(df.count() == 4)
     assert(df.filter(df("address.state") equalTo "NC").count() == 2)
     assert(df.filter(df("address.city") equalTo "Nowhere").count() == 0)
@@ -99,14 +99,14 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     )).saveToGrid()
 
     val collectionName = randomString()
-    sql.read.grid.loadClass[JPerson].write.grid(collectionName).save()
+    spark.read.grid.loadClass[JPerson].write.grid(collectionName).save()
 
     val person = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
     assert(person.getProperty[Any]("age").isInstanceOf[Integer])
     assert(person.getProperty[Any]("name").isInstanceOf[String])
 
-    val df = sql.read.grid.load(collectionName)
+    val df = spark.read.grid.load(collectionName)
     assert(df.count() == 4)
     assert(df.filter(df("address.state") equalTo "NC").count() == 2)
     assert(df.filter(df("address.city") equalTo "Nowhere").count() == 0)

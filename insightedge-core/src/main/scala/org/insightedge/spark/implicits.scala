@@ -17,6 +17,7 @@
 package org.insightedge.spark
 
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.insightedge.{DataFrameImplicits, GeospatialImplicits}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.insightedge.spark.context.{InsightEdgeConfig, InsightEdgeSparkContext}
@@ -73,6 +74,13 @@ object implicits {
       def setInsightEdgeConfig(ieConfig: InsightEdgeConfig): SparkConf = {
         ieConfig.populateSparkConf(sparkConf)
         sparkConf
+      }
+    }
+
+    implicit class SparkSessionBuilderExtension(builder: SparkSession.Builder) {
+      def insightEdgeConfig(ieConfig: InsightEdgeConfig): SparkSession.Builder = {
+        ieConfig.populateSparkSessionBuilder(builder)
+        builder
       }
     }
 
