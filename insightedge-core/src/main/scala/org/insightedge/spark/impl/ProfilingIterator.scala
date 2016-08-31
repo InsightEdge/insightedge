@@ -1,6 +1,8 @@
 package org.insightedge.spark.impl
 
-private[spark] class ProfilingIterator[T](delegate: Iterator[T]) extends Iterator[T] {
+import org.insightedge.spark.utils.Logging
+
+private[spark] class ProfilingIterator[T](delegate: Iterator[T]) extends Iterator[T] with Logging {
   private var time: Long = 0
   private var finished: Boolean = false
   private var _count = 0
@@ -15,11 +17,11 @@ private[spark] class ProfilingIterator[T](delegate: Iterator[T]) extends Iterato
 
     if (!result) {
       if (finished) {
-        println("iterator hasNext called after finished")
+        logInfo("iterator hasNext called after finished")
       } else {
         finished = true
         val shortTime = (BigDecimal(time) / 1000000000).setScale(5, BigDecimal.RoundingMode.HALF_UP)
-        println("iterator accumulated " + shortTime + " seconds")
+        logInfo("iterator accumulated " + shortTime + " seconds")
       }
     }
 

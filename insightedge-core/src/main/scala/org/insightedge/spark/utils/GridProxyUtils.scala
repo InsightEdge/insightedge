@@ -15,7 +15,7 @@ import scala.reflect._
 /**
  * @author Oleksiy_Dyagilev
  */
-private[spark] object GridProxyUtils {
+private[spark] object GridProxyUtils extends Logging {
 
   def createSpace(ieConfig: InsightEdgeConfig): IJSpace = {
     val spaceUri = s"jini://*/*/${ieConfig.spaceName}"
@@ -26,13 +26,13 @@ private[spark] object GridProxyUtils {
   }
 
   def createGridProxy(ieConfig: InsightEdgeConfig): GigaSpace = {
-    profileWithPrintln("createClusteredProxy") {
+    profileWithInfo("createClusteredProxy") {
       new GigaSpaceConfigurer(this.createSpace(ieConfig)).create()
     }
   }
 
   def createDirectProxy(gsPartition: InsightEdgePartition, ieConfig: InsightEdgeConfig): GigaSpace = {
-    profileWithPrintln("createDirectProxy") {
+    profileWithInfo("createDirectProxy") {
       val spaceName = ieConfig.spaceName
       val url = s"jini://*/${gsPartition.gridContainerName}/$spaceName"
       val urlSpaceConfigurer = new UrlSpaceConfigurer(url)
@@ -44,7 +44,7 @@ private[spark] object GridProxyUtils {
 
 
   def buildGridPartitions[R : ClassTag](ieConfig: InsightEdgeConfig, splitCount: Option[Int], supportsBuckets: Boolean): Seq[InsightEdgePartition] = {
-    profileWithPrintln("lookupInsightEdgePartitions") {
+    profileWithInfo("lookupInsightEdgePartitions") {
       val gs = GridProxyFactory.getOrCreateClustered(ieConfig)
       val asyncResult = gs.execute(new LookupPartitionTask)
       val gsPartitions = asyncResult.get().map(_.toList).map {
@@ -102,6 +102,6 @@ private[spark] object GridProxyUtils {
     })
   }
 
-  private def profileWithPrintln[T](message: String)(block: => T): T = Profiler.profile(message)(println(_))(block)
+  private def profileWithInfo[T](message: String)(block: => T): T = Profiler.profile(message)(logInfo(_))(block)
 
 }
