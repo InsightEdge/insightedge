@@ -21,10 +21,10 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
 String branchName = "$env.BRANCH_NAME".toString()
 
 String zeppelinRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-zeppelin.git"
-String zeppelinDefaultBranchName = "branch-1.0"
+String zeppelinDefaultBranchName = "master"
 
 String examplesRepo = "https://\$USERNAME:\$PASSWORD@github.com/InsightEdge/insightedge-examples.git"
-String examplesDefaultBranchName = "branch-1.0"
+String examplesDefaultBranchName = "master"
 
 echo "Branch: $branchName"
 sh 'git log -1 --format="%H" > temp-git-commit-hash'
