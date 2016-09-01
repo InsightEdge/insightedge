@@ -21,8 +21,7 @@ import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig, Spark}
-import org.insightedge.spark.implicits
+import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.openspaces.spatial.ShapeFactory._
