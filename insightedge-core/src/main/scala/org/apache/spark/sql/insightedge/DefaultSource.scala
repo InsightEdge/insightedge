@@ -19,6 +19,7 @@ package org.apache.spark.sql.insightedge
 import org.apache.spark.internal.Logging
 import org.apache.spark.sql.insightedge.DefaultSource._
 import org.apache.spark.sql.insightedge.relation.{InsightEdgeAbstractRelation, InsightEdgeClassRelation, InsightEdgeDocumentRelation}
+import org.apache.spark.sql.insightedge.udt.GeoUDTRegistration
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
@@ -54,9 +55,8 @@ class DefaultSource
                             parameters: Map[String, String],
                             schema: Option[StructType] = None
                            ): InsightEdgeAbstractRelation = synchronized {
-    if (!sqlContext.experimental.extraStrategies.contains(InsightEdgeSourceStrategy)) {
-      sqlContext.experimental.extraStrategies = InsightEdgeSourceStrategy +: sqlContext.experimental.extraStrategies
-    }
+
+    GeoUDTRegistration.registerIfNotAlready()
 
     val readBufferSize = parameters.get(InsightEdgeReadBufferSizeProperty).map(_.toInt).getOrElse(DefaultReadBufferSize)
     val splitCount = parameters.get(InsightEdgeSplitCountProperty).map(_.toInt)
