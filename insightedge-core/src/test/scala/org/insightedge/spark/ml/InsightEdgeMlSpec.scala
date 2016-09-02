@@ -20,9 +20,9 @@ import org.apache.spark.SparkContext
 import org.apache.spark.ml.classification.LogisticRegression
 import org.apache.spark.ml.feature.{HashingTF, Tokenizer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
-import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.ml.linalg.DenseVector
 import org.apache.spark.sql.{Row, SQLContext}
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig, Spark}
+import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
 import org.insightedge.spark.implicits.all._
 import org.scalatest.FunSpec
 
@@ -71,17 +71,21 @@ class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spar
       .collect()
 
     def printPredictions(predictions: Array[Row]) = {
-      predictions.foreach { case Row(id: Long, text: String, prob: Vector, prediction: Double) =>
-        println(s"($id, $text) --> prob=$prob, prediction=$prediction")
+      predictions.foreach { row: Row =>
+          val id = row.getAs[Long]("id")
+          val text = row.getAs[String]("text")
+          val probability = row.getAs[DenseVector]("probability")
+          val prediction = row.getAs[Double]("prediction")
+          println(s"($id, $text) --> prob=$probability, prediction=$prediction")
       }
     }
 
     printPredictions(predictions)
 
     // stop Spark context and create it again to make sure we can load in another context
-    // TODO: stop IE context
-    spark.stop()
+    spark.stopInsightEdgeContext()
     spark = createSpark()
+    sc = spark.sparkContext
 
     // load model from grid
     val loadedModel = sc.loadMLInstance[PipelineModel]("testPipelineModel").get
