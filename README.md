@@ -1,7 +1,7 @@
 # InsightEdge
 
 **Documentation:** [User Guide](http://insightedge.io/docs/010/index.html)<br/>
-**Community:** [Slack Channel](http://insightedge-slack.herokuapp.com/), [StackOverflow tag](http://stackoverflow.com/questions/tagged/insightedge), [Email](hello@insightedge.io)<br/>
+**Community:** [Slack Channel](http://insightedge-slack.herokuapp.com/), [StackOverflow tag](http://stackoverflow.com/questions/tagged/insightedge), [Email](mailto:hello@insightedge.io)<br/>
 **Contributing:** [Contribution Guide](https://github.com/InsightEdge/insightedge/blob/branch-1.0/CONTRIBUTING.md)<br/>
 **Issue Tracker:** [Jira](https://xap-issues.atlassian.net)<br/>
 **License:** [Apache 2.0](https://github.com/InsightEdge/insightedge/blob/master/LICENSE.md)
