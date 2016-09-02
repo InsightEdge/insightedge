@@ -41,9 +41,9 @@ mvn clean install
 To build InsightEdge zip distribution you need the following binary dependencies:
 
 * [insightedge-datagrid 12.0.0](https://github.com/InsightEdge/insightedge-datagrid): find build instructions in repository readme or download release from the [website](https://xap.github.io/)
-* [insightedge-examples](https://github.com/InsightEdge/insightedge-examples): find build instructions in repository readme
-* [insightedge-zeppelin](https://github.com/InsightEdge/insightedge-zeppelin): build with `mvn clean install -DskipTests -P spark-1.6 -P build-distr`
-* [Apache Spark 1.6.1](http://spark.apache.org/downloads.html)
+* [insightedge-examples](https://github.com/InsightEdge/insightedge-examples): use the same branch as in this repo, find build instructions in repository readme
+* [insightedge-zeppelin](https://github.com/InsightEdge/insightedge-zeppelin): use the same branch as in this repo, build with `mvn clean install -DskipTests -P spark-1.6 -P build-distr`
+* [Apache Spark 1.6.1](http://spark.apache.org/downloads.html): download zip
 
 Package InsightEdge distribution:
 
@@ -51,12 +51,15 @@ Package InsightEdge distribution:
 mvn clean package -P package-community -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.zip>
 ```
 
+The archive is generated under `insightedge-packager/target/community` directory. The archive content is under `insightedge-packager/target/contents-community`.
+
 To run integration tests refer to the [wiki page](https://github.com/InsightEdge/insightedge/wiki/Integration-tests)
 
 ## Quick Start
 
 Build the project and start InsightEdge demo mode with 
 ```bash
+cd insightedge-packager/target/contents-community
 ./sbin/insightedge.sh --mode demo
 ```
 
