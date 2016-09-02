@@ -16,7 +16,7 @@ object GeoUDTRegistration {
     registerIfNotAlready("org.openspaces.spatial.shapes.Circle", "org.apache.spark.sql.insightedge.udt.CircleUDT")
     registerIfNotAlready("org.openspaces.spatial.shapes.Point", "org.apache.spark.sql.insightedge.udt.PointUDT")
     registerIfNotAlready("org.openspaces.spatial.shapes.Polygon", "org.apache.spark.sql.insightedge.udt.PolygonUDT")
-    registerIfNotAlready("org.openspaces.spatial.shapes.Rectangle", "org.apache.spark.sql.insightedge.udt.PolygonUDT")
+    registerIfNotAlready("org.openspaces.spatial.shapes.Rectangle", "org.apache.spark.sql.insightedge.udt.RectangleUDT")
   }
 
   private def registerIfNotAlready(userClass: String, udtClass: String) = {
