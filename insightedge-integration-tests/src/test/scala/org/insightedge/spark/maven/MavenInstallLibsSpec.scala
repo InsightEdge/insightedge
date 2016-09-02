@@ -33,9 +33,11 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
     val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
     val edition = Option(System.getProperty("dist.edition")).getOrElse("")
     val version = Option(System.getProperty("dist.version")).getOrElse("")
+    val branch = Option(System.getProperty("git.branch")).getOrElse(fail("Git branch is not specified"))
     println(s"Package dir: $packagerDir")
     println(s"Edition: $edition")
     println(s"Version: $version")
+    println(s"Git branch: $branch")
 
     val zipDir = s"$packagerDir/target/$edition"
     println(s"Zip dir: $zipDir")
@@ -46,7 +48,7 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
     // run installation
-    execAssertSucc(s"$scriptsDir/run.sh $zipDir $version")
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir $version $branch")
   }
 
   after {
