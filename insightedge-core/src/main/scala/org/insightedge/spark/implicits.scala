@@ -84,6 +84,15 @@ object implicits {
       }
     }
 
+    implicit class SparkSessionExtension(sparkSession: SparkSession) {
+      /**
+        * Stops internal Spark context and cleans all resources (connections to Data Grid, etc)
+        */
+      def stopInsightEdgeContext() = {
+        sparkSession.stop()
+      }
+    }
+
   }
 
 }
