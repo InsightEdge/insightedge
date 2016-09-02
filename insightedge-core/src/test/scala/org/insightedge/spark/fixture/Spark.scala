@@ -32,9 +32,7 @@ trait Spark extends BeforeAndAfterAll with BeforeAndAfterEach {
   }
 
   override protected def afterEach() = {
-    spark.stop()
-    // TODO: move stopInsightEdgeContext() to SparkSession
-    //    sc.stopInsightEdgeContext()
+    spark.stopInsightEdgeContext()
     super.afterEach()
   }
 
