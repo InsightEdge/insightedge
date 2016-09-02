@@ -42,9 +42,9 @@ echo "-- Git branch: $BRANCH"
 
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
+cd $HOME/insightedge-examples
 git fetch
 git checkout $BRANCH
-cd $HOME/insightedge-examples
 
 println "------ Maven build should fail"
 rm -rf $HOME/.m2
