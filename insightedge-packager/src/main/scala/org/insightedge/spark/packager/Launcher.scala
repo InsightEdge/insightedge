@@ -20,8 +20,8 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-import org.insightedge.spark.packager.Utils._
 import org.apache.commons.io.filefilter.TrueFileFilter
+import org.insightedge.spark.packager.Utils._
 
 /**
   * @author Leonid_Poliakov
