@@ -16,7 +16,7 @@ private[insightedge] case class InsightEdgeClassRelation(
   extends InsightEdgeAbstractRelation(context, options) with Serializable {
 
   override lazy val inferredSchema: StructType = {
-    val schema = SchemaInference.schemaFor(clazz.runtimeClass, (c: Class[_]) => InsightEdgeAbstractRelation.udtFor(c))
+    val schema = SchemaInference.schemaFor(clazz.runtimeClass)
     schema.dataType.asInstanceOf[StructType]
   }
 
