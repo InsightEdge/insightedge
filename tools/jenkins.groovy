@@ -110,14 +110,14 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
         if (branchName.equals("master") || branchName.startsWith("branch-")) {
             try {
                 stage 'Run long integration tests (community)'
-                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e"
+                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-community,only-long-running-test -e -Dgit.branch=$branchName"
             } finally {
                 step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
             }
 
             try {
                 stage 'Run long integration tests (premium)'
-                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium,only-long-running-test -e"
+                sh "mvn clean verify -pl insightedge-integration-tests -P run-integration-tests-premium,only-long-running-test -e -Dgit.branch=$branchName"
             } finally {
                 step([$class: 'JUnitResultArchiver', testResults: 'insightedge-integration-tests/target/surefire-reports/TEST-*.xml'])
             }

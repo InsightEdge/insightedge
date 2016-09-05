@@ -14,6 +14,7 @@
 
     <properties>
         <dist.edition></dist.edition>
+        <git.branch></git.branch>
     </properties>
 
     <dependencies>
@@ -203,7 +204,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version}</argLine>
+                    <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Dgit.branch=${git.branch}</argLine>
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <junitxml>.</junitxml>
                     <filereports>scalatest.txt</filereports>
