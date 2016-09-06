@@ -1,11 +1,27 @@
+/*
+ * Copyright (c) 2016, GigaSpaces Technologies, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.insightedge.spark.packager
 
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-import org.insightedge.spark.packager.Utils._
 import org.apache.commons.io.filefilter.TrueFileFilter
+import org.insightedge.spark.packager.Utils._
 
 /**
   * @author Leonid_Poliakov
@@ -33,11 +49,20 @@ object Launcher {
       untgz(spark, output, cutRootFolder = true)
     }
 
-    run("Adding docs to insightedge") {
-      copy(s"$project/README.md", s"$output/RELEASE")
+    run("Adding InsightEdge license and VERSION file") {
+      copy(s"$project/LICENSE.md", s"$output/INSIGHTEDGE-LICENSE.md")
       val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
       val versionInfo = s"Version: $version\nHash: ${lastCommitHash.getOrElse("")}\nTimestamp: $timestamp\nEdition: $edition"
       writeToFile(s"$output/VERSION", versionInfo)
+    }
+
+    run("Replacing README.md") {
+      remove(s"$output/README.md")
+      copy(s"$project/README.md", s"$output/README.md")
+    }
+
+    run("Removing CHANGES.txt ") {
+      remove(s"$output/CHANGES.txt")
     }
 
     run("Adding integration libs") {

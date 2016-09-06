@@ -1,6 +1,25 @@
+/*
+ * Copyright (c) 2016, GigaSpaces Technologies, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.insightedge.spark.fixture
 
-import com.xebialabs.overcast.host.{CloudHost, CloudHostFactory, DockerHost}
+import com.spotify.docker.client.DefaultDockerClient
+import com.spotify.docker.client.messages.{ContainerConfig, ContainerInfo, HostConfig, PortBinding}
+import org.insightedge.spark.utils.BuildUtils
+import org.insightedge.spark.utils.BuildUtils.BuildVersion
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.libs.ws.ning.NingWSClient
 
@@ -8,7 +27,7 @@ import scala.annotation.tailrec
 import scala.concurrent.Await
 import scala.util.Try
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
+import collection.JavaConverters._
 
 /**
   * Suite mixin that starts InsightEdge Demo Mode docker image before all tests and stops after
@@ -19,15 +38,40 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   self: Suite =>
 
   private val DockerImageStartTimeout = 3.minutes
-  private val TargetZeppelinPort = 8090
-  private lazy val dockerHost: DockerHost = CloudHostFactory.getCloudHost("insightedge-tests-demo-mode").asInstanceOf[DockerHost]
+  private val ZeppelinPort = "8090"
+  private val ImageName = s"insightedge-tests-demo-mode:$BuildVersion"
+
+  protected var containerId: String = _
+  private val docker = DefaultDockerClient.fromEnv().build()
+  private var zeppelinMappedPort: String = _
 
   val wsClient = NingWSClient()
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
     println("Starting docker container")
-    dockerHost.setup()
+
+    val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
+    val portBindings = Map(ZeppelinPort -> randomPort).asJava
+    val hostConfig = HostConfig.builder().portBindings(portBindings).build()
+
+    val containerConfig = ContainerConfig.builder()
+      .hostConfig(hostConfig)
+      .image(ImageName).exposedPorts(ZeppelinPort)
+      .cmd("/etc/bootstrap.sh", "-d")
+      .build()
+
+    val creation = docker.createContainer(containerConfig)
+    containerId = creation.id()
+
+    // Start container
+    docker.startContainer(containerId)
+
+    val containerInfo = docker.inspectContainer(containerId)
+    val bindings = containerInfo.networkSettings().ports().get(ZeppelinPort + "/tcp")
+    val binding = bindings.asScala.head
+    zeppelinMappedPort = binding.hostPort()
+
     if (!awaitImageStarted()) {
       println("image start failed with timeout ... cleaning up")
       stopAll()
@@ -42,18 +86,15 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
   def stopAll() ={
     println("Stopping docker container")
-    dockerHost.teardown()
+    docker.killContainer(containerId)
+    docker.removeContainer(containerId)
+    docker.close()
+
     wsClient.close()
   }
 
   def zeppelinUrl = {
-    val host = dockerHost.getHostName
-    val port = dockerHost.getPort(TargetZeppelinPort)
-    s"http://$host:$port"
-  }
-
-  def runningContainerId() = {
-    dockerHost.getDockerDriver.getContainerId
+    s"http://127.0.0.1:$zeppelinMappedPort"
   }
 
   private def awaitImageStarted(): Boolean = {
@@ -61,6 +102,8 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     val startTime = System.currentTimeMillis
 
     val sleepBetweenAttempts = 1.second
+
+    println(s"Zeppelin $zeppelinUrl")
 
     def attempt() = Try {
       println("ping zeppelin")

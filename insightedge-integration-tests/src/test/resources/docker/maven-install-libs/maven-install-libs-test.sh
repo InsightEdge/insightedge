@@ -37,10 +37,14 @@ echo "-- Maven version"
 mvn --version
 echo "-- SBT version "
 sbt sbtVersion # TODO it fails sometimes
+BRANCH=$1
+echo "-- Git branch: $BRANCH"
 
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
 cd $HOME/insightedge-examples
+git fetch
+git checkout $BRANCH
 
 println "------ Maven build should fail"
 rm -rf $HOME/.m2
