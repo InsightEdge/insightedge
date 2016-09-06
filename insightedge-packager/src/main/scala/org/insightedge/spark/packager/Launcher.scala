@@ -61,9 +61,8 @@ object Launcher {
       copy(s"$project/README.md", s"$output/README.md")
     }
 
-    run("Removing CHANGES.txt and RELEASE") {
+    run("Removing CHANGES.txt ") {
       remove(s"$output/CHANGES.txt")
-      remove(s"$output/RELEASE")
     }
 
     run("Adding integration libs") {
