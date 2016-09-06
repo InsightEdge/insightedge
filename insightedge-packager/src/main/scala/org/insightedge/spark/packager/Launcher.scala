@@ -49,11 +49,21 @@ object Launcher {
       untgz(spark, output, cutRootFolder = true)
     }
 
-    run("Adding docs to insightedge") {
-      copy(s"$project/README.md", s"$output/RELEASE")
+    run("Adding InsightEdge license and VERSION file") {
+      copy(s"$project/LICENSE.md", s"$output/INSIGHTEDGE-LICENSE.md")
       val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
-      val versionInfo = s"Version: $version\nHash: ${lastCommitHash.getOrElse("")}\nTimestamp: $timestamp\nEdition: $edition"
+      val versionInfo = s"InsightEdge version: $version\nHash: ${lastCommitHash.getOrElse("")}\nTimestamp: $timestamp\nEdition: $edition"
       writeToFile(s"$output/VERSION", versionInfo)
+    }
+
+    run("Replacing README.md") {
+      remove(s"$output/README.md")
+      copy(s"$project/README.md", s"$output/README.md")
+    }
+
+    run("Removing CHANGES.txt and RELEASE") {
+      remove(s"$output/CHANGES.txt")
+      remove(s"$output/RELEASE")
     }
 
     run("Adding integration libs") {
