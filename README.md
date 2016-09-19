@@ -47,7 +47,6 @@ mvn clean verify -P run-integration-tests-premium   -pl insightedge-integration-
 * Data locality between Spark and Data Grid nodes
 * Storing MLlib models in Data Grid
 * Saving Spark Streaming computation results in Data Grid
-* Off-Heap persistence
 * Interactive Web Notebook
 
 ## Documentation
