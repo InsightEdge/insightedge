@@ -34,8 +34,7 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
       "basic.LoadRddWithSql",
       "basic.PersistDataFrame",
       "basic.PersistDataFrame",
-      "mllib.SaveAndLoadMLModel",
-      "offheap.OffHeapPersistence"
+      "mllib.SaveAndLoadMLModel"
     )
 
     exampleClassNames.foreach { className =>
