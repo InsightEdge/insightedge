@@ -28,10 +28,10 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
 
   it should "support nested properties" taggedAs ScalaSpaceClass in {
     sc.parallelize(Seq(
-      new Person(id = null, name = "Paul", age = 30, address = new Address(city = "Columbus", state = "OH")),
-      new Person(id = null, name = "Mike", age = 25, address = new Address(city = "Buffalo", state = "NY")),
-      new Person(id = null, name = "John", age = 20, address = new Address(city = "Charlotte", state = "NC")),
-      new Person(id = null, name = "Silvia", age = 27, address = new Address(city = "Charlotte", state = "NC"))
+      Person(id = null, name = "Paul", age = 30, address = Address(city = "Columbus", state = "OH")),
+      Person(id = null, name = "Mike", age = 25, address = Address(city = "Buffalo", state = "NY")),
+      Person(id = null, name = "John", age = 20, address = Address(city = "Charlotte", state = "NC")),
+      Person(id = null, name = "Silvia", age = 27, address = Address(city = "Charlotte", state = "NC"))
     )).saveToGrid()
 
     val df = spark.read.grid.loadClass[Person]
@@ -39,7 +39,7 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
 
-    df.registerTempTable("people")
+    df.createOrReplaceTempView("people")
 
     val unwrapDf = spark.sql("select address.city as city, address.state as state from people")
     val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
@@ -60,7 +60,7 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
 
-    df.registerTempTable("people")
+    df.createOrReplaceTempView("people")
 
     val unwrapDf = spark.sql("select address.city as city, address.state as state from people")
     val countByCity = unwrapDf.groupBy("city").count().collect().map(row => row.getString(0) -> row.getLong(1)).toMap
@@ -70,10 +70,10 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
 
   it should "support nested properties after saving" taggedAs ScalaSpaceClass in {
     sc.parallelize(Seq(
-      new Person(id = null, name = "Paul", age = 30, address = new Address(city = "Columbus", state = "OH")),
-      new Person(id = null, name = "Mike", age = 25, address = new Address(city = "Buffalo", state = "NY")),
-      new Person(id = null, name = "John", age = 20, address = new Address(city = "Charlotte", state = "NC")),
-      new Person(id = null, name = "Silvia", age = 27, address = new Address(city = "Charlotte", state = "NC"))
+      Person(id = null, name = "Paul", age = 30, address = Address(city = "Columbus", state = "OH")),
+      Person(id = null, name = "Mike", age = 25, address = Address(city = "Buffalo", state = "NY")),
+      Person(id = null, name = "John", age = 20, address = Address(city = "Charlotte", state = "NC")),
+      Person(id = null, name = "Silvia", age = 27, address = Address(city = "Charlotte", state = "NC"))
     )).saveToGrid()
 
     val collectionName = randomString()
