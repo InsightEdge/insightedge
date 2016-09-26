@@ -125,7 +125,7 @@
     },
     {
       "title": "Appending Column With Distance",
-      "text": "import org.apache.spark.sql.functions._\n\nval toDistance \u003d udf { point:Point \u003d\u003e\n    val d2r \u003d DistanceUtils.DEGREES_TO_RADIANS\n    val r2km \u003d DistanceUtils.RADIANS_TO_DEGREES * DistanceUtils.DEG_TO_KM\n    DistanceUtils.distHaversineRAD(point.getY()*d2r, point.getX()*d2r, userLocation.getY()*d2r, userLocation.getX()*d2r) * r2km\n}\n\nnearestSchools\n    .withColumn(\"distance\", toDistance(nearestSchools(\"location\")))\n    .registerTempTable(\"nearestSchools\")",
+      "text": "import org.apache.spark.sql.functions._\n\nval toDistance \u003d udf { point:Point \u003d\u003e\n    val d2r \u003d DistanceUtils.DEGREES_TO_RADIANS\n    val r2km \u003d DistanceUtils.RADIANS_TO_DEGREES * DistanceUtils.DEG_TO_KM\n    DistanceUtils.distHaversineRAD(point.getY()*d2r, point.getX()*d2r, userLocation.getY()*d2r, userLocation.getX()*d2r) * r2km\n}\n\nnearestSchools\n    .withColumn(\"distance\", toDistance(nearestSchools(\"location\")))\n    .createOrReplaceTempView(\"nearestSchools\")",
       "dateUpdated": "Jul 6, 2016 4:58:29 AM",
       "config": {
         "colWidth": 12.0,

@@ -230,7 +230,7 @@
     },
     {
       "title": "Loading DataFrames",
-      "text": "%spark\nval df \u003d sqlContext.read.grid.loadClass[Product]\ndf.printSchema()\ndf.registerTempTable(\"product\")\nval lowStock \u003d df.filter(df(\"quantity\") \u003c 5).count()",
+      "text": "%spark\nval df \u003d sqlContext.read.grid.loadClass[Product]\ndf.printSchema()\ndf.createOrReplaceTempView(\"product\")\nval lowStock \u003d df.filter(df(\"quantity\") \u003c 5).count()",
       "dateUpdated": "Apr 20, 2016 6:17:12 AM",
       "config": {
         "colWidth": 4.0,
@@ -261,7 +261,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%md\n#### After executing `df.registerTempTable(\"product\")`, you can run SQL queries on the `product` table to perform interactive analysis",
+      "text": "%md\n#### After executing `df.createOrReplaceTempView(\"product\")`, you can run SQL queries on the `product` table to perform interactive analysis",
       "dateUpdated": "Apr 20, 2016 8:37:08 AM",
       "config": {
         "colWidth": 12.0,
@@ -287,7 +287,7 @@
       "result": {
         "code": "SUCCESS",
         "type": "HTML",
-        "msg": "\u003ch4\u003eAfter executing \u003ccode\u003edf.registerTempTable(\"product\")\u003c/code\u003e, you can run SQL queries on the \u003ccode\u003eproduct\u003c/code\u003e table to perform interactive analysis\u003c/h4\u003e\n"
+        "msg": "\u003ch4\u003eAfter executing \u003ccode\u003edf.createOrReplaceTempView(\"product\")\u003c/code\u003e, you can run SQL queries on the \u003ccode\u003eproduct\u003c/code\u003e table to perform interactive analysis\u003c/h4\u003e\n"
       },
       "dateCreated": "Mar 23, 2016 11:39:39 AM",
       "status": "READY",
