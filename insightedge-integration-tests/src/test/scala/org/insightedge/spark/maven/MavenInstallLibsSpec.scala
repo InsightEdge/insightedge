@@ -35,11 +35,10 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
     println(s"Edition: $BuildEdition")
     println(s"Version: $BuildVersion")
     println(s"Git branch: $GitBranch")
-    var zipDir = Option(System.getProperty("dist.dir")).getOrElse("")
-    if (zipDir.isEmpty) {
+    val zipDir = Option(System.getProperty("dist.dir")).getOrElse{
       val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
       println(s"Package dir: $packagerDir")
-      zipDir = s"$packagerDir/target/$BuildEdition"
+      s"$packagerDir/target/$BuildEdition"
     }
     println(s"Zip dir: $zipDir")
 

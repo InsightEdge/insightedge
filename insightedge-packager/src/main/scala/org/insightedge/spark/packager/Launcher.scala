@@ -29,16 +29,12 @@ import org.insightedge.spark.packager.Utils._
 object Launcher {
 
   def getXapLocation(edition: String, projectBasedir: String): String = {
-    println(s"edition: " + edition)
+    println("edition: " + edition)
     val prefix = s"$projectBasedir/insightedge-packager/target/"
-    if (edition.equalsIgnoreCase("premium")) {
-      prefix + "xap-premium.zip"
-    }
-    else if(edition.equalsIgnoreCase("community")) {
-      prefix + "xap-community.zip"
-    }
-    else {
-      throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or community")
+    edition match {
+      case "premium" => prefix + "xap-premium.zip"
+      case "community" => prefix + "xap-community.zip"
+      case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or community")
     }
   }
 
