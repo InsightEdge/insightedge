@@ -28,6 +28,20 @@ import org.insightedge.spark.packager.Utils._
   */
 object Launcher {
 
+  def getXapLocation(edition: String, projectBasedir: String): String = {
+    println(s"edition: " + edition)
+    val prefix = s"$projectBasedir/insightedge-packager/target/"
+    if (edition.equalsIgnoreCase("premium")) {
+      prefix + "xap-premium.zip"
+    }
+    else if(edition.equalsIgnoreCase("community")) {
+      prefix + "xap-community.zip"
+    }
+    else {
+      throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or community")
+    }
+  }
+
   def main(args: Array[String]) {
     val project = parameter("Project folder" -> "project.directory")
     val version = parameter("Project version" -> "project.version")
@@ -37,7 +51,7 @@ object Launcher {
     val outputFile = parameter("Output file" -> "output.compressed.file")
     val outputPrefix = parameter("Output contents prefix" -> "output.contents.prefix")
     val spark = parameter("Spark distribution" -> "dist.spark")
-    val grid = parameter("Xap distribution" -> "dist.xap")
+    val grid = getXapLocation(edition, project)
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
     val examples = parameter("Examples zip" -> "dist.examples")
     val resources = s"$project/insightedge-packager/src/main/resources"

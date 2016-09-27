@@ -32,13 +32,15 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
   val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
   "maven-install-libs.sh" should "install libs into local maven repo" taggedAs LongRunningTest in {
-    val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
-    println(s"Package dir: $packagerDir")
     println(s"Edition: $BuildEdition")
     println(s"Version: $BuildVersion")
     println(s"Git branch: $GitBranch")
-
-    val zipDir = s"$packagerDir/target/$BuildEdition"
+    var zipDir = Option(System.getProperty("dist.dir")).getOrElse("")
+    if (zipDir.isEmpty) {
+      val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+      println(s"Package dir: $packagerDir")
+      zipDir = s"$packagerDir/target/$BuildEdition"
+    }
     println(s"Zip dir: $zipDir")
 
     println(s"Scripts dir: $scriptsDir")
