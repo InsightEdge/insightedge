@@ -35,14 +35,13 @@ class ClusterInstallationSpec extends FlatSpec with BeforeAndAfter {
   val scriptsDir = getClass.getClassLoader.getResource("docker/cluster-install/").getFile
 
   "insightedge.sh" should "install cluster" in {
-    val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
-
-    println(s"Package dir: $packagerDir")
-    val zipDir = s"$packagerDir/target/$BuildEdition"
+    val zipDir = Option(System.getProperty("dist.dir")).getOrElse{
+      val packagerDir = findPackagerDir(new File(".")).getOrElse(fail(s"Cannot find $PackagerDirName directory"))
+      println(s"Package dir: $packagerDir")
+      s"$packagerDir/target/$BuildEdition"
+    }
     println(s"Zip dir: $zipDir")
-
     println(s"Scripts dir: $scriptsDir")
-
     // workaround for maven plugin bug, it doesn't preserve file permissions
     execAssertSucc(s"chmod +x $scriptsDir/run.sh")
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
