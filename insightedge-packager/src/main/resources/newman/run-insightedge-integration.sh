@@ -5,6 +5,6 @@ JOB_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo "Job DIR: ${JOB_DIR}"
 echo start run-insightedge-integration.sh
 echo `env`
-mvn -f ${JOB_DIR}/insightedge-integration-tests/pom.xml -P run-integration-tests-${DIST_EDITION} -P run-external -DwildcardSuites=$1 -Ddist.dir=${JOB_DIR}/build verify
+mvn -f ${JOB_DIR}/insightedge-integration-tests/pom.xml -P run-integration-tests-${DIST_EDITION} -P run-external -DwildcardSuites=$1 -Ddist.dir=${JOB_DIR}/build -Dgit.branch=${GIT_BRANCH} verify
 EXIT_CODE=$?
 exit $EXIT_CODE
