@@ -7,9 +7,8 @@ get_libs() {
     local separator=$1
 
     local datagrid="$INSIGHTEDGE_HOME/datagrid"
-    local result=""
-    result="$result$separator$(find $INSIGHTEDGE_HOME/lib -name "insightedge-core-*.jar")"
-    result="$result$separator$(find $INSIGHTEDGE_HOME/lib -name "insightedge-scala-*.jar")"
+    local result="$(find $INSIGHTEDGE_HOME/jars -name "insightedge-core-*.jar")"
+    result="$result$separator$(find $INSIGHTEDGE_HOME/jars -name "insightedge-scala-*.jar")"
     result="$result$separator$(echo $datagrid/lib/required/*.jar | tr ' ' $separator)"
     result="$result$separator$(echo $datagrid/lib/optional/spatial/*.jar | tr ' ' $separator)"
     echo $result

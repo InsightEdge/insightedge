@@ -333,7 +333,7 @@ remote_slave() {
     local user=$2
     local key=$3
 
-    hosts_to_instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" org.insightedge.spark.utils.GridTopologyAllocator "$SPACE_TOPOLOGY" "$hosts"`
+    hosts_to_instances=`java -cp "$INSIGHTEDGE_HOME/jars/*" org.insightedge.spark.utils.GridTopologyAllocator "$SPACE_TOPOLOGY" "$hosts"`
     if [[ $hosts_to_instances == ERROR* ]]; then
         error_line "$hosts_to_instances"
         exit 1
@@ -423,7 +423,7 @@ describe_topology_allocation() {
         hosts="$hosts,host_$i"
     done
     echo "Allocated topology for $hosts_count hosts, topology $topology"
-    instances=`java -cp "$INSIGHTEDGE_HOME/lib/*" org.insightedge.spark.utils.GridTopologyAllocator "$topology" "$hosts"`
+    instances=`java -cp "$INSIGHTEDGE_HOME/jars/*" org.insightedge.spark.utils.GridTopologyAllocator "$topology" "$hosts"`
     for instance in $instances; do
         echo $instance
     done
