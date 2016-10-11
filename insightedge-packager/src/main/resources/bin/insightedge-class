@@ -21,7 +21,7 @@ fi
 # Find assembly jar
 SPARK_ASSEMBLY_JAR=
 if [ -f "${INSIGHTEDGE_HOME}/RELEASE" ]; then
-  ASSEMBLY_DIR="${INSIGHTEDGE_HOME}/lib"
+  ASSEMBLY_DIR="${INSIGHTEDGE_HOME}/jars"
 else
   ASSEMBLY_DIR="${INSIGHTEDGE_HOME}/assembly/target/scala-$SPARK_SCALA_VERSION"
 fi

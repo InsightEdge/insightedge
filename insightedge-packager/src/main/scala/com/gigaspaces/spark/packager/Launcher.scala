@@ -41,8 +41,8 @@ object Launcher {
     }
 
     run("Adding integration libs") {
-      copy(s"$project/insightedge-core/target", s"$output/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
-      copy(s"$project/insightedge-scala/target", s"$output/lib", nameFilter(n => n.startsWith("insightedge-scala") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
+      copy(s"$project/insightedge-core/target", s"$output/jars", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
+      copy(s"$project/insightedge-scala/target", s"$output/jars", nameFilter(n => n.startsWith("insightedge-scala") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
     }
 
     run("Adding poms of integration libs") {
@@ -111,8 +111,8 @@ object Launcher {
       remove(s"$output/bin/sparkR2.cmd")
     }
 
-    run("Removing Hadoop examples") {
-      remove(s"$output/lib/spark-examples-1.6.0-hadoop2.6.0.jar")
+    run("Removing Spark examples") {
+      remove(s"$output/examples")
     }
 
     run("Making scripts executable") {
