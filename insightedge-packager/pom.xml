@@ -316,10 +316,10 @@
         <profile>
             <id>publish-artifacts</id>
             <properties>
-                <storage.host>192.168.10.10</storage.host>
+                <storage.host>hercules</storage.host>
                 <storage.port>80</storage.port>
                 <storage.user>tgrid</storage.user>
-                <newman.host>192.168.50.66</newman.host>
+                <newman.host>xap-newman</newman.host>
                 <newman.port>8443</newman.port>
                 <newman.username>root</newman.username>
                 <newman.password>root</newman.password>

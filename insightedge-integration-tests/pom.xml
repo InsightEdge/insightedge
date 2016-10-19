@@ -250,6 +250,7 @@
                         <groupId>org.scalatest</groupId>
                         <artifactId>scalatest-maven-plugin</artifactId>
                         <configuration>
+                            <tagsToExclude>_</tagsToExclude> <!-- Workaround to reset previous value-->
                             <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir} -Dgit.branch=${git.branch}</argLine>
                         </configuration>
                     </plugin>
