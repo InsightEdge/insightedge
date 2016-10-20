@@ -17,11 +17,12 @@
 package org.insightedge.spark.utils;
 
 import com.gigaspaces.async.AsyncResult;
+
+import org.jini.rio.boot.BootUtil;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.executor.DistributedTask;
 import org.openspaces.core.executor.TaskGigaSpace;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class LookupPartitionTask implements DistributedTask<ArrayList<String>, L
     private transient GigaSpace gridProxy;
 
     public ArrayList<String> execute() throws Exception {
-        String hostName = InetAddress.getLocalHost().getHostName();
+        String hostName = BootUtil.getHostAddress();
         String containerName = gridProxy.getSpace().getContainerName();
 
         ArrayList<String> res = new ArrayList<String>();
