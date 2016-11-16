@@ -12,13 +12,57 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>org.openspaces</id>
+            <name>OpenSpaces</name>
+            <url>http://maven-repository.openspaces.org</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <properties>
         <dist.edition></dist.edition>
         <dist.dir>${project.basedir}/../insightedge-packager/target/${dist.edition}</dist.dir>
         <git.branch></git.branch>
+        <gsVersion>12.0.1</gsVersion>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.gigaspaces</groupId>
+            <artifactId>xap-asm</artifactId>
+            <version>${gsVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.gigaspaces</groupId>
+            <artifactId>xap-datagrid</artifactId>
+            <version>${gsVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.gigaspaces</groupId>
+            <artifactId>xap-openspaces</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.gigaspaces</groupId>
+            <artifactId>xap-admin</artifactId>
+            <version>${gsVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+
+
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
             <artifactId>insightedge-scala</artifactId>
@@ -58,7 +102,7 @@
         <dependency>
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
-            <version>3.5.12</version>
+            <version>6.1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
