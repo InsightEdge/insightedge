@@ -32,7 +32,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
   *  Zeppelin
   *  Spark History Server
   *
-  * Secnario:
+  * Scenario:
   * 1. submit job
   * 2. destroy slave1
   *
