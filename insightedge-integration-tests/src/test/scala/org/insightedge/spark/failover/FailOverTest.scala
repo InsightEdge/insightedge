@@ -18,7 +18,6 @@ package org.insightedge.spark.failover
 
 
 import org.insightedge.spark.utils.InsightEdgeAdminUtils
-import org.openspaces.admin.Admin
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -43,8 +42,6 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
   */
 class FailOverTest extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
-
-  protected var admin: Admin = _
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
