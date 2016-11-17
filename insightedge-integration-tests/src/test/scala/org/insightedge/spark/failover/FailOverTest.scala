@@ -23,7 +23,18 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
 /**
-  * Verifies that we can submit InsightEdge examples locally (demo mode + submit within docker container)
+  * Verifies that InsightEdge can recover from machine failover
+  *
+  * Toplogy:
+  *  master1                    slave1                  slave2                 slave3
+  *  Spark Master               Spark Worker Node       Spark Worker Node      Spark Worker Node
+  *  XAP Master (GSA,GSM,LUS)   XAP Slave (GSA, 2*GSC)  XAP Slave (GSA, 2*GSC) XAP Slave (GSA, 2*GSC)
+  *  Zeppelin
+  *  Spark History Server
+  *
+  * Secnario:
+  * 1. submit job
+  * 2. destroy slave1
   *
   * @author Kobi Kisos
   */
