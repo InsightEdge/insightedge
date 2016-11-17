@@ -4,24 +4,25 @@ import java.util.concurrent.TimeUnit
 
 import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
-import com.spotify.docker.client.messages.{ContainerConfig, ExecState, HostConfig, PortBinding}
+import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
 import org.json.simple.{JSONArray, JSONObject}
 import org.json.simple.parser.JSONParser
 import org.openspaces.admin.{Admin, AdminFactory}
-import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.util.{Failure, Try}
+import scala.util.control.Breaks._
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
-import scala.util.Try
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by kobikis on 13/11/16.
   *
-  * @since 12.0.1
+  * @since 1.1.0
   */
 
 object InsightEdgeAdminUtils {
@@ -36,7 +37,7 @@ object InsightEdgeAdminUtils {
   private var IE_HOME=BuildUtils.IEHome
 
   private val wsClient = NingWSClient()
-  protected  var containersId: Map[String, String] = Map[String, String]()
+  var containersId: Map[String, String] = Map[String, String]()
   private var ieSlaveCounter = 0
   private var ieMasterCounter = 0
 
@@ -135,6 +136,13 @@ object InsightEdgeAdminUtils {
     streamHistoryServer.close()
   }
 
+  def restartSparkHistoryServer(): Unit = {
+    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
+    println("history server pid " + historyServerPid)
+    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
+    InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
+  }
+
   private def awaitImageStarted(): Boolean = {
     println("Waiting for Zeppelin to be started ...")
     val startTime = System.currentTimeMillis
@@ -227,8 +235,8 @@ object InsightEdgeAdminUtils {
 
   def destroyContainerByName(name: String): Unit = {
     val id = containersId.get(name).get
-    docker.killContainer(id);
-    docker.removeContainer(id);
+    docker.killContainer(id)
+    docker.removeContainer(id)
   }
 
   def numberOfInsightEdgeMasters(numberOfIeMasters: Int): this.type = {
@@ -267,22 +275,6 @@ object InsightEdgeAdminUtils {
     getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/").get())
   }
 
-  def gett(url: String) : JSONObject = {
-    getBody2(wsClient.url(url).get())
-  }
-
-  private def getBody2(future: Future[WSResponse]) :  JSONObject= {
-    val response = Await.result(future, Duration.Inf)
-    if (response.status != 200)
-      throw new Exception(response.statusText)
-    jsonStrToMap2(response.body)
-  }
-
-  private def jsonStrToMap2(jsonStr: String): JSONObject = {
-    parser.parse(jsonStr).asInstanceOf[JSONObject]
-  }
-
-
   private def getBody(future: Future[WSResponse]) :  JSONArray= {
     val response = Await.result(future, Duration.Inf)
     if (response.status != 200)
@@ -309,6 +301,53 @@ object InsightEdgeAdminUtils {
     admin.getProcessingUnits.waitFor("insightedge-space", 60, TimeUnit.SECONDS).waitForSpace(60, TimeUnit.SECONDS)
 
     this
+  }
+
+  def getAppId: String = {
+    var appId = ""
+    val future = Future {
+      breakable {
+        while (true) {
+          if (InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(getMasterIp()).size() > 0) {
+            appId = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
+            break
+          }
+        }
+      }
+    }
+    val result = Await.result(future, 30 seconds)
+    appId
+  }
+
+  def destroyMachineWhenAppIsRunning(appId: String, containerName: String): Unit = {
+    val future = Future {
+      breakable {
+        while (true) {
+          println(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)
+          if ("RUNNING".equals(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)) {
+            InsightEdgeAdminUtils.destroyContainerByName(containerName)
+            InsightEdgeAdminUtils.containersId -= containerName
+            break
+          }
+        }
+      }
+    }
+    val result1 = Await.result(future, 30 seconds)
+  }
+
+  def waitForAppSuccess(appId: String): Unit = {
+    val future = Future {
+      breakable {
+        while (true) {
+          println(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)
+          if ("SUCCEEDED".equals(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)) {
+            break
+          }
+        }
+      }
+    }
+    future.onComplete { case  _ => println("xxxxxxxxxxxxxxxxxxxxxxx")}
+    val result2 = Await.result(future, 30 seconds)
   }
 
   def shutdown(): Unit = {
