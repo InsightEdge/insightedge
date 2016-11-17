@@ -36,6 +36,9 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
   * 1. submit job
   * 2. destroy slave1
   *
+  * Expected result:
+  * Job should and with status SUCCEEDED
+  *
   * @author Kobi Kisos
   */
 class FailOverTest extends FlatSpec with BeforeAndAfterAll {
