@@ -1,6 +1,6 @@
 package org.insightedge.spark.utils
 
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.{TimeUnit, TimeoutException}
 
 import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
@@ -15,7 +15,7 @@ import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Try}
 import scala.util.control.Breaks._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, Future, TimeoutException}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -315,7 +315,11 @@ object InsightEdgeAdminUtils {
         }
       }
     }
-    val result = Await.result(future, 30 seconds)
+    try {
+      val result = Await.result(future, 30 seconds)
+    }catch{
+      case e: TimeoutException => throw new RuntimeException("Failed to get app id from Spark History Server")
+    }
     appId
   }
 
@@ -332,7 +336,11 @@ object InsightEdgeAdminUtils {
         }
       }
     }
-    val result1 = Await.result(future, 30 seconds)
+    try {
+      val result = Await.result(future, 30 seconds)
+    }catch{
+      case e: TimeoutException => throw new RuntimeException(s"job of app [$appId] is not on status RUNNING")
+    }
   }
 
   def waitForAppSuccess(appId: String): Unit = {
@@ -346,8 +354,11 @@ object InsightEdgeAdminUtils {
         }
       }
     }
-    future.onComplete { case  _ => println("xxxxxxxxxxxxxxxxxxxxxxx")}
-    val result2 = Await.result(future, 30 seconds)
+    try {
+      val result = Await.result(future, 30 seconds)
+    }catch{
+      case e: TimeoutException => throw new RuntimeException(s"job of app [$appId] is not on status SUCCEEDED")
+    }
   }
 
   def shutdown(): Unit = {
