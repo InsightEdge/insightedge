@@ -1,24 +1,25 @@
 package org.insightedge.spark.utils
 
-import java.util.concurrent.{TimeUnit, TimeoutException}
+import java.util.concurrent.TimeUnit
 
-import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
+import com.gigaspaces.cluster.activeelection.SpaceMode
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
 import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
-import org.json.simple.{JSONArray, JSONObject}
+import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
 import org.json.simple.parser.JSONParser
+import org.json.simple.{JSONArray, JSONObject}
+import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.openspaces.admin.{Admin, AdminFactory}
 import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
-import scala.util.{Failure, Try}
-import scala.util.control.Breaks._
-import scala.concurrent.{Await, Future, TimeoutException}
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future, TimeoutException}
+import scala.util.Try
+import scala.util.control.Breaks._
 /**
   * Created by kobikis on 13/11/16.
   *
@@ -229,8 +230,16 @@ object InsightEdgeAdminUtils {
     getContainerIp(getMasterId())
   }
 
+  def getSlaveIp(name: String): String = {
+    getContainerIp(getSlaveId(name))
+  }
+
   def getMasterId(): String = {
     containersId.get("master1").get
+  }
+
+  def getSlaveId(name: String): String = {
+    containersId.get("name").get
   }
 
   def destroyContainerByName(name: String): Unit = {
@@ -303,6 +312,20 @@ object InsightEdgeAdminUtils {
     this
   }
 
+  @tailrec
+  def retry[T](maxRetryTimes: Long = Long.MaxValue)
+              (f: => T)
+              (implicit log: Throwable => Unit = _.printStackTrace): T = {
+    try (f) catch {
+      case e: Exception =>
+        if (maxRetryTimes <= 0) {
+          throw e
+        }
+        log(e)
+        retry(maxRetryTimes - 1)(f)(log)
+    }
+  }
+
   def getAppId: String = {
     var appId = ""
     val future = Future {
@@ -312,6 +335,7 @@ object InsightEdgeAdminUtils {
             appId = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
             break
           }
+          Thread.sleep(100)
         }
       }
     }
@@ -327,7 +351,6 @@ object InsightEdgeAdminUtils {
     val future = Future {
       breakable {
         while (true) {
-          println(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)
           if ("RUNNING".equals(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)) {
             InsightEdgeAdminUtils.destroyContainerByName(containerName)
             InsightEdgeAdminUtils.containersId -= containerName
@@ -343,22 +366,50 @@ object InsightEdgeAdminUtils {
     }
   }
 
-  def waitForAppSuccess(appId: String): Unit = {
+  def waitForAppSuccess(appId: String, sec: Int): Unit = {
     val future = Future {
       breakable {
         while (true) {
-          println(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)
           if ("SUCCEEDED".equals(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)) {
             break
           }
+          Thread.sleep(100)
         }
       }
     }
     try {
-      val result = Await.result(future, 30 seconds)
+      val result = Await.result(future, sec seconds)
     }catch{
       case e: TimeoutException => throw new RuntimeException(s"job of app [$appId] is not on status SUCCEEDED")
     }
+  }
+
+  def datagridNodes(): Map[ProcessingUnitInstance, List[String]] ={
+    var spacesOnMachines: Map[ProcessingUnitInstance, List[String]] = Map[ProcessingUnitInstance, List[String]]()
+
+    admin
+      .getMachines.waitFor(4, 30, TimeUnit.SECONDS)
+
+    admin
+      .getSpaces
+      .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
+      .waitFor(6, 30, TimeUnit.SECONDS)
+
+    admin
+      .getSpaces
+      .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
+      .waitFor(3, SpaceMode.PRIMARY, 30, TimeUnit.SECONDS)
+
+    admin
+      .getSpaces
+      .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
+      .waitFor(3, SpaceMode.BACKUP, 30, TimeUnit.SECONDS)
+
+    admin.getMachines.getMachines.foreach(
+      m => m.getProcessingUnitInstances.foreach(
+        puInstance => spacesOnMachines += (puInstance -> List(m.getHostAddress, puInstance.getSpaceInstance.getMode.name())))
+    )
+    spacesOnMachines
   }
 
   def shutdown(): Unit = {
