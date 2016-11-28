@@ -1,5 +1,6 @@
 package org.insightedge.spark.utils
 
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
@@ -10,23 +11,24 @@ import org.json.simple.parser.JSONParser
 import org.json.simple.{JSONArray, JSONObject}
 import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.openspaces.admin.{Admin, AdminFactory}
+import org.scalatest.Assertions
 import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
-import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future, TimeoutException}
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 import scala.util.control.Breaks._
+
 /**
   * Created by kobikis on 13/11/16.
   *
   * @since 1.1.0
   */
 
-object InsightEdgeAdminUtils {
+object InsightEdgeAdminUtils extends Assertions{
 
   private val DockerImageStartTimeout = 3.minutes
   private val ZeppelinPort = "8090"
@@ -35,7 +37,7 @@ object InsightEdgeAdminUtils {
   private val docker = DefaultDockerClient.fromEnv().build()
   private var zeppelinMappedPort: String = _
 
-  private var IE_HOME=BuildUtils.IEHome
+  private var IE_HOME = BuildUtils.IEHome
 
   private val wsClient = NingWSClient()
   var containersId: Map[String, String] = Map[String, String]()
@@ -50,19 +52,19 @@ object InsightEdgeAdminUtils {
 
   protected var admin: Admin = _
 
-  private  val parser = new JSONParser()
+  private val parser = new JSONParser()
 
-  def loadInsightEdgeSlaveContainer(masterIp: String): String ={
+  def loadInsightEdgeSlaveContainer(masterIp: String): String = {
     val hostConfig = HostConfig
       .builder()
-      .appendBinds(IE_HOME+":/opt/insightedge")
+      .appendBinds(IE_HOME + ":/opt/insightedge")
       .build()
 
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
       .image(ImageName)
       .cmd("bash", "-c", "/opt/insightedge/sbin/insightedge.sh --mode slave --master " + masterIp + " && sleep 2h")
-      .env("XAP_LOOKUP_LOCATORS="+masterIp)
+      .env("XAP_LOOKUP_LOCATORS=" + masterIp)
       .env("XAP_NIC_ADDRESS=#local:ip#")
       .build()
 
@@ -79,14 +81,14 @@ object InsightEdgeAdminUtils {
     containerId
   }
 
-  def loadInsightEdgeMasterContainer(): String ={
+  def loadInsightEdgeMasterContainer(): String = {
     val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
     val portBindings = Map(ZeppelinPort -> randomPort).asJava
     val hostConfig = HostConfig
       .builder()
       .portBindings(portBindings)
 
-      .appendBinds(IE_HOME+":/opt/insightedge")
+      .appendBinds(IE_HOME + ":/opt/insightedge")
       .build()
 
     val containerConfig = ContainerConfig.builder()
@@ -119,9 +121,18 @@ object InsightEdgeAdminUtils {
     val binding = bindings.asScala.head
     zeppelinMappedPort = binding.hostPort()
 
-    if (!awaitImageStarted()) {
-      throw new RuntimeException("image [ " + ImageName + " ] start failed with timeout")
+
+    Try {
+      retry(30000 millis, 1000 millis) {
+        println("ping zeppelin")
+        val resp = wsClient.url(zeppelinUrl).get()
+        Await.result(resp, 1.second)
+      }
+    }match {
+      case Success(_)  => println("Zeppling started")
+      case Failure(_) => fail("image [ " + ImageName + " ] start failed with timeout")
     }
+
     containerId
   }
 
@@ -144,44 +155,41 @@ object InsightEdgeAdminUtils {
     InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
   }
 
-  private def awaitImageStarted(): Boolean = {
-    println("Waiting for Zeppelin to be started ...")
-    val startTime = System.currentTimeMillis
-
-    val sleepBetweenAttempts = 1.second
-
-    println(s"Zeppelin $zeppelinUrl")
-
-    def attempt() = Try {
-      println("ping zeppelin")
-      val resp = wsClient.url(zeppelinUrl).get()
-      Await.result(resp, 1.second)
+  def retry[T](timeout: FiniteDuration, sleepBetweenAttempts: FiniteDuration)(fn: => T): T = {
+    def startTime = System.currentTimeMillis()
+    retryRec(timeout, sleepBetweenAttempts, startTime){
+      fn
     }
+  }
 
-    def timeoutElapsed() = System.currentTimeMillis - startTime > DockerImageStartTimeout.toMillis
+  @annotation.tailrec
+  private def retryRec[T](timeout: FiniteDuration, sleepBetweenAttempts: FiniteDuration, start: Long)(fn: => T): T = {
+    def startTime = start
+
+    def timeoutElapsed() = {
+      val running = System.currentTimeMillis - startTime
+      running < timeout.toMillis
+    }
 
     def sleep() = Thread.sleep(sleepBetweenAttempts.toMillis)
 
-    @tailrec
-    def retryWhile[T](retry: => T)(cond: T => Boolean): T = {
-      val res = retry
-      if (cond(res)) {
-        res
-      } else {
-        retryWhile(retry)(cond)
-      }
+    sleep()
+
+    util.Try { fn } match {
+      case util.Success(x) => x
+      case _  if timeoutElapsed() =>
+        retryRec(timeout, sleepBetweenAttempts, startTime)(fn)
+      case Failure(e) =>
+        if(timeoutElapsed()) {
+          println(e)
+          retryRec(timeout, sleepBetweenAttempts, startTime)(fn)
+        }
+        else
+          throw e
     }
-
-    val res = retryWhile {
-      val r = attempt()
-      sleep()
-      r
-    }(x => x.isSuccess || timeoutElapsed())
-
-    res.isSuccess
   }
 
-  def execAndWaitFor(containerId: String, command: String): Int ={
+  def execAndWaitFor(containerId: String, command: String): Int = {
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
     val execId = execCreation.id()
     val output = docker.execStart(execId)
@@ -206,12 +214,12 @@ object InsightEdgeAdminUtils {
     output.close()
   }
 
-  protected def getContainerIp(containerId: String): String ={
+  protected def getContainerIp(containerId: String): String = {
     var info = docker.inspectContainer(containerId)
     info.networkSettings().ipAddress()
   }
 
-  def deployDataGrid(containerId: String, masterIp: String, topology: String): Unit ={
+  def deployDataGrid(containerId: String, masterIp: String, topology: String): Unit = {
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/sbin/insightedge.sh --mode deploy --topology " + topology + " --master " + masterIp))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
@@ -246,6 +254,7 @@ object InsightEdgeAdminUtils {
     val id = containersId.get(name).get
     docker.killContainer(id)
     docker.removeContainer(id)
+    containersId -= name
   }
 
   def numberOfInsightEdgeMasters(numberOfIeMasters: Int): this.type = {
@@ -268,23 +277,29 @@ object InsightEdgeAdminUtils {
     this
   }
 
-  private def createDataGridAdmin(locator: String) : Admin = {
+  private def createDataGridAdmin(locator: String): Admin = {
     new AdminFactory().addLocator(locator).create()
   }
 
-  def getDataGridAdmin() : Admin = {
+  def getDataGridAdmin: Admin = {
     admin
   }
 
-  def isAppCompletedHistoryServer(masterIp: String, appId: String) : JSONArray = {
+  def assertAllJobsSucceeded(masterIp: String, appId: String): Unit = {
+    val jobs: JSONArray = getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
+    val jobsArr = jobs.toArray(new Array[JSONObject](0))
+    jobsArr.map((o: JSONObject) => assert(!o.get("status").equals("FAILED")))
+  }
+
+  def isAppCompletedHistoryServer(masterIp: String, appId: String): JSONArray = {
     getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
   }
 
-  def getSparkAppsFromHistoryServer(masterIp: String) : JSONArray = {
+  def getSparkAppsFromHistoryServer(masterIp: String): JSONArray = {
     getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/").get())
   }
 
-  private def getBody(future: Future[WSResponse]) :  JSONArray= {
+  private def getBody(future: Future[WSResponse]): JSONArray = {
     val response = Await.result(future, Duration.Inf)
     if (response.status != 200)
       throw new Exception(response.statusText)
@@ -297,13 +312,13 @@ object InsightEdgeAdminUtils {
 
 
   def create(): this.type = {
-    for(i <-0 until numOfIEMasters ){
+    for (i <- 0 until numOfIEMasters) {
       loadInsightEdgeMasterContainer()
     }
-    for(i <-0 until numOfIESlaves ){
+    for (i <- 0 until numOfIESlaves) {
       loadInsightEdgeSlaveContainer(getContainerIp(containersId.get("master1").get))
     }
-    deployDataGrid(containersId.get("master1").get, getContainerIp(containersId.get("master1").get), numOfDataGridMasters.toString +"," +numOfDataGridSlaves)
+    deployDataGrid(containersId.get("master1").get, getContainerIp(containersId.get("master1").get), numOfDataGridMasters.toString + "," + numOfDataGridSlaves)
 
     admin = createDataGridAdmin(getMasterIp())
 
@@ -312,75 +327,49 @@ object InsightEdgeAdminUtils {
     this
   }
 
-  @tailrec
-  def retry[T](maxRetryTimes: Long = Long.MaxValue)
-              (f: => T)
-              (implicit log: Throwable => Unit = _.printStackTrace): T = {
-    try (f) catch {
-      case e: Exception =>
-        if (maxRetryTimes <= 0) {
-          throw e
-        }
-        log(e)
-        retry(maxRetryTimes - 1)(f)(log)
-    }
-  }
-
   def getAppId: String = {
     var appId = ""
-    val future = Future {
-      breakable {
-        while (true) {
-          if (InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(getMasterIp()).size() > 0) {
-            appId = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
-            break
-          }
-          Thread.sleep(100)
+    retry(30000 millis, 100 millis) {
+      val f = Future {
+        if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0)
+          appId = getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
+        if(appId == null ||  appId.equals(""))
+          fail("Failed to get app id from Spark History Server")
+        else {
+          println(s"App Id [ $appId ]")
+          appId
         }
       }
+      Await.result(f, 1.seconds)
+      f.value.get.get
     }
-    try {
-      val result = Await.result(future, 30 seconds)
-    }catch{
-      case e: TimeoutException => throw new RuntimeException("Failed to get app id from Spark History Server")
-    }
-    appId
   }
 
   def destroyMachineWhenAppIsRunning(appId: String, containerName: String): Unit = {
-    val future = Future {
-      breakable {
-        while (true) {
-          if ("RUNNING".equals(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)) {
-            InsightEdgeAdminUtils.destroyContainerByName(containerName)
-            InsightEdgeAdminUtils.containersId -= containerName
-            break
-          }
+    retry(30000 millis, 100 millis) {
+      val f = Future {
+        val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
+        if ("RUNNING".equals(status)) {
+          destroyContainerByName(containerName)
+          containersId -= containerName
+          println(s"Container $containerName destroyed")
+        } else {
+          fail(s"job of app [$appId] is not on status RUNNING")
         }
       }
-    }
-    try {
-      val result = Await.result(future, 30 seconds)
-    }catch{
-      case e: TimeoutException => throw new RuntimeException(s"job of app [$appId] is not on status RUNNING")
+      Await.result(f, 5 seconds)
     }
   }
 
   def waitForAppSuccess(appId: String, sec: Int): Unit = {
-    val future = Future {
-      breakable {
-        while (true) {
-          if ("SUCCEEDED".equals(InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString)) {
-            break
-          }
-          Thread.sleep(100)
+    retry(30000 millis, 100 millis) {
+      val f = Future {
+        val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
+        if (!"SUCCEEDED".equals(status)) {
+          fail(s"job of app [$appId] is not on status SUCCEEDED")
         }
       }
-    }
-    try {
-      val result = Await.result(future, sec seconds)
-    }catch{
-      case e: TimeoutException => throw new RuntimeException(s"job of app [$appId] is not on status SUCCEEDED")
+      Await.result(f, 5 seconds)
     }
   }
 
