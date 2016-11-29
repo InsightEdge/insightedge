@@ -324,6 +324,10 @@
                         <executions>
                             <!--Don't build images, only run tests-->
                             <execution>
+                                <id>build-failover-image</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
                                 <id>build-maven-install-libs-image</id>
                                 <phase>none</phase>
                             </execution>
@@ -365,6 +369,10 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <executions>
                             <!--Images to build-->
+                            <execution>
+                                <id>build-failover-image</id>
+                                <phase>pre-integration-test</phase>
+                            </execution>
                             <execution>
                                 <id>build-maven-install-libs-image</id>
                                 <phase>pre-integration-test</phase>
@@ -440,6 +448,10 @@
                         <groupId>com.spotify</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <executions>
+                            <execution>
+                                <id>build-failover-image</id>
+                                <phase>none</phase>
+                            </execution>
                             <execution>
                                 <id>build-demo-mode-image</id>
                                 <phase>none</phase>
