@@ -1,6 +1,5 @@
 package org.insightedge.spark.utils
 
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
@@ -16,11 +15,9 @@ import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
 import scala.collection.JavaConverters._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future, TimeoutException}
+import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
-import scala.util.control.Breaks._
 
 /**
   * Created by kobikis on 13/11/16.
@@ -111,8 +108,6 @@ object InsightEdgeAdminUtils extends Assertions{
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/sbin/insightedge.sh --mode zeppelin --master $MY_IP"))
     val execId = execCreation.id()
     val stream = docker.execStart(execId)
-    stream.readFully()
-    stream.close()
 
     startSparkHistoryServer(containerId)
 
@@ -144,8 +139,6 @@ object InsightEdgeAdminUtils extends Assertions{
     val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/sbin/start-history-server.sh"))
     val execIdHistoryServer = execCreationHistoryServer.id()
     val streamHistoryServer = docker.execStart(execIdHistoryServer)
-    streamHistoryServer.readFully()
-    streamHistoryServer.close()
   }
 
   def restartSparkHistoryServer(): Unit = {
@@ -211,7 +204,6 @@ object InsightEdgeAdminUtils extends Assertions{
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command))
     val execId = execCreation.id()
     val output = docker.execStart(execId)
-    output.close()
   }
 
   protected def getContainerIp(containerId: String): String = {
@@ -223,7 +215,6 @@ object InsightEdgeAdminUtils extends Assertions{
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/sbin/insightedge.sh --mode deploy --topology " + topology + " --master " + masterIp))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
-    stream.close()
   }
 
 
@@ -231,7 +222,6 @@ object InsightEdgeAdminUtils extends Assertions{
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/sbin/insightedge.sh --mode undeploy --master " + masterIp))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
-    stream.close()
   }
 
   def getMasterIp(): String = {
@@ -330,46 +320,36 @@ object InsightEdgeAdminUtils extends Assertions{
   def getAppId: String = {
     var appId = ""
     retry(30000 millis, 100 millis) {
-      val f = Future {
-        if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0)
-          appId = getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
-        if(appId == null ||  appId.equals(""))
-          fail("Failed to get app id from Spark History Server")
-        else {
-          println(s"App Id [ $appId ]")
-          appId
-        }
+      if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0)
+        appId = getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
+      if(appId == null ||  appId.equals(""))
+        fail("Failed to get app id from Spark History Server")
+      else {
+        println(s"App Id [ $appId ]")
+        appId
       }
-      Await.result(f, 1.seconds)
-      f.value.get.get
     }
   }
 
   def destroyMachineWhenAppIsRunning(appId: String, containerName: String): Unit = {
     retry(30000 millis, 100 millis) {
-      val f = Future {
-        val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
-        if ("RUNNING".equals(status)) {
-          destroyContainerByName(containerName)
-          containersId -= containerName
-          println(s"Container $containerName destroyed")
-        } else {
-          fail(s"job of app [$appId] is not on status RUNNING")
-        }
+      val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
+      if ("RUNNING".equals(status)) {
+        destroyContainerByName(containerName)
+        containersId -= containerName
+        println(s"Container $containerName destroyed")
+      } else {
+        fail(s"job of app [$appId] is not on status RUNNING")
       }
-      Await.result(f, 5 seconds)
     }
   }
 
   def waitForAppSuccess(appId: String, sec: Int): Unit = {
     retry(30000 millis, 100 millis) {
-      val f = Future {
-        val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
-        if (!"SUCCEEDED".equals(status)) {
-          fail(s"job of app [$appId] is not on status SUCCEEDED")
-        }
+      val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
+      if (!"SUCCEEDED".equals(status)) {
+        fail(s"job of app [$appId] is not on status SUCCEEDED")
       }
-      Await.result(f, 5 seconds)
     }
   }
 
@@ -408,5 +388,3 @@ object InsightEdgeAdminUtils extends Assertions{
     wsClient.close()
   }
 }
-
-
