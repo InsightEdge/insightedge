@@ -17,16 +17,6 @@
             <id>org.openspaces</id>
             <name>OpenSpaces</name>
             <url>http://maven-repository.openspaces.org</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
         </repository>
     </repositories>
 
