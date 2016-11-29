@@ -34,7 +34,7 @@
         <dist.edition></dist.edition>
         <dist.dir>${project.basedir}/../insightedge-packager/target/${dist.edition}</dist.dir>
         <git.branch></git.branch>
-        <gsVersion>12.0.1</gsVersion>
+        <gsVersion>12.1.0-SNAPSHOT</gsVersion>
     </properties>
 
     <dependencies>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>com.gigaspaces</groupId>
             <artifactId>xap-build-plugin</artifactId>
-            <version>12.0.1-SNAPSHOT</version>
+            <version>12.1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -475,7 +475,7 @@
                     <plugin>
                         <groupId>com.gigaspaces</groupId>
                         <artifactId>xap-build-plugin</artifactId>
-                        <version>12.0.1-SNAPSHOT</version>
+                        <version>12.1.0-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>
