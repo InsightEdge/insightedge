@@ -47,6 +47,10 @@
 
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
+            <artifactId>insightedge-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.gigaspaces.insightedge</groupId>
             <artifactId>insightedge-scala</artifactId>
         </dependency>
         <!-- Scala -->

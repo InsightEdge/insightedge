@@ -19,7 +19,7 @@ package org.insightedge.spark.failover
 
 import java.util.concurrent.TimeUnit
 
-import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -45,6 +45,8 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
 
+  private val JOBS = s"/opt/insightedge-integration-tests-${BuildUtils.BuildVersion}.jar"
+
   override protected def beforeAll(): Unit = {
     super.beforeAll()
     println("Starting docker container")
@@ -63,7 +65,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
     val command = "/opt/insightedge/bin/insightedge-submit  --class " + fullClassName +
-      " --master spark://" + masterIp + ":7077 /opt/insightedge/quickstart/scala/insightedge-examples.jar" +
+      " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName + " insightedge " + masterIp + ":4174"
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
