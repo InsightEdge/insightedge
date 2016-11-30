@@ -16,9 +16,6 @@
 
 package org.insightedge.spark.failover
 
-
-import java.util.concurrent.TimeUnit
-
 import org.insightedge.spark.utils.InsightEdgeAdminUtils
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
@@ -42,7 +39,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
   *
   * @author Kobi Kisos
   */
-class MachineFailOverLoadRddTest extends FlatSpec with BeforeAndAfterAll {
+class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
 
   override protected def beforeAll(): Unit = {
@@ -56,9 +53,9 @@ class MachineFailOverLoadRddTest extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine" in {
+  "insightedge-submit.sh " should "submit SaveRdd example while destroying slave machine" in {
 
-    val fullClassName = s"org.insightedge.examples.basic.LoadRdd"
+    val fullClassName = s"org.insightedge.examples.basic.SaveRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
@@ -83,7 +80,6 @@ class MachineFailOverLoadRddTest extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
   }
-
 
   override protected def afterAll(): Unit = {
     super.afterAll()

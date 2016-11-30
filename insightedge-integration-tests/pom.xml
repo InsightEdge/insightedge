@@ -24,22 +24,9 @@
         <dist.edition></dist.edition>
         <dist.dir>${project.basedir}/../insightedge-packager/target/${dist.edition}</dist.dir>
         <git.branch></git.branch>
-        <gsVersion>12.1.0-SNAPSHOT</gsVersion>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.gigaspaces</groupId>
-            <artifactId>xap-asm</artifactId>
-            <version>${gsVersion}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.gigaspaces</groupId>
-            <artifactId>xap-datagrid</artifactId>
-            <version>${gsVersion}</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>org.gigaspaces</groupId>
             <artifactId>xap-openspaces</artifactId>
@@ -48,10 +35,15 @@
         <dependency>
             <groupId>com.gigaspaces</groupId>
             <artifactId>xap-admin</artifactId>
-            <version>${gsVersion}</version>
+            <version>${xap.version}</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.gigaspaces</groupId>
+            <artifactId>xap-asm</artifactId>
+            <version>${xap.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
@@ -465,7 +457,7 @@
                     <plugin>
                         <groupId>com.gigaspaces</groupId>
                         <artifactId>xap-build-plugin</artifactId>
-                        <version>12.1.0-SNAPSHOT</version>
+                        <version>12.0.1-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>

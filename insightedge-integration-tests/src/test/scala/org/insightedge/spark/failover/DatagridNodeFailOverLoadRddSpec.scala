@@ -16,7 +16,9 @@
 
 package org.insightedge.spark.failover
 
+import com.gigaspaces.cluster.activeelection.SpaceMode
 import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -32,14 +34,14 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
   *
   * Scenario:
   * 1. submit job
-  * 2. destroy slave1
+  * 2. restart datagrid primary on machine slave1
   *
   * Expected result:
   * Job should and with status SUCCEEDED
   *
   * @author Kobi Kisos
   */
-class MachineFailOverStreamingTest extends FlatSpec with BeforeAndAfterAll {
+class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
 
   override protected def beforeAll(): Unit = {
@@ -53,9 +55,9 @@ class MachineFailOverStreamingTest extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit StreamExample example while destroying slave machine" in {
+  "insightedge-submit.sh " should "submit LoadRdd while restarting datagrid primary node" in {
 
-    val fullClassName = s"org.insightedge.examples.streaming.StreamExample"
+    val fullClassName = s"org.insightedge.examples.basic.LoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
@@ -63,28 +65,34 @@ class MachineFailOverStreamingTest extends FlatSpec with BeforeAndAfterAll {
       " --master spark://" + masterIp + ":7077 /opt/insightedge/quickstart/scala/insightedge-examples.jar" +
       " spark://" + masterIp + ":7077 " + spaceName + " insightedge " + masterIp + ":4174"
 
+    val spacesOnMachines = InsightEdgeAdminUtils.datagridNodes()
+
     InsightEdgeAdminUtils.exec(masterContainerId, command)
+    var appId: String = InsightEdgeAdminUtils.getAppId
 
-    InsightEdgeAdminUtils.restartSparkHistoryServer()
-
-    //wait for history server to be available
-    Thread.sleep(30000)
-
-    val appId: String = InsightEdgeAdminUtils.getAppId
-
-
-    InsightEdgeAdminUtils.destroyContainerByName("slave1")
+    restartPrimaryOnSlaveMachine(spacesOnMachines)
 
     //wait for job to finish
-    Thread.sleep(120000)
+    Thread.sleep(60000)
 
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
     //wait for history server to be available
     Thread.sleep(30000)
 
-   InsightEdgeAdminUtils.assertAllJobsSucceeded(InsightEdgeAdminUtils.getMasterIp(), appId)
+    InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
+  }
 
+  def restartPrimaryOnSlaveMachine(spacesOnMachines: Map[ProcessingUnitInstance, List[String]]): String = {
+    spacesOnMachines foreach {
+      case (key, value) =>
+        if(value.tail.filter(_.equals(SpaceMode.PRIMARY.name())).size == 1) {
+          println("Restarting " + key.getSpaceInstance.getSpaceInstanceName + " on machine " + value.head)
+          key.restart()
+          return value.head
+        }
+    }
+    return null
   }
 
   override protected def afterAll(): Unit = {
