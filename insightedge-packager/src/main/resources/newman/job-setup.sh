@@ -12,7 +12,7 @@ else
     jar xf resources/gigaspaces-insightedge*premium*.zip
     mv gigaspaces-insightedge* build
     mv resources/gigaspaces-insightedge*premium*.zip build/
-    build/gigaspaces-insightedge*premium*/insightedge-maven.sh
+    build/sbin/insightedge-maven.sh
 fi
 jar xf resources/integration-tests-sources.zip
 mvn -f ${JOB_DIR}/insightedge-integration-tests/pom.xml -P run-integration-tests-${DIST_EDITION} -P setup-external -Ddist.dir=${JOB_DIR}/build clean pre-integration-test
