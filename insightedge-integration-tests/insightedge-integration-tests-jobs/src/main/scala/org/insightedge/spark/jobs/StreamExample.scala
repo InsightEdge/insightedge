@@ -1,4 +1,4 @@
-package org.insightedge.spark.failover.jobs
+package org.insightedge.spark.jobs
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SQLContext

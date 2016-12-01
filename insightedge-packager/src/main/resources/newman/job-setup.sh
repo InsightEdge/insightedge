@@ -21,7 +21,7 @@ fi
 jar xf resources/integration-tests-sources.zip
 mvn -f ${JOB_DIR}/insightedge-integration-tests/pom.xml -P run-integration-tests-${DIST_EDITION} -P setup-external -Ddist.dir=${JOB_DIR}/build clean pre-integration-test
 
-cp ${JOB_DIR}/insightedge-integration-tests/target/insightedge-integration-tests*.jar ${JOB_DIR}
+cp ${JOB_DIR}/insightedge-integration-tests/insightedge-integration-tests-jobs/target/insightedge-integration-tests-jobs*.jar ${JOB_DIR}
 EXIT_CODE=$?
 echo "done job setup"
 exit $EXIT_CODE

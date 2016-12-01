@@ -4,7 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>insightedge-integration-tests</artifactId>
+    <packaging>pom</packaging>
     <description>InsightEdge Integration Tests</description>
+
+    <modules>
+        <module>insightedge-integration-tests-jobs</module>
+    </modules>
 
     <parent>
         <groupId>org.gigaspaces.insightedge</groupId>
@@ -45,17 +50,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.gigaspaces.insightedge</groupId>
-            <artifactId>insightedge-core</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.jersey</groupId>
-                    <artifactId>jersey-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
             <artifactId>insightedge-scala</artifactId>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.insightedge.spark.failover.jobs
+package org.insightedge.spark.jobs
 
 import org.insightedge.scala.annotation._
 
