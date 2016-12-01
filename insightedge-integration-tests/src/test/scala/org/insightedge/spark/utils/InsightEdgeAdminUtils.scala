@@ -84,7 +84,6 @@ object InsightEdgeAdminUtils extends Assertions{
     val hostConfig = HostConfig
       .builder()
       .portBindings(portBindings)
-
       .appendBinds(IE_HOME + ":/opt/insightedge")
       .build()
 
