@@ -57,7 +57,7 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
 
   "insightedge-submit.sh " should "submit StreamExample example while destroying slave machine" in {
 
-    val fullClassName = s"org.insightedge.examples.streaming.StreamExample"
+    val fullClassName = s"org.insightedge.spark.jobs.StreamExample"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
