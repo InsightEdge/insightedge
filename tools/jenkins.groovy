@@ -8,6 +8,7 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
     // never fails with non-zero status code (using ||: syntax)
     sh "git ls-remote --heads $repo | grep -c $targetBranch > temp-branch-count || :"
     String branchMatchCount = readFile("temp-branch-count").trim()
+    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX " $branchMatchCount
     if (branchMatchCount.equals("1")) {
         echo "Branch $targetBranch found at: $repo"
         return targetBranch
