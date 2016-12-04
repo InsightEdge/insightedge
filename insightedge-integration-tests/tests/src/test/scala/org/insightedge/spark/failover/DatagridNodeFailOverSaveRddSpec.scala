@@ -46,7 +46,7 @@ import scala.collection.immutable.Nil
 class DatagridNodeFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
 
-  private val JOBS = s"/opt/insightedge/quickstart/scala/insightedge-integration-tests-jobs-${BuildUtils.BuildVersion}.jar"
+  private val JOBS = s"/opt/insightedge/quickstart/scala/jobs-${BuildUtils.BuildVersion}.jar"
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()

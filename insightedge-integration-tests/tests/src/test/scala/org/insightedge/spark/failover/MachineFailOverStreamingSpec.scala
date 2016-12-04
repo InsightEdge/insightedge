@@ -16,9 +16,6 @@
 
 package org.insightedge.spark.failover
 
-
-import java.util.concurrent.TimeUnit
-
 import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
@@ -42,10 +39,10 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
   *
   * @author Kobi Kisos
   */
-class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
+class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
 
-  private val JOBS = s"/opt/insightedge/quickstart/scala/insightedge-integration-tests-jobs-${BuildUtils.BuildVersion}.jar"
+  private val JOBS = s"/opt/insightedge/quickstart/scala/jobs-${BuildUtils.BuildVersion}.jar"
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
@@ -58,9 +55,9 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine" in {
+  "insightedge-submit.sh " should "submit StreamExample example while destroying slave machine" in {
 
-    val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
+    val fullClassName = s"org.insightedge.spark.jobs.StreamExample"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
@@ -70,22 +67,27 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
 
+    InsightEdgeAdminUtils.restartSparkHistoryServer()
 
-    var appId: String = InsightEdgeAdminUtils.getAppId
+    //wait for history server to be available
+    Thread.sleep(30000)
 
-    InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(appId, "slave1")
+    val appId: String = InsightEdgeAdminUtils.getAppId
+
+
+    InsightEdgeAdminUtils.destroyContainerByName("slave1")
 
     //wait for job to finish
-    Thread.sleep(60000)
+    Thread.sleep(120000)
 
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
     //wait for history server to be available
     Thread.sleep(30000)
 
-    InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
-  }
+   InsightEdgeAdminUtils.assertAllJobsSucceeded(InsightEdgeAdminUtils.getMasterIp(), appId)
 
+  }
 
   override protected def afterAll(): Unit = {
     super.afterAll()

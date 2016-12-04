@@ -15,6 +15,6 @@ cp ${JOB_DIR}/build/conf/spark-defaults.conf.template ${JOB_DIR}/build/conf/spar
 echo "spark.eventLog.enabled=true" > ${JOB_DIR}/build/conf/spark-defaults.conf
 
 
-mvn -f ${JOB_DIR}/insightedge-integration-tests/pom.xml -P run-integration-tests-${DIST_EDITION} -P run-external -DwildcardSuites=$1 -Ddist.dir=${JOB_DIR}/build -Dgit.branch=${GIT_BRANCH} verify
+mvn -f ${JOB_DIR}/insightedge-integration-tests/tests/pom.xml -P run-integration-tests-${DIST_EDITION} -P run-external -DwildcardSuites=$1 -Ddist.dir=${JOB_DIR}/build -Dgit.branch=${GIT_BRANCH} verify
 EXIT_CODE=$?
 exit $EXIT_CODE

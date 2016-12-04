@@ -18,7 +18,6 @@ package org.insightedge.spark.cluster
 
 import java.io.File
 
-import org.insightedge.spark.utils.BuildUtils
 import org.insightedge.spark.utils.BuildUtils.BuildEdition
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 import org.insightedge.spark.utils.ProcessUtils._
