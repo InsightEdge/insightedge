@@ -8,7 +8,6 @@ def String getBranchOrDefault(String repo, String targetBranch, String defaultBr
     // never fails with non-zero status code (using ||: syntax)
     sh "git ls-remote --heads $repo | grep -c $targetBranch > temp-branch-count || :"
     String branchMatchCount = readFile("temp-branch-count").trim()
-    echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX " $branchMatchCount
     if (branchMatchCount.equals("1")) {
         echo "Branch $targetBranch found at: $repo"
         return targetBranch
@@ -41,10 +40,10 @@ echo "Branch: $branchName"
 echo "Publish newman artifacts: " + shouldPublishPrivateArtifacts
 echo "Newman tags: " + newmanTags
 
-String zeppelinRepo = "git@github.com:giga-dev/insightedge-zeppelin.git"
+String zeppelinRepo = "git@github.com:InsightEdge/insightedge-zeppelin.git"
 String zeppelinDefaultBranchName = "master"
 
-String examplesRepo = "git@github.com:giga-dev/insightedge-examples.git"
+String examplesRepo = "git@github.com:InsightEdge/insightedge-examples.git"
 String examplesDefaultBranchName = "master"
 
 sh 'git log -1 --format="%H" > temp-git-commit-hash'
