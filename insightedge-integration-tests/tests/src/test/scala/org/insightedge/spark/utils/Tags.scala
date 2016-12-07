@@ -22,3 +22,4 @@ import org.scalatest.Tag
   * @author Danylo_Hurin.
   */
 object LongRunningTest extends Tag("org.insightedge.spark.utils.LongRunningTest")
+object PremiumOnlyTest extends Tag("org.insightedge.spark.utils.PremiumOnlyTest")

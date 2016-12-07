@@ -164,7 +164,7 @@
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <junitxml>.</junitxml>
                     <filereports>scalatest.txt</filereports>
-                    <tagsToExclude>org.insightedge.spark.utils.LongRunningTest</tagsToExclude>
+                    <tagsToExclude>org.insightedge.spark.utils.LongRunningTest${tagsToExcludes}</tagsToExclude>
                 </configuration>
             </plugin>
             <plugin>
@@ -286,6 +286,7 @@
             <id>run-integration-tests-community</id>
             <properties>
                 <dist.edition>community</dist.edition>
+                <tagsToExcludes>,org.insightedge.spark.utils.PremiumOnlyTest</tagsToExcludes>
             </properties>
         </profile>
 

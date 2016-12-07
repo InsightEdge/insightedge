@@ -17,7 +17,7 @@
 package org.insightedge.spark.failover
 
 
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -56,7 +56,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine" in {
+  "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine" taggedAs PremiumOnlyTest in {
 
     val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()

@@ -17,7 +17,7 @@
 package org.insightedge.spark.failover
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
 import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
@@ -57,7 +57,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit LoadRdd while restarting datagrid primary node" in {
+  "insightedge-submit.sh " should "submit LoadRdd while restarting datagrid primary node" taggedAs PremiumOnlyTest in {
 
     val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
