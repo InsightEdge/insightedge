@@ -48,10 +48,10 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     val gsPartition = split.asInstanceOf[InsightEdgePartition]
     logInfo(s"Reading partition $gsPartition")
 
-    val directProxy = createDirectProxy(gsPartition)
+    val proxy = createProxy()
 
     val iterator = profileWithInfo("createIterator") {
-      new ProfilingIterator(new InsightEdgeQueryIterator[T](directProxy.iterator(dataGridQuery, readRddBufferSize)))
+      new ProfilingIterator(new InsightEdgeQueryIterator[T](proxy.iterator(dataGridQuery, readRddBufferSize)))
     }
 
     context.addTaskCompletionListener { _ =>
@@ -79,9 +79,10 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     * @tparam T type of query
     * @return GigaSpaces sql query
     */
-  protected def createInsightEdgeQuery[T: ClassTag](sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[T] = {
+  protected def createInsightEdgeQuery[T: ClassTag](sqlQuery: String, partition: Partition, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[T] = {
     val clazz = classTag[T].runtimeClass
     val query = new SQLQuery[T](clazz.asInstanceOf[Class[T]], sqlQuery)
+    query.setRouting(partition.index)
     query.setParameters(params.map(_.asInstanceOf[Object]): _*)
     if (fields.nonEmpty) {
       query.setProjections(fields.toArray: _*)
@@ -167,8 +168,8 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     }
   }
 
-  protected def createDirectProxy(gsPartition: InsightEdgePartition): GigaSpace = {
-    GridProxyFactory.getOrCreateDirect(gsPartition, ieConfig)
+  protected def createProxy(): GigaSpace = {
+    GridProxyFactory.getOrCreateClustered(ieConfig)
   }
 
 

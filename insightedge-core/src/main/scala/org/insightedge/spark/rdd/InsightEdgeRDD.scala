@@ -32,7 +32,7 @@ class InsightEdgeRDD[R: ClassTag](
   @DeveloperApi
   override def compute(partition: Partition, context: TaskContext): Iterator[R] = {
     val sqlQuery = if (supportsBuckets()) bucketQuery(partition) else ""
-    val gsQuery = createInsightEdgeQuery[R](sqlQuery)
+    val gsQuery = createInsightEdgeQuery[R](sqlQuery, partition)
     computeInternal[R](partition, gsQuery, context)
   }
 
