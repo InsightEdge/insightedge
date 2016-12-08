@@ -33,8 +33,8 @@ class InsightEdgeDocumentRDD(
 
   @DeveloperApi
   override def compute(split: Partition, context: TaskContext): Iterator[SpaceDocument] = {
-    val gsQuery = createDocumentInsightEdgeQuery(typeName, query, queryParams, queryFields)
-    computeInternal[SpaceDocument](split, gsQuery, context)
+    val gsQuery = createDocumentInsightEdgeQuery(typeName, split, query, queryParams, queryFields)
+     computeInternal[SpaceDocument](split, gsQuery, context)
   }
 
 }

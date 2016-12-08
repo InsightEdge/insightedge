@@ -21,13 +21,11 @@ import org.insightedge.spark.implicits
 import implicits.basic._
 import org.insightedge.spark.utils.InsightEdgeConstants.DefaultSplitCount
 import org.insightedge.spark.utils._
-import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.JSpatialData
 import org.apache.spark.sql.insightedge.model.SpatialData
 import org.insightedge.spark.fixture.Spark
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
-import org.openspaces.spatial.ShapeFactory
 import org.openspaces.spatial.ShapeFactory._
 import org.scalatest._
 

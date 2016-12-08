@@ -99,8 +99,9 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     * @param fields   projected fields
     * @return GigaSpaces sql query
     */
-  protected def createDocumentInsightEdgeQuery(typeName: String, sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[SpaceDocument] = {
+  protected def createDocumentInsightEdgeQuery(typeName: String, partition: Partition, sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[SpaceDocument] = {
     val query = new SQLQuery[SpaceDocument](typeName, sqlQuery)
+    query.setRouting(partition.index)
     query.setParameters(params.map(_.asInstanceOf[Object]): _*)
     if (fields.nonEmpty) {
       query.setProjections(fields.toArray: _*)

@@ -77,7 +77,8 @@ private[spark] object GridProxyUtils extends Logging {
 
   def splitPartitionsByBuckets(gridPartitions: Seq[InsightEdgePartition], optionalSplitCount: Option[Int]): Seq[InsightEdgePartition] = {
     val splitCount = max(1, optionalSplitCount.getOrElse(DefaultSplitCount))
-    val sparkPartitions = gridPartitions.flatMap(splitPartitionByBuckets(_, splitCount))
+    val gridPartitionsSize = gridPartitions.size
+    val sparkPartitions = gridPartitions.flatMap(splitPartitionByBuckets(_, splitCount, gridPartitionsSize))
     sparkPartitions
   }
 
@@ -88,13 +89,13 @@ private[spark] object GridProxyUtils extends Logging {
   /**
    * Splits bucket ranges across spark partitions
    */
-  def splitPartitionByBuckets(gridPartition: InsightEdgePartition, sparkCount: Int): Seq[InsightEdgePartition] = {
+  def splitPartitionByBuckets(gridPartition: InsightEdgePartition, sparkCount: Int, gridPartitionsSize: Int): Seq[InsightEdgePartition] = {
     var totalBuckets = 0
     var localPartitionId = gridPartition.id
     equallySplit(BucketsCount, sparkCount).map(bucketsCount => {
       val sparkPartition = InsightEdgePartition(localPartitionId , gridPartition.hostName, gridPartition.gridContainerName, Some(totalBuckets), Some(totalBuckets + bucketsCount))
       totalBuckets += bucketsCount
-      localPartitionId += 2
+      localPartitionId += gridPartitionsSize
       sparkPartition
     })
   }
