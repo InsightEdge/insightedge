@@ -151,7 +151,7 @@
         <profile>
             <id>package-community</id>
             <properties>
-                <dist.xap>http://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/xap-open/12.1.0/12.1.0-m7/gigaspaces-xap-open-12.1.0-m7-b16707.zip</dist.xap>
+                <dist.xap>https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/xap-open/12.1.0/12.1.0-m9-16708-358/gigaspaces-xap-open-12.1.0-m9-b16708-358.zip</dist.xap>
                 <xap.download.phase>process-resources</xap.download.phase>
                 <xap.dist.filename>xap-community.zip</xap.dist.filename>
             </properties>

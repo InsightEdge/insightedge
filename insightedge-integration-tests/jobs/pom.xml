@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>com.gigaspaces</groupId>
                 <artifactId>xap-build-plugin</artifactId>
-                <version>12.0.1-SNAPSHOT</version>
+                <version>12.1.0-m9-16708-358</version>
                 <executions>
                     <execution>
                         <phase>none</phase>

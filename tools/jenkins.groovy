@@ -55,7 +55,7 @@ echo "Commit: $commitHash"
 
 stage 'Build insightedge'
 try {
-    load 'tools/build.groovy'
+    load 'tools/build.groovy' $XAP_PREMIUM_URL
 } finally {
     step([$class: 'JUnitResultArchiver', testResults: 'insightedge-core/target/surefire-reports/TEST-*.xml'])
 }
