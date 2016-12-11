@@ -39,6 +39,7 @@ private[spark] object GridProxyUtils extends Logging {
     val urlSpaceConfigurer = new UrlSpaceConfigurer(spaceUri)
     ieConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
     ieConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
+    System.setProperty("com.gs.protectiveMode.ambiguousQueryRoutingUsage", "false")
     urlSpaceConfigurer.space()
   }
 
