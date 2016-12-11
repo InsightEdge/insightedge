@@ -44,13 +44,13 @@ class InsightEdgeUtilsSpec extends FunSpec {
     val result = GridProxyUtils.splitPartitionsByBuckets(gridPartitions, None)
     val expected = Seq(
       InsightEdgePartition(0, "host", "cont1", Some(0), Some(32)),
-      InsightEdgePartition(1, "host", "cont1", Some(32), Some(64)),
-      InsightEdgePartition(2, "host", "cont1", Some(64), Some(96)),
-      InsightEdgePartition(3, "host", "cont1", Some(96), Some(128)),
+      InsightEdgePartition(2, "host", "cont1", Some(32), Some(64)),
+      InsightEdgePartition(4, "host", "cont1", Some(64), Some(96)),
+      InsightEdgePartition(6, "host", "cont1", Some(96), Some(128)),
 
-      InsightEdgePartition(4, "host", "cont2", Some(0), Some(32)),
-      InsightEdgePartition(5, "host", "cont2", Some(32), Some(64)),
-      InsightEdgePartition(6, "host", "cont2", Some(64), Some(96)),
+      InsightEdgePartition(1, "host", "cont2", Some(0), Some(32)),
+      InsightEdgePartition(3, "host", "cont2", Some(32), Some(64)),
+      InsightEdgePartition(5, "host", "cont2", Some(64), Some(96)),
       InsightEdgePartition(7, "host", "cont2", Some(96), Some(128))
     )
     assert(result == expected)
@@ -66,15 +66,15 @@ class InsightEdgeUtilsSpec extends FunSpec {
     // 128 buckets split 3 = 43,43,42 buckets per spark node
     val expected = Seq(
       InsightEdgePartition(0, "host1", "cont1", Some(0), Some(43)),
-      InsightEdgePartition(1, "host1", "cont1", Some(43), Some(86)),
-      InsightEdgePartition(2, "host1", "cont1", Some(86), Some(128)),
+      InsightEdgePartition(3, "host1", "cont1", Some(43), Some(86)),
+      InsightEdgePartition(6, "host1", "cont1", Some(86), Some(128)),
 
-      InsightEdgePartition(3, "host1", "cont2", Some(0), Some(43)),
+      InsightEdgePartition(1, "host1", "cont2", Some(0), Some(43)),
       InsightEdgePartition(4, "host1", "cont2", Some(43), Some(86)),
-      InsightEdgePartition(5, "host1", "cont2", Some(86), Some(128)),
+      InsightEdgePartition(7, "host1", "cont2", Some(86), Some(128)),
 
-      InsightEdgePartition(6, "host2", "cont3", Some(0), Some(43)),
-      InsightEdgePartition(7, "host2", "cont3", Some(43), Some(86)),
+      InsightEdgePartition(2, "host2", "cont3", Some(0), Some(43)),
+      InsightEdgePartition(5, "host2", "cont3", Some(43), Some(86)),
       InsightEdgePartition(8, "host2", "cont3", Some(86), Some(128))
     )
     assert(result == expected)

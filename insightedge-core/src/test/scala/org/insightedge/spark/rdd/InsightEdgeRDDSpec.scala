@@ -21,13 +21,11 @@ import org.insightedge.spark.implicits
 import implicits.basic._
 import org.insightedge.spark.utils.InsightEdgeConstants.DefaultSplitCount
 import org.insightedge.spark.utils._
-import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.JSpatialData
 import org.apache.spark.sql.insightedge.model.SpatialData
 import org.insightedge.spark.fixture.Spark
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
-import org.openspaces.spatial.ShapeFactory
 import org.openspaces.spatial.ShapeFactory._
 import org.scalatest._
 
@@ -114,7 +112,6 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == 8 * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
-    assert(GridProxyFactory.directCacheSize() == NumberOfGridPartitions)
   }
 
   it should "have bucketed partitions set by user [java]" taggedAs JavaSpaceClass in {
@@ -122,7 +119,6 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == 8 * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
-    assert(GridProxyFactory.directCacheSize() == NumberOfGridPartitions)
   }
 
   it should "have default bucketed partitions as 4x grid partitions" taggedAs ScalaSpaceClass in {
@@ -130,7 +126,6 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == DefaultSplitCount * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
-    assert(GridProxyFactory.directCacheSize() == NumberOfGridPartitions)
   }
 
   it should "have default bucketed partitions as 4x grid partitions [java]" taggedAs JavaSpaceClass in {
@@ -138,7 +133,6 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == DefaultSplitCount * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
-    assert(GridProxyFactory.directCacheSize() == NumberOfGridPartitions)
   }
 
   it should "ignore splitCount for non-bucketed models" taggedAs ScalaSpaceClass in {
@@ -146,7 +140,6 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     assert(!rdd.supportsBuckets())
     assert(rdd.getNumPartitions == NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
-    assert(GridProxyFactory.directCacheSize() == NumberOfGridPartitions)
   }
 
   it should "ignore splitCount for non-bucketed models [java]" taggedAs JavaSpaceClass in {
@@ -154,7 +147,6 @@ class InsightEdgeRDDSpec extends FlatSpec with IEConfig with InsightEdge with Sp
     assert(!rdd.supportsBuckets())
     assert(rdd.getNumPartitions == NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
-    assert(GridProxyFactory.directCacheSize() == NumberOfGridPartitions)
   }
 
   it should "read spatial data" taggedAs ScalaSpaceClass in {

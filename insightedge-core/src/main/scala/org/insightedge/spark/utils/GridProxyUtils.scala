@@ -39,6 +39,7 @@ private[spark] object GridProxyUtils extends Logging {
     val urlSpaceConfigurer = new UrlSpaceConfigurer(spaceUri)
     ieConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
     ieConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
+    System.setProperty("com.gs.protectiveMode.ambiguousQueryRoutingUsage", "false")
     urlSpaceConfigurer.space()
   }
 
@@ -77,8 +78,9 @@ private[spark] object GridProxyUtils extends Logging {
 
   def splitPartitionsByBuckets(gridPartitions: Seq[InsightEdgePartition], optionalSplitCount: Option[Int]): Seq[InsightEdgePartition] = {
     val splitCount = max(1, optionalSplitCount.getOrElse(DefaultSplitCount))
-    val sparkPartitions = gridPartitions.flatMap(splitPartitionByBuckets(_, splitCount))
-    assignPartitionIds(sparkPartitions)
+    val gridPartitionsSize = gridPartitions.size
+    val sparkPartitions = gridPartitions.flatMap(splitPartitionByBuckets(_, splitCount, gridPartitionsSize))
+    sparkPartitions
   }
 
   def assignPartitionIds(partitions: Seq[InsightEdgePartition]): Seq[InsightEdgePartition] = {
@@ -88,11 +90,13 @@ private[spark] object GridProxyUtils extends Logging {
   /**
    * Splits bucket ranges across spark partitions
    */
-  def splitPartitionByBuckets(gridPartition: InsightEdgePartition, sparkCount: Int): Seq[InsightEdgePartition] = {
+  def splitPartitionByBuckets(gridPartition: InsightEdgePartition, sparkCount: Int, gridPartitionsSize: Int): Seq[InsightEdgePartition] = {
     var totalBuckets = 0
+    var localPartitionId = gridPartition.id
     equallySplit(BucketsCount, sparkCount).map(bucketsCount => {
-      val sparkPartition = InsightEdgePartition(gridPartition.id, gridPartition.hostName, gridPartition.gridContainerName, Some(totalBuckets), Some(totalBuckets + bucketsCount))
+      val sparkPartition = InsightEdgePartition(localPartitionId , gridPartition.hostName, gridPartition.gridContainerName, Some(totalBuckets), Some(totalBuckets + bucketsCount))
       totalBuckets += bucketsCount
+      localPartitionId += gridPartitionsSize
       sparkPartition
     })
   }

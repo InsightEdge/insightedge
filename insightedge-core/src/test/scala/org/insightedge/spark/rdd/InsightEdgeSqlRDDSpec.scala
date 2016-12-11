@@ -35,7 +35,6 @@ class InsightEdgeSqlRDDSpec extends FlatSpec with IEConfig with InsightEdge with
 
     assert(!sqlRdd.supportsBuckets())
     assert(sqlRdd.partitions.length == 2)
-    assert(GridProxyFactory.directCacheSize() == 2)
   }
 
   it should "query data from Data Grid with a help of SQL [java]" taggedAs JavaSpaceClass in {
@@ -47,7 +46,6 @@ class InsightEdgeSqlRDDSpec extends FlatSpec with IEConfig with InsightEdge with
 
     assert(!sqlRdd.supportsBuckets())
     assert(sqlRdd.partitions.length == 2)
-    assert(GridProxyFactory.directCacheSize() == 2)
   }
 
   it should "query bucketed data from Data Grid with a help of SQL" taggedAs ScalaSpaceClass in {
@@ -59,7 +57,6 @@ class InsightEdgeSqlRDDSpec extends FlatSpec with IEConfig with InsightEdge with
 
     assert(sqlRdd.supportsBuckets())
     assert(sqlRdd.partitions.length == 2 * 4)
-    assert(GridProxyFactory.directCacheSize() == 2)
   }
 
   it should "query bucketed data from Data Grid with a help of SQL [java]" taggedAs JavaSpaceClass in {
@@ -71,7 +68,6 @@ class InsightEdgeSqlRDDSpec extends FlatSpec with IEConfig with InsightEdge with
 
     assert(sqlRdd.supportsBuckets())
     assert(sqlRdd.partitions.length == 2 * 4)
-    assert(GridProxyFactory.directCacheSize() == 2)
   }
 
   it should "have bucketed partitions set by user" taggedAs ScalaSpaceClass in {
@@ -83,7 +79,6 @@ class InsightEdgeSqlRDDSpec extends FlatSpec with IEConfig with InsightEdge with
 
     assert(sqlRdd.supportsBuckets())
     assert(sqlRdd.partitions.length == 2 * 8)
-    assert(GridProxyFactory.directCacheSize() == 2)
   }
 
   it should "have bucketed partitions set by user [java]" taggedAs JavaSpaceClass in {
@@ -95,7 +90,6 @@ class InsightEdgeSqlRDDSpec extends FlatSpec with IEConfig with InsightEdge with
 
     assert(sqlRdd.supportsBuckets())
     assert(sqlRdd.partitions.length == 2 * 8)
-    assert(GridProxyFactory.directCacheSize() == 2)
   }
 
 }
