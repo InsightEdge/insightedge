@@ -1,6 +1,6 @@
 @echo off
 
-set INSIGHTEDGE_VER=1.0.0
+set INSIGHTEDGE_VER=1.0.1
 
 if "x%INSIGHTEDGE_HOME%"=="x" (
     set INSIGHTEDGE_HOME=%~dp0..

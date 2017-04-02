@@ -16,9 +16,9 @@
 
 package org.apache.spark.sql.insightedge.udt
 
-import com.spatial4j.core.context.SpatialContext
-import com.spatial4j.core.context.jts.{JtsSpatialContext, JtsSpatialContextFactory}
-import com.spatial4j.core.shape.{Shape => SShape}
+import org.locationtech.spatial4j.context.SpatialContext
+import org.locationtech.spatial4j.context.jts.{JtsSpatialContext, JtsSpatialContextFactory}
+import org.locationtech.spatial4j.shape.{Shape => SShape}
 import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
 import org.openspaces.spatial.shapes.{Circle => XCircle, LineString => XLineString, Point => XPoint, Polygon => XPolygon, Rectangle => XRectangle, Shape => XShape}
 import org.openspaces.spatial.spatial4j.Spatial4jShapeProvider

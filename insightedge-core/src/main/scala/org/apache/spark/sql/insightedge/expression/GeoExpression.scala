@@ -16,8 +16,8 @@
 
 package org.apache.spark.sql.insightedge.expression
 
-import com.spatial4j.core.context.SpatialContext
-import com.spatial4j.core.shape.{Shape => SpatialShape}
+import org.locationtech.spatial4j.context.SpatialContext
+import org.locationtech.spatial4j.shape.{Shape => SpatialShape}
 import org.apache.lucene.spatial.query.SpatialOperation
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.catalyst.expressions.codegen.{CodeGenContext, GeneratedExpressionCode}
