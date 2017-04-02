@@ -74,8 +74,8 @@ withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'insigh
     distributions = "-Ddist.spark=$env.SPARK_DIST"
     distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.6.1-SNAPSHOT.tar.gz"
     distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
-    premiumDist = "$distributions -Ddist.xap=$env.XAP_DIST_HOME/gigaspaces-xap-premium-12.0.0-ga-b16000.zip"
-    communityDist = "$distributions -Ddist.xap=$env.XAP_DIST_HOME/gigaspaces-xap-open-12.0.0-ga-b16000.zip"
+    premiumDist = "$distributions -Ddist.xap=$env.XAP_DIST_HOME/gigaspaces-xap-premium-12.1.0-ga-b17000.zip"
+    communityDist = "$distributions -Ddist.xap=$env.XAP_DIST_HOME/gigaspaces-xap-open-12.1.0-ga-b17000.zip"
     sh "mvn package -pl insightedge-packager -P package-premium   -DskipTests=true $premiumDist   -Dlast.commit.hash=$commitHash"
     sh "mvn package -pl insightedge-packager -P package-community -DskipTests=true $communityDist -Dlast.commit.hash=$commitHash"
 
