@@ -335,17 +335,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>com.gigaspaces</groupId>
-                        <artifactId>xap-build-plugin</artifactId>
-                        <version>12.1.0-m9-16708-358</version>
-                        <configuration>
-                            <user>${user}</user>
-                            <key>${key}</key>
-                            <container>${container}</container>
-                            <type />
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
