@@ -317,12 +317,6 @@
                                     <attach>false</attach>
                                 </configuration>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.6</version>
-                        <executions>
                             <execution>
                                 <id>package-tests</id>
                                 <phase>process-resources</phase>
