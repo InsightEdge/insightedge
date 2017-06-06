@@ -1,11 +1,11 @@
 #!/bin/bash
 set -x
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 ie-release-params.sh"
-    exit 1
-fi
-
-source "$1"
+#if [ $# -ne 1 ]; then
+#    echo "Usage: $0 ie-release-params.sh"
+#    exit 1
+#fi
+#
+#source "$1"
 
 function uniquify_timer_triggered_nightly_git_tag_name {
     if [[ "$TAG_NAME" == *NIGHTLY ]]
