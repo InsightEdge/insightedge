@@ -118,9 +118,9 @@ function package_ie {
     pushd "$1"
 
      if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin-${IE_RELEASE_VERSION}.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_OPEN_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin-${IE_RELEASE_VERSION}.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
      elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_PREMIUM -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin-${IE_RELEASE_VERSION}.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_PREMIUM_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin-${IE_RELEASE_VERSION}.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
     fi
     echo "****************************************************************************************************"
     echo "Installing $rep"
