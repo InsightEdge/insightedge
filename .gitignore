@@ -25,7 +25,6 @@ hs_err_pid*
 **/.idea/*
 out/
 bin/*
-build/*
 
 # eclipse specific git ignore
 *.pydevproject
