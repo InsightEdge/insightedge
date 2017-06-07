@@ -1,6 +1,11 @@
 #!/bin/bash
 set -x
-#if [ $# -ne 1 ]; then
+if [ "$MODE" == "NIGHTLY" ]; then
+    IE_BUILD_NUMBER="$IE_BUILD_NUMBER-$BUILD_NUMBER"
+fi
+export FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-$IE_BUILD_NUMBER"
+
+    #if [ $# -ne 1 ]; then
 #    echo "Usage: $0 ie-release-params.sh"
 #    exit 1
 #fi
@@ -34,13 +39,13 @@ function rename_poms {
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
     # Find each pom.xml under $1 and replace every $trimmed_version with $FINAL_IE_BUILD_VERSION
     local pom_version
-    if [[ "$MODE" == "NIGHTLY" ]]
+    if [ "$MODE" == "NIGHTLY" ]
     then
-        pom_version="${FINAL_IE_BUILD_VERSION}"
-    elif [[ "$MODE" == "MILESTONE" ]]
+        pom_version="${IE_VERSION}-${MILESTONE}-${IE_BUILD_NUMBER}"
+    elif [ "$MODE" == "MILESTONE" ]
     then
         pom_version="${IE_VERSION}-${MILESTONE}"
-    elif [[ "$MODE" == "GA" ]]
+    elif [ "$MODE" == "GA" ]
     then
         pom_version="${IE_VERSION}"
     else
@@ -344,7 +349,7 @@ function publish_ie {
     version=${IE_VERSION}
     echo "version=${IE_VERSION}"
 
-    buildNumber=${buildNumber}
+    buildNumber=${IE_BUILD_NUMBER}
     echo "buildNumber=${buildNumber}"
 
     base_path="/home/giga/backup-store/insightedge"
