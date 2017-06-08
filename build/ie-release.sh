@@ -17,7 +17,8 @@ else
     exit 1
 fi
 
-
+echo "livnat my env:"
+env
     #if [ $# -ne 1 ]; then
 #    echo "Usage: $0 ie-release-params.sh"
 #    exit 1
