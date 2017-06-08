@@ -5,6 +5,19 @@ if [ "$MODE" == "NIGHTLY" ]; then
 fi
 export FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-$IE_BUILD_NUMBER"
 
+export pom_version
+if [ "$MODE" == "NIGHTLY" ];then
+        pom_version="${IE_VERSION}-${MILESTONE}-${IE_BUILD_NUMBER}"
+elif [ "$MODE" == "MILESTONE" ];then
+        pom_version="${IE_VERSION}-${MILESTONE}"
+elif [ "$MODE" == "GA" ];then
+        pom_version="${IE_VERSION}"
+else
+    echo "unspecified mode: $MODE exiting"
+    exit 1
+fi
+
+
     #if [ $# -ne 1 ]; then
 #    echo "Usage: $0 ie-release-params.sh"
 #    exit 1
@@ -38,20 +51,6 @@ function rename_poms {
     # Since grep return the whole line there are spaces that needed to trim.
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
     # Find each pom.xml under $1 and replace every $trimmed_version with $FINAL_IE_BUILD_VERSION
-    local pom_version
-    if [ "$MODE" == "NIGHTLY" ]
-    then
-        pom_version="${IE_VERSION}-${MILESTONE}-${IE_BUILD_NUMBER}"
-    elif [ "$MODE" == "MILESTONE" ]
-    then
-        pom_version="${IE_VERSION}-${MILESTONE}"
-    elif [ "$MODE" == "GA" ]
-    then
-        pom_version="${IE_VERSION}"
-    else
-        echo "unspecified mode: $MODE exiting"
-        exit 1
-    fi
 
     find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$pom_version/" \{\} \;
 }
@@ -60,7 +59,7 @@ function rename_poms {
 function rename_ie_version  {
 
     local trimmed_version="<insightedge\.version>.*<\/insightedge\.version>"
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$FINAL_IE_BUILD_VERSION<\/insightedge.version>/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$pom_version<\/insightedge.version>/" \{\} \;
 
 }
 
