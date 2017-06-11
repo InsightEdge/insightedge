@@ -164,7 +164,7 @@
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-${project.version}-community
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.community.filename}-community
                                         </jvmArg>
                                         <!-- Distribution edition -->
                                         <jvmArg>-Ddist.edition=community</jvmArg>
@@ -205,7 +205,7 @@
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-${project.version}-premium
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.premium.filename}-premium
                                         </jvmArg>
                                         <!-- Distribution edition -->
                                         <jvmArg>-Ddist.edition=premium</jvmArg>
