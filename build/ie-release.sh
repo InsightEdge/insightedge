@@ -376,7 +376,7 @@ function publish_ie {
 
     echo "starting newman submitter process..."
     java -version
-    wget http://xap-test.s3.amazonaws.com/qa/newman/newman-submitter-1.0.jar -P ${WORKSPACE}
+    wget http://xap-test.s3.amazonaws.com/qa/newman/newman-submitter-1.0.jar -O ${WORKSPACE}/newman-submitter-1.0.jar
     sumbitter_jar=${WORKSPACE}/newman-submitter-1.0.jar
     if [ -f $sumbitter_jar ]; then
         BASE_WEB_URI=http://${host}:${port}/insightedge
