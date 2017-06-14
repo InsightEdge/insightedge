@@ -20,7 +20,7 @@ echo "Git branch: $BRANCH"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/stop.sh
 
-docker run --name maven-install-libs-test-image -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-maven-install-libs:$VERSION
+docker run --name maven-install-libs-test-image -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-maven-install-libs
 
 docker exec --user ie-user maven-install-libs-test-image /home/ie-user/maven-install-libs-test.sh $BRANCH
 
