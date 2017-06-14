@@ -43,7 +43,7 @@ RUN chown ie-user /home/ie-user/ie-user.pem
 RUN chmod 400 /home/ie-user/ie-user.pem
 
 # add env variables for ie-user
-RUN printf "export JAVA_HOME=/usr/jdk1.8.0_31 \n" >> /home/ie-user/.bashrc
+RUN printf "export JAVA_HOME=$JAVA_HOME \n" >> /home/ie-user/.bashrc
 RUN printf "export PATH=$PATH:$JAVA_HOME/bin \n" >> /home/ie-user/.bashrc
 RUN printf 'export XAP_NIC_ADDRESS="#local:ip#" \n' >> /home/ie-user/.bashrc
 RUN printf 'export NIC_ADDR="#local:ip#" \n' >> /home/ie-user/.bashrc
