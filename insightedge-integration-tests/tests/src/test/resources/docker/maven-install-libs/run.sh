@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 #
 # Starts a docker image with pre-installed Maven/Sbt and runs tests.
 #
@@ -25,7 +24,7 @@ $DIR/stop.sh
 
 #validate test not getting error after trying to stop all containers
 set -e
-docker run --name maven-install-libs-test-image -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-maven-install-libs:$VERSION
+docker run --name maven-install-libs-test-image -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-maven-install-libs
 
 docker exec --user ie-user maven-install-libs-test-image /home/ie-user/install-libs-test.sh $BRANCH $MVN_OR_SBT
 
