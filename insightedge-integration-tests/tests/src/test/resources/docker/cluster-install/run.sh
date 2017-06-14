@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x -e
 #
 # Starts a cluster of containers and installs InsightEdge there.
 #
