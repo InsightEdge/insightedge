@@ -17,17 +17,15 @@
 package org.insightedge.spark.fixture
 
 import com.spotify.docker.client.DefaultDockerClient
-import com.spotify.docker.client.messages.{ContainerConfig, ContainerInfo, HostConfig, PortBinding}
-import org.insightedge.spark.utils.BuildUtils
-import org.insightedge.spark.utils.BuildUtils.BuildVersion
+import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.libs.ws.ning.NingWSClient
 
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 import scala.concurrent.Await
-import scala.util.Try
 import scala.concurrent.duration._
-import collection.JavaConverters._
+import scala.util.Try
 
 /**
   * Suite mixin that starts InsightEdge Demo Mode docker image before all tests and stops after
@@ -39,7 +37,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
   private val DockerImageStartTimeout = 3.minutes
   private val ZeppelinPort = "8090"
-  private val ImageName = s"insightedge-tests-demo-mode:$BuildVersion"
+  private val ImageName = s"insightedge-tests-demo-mode"
 
   protected var containerId: String = _
   private val docker = DefaultDockerClient.fromEnv().build()
