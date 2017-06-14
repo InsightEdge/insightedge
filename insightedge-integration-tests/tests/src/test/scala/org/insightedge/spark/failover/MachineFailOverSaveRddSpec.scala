@@ -42,7 +42,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
 
-  private val JOBS = s"/opt/insightedge/quickstart/scala/jobs-${BuildUtils.BuildVersion}.jar"
+  private val JOBS = s"/opt/insightedge/quickstart/scala/jobs.jar"
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
