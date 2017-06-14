@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x -es
 #
 # Starts a docker image with pre-installed Maven/Sbt and runs tests.
 #
