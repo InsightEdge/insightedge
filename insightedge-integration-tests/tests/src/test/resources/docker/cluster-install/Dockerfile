@@ -17,17 +17,19 @@ RUN useradd ie-user -G wheel -s /bin/bash -m
 RUN echo "ie-user:ie-user" | chpasswd
 RUN echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
 
+ENV HERCULES_IP 192.168.10.50
+
 # java
-ENV JAVA_HOME /usr/jdk1.8.0_31
+ENV ZIPPED_JDK=jdk-8u131-linux-x64.tar.gz
+ENV TAR_JDK=jdk-8u131-linux-x64.tar
+
+ENV JAVA_TARGET=jdk1.8.0_131
+ENV JAVA_HOME /usr/$JAVA_TARGET
 ENV PATH $PATH:$JAVA_HOME/bin
 
-RUN curl -sL --retry 3 --insecure \
-  --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
-  "http://download.oracle.com/otn-pub/java/jdk/8u31-b13/server-jre-8u31-linux-x64.tar.gz" \
-  | gunzip \
-  | tar x -C /usr/ \
-  && ln -s $JAVA_HOME /usr/java \
-  && rm -rf $JAVA_HOME/man
+RUN wget http://$HERCULES_IP/javas/$ZIPPED_JDK
+RUN gunzip $ZIPPED_JDK && tar -xvf $TAR_JDK -C /usr/
+RUN ln -s $JAVA_HOME /usr/java && rm -rf $JAVA_HOME/man
 
 ADD ie-user.pem.pub /home/ie-user/ie-user.pem.pub
 ADD ie-user.pem /home/ie-user/ie-user.pem
@@ -41,7 +43,7 @@ RUN chown ie-user /home/ie-user/ie-user.pem
 RUN chmod 400 /home/ie-user/ie-user.pem
 
 # add env variables for ie-user
-RUN printf "export JAVA_HOME=/usr/jdk1.8.0_31 \n" >> /home/ie-user/.bashrc
+RUN printf "export JAVA_HOME=$JAVA_HOME \n" >> /home/ie-user/.bashrc
 RUN printf "export PATH=$PATH:$JAVA_HOME/bin \n" >> /home/ie-user/.bashrc
 RUN printf 'export XAP_NIC_ADDRESS="#local:ip#" \n' >> /home/ie-user/.bashrc
 RUN printf 'export NIC_ADDR="#local:ip#" \n' >> /home/ie-user/.bashrc

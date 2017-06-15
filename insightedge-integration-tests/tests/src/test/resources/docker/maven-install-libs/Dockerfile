@@ -15,19 +15,22 @@ RUN useradd ie-user -G wheel -s /bin/bash -m
 RUN echo "ie-user:ie-user" | chpasswd
 RUN echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
 
-# java
-ENV JAVA_HOME /usr/jdk1.8.0_31
-ENV PATH $PATH:$JAVA_HOME/bin
-RUN curl -sL --retry 3 --insecure \
-  --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
-  "http://download.oracle.com/otn-pub/java/jdk/8u31-b13/server-jre-8u31-linux-x64.tar.gz" \
-  | gunzip \
-  | tar x -C /usr/ \
-  && ln -s $JAVA_HOME /usr/java \
-  && rm -rf $JAVA_HOME/man
+ENV HERCULES_IP 192.168.10.50
 
-RUN alternatives --install /usr/bin/java java /usr/jdk1.8.0_31/bin/java 1
-RUN alternatives --set java /usr/jdk1.8.0_31/bin/java
+# java
+ENV ZIPPED_JDK=jdk-8u131-linux-x64.tar.gz
+ENV TAR_JDK=jdk-8u131-linux-x64.tar
+
+ENV JAVA_TARGET=jdk1.8.0_131
+ENV JAVA_HOME /usr/$JAVA_TARGET
+ENV PATH $PATH:$JAVA_HOME/bin
+
+RUN wget http://$HERCULES_IP/javas/$ZIPPED_JDK
+RUN gunzip $ZIPPED_JDK && tar -xvf $TAR_JDK -C /usr/
+RUN ln -s $JAVA_HOME /usr/java && rm -rf $JAVA_HOME/man
+
+RUN alternatives --install /usr/bin/java java $JAVA_HOME/bin/java 1
+RUN alternatives --set java $JAVA_HOME/bin/java
 
 # maven
 ENV MVN_VERSION=3.3.9
