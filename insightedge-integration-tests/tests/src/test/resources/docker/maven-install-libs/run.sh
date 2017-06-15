@@ -11,11 +11,11 @@ if [ "$#" -ne 4 ]; then
 fi
 
 LOCAL_DOWNLOAD_DIR=$1
-VERSION=$2
+IE_VERSION=$2
 BRANCH=$3
 MVN_OR_SBT=$4
 echo "Local download dir: $LOCAL_DOWNLOAD_DIR"
-echo "Version: $VERSION"
+echo "IE Version: $IE_VERSION"
 echo "Git branch: $BRANCH"
 echo "Build option: $MVN_OR_SBT"
 
