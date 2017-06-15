@@ -58,10 +58,14 @@ function rename_poms {
 
 # replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${FINAL_IE_BUILD_VERSION}</insightedge.version>
 function rename_ie_version  {
-
     local trimmed_version="<insightedge\.version>.*<\/insightedge\.version>"
     find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$pom_version<\/insightedge.version>/" \{\} \;
+}
 
+# replace all occurrences of <xap.version>x.y.z-SNAPSHOT</xap.version> with <xap.version>${XAP_RELEASE_VERSION}</xap.version>
+function rename_xap_version  {
+    local trimmed_version="<xap\.version>.*<\/xap\.version>"
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<xap.version>$XAP_RELEASE_VERSION<\/xap.version>/" \{\} \;
 }
 
 # Clean all nightly tags older then 7 days.
@@ -164,6 +168,7 @@ function package_ie {
 function mvn_deploy {
 
     pushd "$1"
+    # TODO remove XAP_RELEASE_VERSION
     cmd="mvn -B -Dmaven.repo.local=$M2/repository -DskipTests deploy -Dxap.version=${XAP_RELEASE_VERSION}"
     echo "****************************************************************************************************"
     echo "Maven deploy"
@@ -458,12 +463,15 @@ function release_ie {
 
     announce_step "rename version in poms [ie]"
     rename_poms "$ie_folder"
+    announce_step "rename xap version in poms [ie]"
+    rename_xap_version "$ie_folder"
 
     announce_step "rename version in poms [ie example]"
     rename_poms "$ie_exm_folder"
 
-    announce_step "rename version in poms [ie zeppelin]"
+    announce_step "rename ie version in poms [ie zeppelin]"
     rename_ie_version "$ie_zeppelin_folder"
+    announce_step "rename version in poms [ie zeppelin]"
     rename_poms "$ie_zeppelin_folder"
 
 
