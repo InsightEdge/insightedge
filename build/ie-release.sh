@@ -469,8 +469,13 @@ function release_ie {
 
     if [ ! -f "$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz" ]
     then
+        announce_step "Downloading spark distribution"
         wget https://d3kbcqa49mib13.cloudfront.net/spark-1.6.1-bin-hadoop2.6.tgz -P ${WORKSPACE}
+        echo "Finished downloading spark"
+    else
+        echo "Found Spark distribution, download is skipped"
     fi
+
 
     announce_step "executing maven install on ie"
     mvn_install "$ie_folder" "IE"
