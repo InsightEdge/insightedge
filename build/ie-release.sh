@@ -485,21 +485,21 @@ function release_ie {
     mvn_install "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
-    announce_step "executing maven install on ie community package"
+    announce_step "package ie community package"
     package_ie "$ie_folder" "IE_PACKAGE_COMMUNITY"
-    echo "Done installing ie community package"
+    echo "Done package ie community"
 
-    announce_step "executing maven install on ie premium package"
+    announce_step "package ie premium package"
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
-    echo "Done installing ie premium package"
+    echo "Done package ie premium"
 
-    announce_step "commiting changes in ie"
+    announce_step "committing changes in ie"
     commit_changes "$ie_folder"
 
-    announce_step "commiting changes in ie examples"
+    announce_step "committing changes in ie examples"
     commit_changes "$ie_exm_folder"
 
-    announce_step "commiting changes in ie zeppelin"
+    announce_step "committing changes in ie zeppelin"
     commit_changes "$ie_zeppelin_folder"
 
     announce_step "delete temp branch $temp_branch_name in ie"
@@ -511,16 +511,17 @@ function release_ie {
     announce_step "delete temp branch $temp_branch_name in ie zeppelin"
     delete_temp_branch "$ie_zeppelin_folder" "$temp_branch_name"
 
-     publish_ie
+    announce_step "publish ie to hercules and newman"
+    publish_ie
 
-     announce_step "uploading ie-community zip"
-     upload_ie_zip "$ie_folder" "ie-community"
+    announce_step "uploading ie-community zip"
+    upload_ie_zip "$ie_folder" "ie-community"
 
-     announce_step "uploading ie-community zip"
-     upload_ie_zip "$ie_folder" "ie-premium"
+    announce_step "uploading ie-premium zip"
+    upload_ie_zip "$ie_folder" "ie-premium"
 
 
-	announce_step "deploying IE"
+	announce_step "deploying IE maven artifacts"
 	mvn_deploy "$ie_folder"
 
     announce_step "DONE !"
