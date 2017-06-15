@@ -39,6 +39,8 @@ echo "-- SBT version "
 sbt sbtVersion # TODO it fails sometimes
 BRANCH=$1
 echo "-- Git branch: $BRANCH"
+IE_VERSION=$2
+echo "-- IE Version: $IE_VERSION"
 
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
@@ -48,7 +50,7 @@ git checkout $BRANCH
 
 println "------ Maven build should fail"
 rm -rf $HOME/.m2
-mvn clean test package | tee $HOME/insightedge-examples-mvn-fail.out
+mvn clean test -o -Die.version=$IE_VERSION package | tee $HOME/insightedge-examples-mvn-fail.out
 maven_failed=`grep -c "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-fail.out`
 if [[ $maven_failed > 0 ]]; then
     println "------ OK: Maven build failed"
@@ -60,7 +62,7 @@ fi
 println "------ Maven build should succeed"
 rm -rf $HOME/.m2
 add_insightedge_libs_to_repo
-mvn clean test package | tee $HOME/insightedge-examples-mvn-success.out
+mvn clean test -o -Die.version=$IE_VERSION package | tee $HOME/insightedge-examples-mvn-success.out
 maven_failed=`grep -c "\[INFO\] BUILD FAILURE" $HOME/insightedge-examples-mvn-success.out`
 if [[ $maven_failed == 0 ]]; then
     println "------ OK: Maven build succeeded"
