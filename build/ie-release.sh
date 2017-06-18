@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -xe
 if [ "$MODE" == "NIGHTLY" ]; then
     IE_BUILD_NUMBER="$IE_BUILD_NUMBER-$BUILD_NUMBER"
 fi
