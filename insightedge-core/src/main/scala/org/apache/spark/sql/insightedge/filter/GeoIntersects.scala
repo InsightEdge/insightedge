@@ -22,4 +22,6 @@ import org.openspaces.spatial.shapes.Shape
 /**
   * @author Leonid_Poliakov
   */
-case class GeoIntersects(attribute: String, value: Shape) extends Filter
+case class GeoIntersects(attribute: String, value: Shape) extends Filter {
+  override def references: Array[String] = Array(attribute) ++ findReferences(value)
+}
