@@ -19,9 +19,10 @@
 # export JAVA_HOME=
 # export MASTER=                 		# Spark master url. eg. spark://master_addr:7077. Leave empty if you want to use local mode.
 # export ZEPPELIN_JAVA_OPTS      		# Additional jvm options. for example, export ZEPPELIN_JAVA_OPTS="-Dspark.executor.memory=8g -Dspark.cores.max=16"
-# export ZEPPELIN_MEM            		# Zeppelin jvm mem options Default -Xmx1024m -XX:MaxPermSize=512m
-# export ZEPPELIN_INTP_MEM       		# zeppelin interpreter process jvm mem options. Default = ZEPPELIN_MEM
-# export ZEPPELIN_INTP_JAVA_OPTS 		# zeppelin interpreter process jvm options. Default = ZEPPELIN_JAVA_OPTS
+# export ZEPPELIN_MEM            		# Zeppelin jvm mem options Default -Xms1024m -Xmx1024m -XX:MaxPermSize=512m
+# export ZEPPELIN_INTP_MEM       		# zeppelin interpreter process jvm mem options. Default -Xms1024m -Xmx1024m -XX:MaxPermSize=512m
+# export ZEPPELIN_INTP_JAVA_OPTS 		# zeppelin interpreter process jvm options.
+# export ZEPPELIN_SSL_PORT       		# ssl port (used when ssl environment variable is set to true)
 
 # export ZEPPELIN_LOG_DIR        		# Where log files are stored.  PWD by default.
 # export ZEPPELIN_PID_DIR        		# The pid files are stored. ${ZEPPELIN_HOME}/run by default.
@@ -32,10 +33,16 @@
 # export ZEPPELIN_NOTEBOOK_S3_BUCKET        # Bucket where notebook saved
 # export ZEPPELIN_NOTEBOOK_S3_ENDPOINT      # Endpoint of the bucket
 # export ZEPPELIN_NOTEBOOK_S3_USER          # User in bucket where notebook saved. For example bucket/user/notebook/2A94M5J1Z/note.json
+# export ZEPPELIN_NOTEBOOK_S3_KMS_KEY_ID    # AWS KMS key ID
+# export ZEPPELIN_NOTEBOOK_S3_KMS_KEY_REGION      # AWS KMS key region
 # export ZEPPELIN_IDENT_STRING   		# A string representing this instance of zeppelin. $USER by default.
 # export ZEPPELIN_NICENESS       		# The scheduling priority for daemons. Defaults to 0.
 # export ZEPPELIN_INTERPRETER_LOCALREPO         # Local repository for interpreter's additional dependency loading
+# export ZEPPELIN_INTERPRETER_DEP_MVNREPO       # Remote principal repository for interpreter's additional dependency loading
+# export ZEPPELIN_HELIUM_NPM_REGISTRY           # Remote Npm registry for Helium dependency loader
 # export ZEPPELIN_NOTEBOOK_STORAGE 		# Refers to pluggable notebook storage class, can have two classes simultaneously with a sync between them (e.g. local and remote).
+# export ZEPPELIN_NOTEBOOK_ONE_WAY_SYNC	# If there are multiple notebook storages, should we treat the first one as the only source of truth?
+# export ZEPPELIN_NOTEBOOK_PUBLIC   # Make notebook public by default when created, private otherwise
 
 #### Spark interpreter configuration ####
 
@@ -57,6 +64,7 @@ INSIGHTEDGE_JARS=$(get_libs ',')
 export SPARK_HOME="$INSIGHTEDGE_HOME"                  # (required) When it is defined, load it instead of Zeppelin embedded Spark libraries
 export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
 
+
 ## Use embedded spark binaries ##
 ## without SPARK_HOME defined, Zeppelin still able to run spark interpreter process using embedded spark binaries.
 ## however, it is not encouraged when you can define SPARK_HOME
@@ -73,7 +81,7 @@ export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra option
 # export ZEPPELIN_SPARK_USEHIVECONTEXT  # Use HiveContext instead of SQLContext if set true. true by default.
 # export ZEPPELIN_SPARK_CONCURRENTSQL   # Execute multiple SQL concurrently if set true. false by default.
 # export ZEPPELIN_SPARK_IMPORTIMPLICIT  # Import implicits, UDF collection, and sql if set true. true by default.
-# export ZEPPELIN_SPARK_MAXRESULT       # Max number of SparkSQL result to display. 1000 by default.
+# export ZEPPELIN_SPARK_MAXRESULT       # Max number of Spark SQL result to display. 1000 by default.
 # export ZEPPELIN_WEBSOCKET_MAX_TEXT_MESSAGE_SIZE       # Size in characters of the maximum text message to be received by websocket. Defaults to 1024000
 
 
@@ -88,3 +96,7 @@ export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra option
 # export ZEPPELINHUB_API_ADDRESS		# Refers to the address of the ZeppelinHub service in use
 # export ZEPPELINHUB_API_TOKEN			# Refers to the Zeppelin instance token of the user
 # export ZEPPELINHUB_USER_KEY			# Optional, when using Zeppelin with authentication.
+
+#### Zeppelin impersonation configuration
+# export ZEPPELIN_IMPERSONATE_CMD       # Optional, when user want to run interpreter as end web user. eg) 'sudo -H -u ${ZEPPELIN_IMPERSONATE_USER} bash -c '
+# export ZEPPELIN_IMPERSONATE_SPARK_PROXY_USER  #Optional, by default is true; can be set to false if you don't want to use --proxy-user option with Spark interpreter when impersonation enabled
