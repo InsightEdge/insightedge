@@ -15,6 +15,7 @@
         <dist.edition></dist.edition>
         <dist.dir>${project.basedir}/../../insightedge-packager/target/${dist.edition}</dist.dir>
         <git.branch></git.branch>
+        <scala.version>2.11</scala.version>
     </properties>
 
 
@@ -74,7 +75,7 @@
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.10</artifactId>
+            <artifactId>scalatest_${scala.version}</artifactId>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -98,7 +99,7 @@
         <!-- REST client lib -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-ws_2.10</artifactId>
+            <artifactId>play-ws_${scala.version}</artifactId>
             <version>2.4.6</version>
         </dependency>
     </dependencies>

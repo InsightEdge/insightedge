@@ -147,7 +147,7 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     */
   override protected def getPartitions: Array[Partition] = {
     profileWithInfo("getPartitions") {
-      val dataGridPartitions = GridProxyUtils.buildGridPartitions[R](ieConfig, splitCount, supportsBuckets())
+      val dataGridPartitions = GridProxyUtils.buildGridPartitions[R](ieConfig, splitCount, supportsBuckets()).sortBy(_.id)
       logInfo(s"Found data grid partitions $dataGridPartitions")
 
       dataGridPartitions.toArray
