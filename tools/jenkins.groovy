@@ -85,7 +85,7 @@ dir("examples/$examplesBranchName") {
 
 stage 'Package insightedge'
 distributions = "-Ddist.spark=$env.SPARK_DIST"
-distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.6.1-SNAPSHOT.tar.gz"
+distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin.tar.gz"
 distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
 premiumDist = "$distributions -Ddist.xap=" + xapPremiumUrl
 communityDist = "$distributions -Ddist.xap=" + xapOpenUrl
