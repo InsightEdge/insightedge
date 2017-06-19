@@ -1,5 +1,7 @@
 #!/bin/bash
 set -x -e
+echo "ENV:"
+env
 echo "starting job setup"
 JOB_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo "Job DIR: ${JOB_DIR}"
