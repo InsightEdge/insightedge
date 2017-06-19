@@ -33,4 +33,4 @@ process_args(){
 }
 ARGS=$(process_args "$@")
 
-exec "${INSIGHTEDGE_HOME}"/bin/insightedge-class org.apache.spark.deploy.SparkSubmit $ARGS
+exec "${INSIGHTEDGE_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit $ARGS
