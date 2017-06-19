@@ -1,19 +1,6 @@
 def String getBranchOrDefault(String repo, String targetBranch, String defaultBranch) {
-    // default branch is preferred over master
-    if (targetBranch.equals("master")) {
-        return defaultBranch
-    }
-
-    // write a number of branches matching target to a file
-    sh "git ls-remote --heads $repo | grep -c $targetBranch > temp-branch-count"
-    String branchMatchCount = readFile("temp-branch-count").trim()
-    if (branchMatchCount.equals("1")) {
-        echo "Branch $targetBranch found at: $repo"
-        return targetBranch
-    } else {
-        echo "Found $branchMatchCount branches matching $targetBranch at: $repo; Falling to default branch: $defaultBranch"
-        return defaultBranch
-    }
+    // TODO ONLY TEMP !!
+    return "spark_2_with_master"
 }
 
 def String calcBuildNumber() {
