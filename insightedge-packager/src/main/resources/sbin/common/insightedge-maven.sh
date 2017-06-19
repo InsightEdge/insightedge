@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x -e
 # This scripts installs InsightEdge artifacts(jars) to local maven repository
 
 INSIGHTEDGE_VER=1.1.0-SNAPSHOT
@@ -22,7 +22,7 @@ mvn install:install-file \
  -Dversion=$INSIGHTEDGE_VER \
  -DpomFile=${INSIGHTEDGE_HOME}/tools/maven/poms/insightedge-core/pom.xml \
  -Dpackaging=jar \
- -Dfile=${INSIGHTEDGE_HOME}/lib/insightedge-core-${INSIGHTEDGE_VER}.jar
+ -Dfile=${INSIGHTEDGE_HOME}/jars/insightedge-core-${INSIGHTEDGE_VER}.jar
 
 mvn install:install-file \
  -DgroupId=org.gigaspaces.insightedge \
@@ -31,7 +31,7 @@ mvn install:install-file \
  -Dversion=$INSIGHTEDGE_VER \
  -DpomFile=${INSIGHTEDGE_HOME}/tools/maven/poms/insightedge-scala/pom.xml \
  -Dpackaging=jar \
- -Dfile=${INSIGHTEDGE_HOME}/lib/insightedge-scala-${INSIGHTEDGE_VER}.jar
+ -Dfile=${INSIGHTEDGE_HOME}/jars/insightedge-scala-${INSIGHTEDGE_VER}.jar
 
 # Install spring.aopalliance to local maven repo (fixes SBT builds)
 mvn dependency:get \
