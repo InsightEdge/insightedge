@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 #
 # Starts a cluster of containers and installs InsightEdge there.
 #
@@ -17,6 +18,8 @@ EDITION=$2
 # Stop if anything is running
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/stop.sh
+
+set -e
 
 # Run cluster containers
 docker run --name master -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
