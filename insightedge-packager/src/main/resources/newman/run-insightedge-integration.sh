@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -x -e
 echo "executing InsightEdge Integration test: $1, edition: ${DIST_EDITION}"
 JOB_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo "Job DIR: ${JOB_DIR}"
