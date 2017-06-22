@@ -18,25 +18,22 @@ package org.apache.spark.sql.insightedge
 
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig}
-import org.insightedge.spark.implicits.all._
-import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData}
-import org.insightedge.spark.utils.JavaSpaceClass
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.insightedge.model.Address
 import org.apache.spark.sql.types._
-import org.insightedge.spark.fixture.Spark
-import org.insightedge.spark.rdd.JData
+import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.implicits.all._
+import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData, JData}
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
-import org.scalatest.FlatSpec
+import org.scalatest.fixture
 
 import scala.collection.JavaConversions._
 
-class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFrameCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
 
-  it should "create dataframe with insightedge format" taggedAs ScalaSpaceClass in {
+  it should "create dataframe with insightedge format" taggedAs ScalaSpaceClass in { f =>
     writeDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     val df = spark.read
       .format("org.apache.spark.sql.insightedge")
       .option("class", classOf[Data].getName)
@@ -45,9 +42,9 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
-  it should "create dataframe with insightedge format [java]" taggedAs JavaSpaceClass in {
+  it should "create dataframe with insightedge format [java]" taggedAs JavaSpaceClass in { f=>
     writeJDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     val df = spark.read
       .format("org.apache.spark.sql.insightedge")
       .option("class", classOf[JData].getName)
@@ -56,8 +53,9 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
-  it should "fail to create dataframe with insightedge format without class or collection provided" taggedAs ScalaSpaceClass in {
+  it should "fail to create dataframe with insightedge format without class or collection provided" taggedAs ScalaSpaceClass in { f=>
     val thrown = intercept[IllegalArgumentException] {
+      val spark = f.spark
       val df = spark.read
         .format("org.apache.spark.sql.insightedge")
         .load()
@@ -65,23 +63,23 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(thrown.getMessage == "'path', 'collection' or 'class' must be specified")
   }
 
-  it should "create dataframe with implicits" taggedAs ScalaSpaceClass in {
+  it should "create dataframe with implicits" taggedAs ScalaSpaceClass in { f=>
     writeDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     val df = spark.read.grid.loadClass[Data]
     assert(df.count() == 1000)
   }
 
-  it should "create dataframe with implicits [java]" taggedAs JavaSpaceClass in {
+  it should "create dataframe with implicits [java]" taggedAs JavaSpaceClass in { f=>
     writeJDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     val df = spark.read.grid.loadClass[JData]
     assert(df.count() == 1000)
   }
 
-  it should "create dataframe with SQL syntax" taggedAs ScalaSpaceClass in {
+  it should "create dataframe with SQL syntax" taggedAs ScalaSpaceClass in { f=>
     writeDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     spark.sql(
       s"""
          |create temporary table dataTable
@@ -93,9 +91,9 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(count == 1000)
   }
 
-  it should "create dataframe with SQL syntax [java]" taggedAs JavaSpaceClass in {
+  it should "create dataframe with SQL syntax [java]" taggedAs JavaSpaceClass in { f=>
     writeJDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     spark.sql(
       s"""
          |create temporary table dataTable
@@ -107,9 +105,9 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(count == 1000)
   }
 
-  it should "load dataframe with 'collection' or 'path' option" taggedAs ScalaSpaceClass in {
+  it should "load dataframe with 'collection' or 'path' option" taggedAs ScalaSpaceClass in { f=>
     writeDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     val collectionName = randomString()
     val df = spark.read.grid.loadClass[Data]
     df.write.grid.save(collectionName)
@@ -121,9 +119,9 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(fromGrid2.count() == 1000)
   }
 
-  it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in {
+  it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in { f=>
     writeBucketedDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     val df = spark.read.grid
       .option("class", classOf[BucketedData].getName)
       .option("splitCount", "4")
@@ -132,9 +130,9 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
 
-  it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in {
+  it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in { f=>
     writeJBucketedDataSeqToDataGrid(1000)
-
+    val spark = f.spark
     val df = spark.read.grid
       .option("class", classOf[JBucketedData].getName)
       .option("splitCount", "4")
@@ -143,7 +141,7 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
 
-  it should "load dataframe from existing space documents with provided schema" in {
+  it should "load dataframe from existing space documents with provided schema" in { f=>
     val collectionName = randomString()
 
     spaceProxy.getTypeManager.registerTypeDescriptor(
@@ -192,7 +190,7 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
       StructField("state", StringType, nullable = true),
       StructField("city", StringType, nullable = true)
     ))
-
+    val spark = f.spark
     val df = spark.read.grid.schema(
       StructType(Seq(
         StructField("personId", StringType, nullable = false),
@@ -216,7 +214,7 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
     dataFrameAsserts(spark.read.grid.load(tableName))
   }
 
-  it should "load dataframe from existing space documents with empty schema" in {
+  it should "load dataframe from existing space documents with empty schema" in { f=>
     val collectionName = randomString()
 
     spaceProxy.getTypeManager.registerTypeDescriptor(
@@ -227,7 +225,7 @@ class DataFrameCreateSpec extends FlatSpec with IEConfig with InsightEdge with S
       new SpaceDocument(collectionName, Map("name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32))),
       new SpaceDocument(collectionName, Map("name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20)))
     ))
-
+    val spark = f.spark
     val df = spark.read.grid.load(collectionName)
     assert(df.count() == 2)
     assert(df.schema.fields.length == 0)

@@ -26,11 +26,11 @@ import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.openspaces.spatial.ShapeFactory._
 import org.openspaces.spatial.shapes.{Circle, Point, Rectangle}
-import org.scalatest.FlatSpec
+import org.scalatest.fixture
 
-class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFrameSpatialSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
 
-  it should "find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in {
+  it should "find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in { f=>
     val searchedCircle = circle(point(0, 0), 1.0)
     val searchedRect = rectangle(0, 2, 0, 2)
     val searchedPoint = point(1, 1)
@@ -66,7 +66,7 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
       assert(df.filter(df("point") geoWithin rectangle(-2, 2, -2, 2)).count() == 1)
       assert(df.filter(df("point") geoWithin rectangle(2, 4, -2, 2)).count() == 0)
     }
-
+    val spark = f.spark
     // pushed down to XAP
     val df = spark.read.grid.loadClass[SpatialData]
     df.printSchema()
@@ -77,9 +77,9 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     asserts(pdf)
   }
 
-  it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in {
+  it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { f=>
     spaceProxy.write(new JSpatialData(1L, point(0, 0)))
-
+    val spark = f.spark
     // pushed down to XAP
     val df = spark.read.grid.loadClass[JSpatialData]
     df.printSchema()
@@ -90,9 +90,9 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     zeroPointCheck(pdf, "point")
   }
 
-  it should "work with shapes embedded on second level" taggedAs ScalaSpaceClass in {
+  it should "work with shapes embedded on second level" taggedAs ScalaSpaceClass in { f=>
     spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
-
+    val spark = f.spark
     // pushed down to XAP
     val df = spark.read.grid.loadClass[SpatialEmbeddedData]
     df.printSchema()
@@ -103,9 +103,9 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     zeroPointCheck(pdf, "location.point")
   }
 
-  it should "work with new columns via udf" in {
+  it should "work with new columns via udf" in { f=>
     spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
-
+    val spark = f.spark
     val df = spark.read.grid.loadClass[SpatialData]
     val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)
     val unwrappedDf = df.withColumn("locationX", toPointX(df("point")))
@@ -115,10 +115,11 @@ class DataFrameSpatialSpec extends FlatSpec with IEConfig with InsightEdge with 
     assert(row.getAs[Double]("locationX") == 1)
   }
 
-  it should "persist shapes as shapes" taggedAs ScalaSpaceClass in {
+  it should "persist shapes as shapes" taggedAs ScalaSpaceClass in { f=>
     spaceProxy.write(SpatialData(id = null, routing = 1, circle(point(0, 0), 1.0), rectangle(0, 2, 0, 2), point(1, 1)))
 
     val collectionName = randomString()
+    val spark = f.spark
     spark.read.grid.loadClass[SpatialData].write.grid(collectionName).save()
 
     val data = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))

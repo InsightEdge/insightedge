@@ -16,18 +16,19 @@
 
 package org.apache.spark.sql.insightedge
 
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig}
+import org.insightedge.spark.fixture.{IEConfig, InsightEdge}
 import org.apache.spark.sql.insightedge.relation.InsightEdgeAbstractRelation
 import InsightEdgeAbstractRelation.{filtersToSql, unsupportedFilters}
-import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoWithin, GeoIntersects}
+import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}
 import org.apache.spark.sql.sources._
 import org.insightedge.spark.fixture.Spark
+import org.insightedge.spark.utils.ScalaSpaceClass
 import org.openspaces.spatial.ShapeFactory.{circle, point}
-import org.scalatest.FunSpec
+import org.scalatest.fixture
 
-class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge with Spark {
+class DataFrameRelationQuerySpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
 
-  it("should handle simple filters") {
+  it should "should handle simple filters" taggedAs ScalaSpaceClass in{ f=>
     val unhandled = unsupportedFilters(Array(
       EqualTo("key", 0),
       EqualNullSafe("key", 0),
@@ -42,7 +43,7 @@ class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge 
     assert(unhandled.length == 0)
   }
 
-  it("should handle and/or filters with handled children") {
+  it should "should handle and/or filters with handled children" taggedAs ScalaSpaceClass in{ f=>
     val unhandled = unsupportedFilters(Array(
       And(GreaterThan("key", 0), LessThan("key", 1)),
       Or(GreaterThan("key", 1), LessThan("key", 0)),
@@ -54,7 +55,7 @@ class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge 
     assert(unhandled.length == 0)
   }
 
-  it("should not handle some filters") {
+  it should "should not handle some filters" taggedAs ScalaSpaceClass in{ f=>
     val unhandled = unsupportedFilters(Array(
       StringStartsWith("key", "value"),
       StringEndsWith("key", "value"),
@@ -64,7 +65,7 @@ class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge 
     assert(unhandled.length == 4)
   }
 
-  it("should not handle and/or filters with unhandled children") {
+  it should "should not handle and/or filters with unhandled children" taggedAs ScalaSpaceClass in{ f=>
     val unhandled = unsupportedFilters(Array(
       And(GreaterThan("key", 0), StringContains("key", "value")),
       Or(GreaterThan("key", 1), StringContains("key", "value")),
@@ -76,7 +77,8 @@ class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge 
     assert(unhandled.length == 3)
   }
 
-  it("should create simple sql query") {
+
+  it should "should create simple sql query" taggedAs ScalaSpaceClass in{ f=>
     implicit class FilterAsserts(val filter: Filter) {
       def gives(query: String, params: Seq[Any]): Boolean = {
         val (actualQuery, actualParams) = filtersToSql(Array(filter))
@@ -123,7 +125,8 @@ class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge 
     )
   }
 
-  it("should create sql query ignoring unhandled filters") {
+  it should "should create sql query ignoring unhandled filters" taggedAs ScalaSpaceClass in{ f=>
+
     val (query, params) = filtersToSql(
       Array(
         Or(EqualTo("role", "ADMIN"), EqualTo("name", "superuser")),
@@ -135,11 +138,12 @@ class DataFrameRelationQuerySpec extends FunSpec with IEConfig with InsightEdge 
     assert(params equals Seq("ADMIN", "superuser"))
   }
 
-  it("should create empty sql query") {
+  it should "should create empty sql query" taggedAs ScalaSpaceClass in{ f=>
     assert(filtersToSql(Array()) equals("", Seq()))
   }
 
-  it("should create sql query with nested properties") {
+  it should "should create sql query with nested properties" taggedAs ScalaSpaceClass in{ f=>
+
     val (query, params) = filtersToSql(
       Array(EqualTo("address.city", "Buffalo"))
     )

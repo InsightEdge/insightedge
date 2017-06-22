@@ -19,18 +19,31 @@ package org.insightedge.spark.fixture
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.insightedge.spark.implicits.basic._
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
+import org.scalatest._
 
 /**
   * Suite mixin that starts and stops Spark before and after each test
   *
   * @author Oleksiy_Dyagilev
   */
-trait Spark extends BeforeAndAfterAll with BeforeAndAfterEach {
+trait Spark extends fixture.FlatSpec {
   self: Suite with IEConfig with InsightEdge =>
 
-  var spark: SparkSession = _
-  var sc: SparkContext = _
+  case class FixtureParam(spark: SparkSession, sc: SparkContext)
+
+  override def withFixture(test: OneArgTest): Outcome = {
+    println("Before create Spark... ")
+    val spark = createSpark()
+    val sc = spark.sparkContext
+    val theFixture = FixtureParam(spark, sc)
+    try {
+      println("Before invoking test... ")
+      withFixture(test.toNoArgTest(theFixture))
+    } finally{
+      println("Before stopping Insight Edge... ")
+      spark.stopInsightEdgeContext()
+    }
+  }
 
   def createSpark(): SparkSession = {
     SparkSession
@@ -40,16 +53,4 @@ trait Spark extends BeforeAndAfterAll with BeforeAndAfterEach {
       .insightEdgeConfig(ieConfig)
       .getOrCreate()
   }
-
-  override protected def beforeEach() = {
-    spark = createSpark()
-    sc = spark.sparkContext
-    super.beforeEach()
-  }
-
-  override protected def afterEach() = {
-    spark.stopInsightEdgeContext()
-    super.afterEach()
-  }
-
 }

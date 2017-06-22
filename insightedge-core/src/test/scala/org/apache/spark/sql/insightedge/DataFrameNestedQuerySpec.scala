@@ -19,15 +19,18 @@ package org.apache.spark.sql.insightedge
 import com.gigaspaces.document.{DocumentProperties, SpaceDocument}
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.insightedge.model.{Address, Person}
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig, Spark}
+import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
-import org.scalatest.FlatSpec
+import org.scalatest.fixture
 
-class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFrameNestedQuerySpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
 
-  it should "support nested properties" taggedAs ScalaSpaceClass in {
-    sc.parallelize(Seq(
+  it should "support nested properties" taggedAs ScalaSpaceClass in { f=>
+
+    val spark = f.spark
+
+    f.sc.parallelize(Seq(
       Person(id = null, name = "Paul", age = 30, address = Address(city = "Columbus", state = "OH")),
       Person(id = null, name = "Mike", age = 25, address = Address(city = "Buffalo", state = "NY")),
       Person(id = null, name = "John", age = 20, address = Address(city = "Charlotte", state = "NC")),
@@ -47,14 +50,14 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     unwrapDf.printSchema()
   }
 
-  it should "support nested properties [java]" taggedAs JavaSpaceClass in {
-    parallelizeJavaSeq(sc, () => Seq(
+  it should "support nested properties [java]" taggedAs JavaSpaceClass in { f=>
+    parallelizeJavaSeq(f.sc, () => Seq(
       new JPerson(null, "Paul", 30, new JAddress("Columbus", "OH")),
       new JPerson(null, "Mike", 25, new JAddress("Buffalo", "NY")),
       new JPerson(null, "John", 20, new JAddress("Charlotte", "NC")),
       new JPerson(null, "Silvia", 27, new JAddress("Charlotte", "NC"))
     )).saveToGrid()
-
+    val spark = f.spark
     val df = spark.read.grid.loadClass[JPerson]
     df.printSchema()
     assert(df.count() == 4)
@@ -68,8 +71,8 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     unwrapDf.printSchema()
   }
 
-  it should "support nested properties after saving" taggedAs ScalaSpaceClass in {
-    sc.parallelize(Seq(
+  it should "support nested properties after saving" taggedAs ScalaSpaceClass in { f=>
+    f.sc.parallelize(Seq(
       Person(id = null, name = "Paul", age = 30, address = Address(city = "Columbus", state = "OH")),
       Person(id = null, name = "Mike", age = 25, address = Address(city = "Buffalo", state = "NY")),
       Person(id = null, name = "John", age = 20, address = Address(city = "Charlotte", state = "NC")),
@@ -77,6 +80,7 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     )).saveToGrid()
 
     val collectionName = randomString()
+    val spark = f.spark
     spark.read.grid.loadClass[Person].write.grid(collectionName).save()
 
     val person = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
@@ -90,8 +94,8 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     assert(df.filter(df("address.city") equalTo "Nowhere").count() == 0)
   }
 
-  it should "support nested properties after saving [java]" taggedAs ScalaSpaceClass in {
-    parallelizeJavaSeq(sc, () => Seq(
+  it should "support nested properties after saving [java]" taggedAs ScalaSpaceClass in { f=>
+    parallelizeJavaSeq(f.sc, () => Seq(
       new JPerson(null, "Paul", 30, new JAddress("Columbus", "OH")),
       new JPerson(null, "Mike", 25, new JAddress("Buffalo", "NY")),
       new JPerson(null, "John", 20, new JAddress("Charlotte", "NC")),
@@ -99,6 +103,7 @@ class DataFrameNestedQuerySpec extends FlatSpec with IEConfig with InsightEdge w
     )).saveToGrid()
 
     val collectionName = randomString()
+    val spark = f.spark
     spark.read.grid.loadClass[JPerson].write.grid(collectionName).save()
 
     val person = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))

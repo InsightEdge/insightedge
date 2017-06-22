@@ -16,24 +16,25 @@
 
 package org.insightedge.spark.ml
 
-import org.apache.spark.SparkContext
 import org.apache.spark.ml.classification.LogisticRegression
 import org.apache.spark.ml.feature.{HashingTF, Tokenizer}
-import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.linalg.DenseVector
-import org.apache.spark.sql.{Row, SQLContext}
+import org.apache.spark.ml.{Pipeline, PipelineModel}
+import org.apache.spark.sql.Row
 import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
 import org.insightedge.spark.implicits.all._
-import org.scalatest.FunSpec
+import org.insightedge.spark.utils.ScalaSpaceClass
+import org.scalatest.fixture
 
 
 /**
   * @author Oleksiy_Dyagilev
   */
-class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spark {
+class InsightEdgeMlSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
 
-  it("should store and load ML Pipeline Model (Tokenizer, HashingTF, LogisticRegression)") {
-    val training = spark.createDataFrame(Seq(
+  it should "should store and load ML Pipeline Model (Tokenizer, HashingTF, LogisticRegression" taggedAs ScalaSpaceClass in{ f=>
+
+    val training = f.spark.createDataFrame(Seq(
       (0L, "a b c d e spark", 1.0),
       (1L, "b d", 0.0),
       (2L, "spark f g h", 1.0),
@@ -56,7 +57,7 @@ class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spar
     val model = pipeline.fit(training)
 
     // Save model to grid
-    model.saveToGrid(sc, "testPipelineModel")
+    model.saveToGrid(f.sc, "testPipelineModel")
 
     val testSeq = Seq(
       (4L, "spark i j k"),
@@ -64,7 +65,7 @@ class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spar
       (6L, "mapreduce spark"),
       (7L, "apache hadoop")
     )
-    val testDf = spark.createDataFrame(testSeq).toDF("id", "text")
+    val testDf = f.spark.createDataFrame(testSeq).toDF("id", "text")
 
     val predictions = model.transform(testDf)
       .select("id", "text", "probability", "prediction")
@@ -72,20 +73,20 @@ class InsightEdgeMlSpec extends FunSpec with IEConfig with InsightEdge with Spar
 
     def printPredictions(predictions: Array[Row]) = {
       predictions.foreach { row: Row =>
-          val id = row.getAs[Long]("id")
-          val text = row.getAs[String]("text")
-          val probability = row.getAs[DenseVector]("probability")
-          val prediction = row.getAs[Double]("prediction")
-          println(s"($id, $text) --> prob=$probability, prediction=$prediction")
+        val id = row.getAs[Long]("id")
+        val text = row.getAs[String]("text")
+        val probability = row.getAs[DenseVector]("probability")
+        val prediction = row.getAs[Double]("prediction")
+        println(s"($id, $text) --> prob=$probability, prediction=$prediction")
       }
     }
 
     printPredictions(predictions)
 
     // stop Spark context and create it again to make sure we can load in another context
-    spark.stopInsightEdgeContext()
-    spark = createSpark()
-    sc = spark.sparkContext
+    f.spark.stopInsightEdgeContext()
+    val spark = createSpark()
+    val sc = spark.sparkContext
 
     // load model from grid
     val loadedModel = sc.loadMLInstance[PipelineModel]("testPipelineModel").get

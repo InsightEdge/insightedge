@@ -23,26 +23,28 @@ import org.apache.spark.mllib.tree.DecisionTree
 import org.apache.spark.mllib.tree.model.{DecisionTreeModel, GradientBoostedTreesModel}
 import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.rdd.RDD
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig, Spark}
+import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
 import org.insightedge.spark.implicits.basic._
 import org.insightedge.spark.implicits.mllib._
+import org.insightedge.spark.utils.ScalaSpaceClass
 import org.scalatest._
 
 
-class InsightEdgeMLlibSpec extends FunSpec with IEConfig with InsightEdge with Spark {
+class InsightEdgeMLlibSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
 
-  it("should successfully store DecisionTreeModel MLlib model to Data Grid") {
-    val testDataRDD = loadDataFromFile().map(_.features)
+  it should "should successfully store DecisionTreeModel MLlib model to Data Grid" taggedAs ScalaSpaceClass in{ f=>
+
+    val testDataRDD = loadDataFromFile(f.sc).map(_.features)
     val testDataArray = testDataRDD.collect()
-    val model = createDecisionTreeModel()
+    val model = createDecisionTreeModel(f.sc)
     val prediction = model.predict(testDataRDD).collect()
-    model.saveToGrid(sc, "model")
+    model.saveToGrid(f.sc, "model")
 
     // stop Spark context and create it again to make sure we can load in another context
-    spark.stopInsightEdgeContext()
+    f.spark.stopInsightEdgeContext()
 
-    spark = createSpark()
-    sc = spark.sparkContext
+    val spark = createSpark()
+    val sc = spark.sparkContext
 
     val loadedModel = sc.loadMLInstance[DecisionTreeModel]("model").get
     assert(model.depth === loadedModel.depth)
@@ -54,20 +56,21 @@ class InsightEdgeMLlibSpec extends FunSpec with IEConfig with InsightEdge with S
     assert(prediction sameElements loadedModelPrediction)
   }
 
-  it("should load nothing if there is no such MLlib model int DataGrid") {
-    val model = createDecisionTreeModel()
+  it should "should load nothing if there is no such MLlib model int DataGrid" taggedAs ScalaSpaceClass in{ f=>
+    val model = createDecisionTreeModel(f.sc)
+    val sc = f.sc
     model.saveToGrid(sc, "model")
     assert(None === sc.loadMLInstance[DecisionTreeModel]("model2"))
     assert(None === sc.loadMLInstance[GradientBoostedTreesModel]("model"))
   }
 
-  private def loadDataFromFile(): RDD[LabeledPoint] = {
+  private def loadDataFromFile(sc:SparkContext): RDD[LabeledPoint] = {
     val path = FileUtils.getFile("src", "test", "resources", "data", "sample_libsvm_data.txt").getAbsolutePath
     MLUtils.loadLibSVMFile(sc, path)
   }
 
-  private def createDecisionTreeModel(): DecisionTreeModel = {
-    val data = loadDataFromFile()
+  private def createDecisionTreeModel(sc:SparkContext): DecisionTreeModel = {
+    val data = loadDataFromFile(sc)
     val splits = data.randomSplit(Array(0.7, 0.3))
     val (trainingData, testData) = (splits(0), splits(1))
     val numClasses = 2
