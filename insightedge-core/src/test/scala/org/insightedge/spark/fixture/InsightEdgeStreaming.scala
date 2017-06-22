@@ -26,8 +26,8 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite, time}
 /**
   * @author Oleksiy_Dyagilev
   */
-trait SparkStreaming extends BeforeAndAfterAll with BeforeAndAfterEach {
-  self: Suite with IEConfig =>
+trait InsightEdgeStreaming extends InsightEdge with BeforeAndAfterAll with BeforeAndAfterEach {
+  self: Suite =>
 
   var ssc: StreamingContext = _
 

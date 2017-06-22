@@ -21,7 +21,7 @@ import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.insightedge.model.Address
 import org.apache.spark.sql.types._
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData, JData}
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
@@ -29,11 +29,11 @@ import org.scalatest.fixture
 
 import scala.collection.JavaConversions._
 
-class DataFrameCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "create dataframe with insightedge format" taggedAs ScalaSpaceClass in { f =>
+  it should "create dataframe with insightedge format" taggedAs ScalaSpaceClass in { ie =>
     writeDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read
       .format("org.apache.spark.sql.insightedge")
       .option("class", classOf[Data].getName)
@@ -42,9 +42,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdg
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
-  it should "create dataframe with insightedge format [java]" taggedAs JavaSpaceClass in { f=>
+  it should "create dataframe with insightedge format [java]" taggedAs JavaSpaceClass in { ie =>
     writeJDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read
       .format("org.apache.spark.sql.insightedge")
       .option("class", classOf[JData].getName)
@@ -53,9 +53,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdg
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
 
-  it should "fail to create dataframe with insightedge format without class or collection provided" taggedAs ScalaSpaceClass in { f=>
+  it should "fail to create dataframe with insightedge format without class or collection provided" taggedAs ScalaSpaceClass in { ie =>
     val thrown = intercept[IllegalArgumentException] {
-      val spark = f.spark
+      val spark = ie.spark
       val df = spark.read
         .format("org.apache.spark.sql.insightedge")
         .load()
@@ -141,17 +141,17 @@ class DataFrameCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdg
     assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
 
-  it should "load dataframe from existing space documents with provided schema" in { f=>
+  it should "load dataframe from existing space documents with provided schema" in { ie =>
     val collectionName = randomString()
 
-    spaceProxy.getTypeManager.registerTypeDescriptor(
+    ie.spaceProxy.getTypeManager.registerTypeDescriptor(
       new SpaceTypeDescriptorBuilder(collectionName)
         .idProperty("personId")
         .routingProperty("name")
         .create()
     )
 
-    spaceProxy.writeMultiple(Array(
+    ie.spaceProxy.writeMultiple(Array(
       new SpaceDocument(collectionName, Map(
         "personId" -> "111",
         "name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32),
@@ -190,7 +190,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdg
       StructField("state", StringType, nullable = true),
       StructField("city", StringType, nullable = true)
     ))
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.schema(
       StructType(Seq(
         StructField("personId", StringType, nullable = false),
@@ -214,18 +214,18 @@ class DataFrameCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdg
     dataFrameAsserts(spark.read.grid.load(tableName))
   }
 
-  it should "load dataframe from existing space documents with empty schema" in { f=>
+  it should "load dataframe from existing space documents with empty schema" in { ie =>
     val collectionName = randomString()
 
-    spaceProxy.getTypeManager.registerTypeDescriptor(
+    ie.spaceProxy.getTypeManager.registerTypeDescriptor(
       new SpaceTypeDescriptorBuilder(collectionName).create()
     )
 
-    spaceProxy.writeMultiple(Array(
+    ie.spaceProxy.writeMultiple(Array(
       new SpaceDocument(collectionName, Map("name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32))),
       new SpaceDocument(collectionName, Map("name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20)))
     ))
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.load(collectionName)
     assert(df.count() == 2)
     assert(df.schema.fields.length == 0)

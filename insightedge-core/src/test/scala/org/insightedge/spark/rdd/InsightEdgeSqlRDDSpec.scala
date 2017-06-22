@@ -16,13 +16,13 @@
 
 package org.insightedge.spark.rdd
 
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits
 import org.insightedge.spark.implicits.basic._
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.fixture
 
-class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with InsightEdge {
 
   it should "query data from Data Grid with a help of SQL" taggedAs ScalaSpaceClass in { f=>
     writeDataSeqToDataGrid(1000)

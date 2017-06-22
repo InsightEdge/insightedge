@@ -16,7 +16,6 @@
 
 package org.insightedge.spark.streaming
 
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig}
 import org.insightedge.spark.implicits
 import implicits.basic._
 import implicits.streaming._
@@ -24,8 +23,8 @@ import org.insightedge.spark.rdd.Data
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.dstream.InputDStream
-import org.insightedge.spark.fixture.SparkStreaming
-import org.scalatest.FunSpec
+import org.insightedge.spark.fixture.InsightEdgeStreaming
+import org.scalatest.{FunSpec, fixture}
 import org.scalatest.concurrent.Eventually._
 
 import scala.collection.mutable
@@ -34,9 +33,9 @@ import scala.util.Random
 /**
   * @author Oleksiy_Dyagilev
   */
-class InsightEdgeStreamingSpec extends FunSpec with IEConfig with InsightEdge with SparkStreaming {
+class InsightEdgeStreamingSpec extends fixture.FlatSpec with InsightEdgeStreaming {
 
-  it("should save single object from Spark driver") {
+  it should "should save single object from Spark driver" in { ie =>
     val sc = ssc.sparkContext
 
     val stream: InputDStream[String] = ssc.queueStream(stringQueue(sc))
@@ -50,12 +49,12 @@ class InsightEdgeStreamingSpec extends FunSpec with IEConfig with InsightEdge wi
     ssc.start()
 
     eventually {
-      val savedData = spaceProxy.readMultiple(dataQuery())
+      val savedData = ie.spaceProxy.readMultiple(dataQuery())
       assert(savedData.length == 1)
     }(timeout(2))
   }
 
-  it("should save multiple objects from Spark driver") {
+  it should "save multiple objects from Spark driver" in { ie =>
     val sc = ssc.sparkContext
 
     val stream: InputDStream[String] = ssc.queueStream(stringQueue(sc))
@@ -69,12 +68,12 @@ class InsightEdgeStreamingSpec extends FunSpec with IEConfig with InsightEdge wi
     ssc.start()
 
     eventually {
-      val savedData = spaceProxy.readMultiple(dataQuery())
+      val savedData = ie.spaceProxy.readMultiple(dataQuery())
       assert(savedData.nonEmpty)
     }(timeout(2))
   }
 
-  it("should save DStream") {
+  it should "save DStream" in { ie =>
     val sc = ssc.sparkContext
 
     val stream: InputDStream[String] = ssc.queueStream(stringQueue(sc))
@@ -86,7 +85,7 @@ class InsightEdgeStreamingSpec extends FunSpec with IEConfig with InsightEdge wi
     ssc.start()
 
     eventually {
-      val savedData = spaceProxy.readMultiple(dataQuery())
+      val savedData = ie.spaceProxy.readMultiple(dataQuery())
       assert(savedData.nonEmpty)
     }(timeout(2))
   }

@@ -16,7 +16,6 @@
 
 package org.insightedge.spark.rdd
 
-import org.insightedge.spark.fixture.{InsightEdge, IEConfig}
 import org.insightedge.spark.implicits
 import implicits.basic._
 import org.insightedge.spark.utils.InsightEdgeConstants.DefaultSplitCount
@@ -24,149 +23,149 @@ import org.insightedge.spark.utils._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.insightedge.JSpatialData
 import org.apache.spark.sql.insightedge.model.SpatialData
-import org.insightedge.spark.fixture.Spark
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.openspaces.spatial.ShapeFactory._
 import org.scalatest._
 
-class InsightEdgeRDDSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class InsightEdgeRDDSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "store data to Data Grid" taggedAs ScalaSpaceClass in { f=>
-    val rdd: RDD[Data] = f.sc.parallelize(dataSeq(1000))
+  it should "store data to Data Grid" taggedAs ScalaSpaceClass in { ie =>
+    val rdd: RDD[Data] = ie.sc.parallelize(dataSeq(1000))
     rdd.saveToGrid()
 
-    val dataCount = spaceProxy.readMultiple(dataQuery()).length
+    val dataCount = ie.spaceProxy.readMultiple(dataQuery()).length
     assert(dataCount == 1000, "Data objects weren't written to the space")
     for (i <- 1 to 1000) {
-      assert(spaceProxy.read(dataQuery(s"routing = $i")).data == "data" + i, "Data objects weren't written to the space")
+      assert(ie.spaceProxy.read(dataQuery(s"routing = $i")).data == "data" + i, "Data objects weren't written to the space")
     }
   }
 
-  it should "store data to Data Grid [java]" taggedAs JavaSpaceClass in { f=>
-    val rdd = parallelizeJavaSeq(f.sc, () => (1L to 1000).map(i => new JData(i, "data" + i)))
+  it should "store data to Data Grid [java]" taggedAs JavaSpaceClass in { ie =>
+    val rdd = parallelizeJavaSeq(ie.sc, () => (1L to 1000).map(i => new JData(i, "data" + i)))
     rdd.saveToGrid()
 
-    val dataCount = spaceProxy.count(new JData())
+    val dataCount = ie.spaceProxy.count(new JData())
     assert(dataCount == 1000, "Data objects weren't written to the space")
     for (i <- 1L to 1000) {
       val template = new JData()
       template.setRouting(i)
-      assert(spaceProxy.read(template).getData == "data" + i, "Data objects weren't written to the space")
+      assert(ie.spaceProxy.read(template).getData == "data" + i, "Data objects weren't written to the space")
     }
   }
 
-  it should "read data from Data Grid" taggedAs ScalaSpaceClass in { f=>
+  it should "read data from Data Grid" taggedAs ScalaSpaceClass in { ie =>
     writeDataSeqToDataGrid(1000)
-    val rdd = f.sc.gridRdd[Data]()
+    val rdd = ie.sc.gridRdd[Data]()
     val sum = rdd.map(data => data.routing).sum()
     val expectedSum = (1 to 1000).sum
     assert(sum == expectedSum, "")
   }
 
-  it should "read bucketed data from Data Grid" taggedAs ScalaSpaceClass in { f=>
+  it should "read bucketed data from Data Grid" taggedAs ScalaSpaceClass in { ie =>
     writeBucketedDataSeqToDataGrid(1000)
-    val rdd = f.sc.gridRdd[BucketedData]()
+    val rdd = ie.sc.gridRdd[BucketedData]()
     val sum = rdd.map(data => data.routing).sum()
     val expectedSum = (1 to 1000).sum
     assert(sum == expectedSum, "")
   }
 
-  it should "read bucketed data from Data Grid [java]" taggedAs JavaSpaceClass in { f=>
+  it should "read bucketed data from Data Grid [java]" taggedAs JavaSpaceClass in { ie =>
     writeJBucketedDataSeqToDataGrid(1000)
-    val rdd = f.sc.gridRdd[JBucketedData]()
+    val rdd = ie.sc.gridRdd[JBucketedData]()
     val sum = rdd.map(data => data.getRouting.toLong).sum()
     val expectedSum = (1 to 1000).sum
     assert(sum == expectedSum, "")
   }
 
-  it should "read data from Data Grid [java]" taggedAs JavaSpaceClass in { f=>
+  it should "read data from Data Grid [java]" taggedAs JavaSpaceClass in { ie =>
     writeJDataSeqToDataGrid(1000)
-    val rdd = f.sc.gridRdd[JData]()
+    val rdd = ie.sc.gridRdd[JData]()
     val sum = rdd.map(data => data.getRouting.toLong).sum()
     val expectedSum = (1 to 1000).sum
     assert(sum == expectedSum, "")
   }
 
-  it should "read only data of RDD type" taggedAs ScalaSpaceClass in { f=>
+  it should "read only data of RDD type" taggedAs ScalaSpaceClass in { ie =>
     writeDataSeqToDataGrid(10)
 
     val strings = (1 to 20).map(i => new GridString("string " + i))
-    spaceProxy.writeMultiple(strings.toArray)
+    ie.spaceProxy.writeMultiple(strings.toArray)
 
-    val rdd = f.sc.gridRdd[GridString]()
+    val rdd = ie.sc.gridRdd[GridString]()
     assert(rdd.count() == 20)
   }
 
-  it should "read only data of RDD type [java]" taggedAs JavaSpaceClass in { f=>
+  it should "read only data of RDD type [java]" taggedAs JavaSpaceClass in { ie =>
     writeJDataSeqToDataGrid(10)
 
     val strings = (1 to 20).map(i => new GridString("string " + i))
-    spaceProxy.writeMultiple(strings.toArray)
+    ie.spaceProxy.writeMultiple(strings.toArray)
 
-    val rdd = f.sc.gridRdd[GridString]()
+    val rdd = ie.sc.gridRdd[GridString]()
     assert(rdd.count() == 20)
   }
 
-  it should "have bucketed partitions set by user" taggedAs ScalaSpaceClass in { f=>
-    val rdd = f.sc.gridRdd[BucketedGridString](splitCount = Some(8))
+  it should "have bucketed partitions set by user" taggedAs ScalaSpaceClass in { ie =>
+    val rdd = ie.sc.gridRdd[BucketedGridString](splitCount = Some(8))
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == 8 * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
   }
 
-  it should "have bucketed partitions set by user [java]" taggedAs JavaSpaceClass in { f=>
-    val rdd = f.sc.gridRdd[JBucketedData](splitCount = Some(8))
+  it should "have bucketed partitions set by user [java]" taggedAs JavaSpaceClass in { ie =>
+    val rdd = ie.sc.gridRdd[JBucketedData](splitCount = Some(8))
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == 8 * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
   }
 
-  it should "have default bucketed partitions as 4x grid partitions" taggedAs ScalaSpaceClass in { f=>
-    val rdd = f.sc.gridRdd[BucketedGridString](None)
+  it should "have default bucketed partitions as 4x grid partitions" taggedAs ScalaSpaceClass in { ie =>
+    val rdd = ie.sc.gridRdd[BucketedGridString](None)
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == DefaultSplitCount * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
   }
 
-  it should "have default bucketed partitions as 4x grid partitions [java]" taggedAs JavaSpaceClass in { f=>
-    val rdd = f.sc.gridRdd[JBucketedData](None)
+  it should "have default bucketed partitions as 4x grid partitions [java]" taggedAs JavaSpaceClass in { ie =>
+    val rdd = ie.sc.gridRdd[JBucketedData](None)
     assert(rdd.supportsBuckets())
     assert(rdd.getNumPartitions == DefaultSplitCount * NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
   }
 
-  it should "ignore splitCount for non-bucketed models" taggedAs ScalaSpaceClass in { f=>
-    val rdd = f.sc.gridRdd[GridString](None)
+  it should "ignore splitCount for non-bucketed models" taggedAs ScalaSpaceClass in { ie =>
+    val rdd = ie.sc.gridRdd[GridString](None)
     assert(!rdd.supportsBuckets())
     assert(rdd.getNumPartitions == NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
   }
 
-  it should "ignore splitCount for non-bucketed models [java]" taggedAs JavaSpaceClass in { f=>
-    val rdd = f.sc.gridRdd[JData](None)
+  it should "ignore splitCount for non-bucketed models [java]" taggedAs JavaSpaceClass in { ie =>
+    val rdd = ie.sc.gridRdd[JData](None)
     assert(!rdd.supportsBuckets())
     assert(rdd.getNumPartitions == NumberOfGridPartitions)
     assert(GridProxyFactory.clusteredCacheSize() == 1)
   }
 
-  it should "read spatial data" taggedAs ScalaSpaceClass in { f=>
+  it should "read spatial data" taggedAs ScalaSpaceClass in { ie =>
     val searchedPoint = point(0, 0)
-    spaceProxy.write(SpatialData(id = null, routing = 1, null, null, searchedPoint))
+    ie.spaceProxy.write(SpatialData(id = null, routing = 1, null, null, searchedPoint))
 
-    assert(f.sc.gridSql[SpatialData]("point spatial:within ?", Seq(rectangle(-1, 1, -1, 1))).count() == 1)
-    assert(f.sc.gridSql[SpatialData]("point spatial:within ?", Seq(rectangle(1, 2, -1, 1))).count() == 0)
+    assert(ie.sc.gridSql[SpatialData]("point spatial:within ?", Seq(rectangle(-1, 1, -1, 1))).count() == 1)
+    assert(ie.sc.gridSql[SpatialData]("point spatial:within ?", Seq(rectangle(1, 2, -1, 1))).count() == 0)
   }
 
-  it should "read spatial data [java]" taggedAs JavaSpaceClass in { f=>
+  it should "read spatial data [java]" taggedAs JavaSpaceClass in { ie =>
     val searchedPoint = point(0, 0)
-    spaceProxy.write(new JSpatialData(1L, searchedPoint))
+    ie.spaceProxy.write(new JSpatialData(1L, searchedPoint))
 
-    assert(f.sc.gridSql[JSpatialData]("point spatial:within ?", Seq(rectangle(-1, 1, -1, 1))).count() == 1)
-    assert(f.sc.gridSql[JSpatialData]("point spatial:within ?", Seq(rectangle(1, 2, -1, 1))).count() == 0)
+    assert(ie.sc.gridSql[JSpatialData]("point spatial:within ?", Seq(rectangle(-1, 1, -1, 1))).count() == 1)
+    assert(ie.sc.gridSql[JSpatialData]("point spatial:within ?", Seq(rectangle(1, 2, -1, 1))).count() == 0)
   }
 
-  it should "zip with Grid SQL Data" taggedAs ScalaSpaceClass in { f=>
-    val rdd: RDD[Data] = f.sc.parallelize(dataSeq(1000))
+  it should "zip with Grid SQL Data" taggedAs ScalaSpaceClass in { ie =>
+    val rdd: RDD[Data] = ie.sc.parallelize(dataSeq(1000))
     rdd.cache()
     rdd.saveToGrid()
     rdd.flatMap(d => Seq(new GridString(d.data), new GridString(d.data))).saveToGrid()

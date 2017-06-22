@@ -21,7 +21,7 @@ import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.insightedge.model.{Address, DummyPerson}
 import org.apache.spark.sql.types._
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData, JData}
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
@@ -29,11 +29,11 @@ import org.scalatest.fixture
 
 import scala.collection.JavaConversions._
 
-class DataSetCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "create dataset with insightedge format" taggedAs ScalaSpaceClass in { f =>
+  it should "create dataset with insightedge format" taggedAs ScalaSpaceClass in { ie =>
     writeDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     import spark.implicits._
     val ds = spark.read
         .grid
@@ -46,10 +46,10 @@ class DataSetCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge 
     assert(ds.rdd.partitions.length == NumberOfGridPartitions)
   }
 
-  it should "create dataset with insightedge format [java]" taggedAs JavaSpaceClass in { f=>
+  it should "create dataset with insightedge format [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
-    val spark = f.spark
+    val spark = ie.spark
     val ds = spark.read
         .grid
         .loadClass[JData]
@@ -72,26 +72,26 @@ class DataSetCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge 
     assert(thrown.getMessage == "'path', 'collection' or 'class' must be specified")
   }
 
-  it should "create dataset with implicits" taggedAs ScalaSpaceClass in { f=>
+  it should "create dataset with implicits" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     import spark.implicits._
     val ds = spark.read.grid.loadClass[Data].as[Data]
     assert(ds.count() == 1000)
   }
 
-  it should "create dataset with implicits [java]" taggedAs JavaSpaceClass in { f=>
+  it should "create dataset with implicits [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
 
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
-    val spark = f.spark
+    val spark = ie.spark
     val ds = spark.read.grid.loadClass[JData].as[JData]
     assert(ds.count() == 1000)
   }
 
-  it should "load dataset with 'collection' or 'path' option" taggedAs ScalaSpaceClass in { f=>
+  it should "load dataset with 'collection' or 'path' option" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     import spark.implicits._
     val collectionName = randomString()
     val ds = spark.read.grid.loadClass[Data].as[Data]
@@ -104,9 +104,9 @@ class DataSetCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge 
     assert(fromGrid2DataSet.count() == 1000)
   }
 
-  it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in { f=>
+  it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in { ie=>
     writeBucketedDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     import spark.implicits._
     val ds = spark.read.grid
       .option("class", classOf[BucketedData].getName)
@@ -118,10 +118,10 @@ class DataSetCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge 
     assert(ds.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
 
-  it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in { f=>
+  it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in { ie=>
     writeJBucketedDataSeqToDataGrid(1000)
     implicit val jBucketDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JBucketedData])
-    val spark = f.spark
+    val spark = ie.spark
     val ds = spark.read.grid
       .option("class", classOf[JBucketedData].getName)
       .option("splitCount", "4")
@@ -132,19 +132,19 @@ class DataSetCreateSpec extends fixture.FlatSpec with IEConfig with InsightEdge 
   }
 
 
-  it should "load dataset from existing space documents with provided schema" in { f=>
+  it should "load dataset from existing space documents with provided schema" in { ie =>
     val collectionName = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     import spark.implicits._
 
-    spaceProxy.getTypeManager.registerTypeDescriptor(
+    ie.spaceProxy.getTypeManager.registerTypeDescriptor(
       new SpaceTypeDescriptorBuilder(collectionName)
         .idProperty("personId")
         .routingProperty("name")
         .create()
     )
 
-    spaceProxy.writeMultiple(Array(
+    ie.spaceProxy.writeMultiple(Array(
       new SpaceDocument(collectionName, Map(
         "personId" -> "111",
         "name" -> "John",

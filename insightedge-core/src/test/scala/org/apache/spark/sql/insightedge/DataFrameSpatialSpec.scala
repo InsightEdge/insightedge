@@ -21,20 +21,20 @@ import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.openspaces.spatial.ShapeFactory._
 import org.openspaces.spatial.shapes.{Circle, Point, Rectangle}
 import org.scalatest.fixture
 
-class DataFrameSpatialSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in { f=>
+  it should "find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in { ie =>
     val searchedCircle = circle(point(0, 0), 1.0)
     val searchedRect = rectangle(0, 2, 0, 2)
     val searchedPoint = point(1, 1)
-    spaceProxy.write(SpatialData(id = null, routing = 1, searchedCircle, searchedRect, searchedPoint))
+    ie.spaceProxy.write(SpatialData(id = null, routing = 1, searchedCircle, searchedRect, searchedPoint))
 
     def asserts(df: DataFrame): Unit = {
       assert(df.count() == 1)
@@ -66,7 +66,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with IEConfig with InsightEd
       assert(df.filter(df("point") geoWithin rectangle(-2, 2, -2, 2)).count() == 1)
       assert(df.filter(df("point") geoWithin rectangle(2, 4, -2, 2)).count() == 0)
     }
-    val spark = f.spark
+    val spark = ie.spark
     // pushed down to XAP
     val df = spark.read.grid.loadClass[SpatialData]
     df.printSchema()
@@ -77,9 +77,9 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with IEConfig with InsightEd
     asserts(pdf)
   }
 
-  it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { f=>
-    spaceProxy.write(new JSpatialData(1L, point(0, 0)))
-    val spark = f.spark
+  it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { ie =>
+    ie.spaceProxy.write(new JSpatialData(1L, point(0, 0)))
+    val spark = ie.spark
     // pushed down to XAP
     val df = spark.read.grid.loadClass[JSpatialData]
     df.printSchema()
@@ -90,9 +90,9 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with IEConfig with InsightEd
     zeroPointCheck(pdf, "point")
   }
 
-  it should "work with shapes embedded on second level" taggedAs ScalaSpaceClass in { f=>
-    spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
-    val spark = f.spark
+  it should "work with shapes embedded on second level" taggedAs ScalaSpaceClass in { ie =>
+    ie.spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
+    val spark = ie.spark
     // pushed down to XAP
     val df = spark.read.grid.loadClass[SpatialEmbeddedData]
     df.printSchema()
@@ -103,9 +103,9 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with IEConfig with InsightEd
     zeroPointCheck(pdf, "location.point")
   }
 
-  it should "work with new columns via udf" in { f=>
-    spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
-    val spark = f.spark
+  it should "work with new columns via udf" in { ie =>
+    ie.spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[SpatialData]
     val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)
     val unwrappedDf = df.withColumn("locationX", toPointX(df("point")))
@@ -115,14 +115,14 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with IEConfig with InsightEd
     assert(row.getAs[Double]("locationX") == 1)
   }
 
-  it should "persist shapes as shapes" taggedAs ScalaSpaceClass in { f=>
-    spaceProxy.write(SpatialData(id = null, routing = 1, circle(point(0, 0), 1.0), rectangle(0, 2, 0, 2), point(1, 1)))
+  it should "persist shapes as shapes" taggedAs ScalaSpaceClass in { ie =>
+    ie.spaceProxy.write(SpatialData(id = null, routing = 1, circle(point(0, 0), 1.0), rectangle(0, 2, 0, 2), point(1, 1)))
 
     val collectionName = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     spark.read.grid.loadClass[SpatialData].write.grid(collectionName).save()
 
-    val data = spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
+    val data = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(data.getProperty[Any]("routing").isInstanceOf[Long])
     assert(data.getProperty[Any]("circle").isInstanceOf[Circle])
     assert(data.getProperty[Any]("rect").isInstanceOf[Rectangle])

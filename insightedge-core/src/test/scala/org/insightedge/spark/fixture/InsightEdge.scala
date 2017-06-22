@@ -16,42 +16,64 @@
 
 package org.insightedge.spark.fixture
 
-import org.insightedge.spark.model.BucketedGridModel
-import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData}
-import org.insightedge.spark.utils.{InsightEdgeConstants, GridProxyFactory}
 import com.j_spaces.core.client.SQLQuery
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.spark.SparkContext
-import org.insightedge.spark.rdd.JData
+import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.apache.spark.{SparkConf, SparkContext}
+import org.insightedge.spark.context.InsightEdgeConfig
+import org.insightedge.spark.implicits.basic._
+import org.insightedge.spark.model.BucketedGridModel
+import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData, JData}
+import org.insightedge.spark.utils.{GridProxyFactory, InsightEdgeConstants}
 import org.openspaces.core.GigaSpace
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
+import org.scalatest._
 import org.springframework.context.support.ClassPathXmlApplicationContext
 
 import scala.reflect.ClassTag
 import scala.util.Random
 
 /**
-  * Suite mixin that starts InsightEdge data grid
+  * Suite mixin that starts and stops Spark before and after each test
   *
   * @author Oleksiy_Dyagilev
   */
-trait InsightEdge extends BeforeAndAfterAll with BeforeAndAfterEach {
-  self: Suite with IEConfig =>
+trait InsightEdge extends fixture.FlatSpec {
+  self: Suite =>
+
+  val ieConfig = InsightEdgeConfig("test-space", Some("spark"), Some("localhost:4174"))
 
   // see configuration in cluster-test-config.xml
   val NumberOfGridPartitions = 2
 
-  var spaceProxy: GigaSpace = _
-
-  override protected def beforeAll() = {
+  private val spaceProxy: GigaSpace = {
     val ctx = new ClassPathXmlApplicationContext("cluster-test-config.xml")
-    spaceProxy = GridProxyFactory.getOrCreateClustered(ieConfig)
-    super.beforeAll()
+    GridProxyFactory.getOrCreateClustered(ieConfig)
   }
 
-  override protected def afterEach() = {
-    spaceProxy.clear(new Object())
-    super.afterEach()
+  case class FixtureParam(spark: SparkSession, sc: SparkContext, spaceProxy: GigaSpace)
+
+  override def withFixture(test: OneArgTest): Outcome = {
+    println("Before create Spark... ")
+    val spark = createSpark()
+    val sc = spark.sparkContext
+    val theFixture = FixtureParam(spark, sc, spaceProxy)
+    try {
+      println("Before invoking test... ")
+      withFixture(test.toNoArgTest(theFixture))
+    } finally{
+      println("Before stopping Insight Edge... ")
+      spaceProxy.clear(new Object())
+      spark.stopInsightEdgeContext()
+    }
+  }
+
+  def createSpark(): SparkSession = {
+    SparkSession
+      .builder()
+      .appName("insightedge-test")
+      .master("local[2]")
+      .insightEdgeConfig(ieConfig)
+      .getOrCreate()
   }
 
   def dataSeq(count: Int): Seq[Data] = (1L to count).map(i => new Data(i, "data" + i))
@@ -93,5 +115,4 @@ trait InsightEdge extends BeforeAndAfterAll with BeforeAndAfterEach {
   def dataQuery(query: String = "", params: Seq[Object] = Seq()): SQLQuery[Data] = new SQLQuery[Data](classOf[Data], query, params.toArray)
 
   def randomString() = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
-
 }

@@ -20,7 +20,7 @@ import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.SaveMode
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{Data, JData}
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
@@ -28,7 +28,7 @@ import org.scalatest.fixture
 
 
 //TODO check
-class DataSetPersistSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
 
   it should "persist with simplified syntax" taggedAs ScalaSpaceClass in { f =>
     writeDataSeqToDataGrid(1000)

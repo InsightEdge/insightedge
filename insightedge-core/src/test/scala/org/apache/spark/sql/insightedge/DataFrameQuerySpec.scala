@@ -17,13 +17,13 @@
 package org.apache.spark.sql.insightedge
 
 import org.apache.spark.sql.AnalysisException
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{Data, JData}
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.fixture
 
-class DataFrameQuerySpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFrameQuerySpec extends fixture.FlatSpec with InsightEdge {
 
   it should "read empty classes" taggedAs ScalaSpaceClass in { f=>
     val spark = f.spark

@@ -23,14 +23,14 @@ import org.apache.spark.mllib.tree.DecisionTree
 import org.apache.spark.mllib.tree.model.{DecisionTreeModel, GradientBoostedTreesModel}
 import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.rdd.RDD
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.basic._
 import org.insightedge.spark.implicits.mllib._
 import org.insightedge.spark.utils.ScalaSpaceClass
 import org.scalatest._
 
 
-class InsightEdgeMLlibSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class InsightEdgeMLlibSpec extends fixture.FlatSpec with InsightEdge {
 
   it should "should successfully store DecisionTreeModel MLlib model to Data Grid" taggedAs ScalaSpaceClass in{ f=>
 

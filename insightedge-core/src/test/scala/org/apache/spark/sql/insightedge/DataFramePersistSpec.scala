@@ -20,13 +20,13 @@ import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.SaveMode
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{Data, JData}
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.fixture
 
-class DataFramePersistSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
 
   it should "persist with simplified syntax" taggedAs ScalaSpaceClass in { f=>
     writeDataSeqToDataGrid(1000)
@@ -132,10 +132,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with IEConfig with InsightEd
     * This will enable converting the dataframes schema into space type descriptor when save is executed.
     * Right now schema is stored as DataFrameSchema object in space.
     */
-  ignore should "recreate space type with different schema" in { f=>
+  ignore should "recreate space type with different schema" in { ie =>
     import collection.JavaConversions._
 
-    val types = spaceProxy.getTypeManager
+    val types = ie.spaceProxy.getTypeManager
 
     val typeName = randomString()
 
@@ -154,11 +154,11 @@ class DataFramePersistSpec extends fixture.FlatSpec with IEConfig with InsightEd
     val secondEntity = new SpaceDocument(typeName, Map("id" -> "222", "surname" -> "Wind"))
 
     types.registerTypeDescriptor(firstType)
-    spaceProxy.write(firstEntity)
-    spaceProxy.takeMultiple(new SQLQuery[SpaceDocument](typeName, "", Seq()).setProjections(""))
+    ie.spaceProxy.write(firstEntity)
+    ie.spaceProxy.takeMultiple(new SQLQuery[SpaceDocument](typeName, "", Seq()).setProjections(""))
 
     types.registerTypeDescriptor(secondType)
-    spaceProxy.write(secondEntity)
+    ie.spaceProxy.write(secondEntity)
   }
 
 }

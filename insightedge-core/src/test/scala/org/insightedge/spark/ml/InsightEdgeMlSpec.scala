@@ -21,7 +21,7 @@ import org.apache.spark.ml.feature.{HashingTF, Tokenizer}
 import org.apache.spark.ml.linalg.DenseVector
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.sql.Row
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge, Spark}
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.utils.ScalaSpaceClass
 import org.scalatest.fixture
@@ -30,7 +30,7 @@ import org.scalatest.fixture
 /**
   * @author Oleksiy_Dyagilev
   */
-class InsightEdgeMlSpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class InsightEdgeMlSpec extends fixture.FlatSpec with InsightEdge {
 
   it should "should store and load ML Pipeline Model (Tokenizer, HashingTF, LogisticRegression" taggedAs ScalaSpaceClass in{ f=>
 

@@ -16,17 +16,15 @@
 
 package org.apache.spark.sql.insightedge
 
-import org.insightedge.spark.fixture.{IEConfig, InsightEdge}
-import org.apache.spark.sql.insightedge.relation.InsightEdgeAbstractRelation
-import InsightEdgeAbstractRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}
+import org.apache.spark.sql.insightedge.relation.InsightEdgeAbstractRelation.{filtersToSql, unsupportedFilters}
 import org.apache.spark.sql.sources._
-import org.insightedge.spark.fixture.Spark
+import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.utils.ScalaSpaceClass
 import org.openspaces.spatial.ShapeFactory.{circle, point}
 import org.scalatest.fixture
 
-class DataFrameRelationQuerySpec extends fixture.FlatSpec with IEConfig with InsightEdge with Spark {
+class DataFrameRelationQuerySpec extends fixture.FlatSpec with InsightEdge {
 
   it should "should handle simple filters" taggedAs ScalaSpaceClass in{ f=>
     val unhandled = unsupportedFilters(Array(
