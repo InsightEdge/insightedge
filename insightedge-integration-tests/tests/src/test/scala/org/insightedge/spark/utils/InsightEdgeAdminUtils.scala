@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
-import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
-import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
+import com.spotify.docker.client.messages.{ContainerConfig, ExecCreation, HostConfig, PortBinding}
+import com.spotify.docker.client.{DefaultDockerClient, DockerClient, LogStream}
 import org.json.simple.parser.JSONParser
 import org.json.simple.{JSONArray, JSONObject}
 import org.openspaces.admin.pu.ProcessingUnitInstance
@@ -199,10 +199,11 @@ object InsightEdgeAdminUtils extends Assertions{
     output.readFully()
   }
 
-  def exec(containerId: String, command: String): Unit = {
+  def exec(containerId: String, command: String): LogStream = {
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command))
     val execId = execCreation.id()
-    val output = docker.execStart(execId)
+    val output: LogStream = docker.execStart(execId)
+    output
   }
 
   protected def getContainerIp(containerId: String): String = {
@@ -319,8 +320,14 @@ object InsightEdgeAdminUtils extends Assertions{
   def getAppId: String = {
     var appId = ""
     retry(30000 millis, 100 millis) {
-      if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0)
-        appId = getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
+      if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0){
+        val serverApps: JSONArray = getSparkAppsFromHistoryServer(getMasterIp())
+        println("----- serverApps")
+        println(serverApps.toJSONString)
+        println("END ----- serverApps")
+
+        appId = serverApps.get(0).asInstanceOf[JSONObject].get("id").toString
+      }
       if(appId == null ||  appId.equals(""))
         fail("Failed to get app id from Spark History Server")
       else {
@@ -330,7 +337,7 @@ object InsightEdgeAdminUtils extends Assertions{
     }
   }
 
-  def destroyMachineWhenAppIsRunning(appId: String, containerName: String): Unit = {
+  def   destroyMachineWhenAppIsRunning(appId: String, containerName: String): Unit = {
     retry(30000 millis, 100 millis) {
       val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
       if ("RUNNING".equals(status)) {
