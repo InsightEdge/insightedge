@@ -17,7 +17,7 @@
 package org.insightedge.spark.failover
 
 import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
-import org.json.simple.{JSONArray, JSONObject}
+import org.json.simple.JSONArray
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -83,45 +83,21 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     val testMasterIp: String =  InsightEdgeAdminUtils.getMasterIp()
     println(s"testMasterIp [$testMasterIp]")
     val json : JSONArray = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(testMasterIp)
-    println(s"json: [$json]")
+    println(s"json [$json]")
 
     var appId: String = InsightEdgeAdminUtils.getAppId
-    println(s"appId: [$appId]")
-
-    try {
-      val historyServer = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(testMasterIp)
-      if(historyServer != null){
-        println(s"historyServer is $historyServer")
-        val value = historyServer.get(0)
-        if(value != null){
-          println(s"value is [$value]")
-          val j = value.asInstanceOf[JSONObject].get("id")
-          if(j != null){
-            println(s"j is [$j]")
-            val id: String = j.toString
-            println(s"id is [$id]")
-
-          }
-        }
-      }
-    }
-    catch {
-      case e : Exception => println("GOT EXCEPTION" + e)
-    }
 
     InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(appId, "slave1")
-    println("END - destroyMachineWhenAppIsRunning")
+
     //wait for job to finish
     Thread.sleep(60000)
 
     InsightEdgeAdminUtils.restartSparkHistoryServer()
-    println("END - restartSparkHistoryServer")
 
     //wait for history server to be available
     Thread.sleep(30000)
 
     InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
-    println("END - waitForAppSuccess")
   }
 
   override protected def afterAll(): Unit = {
