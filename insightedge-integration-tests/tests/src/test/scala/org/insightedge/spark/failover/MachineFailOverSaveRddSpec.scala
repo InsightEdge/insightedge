@@ -16,7 +16,6 @@
 
 package org.insightedge.spark.failover
 
-import com.spotify.docker.client.LogStream
 import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
 import org.json.simple.{JSONArray, JSONObject}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
@@ -78,14 +77,7 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     println(command)
 
-    val log: LogStream = InsightEdgeAdminUtils.exec(masterContainerId, command)
-    if(log != null){
-      println("log is:")
-      println(log.readFully())
-    }
-    else {
-      println("log is null")
-    }
+    InsightEdgeAdminUtils.exec(masterContainerId, command)
 
     println(s"finished command [$command]")
     val testMasterIp: String =  InsightEdgeAdminUtils.getMasterIp()
@@ -93,8 +85,9 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     val json : JSONArray = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(testMasterIp)
     println(s"json: [$json]")
 
+    var appId: String = InsightEdgeAdminUtils.getAppId
+    println(s"appId: [$appId]")
 
-    // only for debug
     try {
       val historyServer = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(testMasterIp)
       if(historyServer != null){
@@ -115,9 +108,6 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     catch {
       case e : Exception => println("GOT EXCEPTION" + e)
     }
-
-    var appId: String = InsightEdgeAdminUtils.getAppId
-    println(s"appId: [$appId]")
 
     InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(appId, "slave1")
     println("END - destroyMachineWhenAppIsRunning")
