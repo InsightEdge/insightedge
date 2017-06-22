@@ -17,7 +17,6 @@
 package org.insightedge.spark.failover
 
 import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
-import org.json.simple.JSONArray
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -58,8 +57,6 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   "insightedge-submit.sh " should "submit SaveRdd example while destroying slave machine" taggedAs PremiumOnlyTest in {
 
-    println(s"JOBS is [$JOBS]")
-
     val fullClassName = s"org.insightedge.spark.jobs.SaveRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
@@ -79,11 +76,6 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
 
-    println(s"finished command [$command]")
-    val testMasterIp: String =  InsightEdgeAdminUtils.getMasterIp()
-    println(s"testMasterIp [$testMasterIp]")
-    val json : JSONArray = InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(testMasterIp)
-    println(s"json [$json]")
 
     var appId: String = InsightEdgeAdminUtils.getAppId
 
