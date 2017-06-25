@@ -50,7 +50,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
       .format("org.apache.spark.sql.insightedge")
       .option("class", classOf[JData].getName)
       .load()
-      .as[JData]
+
     assert(df.count() == 1000)
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
