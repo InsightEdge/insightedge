@@ -31,7 +31,7 @@ import org.scalatest.fixture
 
 class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in { ie =>
+  it should "dataframe: find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in { ie =>
     val searchedCircle = circle(point(0, 0), 1.0)
     val searchedRect = rectangle(0, 2, 0, 2)
     val searchedPoint = point(1, 1)
@@ -78,7 +78,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     asserts(pdf)
   }
 
-  it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { ie =>
+  it should "dataframe: find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { ie =>
     ie.spaceProxy.write(new JSpatialData(1L, point(0, 0)))
     val spark = ie.spark
     // pushed down to XAP
@@ -91,7 +91,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     zeroPointCheck(pdf, "point")
   }
 
-  it should "work with shapes embedded on second level" taggedAs ScalaSpaceClass in { ie =>
+  it should "dataframe: work with shapes embedded on second level" taggedAs ScalaSpaceClass in { ie =>
     ie.spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
     val spark = ie.spark
     // pushed down to XAP
@@ -104,7 +104,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     zeroPointCheck(pdf, "location.point")
   }
 
-  it should "work with new columns via udf" in { ie =>
+  it should "dataframe: work with new columns via udf" in { ie =>
     ie.spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
     val spark = ie.spark
     val df = spark.read.grid.loadClass[SpatialData]
@@ -116,7 +116,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     assert(row.getAs[Double]("locationX") == 1)
   }
 
-  it should "persist shapes as shapes" taggedAs ScalaSpaceClass in { ie =>
+  it should "dataframe: persist shapes as shapes" taggedAs ScalaSpaceClass in { ie =>
     ie.spaceProxy.write(SpatialData(id = null, routing = 1, circle(point(0, 0), 1.0), rectangle(0, 2, 0, 2), point(1, 1)))
 
     val collectionName = randomString()
