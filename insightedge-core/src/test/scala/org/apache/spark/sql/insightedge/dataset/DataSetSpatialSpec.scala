@@ -24,7 +24,7 @@ import org.apache.spark.sql.insightedge.JSpatialData
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}
 import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
-import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
+import org.insightedge.spark.utils.ScalaSpaceClass
 import org.openspaces.spatial.ShapeFactory._
 import org.openspaces.spatial.shapes.{Circle, Point, Rectangle}
 import org.scalatest.fixture
@@ -92,6 +92,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     val pds = ds.persist()
     zeroPointCheckJSpatialData(pds, "point")
   }
+  */
 
   it should "dataset: work with shapes embedded on second level" taggedAs ScalaSpaceClass in { ie =>
     ie.spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
@@ -103,9 +104,9 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     zeroPointCheckSpatialData(ds, "location.point")
 
     // executed in expressions on Spark
-    val pds = ds.persist().as[SpatialData]
+    val pds = ds.persist().as[SpatialEmbeddedData]
     zeroPointCheckSpatialData(pds, "location.point")
-  }*/
+  }
 
   it should "dataset: work with new columns via udf" in { ie =>
     ie.spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
