@@ -24,9 +24,9 @@ import org.scalatest.fixture
 
 class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "query data from Data Grid with a help of SQL" taggedAs ScalaSpaceClass in { f=>
+  it should "query data from Data Grid with a help of SQL" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
-    val sqlRdd = f.sc.gridSql[Data]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
+    val sqlRdd = ie.sc.gridSql[Data]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
 
     val count = sqlRdd.count()
     assert(count == 3, "Wrong objects count")
@@ -35,9 +35,9 @@ class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with InsightEdge {
     assert(sqlRdd.partitions.length == 2)
   }
 
-  it should "query data from Data Grid with a help of SQL [java]" taggedAs JavaSpaceClass in { f=>
+  it should "query data from Data Grid with a help of SQL [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
-    val sqlRdd = f.sc.gridSql[JData]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
+    val sqlRdd = ie.sc.gridSql[JData]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
 
     val count = sqlRdd.count()
     assert(count == 3, "Wrong objects count")
@@ -46,9 +46,9 @@ class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with InsightEdge {
     assert(sqlRdd.partitions.length == 2)
   }
 
-  it should "query bucketed data from Data Grid with a help of SQL" taggedAs ScalaSpaceClass in { f=>
+  it should "query bucketed data from Data Grid with a help of SQL" taggedAs ScalaSpaceClass in { ie=>
     writeBucketedDataSeqToDataGrid(1000)
-    val sqlRdd = f.sc.gridSql[BucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
+    val sqlRdd = ie.sc.gridSql[BucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
 
     val count = sqlRdd.count()
     assert(count == 3, "Wrong objects count")
@@ -57,9 +57,9 @@ class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with InsightEdge {
     assert(sqlRdd.partitions.length == 2 * 4)
   }
 
-  it should "query bucketed data from Data Grid with a help of SQL [java]" taggedAs JavaSpaceClass in { f=>
+  it should "query bucketed data from Data Grid with a help of SQL [java]" taggedAs JavaSpaceClass in { ie=>
     writeJBucketedDataSeqToDataGrid(1000)
-    val sqlRdd = f.sc.gridSql[JBucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
+    val sqlRdd = ie.sc.gridSql[JBucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"))
 
     val count = sqlRdd.count()
     assert(count == 3, "Wrong objects count")
@@ -68,9 +68,9 @@ class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with InsightEdge {
     assert(sqlRdd.partitions.length == 2 * 4)
   }
 
-  it should "have bucketed partitions set by user" taggedAs ScalaSpaceClass in { f=>
+  it should "have bucketed partitions set by user" taggedAs ScalaSpaceClass in { ie=>
     writeBucketedDataSeqToDataGrid(1000)
-    val sqlRdd = f.sc.gridSql[BucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"), splitCount = Some(8))
+    val sqlRdd = ie.sc.gridSql[BucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"), splitCount = Some(8))
 
     val count = sqlRdd.count()
     assert(count == 3, "Wrong objects count")
@@ -79,9 +79,9 @@ class InsightEdgeSqlRDDSpec extends fixture.FlatSpec with InsightEdge {
     assert(sqlRdd.partitions.length == 2 * 8)
   }
 
-  it should "have bucketed partitions set by user [java]" taggedAs JavaSpaceClass in { f=>
+  it should "have bucketed partitions set by user [java]" taggedAs JavaSpaceClass in { ie=>
     writeJBucketedDataSeqToDataGrid(1000)
-    val sqlRdd = f.sc.gridSql[JBucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"), splitCount = Some(8))
+    val sqlRdd = ie.sc.gridSql[JBucketedData]("data IN (?,?,?)", Seq("data100", "data101", "data102"), splitCount = Some(8))
 
     val count = sqlRdd.count()
     assert(count == 3, "Wrong objects count")

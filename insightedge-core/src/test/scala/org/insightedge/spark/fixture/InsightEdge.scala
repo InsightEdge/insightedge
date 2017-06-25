@@ -18,8 +18,8 @@ package org.insightedge.spark.fixture
 
 import com.j_spaces.core.client.SQLQuery
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.spark.sql.{SQLContext, SparkSession}
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.SparkContext
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.implicits.basic._
 import org.insightedge.spark.model.BucketedGridModel

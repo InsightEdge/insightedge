@@ -32,16 +32,16 @@ import org.scalatest._
 
 class InsightEdgeMLlibSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "should successfully store DecisionTreeModel MLlib model to Data Grid" taggedAs ScalaSpaceClass in{ f=>
+  it should "should successfully store DecisionTreeModel MLlib model to Data Grid" taggedAs ScalaSpaceClass in{ ie=>
 
-    val testDataRDD = loadDataFromFile(f.sc).map(_.features)
+    val testDataRDD = loadDataFromFile(ie.sc).map(_.features)
     val testDataArray = testDataRDD.collect()
-    val model = createDecisionTreeModel(f.sc)
+    val model = createDecisionTreeModel(ie.sc)
     val prediction = model.predict(testDataRDD).collect()
-    model.saveToGrid(f.sc, "model")
+    model.saveToGrid(ie.sc, "model")
 
     // stop Spark context and create it again to make sure we can load in another context
-    f.spark.stopInsightEdgeContext()
+    ie.spark.stopInsightEdgeContext()
 
     val spark = createSpark()
     val sc = spark.sparkContext
@@ -56,9 +56,9 @@ class InsightEdgeMLlibSpec extends fixture.FlatSpec with InsightEdge {
     assert(prediction sameElements loadedModelPrediction)
   }
 
-  it should "should load nothing if there is no such MLlib model int DataGrid" taggedAs ScalaSpaceClass in{ f=>
-    val model = createDecisionTreeModel(f.sc)
-    val sc = f.sc
+  it should "should load nothing if there is no such MLlib model int DataGrid" taggedAs ScalaSpaceClass in{ ie=>
+    val model = createDecisionTreeModel(ie.sc)
+    val sc = ie.sc
     model.saveToGrid(sc, "model")
     assert(None === sc.loadMLInstance[DecisionTreeModel]("model2"))
     assert(None === sc.loadMLInstance[GradientBoostedTreesModel]("model"))

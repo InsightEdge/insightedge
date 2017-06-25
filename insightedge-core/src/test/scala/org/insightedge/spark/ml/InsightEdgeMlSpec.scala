@@ -32,9 +32,9 @@ import org.scalatest.fixture
   */
 class InsightEdgeMlSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "should store and load ML Pipeline Model (Tokenizer, HashingTF, LogisticRegression" taggedAs ScalaSpaceClass in{ f=>
+  it should "should store and load ML Pipeline Model (Tokenizer, HashingTF, LogisticRegression" taggedAs ScalaSpaceClass in{ ie=>
 
-    val training = f.spark.createDataFrame(Seq(
+    val training = ie.spark.createDataFrame(Seq(
       (0L, "a b c d e spark", 1.0),
       (1L, "b d", 0.0),
       (2L, "spark f g h", 1.0),
@@ -57,7 +57,7 @@ class InsightEdgeMlSpec extends fixture.FlatSpec with InsightEdge {
     val model = pipeline.fit(training)
 
     // Save model to grid
-    model.saveToGrid(f.sc, "testPipelineModel")
+    model.saveToGrid(ie.sc, "testPipelineModel")
 
     val testSeq = Seq(
       (4L, "spark i j k"),
@@ -65,7 +65,7 @@ class InsightEdgeMlSpec extends fixture.FlatSpec with InsightEdge {
       (6L, "mapreduce spark"),
       (7L, "apache hadoop")
     )
-    val testDf = f.spark.createDataFrame(testSeq).toDF("id", "text")
+    val testDf = ie.spark.createDataFrame(testSeq).toDF("id", "text")
 
     val predictions = model.transform(testDf)
       .select("id", "text", "probability", "prediction")
@@ -84,7 +84,7 @@ class InsightEdgeMlSpec extends fixture.FlatSpec with InsightEdge {
     printPredictions(predictions)
 
     // stop Spark context and create it again to make sure we can load in another context
-    f.spark.stopInsightEdgeContext()
+    ie.spark.stopInsightEdgeContext()
     val spark = createSpark()
     val sc = spark.sparkContext
 
