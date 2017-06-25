@@ -17,7 +17,7 @@
 package org.apache.spark.sql.insightedge
 
 import org.apache.spark.sql.types.{Metadata, MetadataBuilder}
-import org.apache.spark.sql.{DataFrame, DataFrameReader, DataFrameWriter, Dataset}
+import org.apache.spark.sql._
 
 import scala.reflect._
 
@@ -47,7 +47,7 @@ trait DataFrameImplicits {
       reader.format(InsightEdgeFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
 
-    def loadDS[R: ClassTag]: Dataset[R] = {
+    def loadDS[R: ClassTag : Encoder]: Dataset[R] = {
       loadDF[R].as[R]
     }
 
