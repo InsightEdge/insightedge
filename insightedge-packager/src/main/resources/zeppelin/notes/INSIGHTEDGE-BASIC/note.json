@@ -133,7 +133,7 @@
     },
     {
       "title": "Saving RDD",
-      "text": "%spark\nimport scala.util.Random\n\ndef normal(top:Int): Int = {\n    val iterations = 10\n    val normal = (0 to iterations).foldLeft(0.0){(sum, index) => sum + Math.random()} / iterations\n    (normal * top).toInt\n}\n\nval products = (1 to 100000).map { i => Product(i, \"Description of product \" + i, Math.abs(normal(100) - 30), if (Random.nextDouble() < 0.2) true else false) }\nval generatedRdd = sc.parallelize(products)\ngeneratedRdd.saveToGrid()\n",
+      "text": "%spark\nimport scala.util.Random\n\ndef normal(top:Int): Int = {\n    val iterations = 10\n    val normal = (0 to iterations).foldLeft(0.0){(sum, index) => sum + Math.random()} / iterations\n    (normal * top).toInt\n}\n\nval rdd = sc.parallelize(1 to 100000).map { i => Product(i, \"Description of product \" + i, Math.abs(normal(100) - 30), Random.nextDouble() < 0.2) }\nrdd.saveToGrid()\n",
       "dateUpdated": "2017-06-20T09:42:33+0300",
       "config": {
         "editorSetting": {
