@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.dataframe
 
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
@@ -28,10 +28,10 @@ import org.scalatest.fixture
 
 class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "persist with simplified syntax" taggedAs ScalaSpaceClass in { f=>
+  it should "persist with simplified syntax" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
@@ -42,10 +42,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     readDf.printSchema()
   }
 
-  it should "persist with simplified syntax [java]" taggedAs JavaSpaceClass in { f=>
+  it should "persist with simplified syntax [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val table = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[JData]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
@@ -56,10 +56,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     readDf.printSchema()
   }
 
-  it should "persist without implicits" taggedAs ScalaSpaceClass in { f=>
+  it should "persist without implicits" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read
       .format("org.apache.spark.sql.insightedge")
       .option("class", classOf[Data].getName)
@@ -77,10 +77,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     readDf.printSchema()
   }
 
-  it should "fail to persist with ErrorIfExists mode" taggedAs ScalaSpaceClass in { f=>
+  it should "fail to persist with ErrorIfExists mode" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
 
@@ -90,10 +90,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     println(thrown.getMessage)
   }
 
-  it should "clear before write with Overwrite mode" taggedAs ScalaSpaceClass in { f=>
+  it should "clear before write with Overwrite mode" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid.load(table).count() == 500)
@@ -102,10 +102,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     assert(spark.read.grid.load(table).count() == 200)
   }
 
-  it should "not write with Ignore mode" taggedAs ScalaSpaceClass in { f=>
+  it should "not write with Ignore mode" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid.load(table).count() == 500)
@@ -114,10 +114,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     assert(spark.read.grid.load(table).count() == 500)
   }
 
-  it should "override document schema" taggedAs ScalaSpaceClass in { f=>
+  it should "override document schema" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[Data]
     // persist with modified schema
     df.select("id", "data").write.grid.save(table)

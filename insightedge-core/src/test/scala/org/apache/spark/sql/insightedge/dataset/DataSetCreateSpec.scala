@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.dataset
 
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
@@ -59,17 +59,6 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
 
     assert(ds.count() == 1000)
     assert(ds.rdd.partitions.length == NumberOfGridPartitions)
-  }
-
-  it should "fail to create dataset with insightedge format without class or collection provided" taggedAs ScalaSpaceClass in { f=>
-    val thrown = intercept[IllegalArgumentException] {
-      val spark = f.spark
-      val df = spark.read
-        .format("org.apache.spark.sql.insightedge")
-        .load()
-      //TODO
-    }
-    assert(thrown.getMessage == "'path', 'collection' or 'class' must be specified")
   }
 
   it should "create dataset with implicits" taggedAs ScalaSpaceClass in { ie=>

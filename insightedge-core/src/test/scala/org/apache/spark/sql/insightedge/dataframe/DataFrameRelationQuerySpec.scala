@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.dataframe
 
 import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}
 import org.apache.spark.sql.insightedge.relation.InsightEdgeAbstractRelation.{filtersToSql, unsupportedFilters}

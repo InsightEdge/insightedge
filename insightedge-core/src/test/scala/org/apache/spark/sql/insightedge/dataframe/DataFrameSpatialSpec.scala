@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.dataframe
 
 import com.gigaspaces.document.SpaceDocument
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.insightedge.JSpatialData
 import org.apache.spark.sql.insightedge.model.{Location, SpatialData, SpatialEmbeddedData}
 import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._

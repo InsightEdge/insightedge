@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.apache.spark.sql.insightedge
+package org.apache.spark.sql.insightedge.dataframe
 
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.insightedge.JAddress
 import org.apache.spark.sql.insightedge.model.Address
 import org.apache.spark.sql.types._
 import org.insightedge.spark.fixture.InsightEdge
@@ -63,23 +64,23 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     assert(thrown.getMessage == "'path', 'collection' or 'class' must be specified")
   }
 
-  it should "create dataframe with implicits" taggedAs ScalaSpaceClass in { f=>
+  it should "create dataframe with implicits" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[Data]
     assert(df.count() == 1000)
   }
 
-  it should "create dataframe with implicits [java]" taggedAs JavaSpaceClass in { f=>
+  it should "create dataframe with implicits [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid.loadClass[JData]
     assert(df.count() == 1000)
   }
 
-  it should "create dataframe with SQL syntax" taggedAs ScalaSpaceClass in { f=>
+  it should "create dataframe with SQL syntax" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     spark.sql(
       s"""
          |create temporary table dataTable
@@ -91,9 +92,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     assert(count == 1000)
   }
 
-  it should "create dataframe with SQL syntax [java]" taggedAs JavaSpaceClass in { f=>
+  it should "create dataframe with SQL syntax [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     spark.sql(
       s"""
          |create temporary table dataTable
@@ -105,9 +106,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     assert(count == 1000)
   }
 
-  it should "load dataframe with 'collection' or 'path' option" taggedAs ScalaSpaceClass in { f=>
+  it should "load dataframe with 'collection' or 'path' option" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     val collectionName = randomString()
     val df = spark.read.grid.loadClass[Data]
     df.write.grid.save(collectionName)
@@ -119,9 +120,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     assert(fromGrid2.count() == 1000)
   }
 
-  it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in { f=>
+  it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in { ie=>
     writeBucketedDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid
       .option("class", classOf[BucketedData].getName)
       .option("splitCount", "4")
@@ -130,9 +131,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
 
-  it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in { f=>
+  it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in { ie=>
     writeJBucketedDataSeqToDataGrid(1000)
-    val spark = f.spark
+    val spark = ie.spark
     val df = spark.read.grid
       .option("class", classOf[JBucketedData].getName)
       .option("splitCount", "4")
