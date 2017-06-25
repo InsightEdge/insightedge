@@ -14,6 +14,35 @@ get_libs() {
     echo $result
 }
 
+# split get_libs function for zeppelin interpreter
+get_xap_required_jars() {
+    local separator=$1
+    local datagrid="$INSIGHTEDGE_HOME/datagrid"
+    local result="$result$separator$(echo $datagrid/lib/required/*.jar | tr ' ' $separator)"
+    echo $result
+}
+
+get_xap_spatial_libs() {
+    local separator=$1
+    local datagrid="$INSIGHTEDGE_HOME/datagrid"
+    local result="$result$separator$(echo $datagrid/lib/optional/spatial/*.jar | tr ' ' $separator)"
+    echo $result
+}
+
+get_spark_basic_jars() {
+    local separator=$1
+    local spark_jars="$INSIGHTEDGE_HOME/jars"
+    local result="$result$separator$(echo $spark_jars/*.jar | tr ' ' $separator)"
+    echo $result
+}
+
+get_ie_lib() {
+    local separator=$1
+    local ie_lib="$INSIGHTEDGE_HOME/lib"
+    local result="$result$separator$(echo $ie_lib/*.jar | tr ' ' $separator)"
+    echo $result
+}
+
 install_insightedge() {
     local install=$1
     local artifact=$2
