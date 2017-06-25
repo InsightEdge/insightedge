@@ -65,9 +65,9 @@ class InsightEdgeMlSpec extends fixture.FlatSpec with InsightEdge {
       (6L, "mapreduce spark"),
       (7L, "apache hadoop")
     )
-    val testDf = ie.spark.createDataFrame(testSeq).toDF("id", "text")
+    val testDf1 = ie.spark.createDataFrame(testSeq).toDF("id", "text")
 
-    val predictions = model.transform(testDf)
+    val predictions = model.transform(testDf1)
       .select("id", "text", "probability", "prediction")
       .collect()
 
@@ -91,7 +91,9 @@ class InsightEdgeMlSpec extends fixture.FlatSpec with InsightEdge {
     // load model from grid
     val loadedModel = sc.loadMLInstance[PipelineModel]("testPipelineModel").get
 
-    val afterLoadPredictions = loadedModel.transform(testDf)
+    val testDf2 = spark.createDataFrame(testSeq).toDF("id", "text")
+
+    val afterLoadPredictions = loadedModel.transform(testDf2)
       .select("id", "text", "probability", "prediction")
       .collect()
 
