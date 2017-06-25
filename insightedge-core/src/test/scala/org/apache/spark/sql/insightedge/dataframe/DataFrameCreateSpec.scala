@@ -50,6 +50,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
       .format("org.apache.spark.sql.insightedge")
       .option("class", classOf[JData].getName)
       .load()
+      .as[JData]
     assert(df.count() == 1000)
     assert(df.rdd.partitions.length == NumberOfGridPartitions)
   }
@@ -67,14 +68,14 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
   it should "create dataframe with implicits" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     assert(df.count() == 1000)
   }
 
   it should "create dataframe with implicits [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[JData]
+    val df = spark.read.grid.loadDF[JData]
     assert(df.count() == 1000)
   }
 
@@ -110,7 +111,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     val collectionName = randomString()
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     df.write.grid.save(collectionName)
 
     val fromGrid = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load()

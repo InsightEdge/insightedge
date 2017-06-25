@@ -38,7 +38,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
       Person(id = null, name = "Silvia", age = 27, address = Address(city = "Charlotte", state = "NC"))
     )).saveToGrid()
 
-    val df = spark.read.grid.loadClass[Person]
+    val df = spark.read.grid.loadDF[Person]
     df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
@@ -59,7 +59,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
       new JPerson(null, "Silvia", 27, new JAddress("Charlotte", "NC"))
     )).saveToGrid()
     val spark = f.spark
-    val df = spark.read.grid.loadClass[JPerson]
+    val df = spark.read.grid.loadDF[JPerson]
     df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
@@ -82,7 +82,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid.loadClass[Person].write.grid(collectionName).save()
+    spark.read.grid.loadDF[Person].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
@@ -105,7 +105,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid.loadClass[JPerson].write.grid(collectionName).save()
+    spark.read.grid.loadDF[JPerson].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])

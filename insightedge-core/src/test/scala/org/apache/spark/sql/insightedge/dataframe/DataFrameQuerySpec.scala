@@ -40,7 +40,7 @@ class DataFrameQuerySpec extends fixture.FlatSpec with InsightEdge {
   it should "select one field" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     val increasedRouting = df.select(df("routing") + 10).first().getAs[Long](0)
     assert(increasedRouting >= 10)
   }
@@ -48,7 +48,7 @@ class DataFrameQuerySpec extends fixture.FlatSpec with InsightEdge {
   it should "select one field [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[JData]
+    val df = spark.read.grid.loadDF[JData]
     df.printSchema()
 
     val increasedRouting = df.select(df("routing") + 10).first().getAs[Long](0)
@@ -58,7 +58,7 @@ class DataFrameQuerySpec extends fixture.FlatSpec with InsightEdge {
   it should "filter by one field" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     val count = df.filter(df("routing") > 500).count()
     assert(count == 500)
   }
@@ -66,7 +66,7 @@ class DataFrameQuerySpec extends fixture.FlatSpec with InsightEdge {
   it should "group by field" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     val count = df.groupBy("routing").count().count()
     assert(count == 1000)
   }
@@ -74,7 +74,7 @@ class DataFrameQuerySpec extends fixture.FlatSpec with InsightEdge {
   it should "group by field [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[JData]
+    val df = spark.read.grid.loadDF[JData]
     val count = df.groupBy("routing").count().count()
     assert(count == 1000)
   }
@@ -82,7 +82,7 @@ class DataFrameQuerySpec extends fixture.FlatSpec with InsightEdge {
   it should "fail to resolve column that's not in class" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     intercept[AnalysisException] {
       val count = df.select(df("abc")).count()
     }

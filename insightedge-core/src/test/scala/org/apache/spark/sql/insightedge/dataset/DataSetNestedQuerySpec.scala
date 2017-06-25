@@ -41,7 +41,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     import spark.implicits._
 
-    val ds = spark.read.grid.loadClass[Person].as[Person]
+    val ds = spark.read.grid.loadDF[Person].as[Person]
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
@@ -63,7 +63,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     )).saveToGrid()
     val spark = ie.spark
     implicit val jPersonEncoder = org.apache.spark.sql.Encoders.bean(classOf[JPerson])
-    val ds = spark.read.grid.loadClass[JPerson].as[JPerson]
+    val ds = spark.read.grid.loadDF[JPerson].as[JPerson]
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
@@ -88,7 +88,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     val collectionName = randomString()
     val spark = ie.spark
 
-    spark.read.grid.loadClass[Person].write.grid(collectionName).save()
+    spark.read.grid.loadDF[Person].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
@@ -113,7 +113,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     val collectionName = randomString()
     val spark = ie.spark
     implicit val jPersonEncoder = org.apache.spark.sql.Encoders.bean(classOf[JPerson])
-    spark.read.grid.loadClass[JPerson].write.grid(collectionName).save()
+    spark.read.grid.loadDF[JPerson].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])

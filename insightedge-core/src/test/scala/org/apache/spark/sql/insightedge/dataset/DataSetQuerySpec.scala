@@ -42,7 +42,7 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid.loadDF[Data].as[Data]
     val increasedRouting = ds.select(ds("routing") + 10).first().getAs[Long](0)
     assert(increasedRouting >= 10)
   }
@@ -50,7 +50,7 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
   it should "select one field [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val ds = spark.read.grid.loadClass[JData]
+    val ds = spark.read.grid.loadDF[JData]
     ds.printSchema()
 
     val increasedRouting = ds.select(ds("routing") + 10).first().getAs[Long](0)
@@ -61,7 +61,7 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid.loadDF[Data].as[Data]
     val count = ds.filter(ds("routing") > 500).count()
     assert(count == 500)
   }
@@ -70,7 +70,7 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid.loadDF[Data].as[Data]
     val count = ds.groupBy("routing").count().count()
     assert(count == 1000)
   }
@@ -79,7 +79,7 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
-    val ds = spark.read.grid.loadClass[JData].as[JData]
+    val ds = spark.read.grid.loadDF[JData].as[JData]
     val count = ds.groupBy("routing").count().count()
     assert(count == 1000)
   }
@@ -88,7 +88,7 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid.loadDF[Data].as[Data]
     intercept[AnalysisException] {
       val count = ds.select(ds("abc")).count()
     }

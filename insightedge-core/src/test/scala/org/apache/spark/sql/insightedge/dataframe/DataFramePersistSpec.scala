@@ -32,7 +32,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
     val readDf = spark.read.grid.load(table)
@@ -46,7 +46,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeJDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[JData]
+    val df = spark.read.grid.loadDF[JData]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
     val readDf = spark.read.grid.load(table)
@@ -81,7 +81,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
 
     val thrown = intercept[IllegalStateException] {
@@ -94,7 +94,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid.load(table).count() == 500)
 
@@ -106,7 +106,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid.load(table).count() == 500)
 
@@ -118,7 +118,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid.loadDF[Data]
     // persist with modified schema
     df.select("id", "data").write.grid.save(table)
     // persist with original schema

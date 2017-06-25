@@ -37,7 +37,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
     import spark.implicits._
     val ds = spark.read
         .grid
-        .loadClass[Data]
+        .loadDF[Data]
       .as[Data]
 
     val filter = ds.filter(d => d.routing > 10).count()
@@ -52,7 +52,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     val ds = spark.read
         .grid
-        .loadClass[JData]
+        .loadDF[JData]
         .as[JData]
 
     val filter = ds.filter(d => d.getRouting > -1).count()
@@ -65,7 +65,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid.loadDF[Data].as[Data]
     assert(ds.count() == 1000)
   }
 
@@ -74,7 +74,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
 
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
     val spark = ie.spark
-    val ds = spark.read.grid.loadClass[JData].as[JData]
+    val ds = spark.read.grid.loadDF[JData].as[JData]
     assert(ds.count() == 1000)
   }
 
@@ -83,7 +83,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     import spark.implicits._
     val collectionName = randomString()
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid.loadDF[Data].as[Data]
     ds.write.grid.save(collectionName)
 
     val fromGridDataSet = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load().as[Data]
@@ -101,7 +101,6 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge {
       .option("class", classOf[BucketedData].getName)
       .option("splitCount", "4")
       .load().as[BucketedData]
-    //loadClass
 
     assert(ds.count() == 1000)
     assert(ds.rdd.partitions.length == 4 * NumberOfGridPartitions)
