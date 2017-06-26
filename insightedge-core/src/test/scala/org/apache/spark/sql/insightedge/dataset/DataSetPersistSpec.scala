@@ -24,7 +24,6 @@ import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.fixture
 
 
-//TODO check
 class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
 
   it should "persist with simplified syntax" taggedAs ScalaSpaceClass in { f =>

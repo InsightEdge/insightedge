@@ -17,7 +17,6 @@
 package org.apache.spark.sql.insightedge.dataset
 
 import org.apache.spark.sql.AnalysisException
-import org.apache.spark.sql.insightedge.JPerson
 import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{Data, JData}
