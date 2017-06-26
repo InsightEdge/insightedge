@@ -44,6 +44,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
+    assert(ds.filter( o => o.address.city ==  "Buffalo" ).count() == 1)
 
     ds.createOrReplaceTempView("people")
 
@@ -67,6 +68,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
+    assert(ds.filter( o => o.getAddress.getCity == "Buffalo").count() == 1)
 
     ds.createOrReplaceTempView("people")
 
@@ -100,6 +102,9 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.state") equalTo "NC").count() == 2)
     assert(ds.filter(ds("address.city") equalTo "Nowhere").count() == 0)
+    assert(ds.filter( o => o.address.state == "NC").count() == 2)
+    assert(ds.filter( o => o.address.city == "Nowhere").count() == 0)
+
   }
 
   it should "support nested properties after saving [java]" taggedAs ScalaSpaceClass in { ie =>
@@ -124,5 +129,8 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.state") equalTo "NC").count() == 2)
     assert(ds.filter(ds("address.city") equalTo "Nowhere").count() == 0)
+    assert(ds.filter( o => o.getAddress.getState == "NC").count() == 2)
+    assert(ds.filter( o => o.getAddress.getCity == "Nowhere").count() == 0)
+
   }
 }
