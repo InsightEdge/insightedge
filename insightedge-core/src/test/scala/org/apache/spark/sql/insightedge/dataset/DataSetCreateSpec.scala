@@ -84,8 +84,10 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     val ds = spark.read.grid.loadDS[Data]
     ds.write.grid.save(collectionName)
 
-    val fromGridDataSet = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load().as[Data]
-    assert(fromGridDataSet.count() == 1000)
+    val fromGridDataSetLong = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load().as[Data]
+    val fromGridDataSetShort = spark.read.option("collection", collectionName).loadDS[Data]
+    assert(fromGridDataSetShort.count() == 1000)
+    assert(fromGridDataSetLong.count() == 1000)
     //collection == path
     val fromGrid2DataSet = spark.read.format("org.apache.spark.sql.insightedge").load(collectionName).as[Data]
     assert(fromGrid2DataSet.count() == 1000)
@@ -95,7 +97,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     writeBucketedDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid
+    val ds = spark.read.format("org.apache.spark.sql.insightedge")
       .option("class", classOf[BucketedData].getName)
       .option("splitCount", "4")
       .load().as[BucketedData]
@@ -109,10 +111,8 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     implicit val jBucketDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JBucketedData])
     val spark = ie.spark
     val ds = spark.read.grid
-      .option("class", classOf[JBucketedData].getName)
       .option("splitCount", "4")
-      .load()
-      .as[JBucketedData]
+      .loadDS[JBucketedData]
     assert(ds.count() == 1000)
     assert(ds.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
@@ -152,6 +152,12 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
       assert(dataSet.filter(dataSet("name") equalTo "John").count() == 1)
       assert(dataSet.filter(dataSet("age") < 30).count() == 1)
       assert(dataSet.filter(dataSet("address.state") equalTo "NY").count() == 1)
+
+      assert(dataSet.filter( "age < 30").count() == 1)
+
+      assert(dataSet.filter( o => o.name == "John").count() == 1)
+      assert(dataSet.filter( o => o.age < 30 ).count() == 1)
+      assert(dataSet.filter( o => o.address.state == "NY").count() == 1)
     }
 
     val schemaAsserts = (schema: StructType) => {
