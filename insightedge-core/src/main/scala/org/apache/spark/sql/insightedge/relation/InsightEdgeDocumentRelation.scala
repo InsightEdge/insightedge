@@ -45,7 +45,7 @@ private[insightedge] case class InsightEdgeDocumentRelation(
 
   override def insert(data: DataFrame, overwrite: Boolean): Unit = {
     if (overwrite && !collectionIsEmpty) {
-      gs.takeMultiple(new SQLQuery[SpaceDocument](collection, "", Seq()).setProjections(""))
+      gs.clear(new SpaceDocument(collection))
     }
 
     if (gs.getTypeManager.getTypeDescriptor(collection) == null) {
