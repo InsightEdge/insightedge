@@ -36,8 +36,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     val spark = ie.spark
     import spark.implicits._
     val ds = spark.read
-        .grid
-        .loadDS[Data]
+        .grid[Data].as[Data]
 
     val filteredResult = ds.filter(d => d.routing > 10).count()
     filteredResult should equal(990)
@@ -50,8 +49,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
     val spark = ie.spark
     val ds = spark.read
-        .grid
-        .loadDS[JData]
+        .grid[JData].as[JData]
 
     val filteredResult = ds.filter(d => d.getRouting > 10).count()
     filteredResult should equal(990)
@@ -63,7 +61,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadDS[Data]
+    val ds = spark.read.grid[Data].as[Data]
     assert(ds.count() == 1000)
   }
 
@@ -72,7 +70,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
 
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
     val spark = ie.spark
-    val ds = spark.read.grid.loadDS[JData]
+    val ds = spark.read.grid[JData].as[JData]
     assert(ds.count() == 1000)
   }
 
@@ -81,11 +79,11 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     val spark = ie.spark
     import spark.implicits._
     val collectionName = randomString()
-    val ds = spark.read.grid.loadDS[Data]
+    val ds = spark.read.grid[Data].as[Data]
     ds.write.grid.save(collectionName)
 
     val fromGridDataSetLong = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load().as[Data]
-    val fromGridDataSetShort = spark.read.option("collection", collectionName).loadDS[Data]
+    val fromGridDataSetShort = spark.read.grid(collectionName).as[Data]
     assert(fromGridDataSetShort.count() == 1000)
     assert(fromGridDataSetLong.count() == 1000)
     //collection == path
@@ -110,9 +108,9 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     writeJBucketedDataSeqToDataGrid(1000)
     implicit val jBucketDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JBucketedData])
     val spark = ie.spark
-    val ds = spark.read.grid
+    val ds = spark.read
       .option("splitCount", "4")
-      .loadDS[JBucketedData]
+      .grid[JBucketedData].as[JBucketedData]
     assert(ds.count() == 1000)
     assert(ds.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
@@ -177,7 +175,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
       StructField("city", StringType, nullable = true)
     ))
 
-    val ds = spark.read.grid.schema(
+    val ds = spark.read.schema(
       StructType(Seq(
         StructField("personId", StringType, nullable = false),
         StructField("name", StringType, nullable = true),
@@ -185,8 +183,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
         StructField("age", IntegerType, nullable = false),
         StructField("address", addressType.copy(), nullable = true, nestedClass[Address])
       ))
-    ).load(collectionName).as[DummyPerson]
-    //df.filter( r => r. )
+    ).grid(collectionName).as[DummyPerson]
 
     ds.printSchema()
 
@@ -198,6 +195,6 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     // check if dataframe can be persisted
     val tableName = randomString()
     ds.write.grid.save(tableName)
-    dataSetAsserts(spark.read.grid.load(tableName).as[DummyPerson])
+    dataSetAsserts(spark.read.grid(tableName).as[DummyPerson])
   }
 }

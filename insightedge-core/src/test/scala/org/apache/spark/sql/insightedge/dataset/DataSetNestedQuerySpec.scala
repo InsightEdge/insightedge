@@ -40,7 +40,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     import spark.implicits._
 
-    val ds = spark.read.grid.loadDS[Person]
+    val ds = spark.read.grid[Person].as[Person]
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
@@ -64,7 +64,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val spark = ie.spark
     implicit val jPersonEncoder = org.apache.spark.sql.Encoders.bean(classOf[JPerson])
-    val ds = spark.read.grid.loadDS[JPerson]
+    val ds = spark.read.grid[JPerson].as[JPerson]
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
@@ -90,7 +90,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     val collectionName = randomString()
     val spark = ie.spark
     import spark.implicits._
-    spark.read.grid.loadDS[Person].write.grid(collectionName).save()
+    spark.read.grid[Person].as[Person].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
@@ -98,7 +98,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     assert(person.getProperty[Any]("name").isInstanceOf[String])
 
     import spark.implicits._
-    val ds = spark.read.grid.load(collectionName).as[Person]
+    val ds = spark.read.grid(collectionName).as[Person]
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.state") equalTo "NC").count() == 2)
     assert(ds.filter(ds("address.city") equalTo "Nowhere").count() == 0)
@@ -118,14 +118,14 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     val collectionName = randomString()
     val spark = ie.spark
     implicit val jPersonEncoder = org.apache.spark.sql.Encoders.bean(classOf[JPerson])
-    spark.read.grid.loadDS[JPerson].write.grid(collectionName).save()
+    spark.read.grid[JPerson].as[JPerson].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
     assert(person.getProperty[Any]("age").isInstanceOf[Integer])
     assert(person.getProperty[Any]("name").isInstanceOf[String])
 
-    val ds = spark.read.grid.load(collectionName).as[JPerson]
+    val ds = spark.read.grid(collectionName).as[JPerson]
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.state") equalTo "NC").count() == 2)
     assert(ds.filter(ds("address.city") equalTo "Nowhere").count() == 0)

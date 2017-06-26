@@ -32,10 +32,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[Data]
+    val df = spark.read.grid[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
-    val readDf = spark.read.grid.load(table)
+    val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
     assert(count == 500)
 
@@ -46,10 +46,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeJDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[JData]
+    val df = spark.read.grid[JData]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
-    val readDf = spark.read.grid.load(table)
+    val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
     assert(count == 500)
 
@@ -70,7 +70,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
       .format("org.apache.spark.sql.insightedge")
       .save(table)
 
-    val readDf = spark.read.grid.load(table)
+    val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
     assert(count == 500)
 
@@ -81,7 +81,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[Data]
+    val df = spark.read.grid[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
 
     val thrown = intercept[IllegalStateException] {
@@ -94,31 +94,31 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[Data]
+    val df = spark.read.grid[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
-    assert(spark.read.grid.load(table).count() == 500)
+    assert(spark.read.grid(table).count() == 500)
 
     df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Overwrite).save(table)
-    assert(spark.read.grid.load(table).count() == 200)
+    assert(spark.read.grid(table).count() == 200)
   }
 
   it should "not write with Ignore mode" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[Data]
+    val df = spark.read.grid[Data]
     df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
-    assert(spark.read.grid.load(table).count() == 500)
+    assert(spark.read.grid(table).count() == 500)
 
     df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Ignore).save(table)
-    assert(spark.read.grid.load(table).count() == 500)
+    assert(spark.read.grid(table).count() == 500)
   }
 
   it should "override document schema" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[Data]
+    val df = spark.read.grid[Data]
     // persist with modified schema
     df.select("id", "data").write.grid.save(table)
     // persist with original schema

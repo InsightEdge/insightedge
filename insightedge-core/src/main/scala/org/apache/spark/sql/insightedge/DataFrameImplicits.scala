@@ -39,18 +39,14 @@ trait DataFrameImplicits {
   }
 
   implicit class DataFrameReaderWrapper(val reader: DataFrameReader) {
-    def grid = {
-      reader.format(InsightEdgeFormat)
+
+    def grid(collection: String): DataFrame = {
+      reader.format(InsightEdgeFormat).load(collection)
     }
 
-    def loadDF[R: ClassTag]: DataFrame = {
+    def grid[R: ClassTag]: DataFrame = {
       reader.format(InsightEdgeFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
-
-    def loadDS[R: ClassTag : Encoder]: Dataset[R] = {
-      loadDF[R].as[R]
-    }
-
   }
 
   implicit class DataFrameWriterWrapper(val writer: DataFrameWriter[_]) {

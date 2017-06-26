@@ -68,14 +68,14 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
   it should "create dataframe with implicits" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[Data]
+    val df = spark.read.grid[Data]
     assert(df.count() == 1000)
   }
 
   it should "create dataframe with implicits [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[JData]
+    val df = spark.read.grid[JData]
     assert(df.count() == 1000)
   }
 
@@ -111,7 +111,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     val collectionName = randomString()
-    val df = spark.read.grid.loadDF[Data]
+    val df = spark.read.grid[Data]
     df.write.grid.save(collectionName)
 
     val fromGrid = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load()
@@ -124,10 +124,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
   it should "create dataframe from bucketed type with 'splitCount' option" taggedAs ScalaSpaceClass in { ie=>
     writeBucketedDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid
-      .option("class", classOf[BucketedData].getName)
+    val df = spark.read
       .option("splitCount", "4")
-      .load()
+      .grid[BucketedData]
     assert(df.count() == 1000)
     assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
@@ -135,10 +134,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
   it should "create dataframe from bucketed type with 'splitCount' option [java]" taggedAs ScalaSpaceClass in { ie=>
     writeJBucketedDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val df = spark.read.grid
-      .option("class", classOf[JBucketedData].getName)
+    val df = spark.read
       .option("splitCount", "4")
-      .load()
+      .grid[JBucketedData]
     assert(df.count() == 1000)
     assert(df.rdd.partitions.length == 4 * NumberOfGridPartitions)
   }
@@ -193,7 +191,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
       StructField("city", StringType, nullable = true)
     ))
     val spark = ie.spark
-    val df = spark.read.grid.schema(
+    val df = spark.read.schema(
       StructType(Seq(
         StructField("personId", StringType, nullable = false),
         StructField("name", StringType, nullable = true),
@@ -202,7 +200,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
         StructField("address", addressType.copy(), nullable = true, nestedClass[Address]),
         StructField("jaddress", addressType.copy(), nullable = true, nestedClass[JAddress])
       ))
-    ).load(collectionName)
+    ).grid(collectionName)
     df.printSchema()
 
     // check schema
@@ -213,7 +211,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     // check if dataframe can be persisted
     val tableName = randomString()
     df.write.grid.save(tableName)
-    dataFrameAsserts(spark.read.grid.load(tableName))
+    dataFrameAsserts(spark.read.grid(tableName))
   }
 
   it should "load dataframe from existing space documents with empty schema" in { ie =>
@@ -228,7 +226,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
       new SpaceDocument(collectionName, Map("name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20)))
     ))
     val spark = ie.spark
-    val df = spark.read.grid.load(collectionName)
+    val df = spark.read.grid(collectionName)
     assert(df.count() == 2)
     assert(df.schema.fields.length == 0)
   }

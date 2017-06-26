@@ -70,7 +70,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     import spark.implicits._
     // pushed down to XAP
-    val ds = spark.read.grid.loadDF[SpatialData].as[SpatialData]
+    val ds = spark.read.grid[SpatialData].as[SpatialData]
     ds.printSchema()
     asserts(ds)
 
@@ -86,7 +86,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     // pushed down to XAP
     implicit val jSpatialDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JSpatialData])
-    val ds = spark.read.grid.loadDF[JSpatialData].as[JSpatialData]
+    val ds = spark.read.grid[JSpatialData].as[JSpatialData]
     ds.printSchema()
     zeroPointCheckJSpatialData(ds, "point")
 
@@ -100,7 +100,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     import spark.implicits._
     // pushed down to XAP
-    val ds = spark.read.grid.loadDF[SpatialEmbeddedData].as[SpatialEmbeddedData]
+    val ds = spark.read.grid[SpatialEmbeddedData].as[SpatialEmbeddedData]
     ds.printSchema()
     zeroPointCheckSpatialData(ds, "location.point")
 
@@ -112,7 +112,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
   it should "work with new columns via udf" in { ie =>
     ie.spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
     val spark = ie.spark
-    val df = spark.read.grid.loadDF[SpatialData]
+    val df = spark.read.grid[SpatialData]
     val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)
     val unwrappedDf = df.withColumn("locationX", toPointX(df("point")))
     unwrappedDf.printSchema()
@@ -126,7 +126,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid.loadDF[SpatialData].write.grid(collectionName).save()
+    spark.read.grid[SpatialData].write.grid(collectionName).save()
 
     val data = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(data.getProperty[Any]("routing").isInstanceOf[Long])

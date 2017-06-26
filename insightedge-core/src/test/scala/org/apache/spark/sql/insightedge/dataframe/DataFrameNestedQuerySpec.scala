@@ -38,7 +38,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
       Person(id = null, name = "Silvia", age = 27, address = Address(city = "Charlotte", state = "NC"))
     )).saveToGrid()
 
-    val df = spark.read.grid.loadDF[Person]
+    val df = spark.read.grid[Person]
     df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
@@ -59,7 +59,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
       new JPerson(null, "Silvia", 27, new JAddress("Charlotte", "NC"))
     )).saveToGrid()
     val spark = f.spark
-    val df = spark.read.grid.loadDF[JPerson]
+    val df = spark.read.grid[JPerson]
     df.printSchema()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
@@ -82,14 +82,14 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid.loadDF[Person].write.grid(collectionName).save()
+    spark.read.grid[Person].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
     assert(person.getProperty[Any]("age").isInstanceOf[Integer])
     assert(person.getProperty[Any]("name").isInstanceOf[String])
 
-    val df = spark.read.grid.load(collectionName)
+    val df = spark.read.grid(collectionName)
     assert(df.count() == 4)
     assert(df.filter(df("address.state") equalTo "NC").count() == 2)
     assert(df.filter(df("address.city") equalTo "Nowhere").count() == 0)
@@ -105,14 +105,14 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid.loadDF[JPerson].write.grid(collectionName).save()
+    spark.read.grid[JPerson].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
     assert(person.getProperty[Any]("age").isInstanceOf[Integer])
     assert(person.getProperty[Any]("name").isInstanceOf[String])
 
-    val df = spark.read.grid.load(collectionName)
+    val df = spark.read.grid(collectionName)
     assert(df.count() == 4)
     assert(df.filter(df("address.state") equalTo "NC").count() == 2)
     assert(df.filter(df("address.city") equalTo "Nowhere").count() == 0)

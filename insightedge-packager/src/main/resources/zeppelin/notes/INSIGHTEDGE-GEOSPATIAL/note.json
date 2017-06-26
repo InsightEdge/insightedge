@@ -99,7 +99,7 @@
       "title": "Importing Data To Data Grid"
     },
     {
-      "text": "%spark\nimport com.spatial4j.core.distance.DistanceUtils\nimport org.openspaces.spatial.shapes._\n\nval searchRadius = 3; // km\nval userLocation = point(-77.024470, 39.032506)\nval searchArea = circle(userLocation, DistanceUtils.KM_TO_DEG * searchRadius)\n\nval schools = spark.read.grid.loadDF[School]\nval nearestSchools = schools.filter(schools(\"location\") geoWithin searchArea)\nval nearestSchoolsCount = nearestSchools.count()\n",
+      "text": "%spark\nimport com.spatial4j.core.distance.DistanceUtils\nimport org.openspaces.spatial.shapes._\n\nval searchRadius = 3; // km\nval userLocation = point(-77.024470, 39.032506)\nval searchArea = circle(userLocation, DistanceUtils.KM_TO_DEG * searchRadius)\n\nval schools = spark.read.grid[School]\nval nearestSchools = schools.filter(schools(\"location\") geoWithin searchArea)\nval nearestSchoolsCount = nearestSchools.count()\n",
       "user": "anonymous",
       "dateUpdated": "2017-06-20T10:08:54+0300",
       "config": {

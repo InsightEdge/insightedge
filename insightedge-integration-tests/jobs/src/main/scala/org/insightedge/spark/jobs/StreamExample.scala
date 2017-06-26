@@ -33,7 +33,7 @@ object StreamExample {
 
     val sc = ssc.sparkContext
     val sqlContext = new SQLContext(sc)
-    val df = sqlContext.read.grid.loadDF[Data]
+    val df = sqlContext.read.grid[Data]
     df.printSchema()
 
 
