@@ -22,7 +22,6 @@ import org.apache.spark.sql.insightedge.model.{Address, Person}
 import org.apache.spark.sql.insightedge.{JAddress, JPerson}
 import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
-import org.insightedge.spark.rdd.JData
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
 import org.scalatest.fixture
 
@@ -41,7 +40,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     import spark.implicits._
 
-    val ds = spark.read.grid.loadDF[Person].as[Person]
+    val ds = spark.read.grid.loadDS[Person]
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
@@ -61,9 +60,10 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
       new JPerson(null, "John", 20, new JAddress("Charlotte", "NC")),
       new JPerson(null, "Silvia", 27, new JAddress("Charlotte", "NC"))
     )).saveToGrid()
+
     val spark = ie.spark
     implicit val jPersonEncoder = org.apache.spark.sql.Encoders.bean(classOf[JPerson])
-    val ds = spark.read.grid.loadDF[JPerson].as[JPerson]
+    val ds = spark.read.grid.loadDS[JPerson]
     ds.printSchema()
     assert(ds.count() == 4)
     assert(ds.filter(ds("address.city") equalTo "Buffalo").count() == 1)
@@ -87,8 +87,8 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-
-    spark.read.grid.loadDF[Person].write.grid(collectionName).save()
+    import spark.implicits._
+    spark.read.grid.loadDS[Person].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
@@ -113,7 +113,7 @@ class DataSetNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     val collectionName = randomString()
     val spark = ie.spark
     implicit val jPersonEncoder = org.apache.spark.sql.Encoders.bean(classOf[JPerson])
-    spark.read.grid.loadDF[JPerson].write.grid(collectionName).save()
+    spark.read.grid.loadDS[JPerson].write.grid(collectionName).save()
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
