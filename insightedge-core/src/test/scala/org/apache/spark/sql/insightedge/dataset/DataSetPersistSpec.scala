@@ -32,7 +32,7 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = f.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadDF[Data].as[Data]
+    val ds = spark.read.grid.loadDS[Data]
     ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
     val readDf = spark.read.grid.load(table)
@@ -47,8 +47,8 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
-    val df = spark.read.grid.loadDF[JData].as[JData]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
+    val ds = spark.read.grid.loadDS[JData]
+    ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
     val readDf = spark.read.grid.load(table)
     val count = readDf.select("routing").count()
@@ -81,12 +81,37 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     readDf.printSchema()
   }
 
+  it should "persist without implicits [java]" taggedAs ScalaSpaceClass in { ie=>
+    writeJDataSeqToDataGrid(1000)
+    val table = randomString()
+
+    val spark = ie.spark
+    implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
+
+    val ds = spark.read
+      .format("org.apache.spark.sql.insightedge")
+      .option("class", classOf[JData].getName)
+      .load()
+      .as[JData]
+    ds.filter(ds("routing") > 500)
+      .write
+      .mode(SaveMode.Overwrite)
+      .format("org.apache.spark.sql.insightedge")
+      .save(table)
+
+    val readDf = spark.read.grid.load(table)
+    val count = readDf.select("routing").count()
+    assert(count == 500)
+
+    readDf.printSchema()
+  }
+
   it should "fail to persist with ErrorIfExists mode" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadDF[Data].as[Data]
+    val ds = spark.read.grid.loadDS[Data]
     ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
 
     val thrown = intercept[IllegalStateException] {
@@ -100,7 +125,7 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadDF[Data].as[Data]
+    val ds = spark.read.grid.loadDS[Data]
     ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid.load(table).count() == 500)
 
@@ -113,7 +138,7 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadDF[Data].as[Data]
+    val ds = spark.read.grid.loadDS[Data]
     ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid.load(table).count() == 500)
 
@@ -126,7 +151,7 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadDF[Data].as[Data]
+    val ds = spark.read.grid.loadDS[Data]
     // persist with modified schema
     ds.select("id", "data").write.grid.save(table)
     // persist with original schema
