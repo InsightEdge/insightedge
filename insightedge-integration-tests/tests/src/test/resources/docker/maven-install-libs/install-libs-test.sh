@@ -47,7 +47,7 @@ cd $HOME/insightedge-examples
 git fetch
 git checkout $BRANCH
 
-if [ "$2" = "mvn" ]; then
+if [ "${MVN_OR_SBT}" = "mvn" ]; then
 echo "-- Maven version"
 mvn --version
 println "------ Maven build should fail"
@@ -73,7 +73,7 @@ else
     exit 1
 fi
 
-elif [ "$2" = "sbt" ]; then
+elif [ "${MVN_OR_SBT}" = "sbt" ]; then
 echo "-- SBT version "
 sbt sbtVersion # TODO it fails sometimes
 println "------ SBT build should fail"

@@ -62,9 +62,9 @@ ADD bootstrap.sh /etc/bootstrap.sh
 RUN chown root:root /etc/bootstrap.sh
 RUN chmod 700 /etc/bootstrap.sh
 
-ADD maven-install-libs-test.sh /home/ie-user/maven-install-libs-test.sh
-RUN chmod +x /home/ie-user/maven-install-libs-test.sh
-RUN chown ie-user /home/ie-user/maven-install-libs-test.sh
+ADD install-libs-test.sh /home/ie-user/install-libs-test.sh
+RUN chmod +x /home/ie-user/install-libs-test.sh
+RUN chown ie-user /home/ie-user/install-libs-test.sh
 
 # Keep image running
 CMD ["/etc/bootstrap.sh", "-d"]

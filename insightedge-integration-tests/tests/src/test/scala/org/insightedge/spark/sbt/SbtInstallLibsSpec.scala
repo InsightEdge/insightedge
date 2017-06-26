@@ -16,7 +16,7 @@ class SbtInstallLibsSpec extends FlatSpec with BeforeAndAfter {
 
   val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
-  "maven-install-libs.sh" should "install libs into local maven repo" taggedAs LongRunningTest in {
+  "install-libs-test.sh" should "install libs into local maven repo using Sbt" taggedAs LongRunningTest in {
     println(s"Edition: $BuildEdition")
     println(s"Version: $BuildVersion")
     println(s"Git branch: $GitBranch")
