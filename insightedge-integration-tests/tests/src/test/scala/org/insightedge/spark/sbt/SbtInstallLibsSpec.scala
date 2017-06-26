@@ -1,21 +1,9 @@
-/*
- * Copyright (c) 2016, GigaSpaces Technologies, Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package org.insightedge.spark.sbt
 
-package org.insightedge.spark.maven
 
+/**
+  * Created by livnat on 6/25/17.
+  */
 import java.io.File
 
 import org.insightedge.spark.utils.BuildUtils._
@@ -24,10 +12,7 @@ import org.insightedge.spark.utils.FsUtils._
 import org.insightedge.spark.utils.{BuildUtils, LongRunningTest}
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
-/**
-  * @author Danylo_Hurin.
-  */
-class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
+class SbtInstallLibsSpec extends FlatSpec with BeforeAndAfter {
 
   val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
@@ -48,7 +33,7 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
     execAssertSucc(s"chmod +x $scriptsDir/stop.sh")
 
     // run installation
-    execAssertSucc(s"$scriptsDir/run.sh $zipDir $BuildVersion $GitBranch mvn")
+    execAssertSucc(s"$scriptsDir/run.sh $zipDir $BuildVersion $GitBranch sbt")
   }
 
   after {

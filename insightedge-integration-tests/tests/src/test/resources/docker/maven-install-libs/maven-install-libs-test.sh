@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 function add_insightedge_libs_to_repo() {
     println "------ Installing libraries"
@@ -33,12 +34,12 @@ echo "-- Environment"
 env
 echo "-- Java version"
 java -version
-echo "-- Maven version"
-mvn --version
-echo "-- SBT version "
-sbt sbtVersion # TODO it fails sometimes
+
+
 BRANCH=$1
 echo "-- Git branch: $BRANCH"
+MVN_OR_SBT=$2
+echo "-- Build option: $MVN_OR_SBT"
 
 cd $HOME
 git clone https://github.com/InsightEdge/insightedge-examples.git
@@ -46,6 +47,9 @@ cd $HOME/insightedge-examples
 git fetch
 git checkout $BRANCH
 
+if [ "$2" = "mvn" ]; then
+echo "-- Maven version"
+mvn --version
 println "------ Maven build should fail"
 rm -rf $HOME/.m2
 mvn clean test package | tee $HOME/insightedge-examples-mvn-fail.out
@@ -69,6 +73,9 @@ else
     exit 1
 fi
 
+elif [ "$2" = "sbt" ]; then
+echo "-- SBT version "
+sbt sbtVersion # TODO it fails sometimes
 println "------ SBT build should fail"
 rm -rf $HOME/.m2
 sbt clean test assembly -no-colors | tee $HOME/insightedge-examples-sbt-fail.out
@@ -89,6 +96,11 @@ if [[ $sbt_failed == 0 ]]; then
     println "---- OK: SBT build succeeded"
 else
     println "---- ERROR: SBT build failed"
+    exit 1
+fi
+
+else
+    println "---- ERROR: SBT/MVN failed due to wrong/missing parameter : $MVN_OR_SBT "
     exit 1
 fi
 
