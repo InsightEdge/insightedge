@@ -81,6 +81,8 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
 
   /*
   Does not work , known encoder issue: Dataset usage with nested java spatial class, that on of its fields interface ( Point, not PointImpl )
+  java.lang.UnsupportedOperationException: Cannot infer type for class org.openspaces.spatial.shapes.Point because it is not bean-compliant
+
   it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { ie =>
     ie.spaceProxy.write(new JSpatialData(1L, point(0, 0)))
     val spark = ie.spark

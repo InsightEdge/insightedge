@@ -32,7 +32,7 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val spark = f.spark
     import spark.implicits._
     val ds = spark.read.grid[Data].as[Data]
-    ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
+    ds.filter(o => o.routing > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
     val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
@@ -47,7 +47,7 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
     val ds = spark.read.grid[JData].as[JData]
-    ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
+    ds.filter( o => o.getRouting > 500).write.grid.mode(SaveMode.Overwrite).save(table)
 
     val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
@@ -125,10 +125,10 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     import spark.implicits._
     val ds = spark.read.grid[Data].as[Data]
-    ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
+    ds.filter(o => o.routing > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid(table).count() == 500)
 
-    ds.filter(ds("routing") <= 200).write.grid.mode(SaveMode.Overwrite).save(table)
+    ds.filter(o => o.routing <= 200).write.grid.mode(SaveMode.Overwrite).save(table)
     assert(spark.read.grid(table).count() == 200)
   }
 
@@ -138,10 +138,10 @@ class DataSetPersistSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     import spark.implicits._
     val ds = spark.read.grid[Data].as[Data]
-    ds.filter(ds("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
+    ds.filter( o => o.routing > 500).write.grid.mode(SaveMode.Append).save(table)
     assert(spark.read.grid(table).count() == 500)
 
-    ds.filter(ds("routing") <= 200).write.grid.mode(SaveMode.Ignore).save(table)
+    ds.filter( o => o.routing <= 200).write.grid.mode(SaveMode.Ignore).save(table)
     assert(spark.read.grid(table).count() == 500)
   }
 
