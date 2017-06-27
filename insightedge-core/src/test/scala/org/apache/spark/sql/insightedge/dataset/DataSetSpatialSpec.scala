@@ -128,7 +128,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid[SpatialData].write.grid(collectionName).save()
+    spark.read.grid[SpatialData].write.grid(collectionName)
 
     val data = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(data.getProperty[Any]("routing").isInstanceOf[Long])

@@ -464,7 +464,7 @@
     },
     {
       "title": "Saving DataFrame as collection",
-      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5)\n    .write.grid.mode(SaveMode.Overwrite).save(\"smallStock\")\n",
+      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5)\n    .write.mode(SaveMode.Overwrite).grid(\"smallStock\")\n",
       "dateUpdated": "Jun 27, 2017 10:14:03 AM",
       "config": {
         "editorSetting": {
@@ -546,7 +546,7 @@
     },
     {
       "title": "Saving Dataset as collection",
-      "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 )\n    .write.grid.mode(SaveMode.Overwrite).save(\"bigStock\")\n",
+      "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 )\n    .write.mode(SaveMode.Overwrite).grid(\"bigStock\")\n",
       "user": "anonymous",
       "dateUpdated": "Jun 27, 2017 10:45:12 AM",
       "config": {

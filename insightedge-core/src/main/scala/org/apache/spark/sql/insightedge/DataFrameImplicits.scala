@@ -50,12 +50,9 @@ trait DataFrameImplicits {
   }
 
   implicit class DataFrameWriterWrapper(val writer: DataFrameWriter[_]) {
-    def grid(collection: String) = {
-      writer.format(InsightEdgeFormat).option("collection", collection)
-    }
 
-    def grid = {
-      writer.format(InsightEdgeFormat)
+    def grid(collection: String) = {
+      writer.format(InsightEdgeFormat).save(collection)
     }
   }
 

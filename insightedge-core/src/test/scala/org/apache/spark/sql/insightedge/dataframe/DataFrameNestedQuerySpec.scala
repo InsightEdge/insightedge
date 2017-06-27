@@ -82,7 +82,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid[Person].write.grid(collectionName).save()
+    spark.read.grid[Person].write.grid(collectionName)
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
@@ -105,7 +105,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid[JPerson].write.grid(collectionName).save()
+    spark.read.grid[JPerson].write.grid(collectionName)
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])

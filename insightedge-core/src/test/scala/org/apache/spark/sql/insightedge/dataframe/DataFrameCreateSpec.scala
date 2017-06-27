@@ -112,7 +112,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     val collectionName = randomString()
     val df = spark.read.grid[Data]
-    df.write.grid.save(collectionName)
+    df.write.grid(collectionName)
 
     val fromGrid = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load()
     assert(fromGrid.count() == 1000)
@@ -210,7 +210,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
 
     // check if dataframe can be persisted
     val tableName = randomString()
-    df.write.grid.save(tableName)
+    df.write.grid(tableName)
     dataFrameAsserts(spark.read.grid(tableName))
   }
 

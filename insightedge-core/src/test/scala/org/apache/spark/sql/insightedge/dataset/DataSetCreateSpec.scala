@@ -80,7 +80,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
     import spark.implicits._
     val collectionName = randomString()
     val ds = spark.read.grid[Data].as[Data]
-    ds.write.grid.save(collectionName)
+    ds.write.grid(collectionName)
 
     val fromGridDataSetLong = spark.read.format("org.apache.spark.sql.insightedge").option("collection", collectionName).load().as[Data]
     val fromGridDataSetShort = spark.read.grid(collectionName).as[Data]
@@ -194,7 +194,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
 
     // check if dataframe can be persisted
     val tableName = randomString()
-    ds.write.grid.save(tableName)
+    ds.write.grid(tableName)
     dataSetAsserts(spark.read.grid(tableName).as[DummyPerson])
   }
 }

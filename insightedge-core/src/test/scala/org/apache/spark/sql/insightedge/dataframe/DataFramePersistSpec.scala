@@ -33,7 +33,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     val df = spark.read.grid[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
+    df.filter(df("routing") > 500).write.mode(SaveMode.Overwrite).grid(table)
 
     val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
@@ -47,7 +47,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     val df = spark.read.grid[JData]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
+    df.filter(df("routing") > 500).write.mode(SaveMode.Overwrite).grid(table)
 
     val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
@@ -82,10 +82,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     val df = spark.read.grid[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
+    df.filter(df("routing") > 500).write.mode(SaveMode.ErrorIfExists).grid(table)
 
     val thrown = intercept[IllegalStateException] {
-      df.filter(df("routing") < 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
+      df.filter(df("routing") < 500).write.mode(SaveMode.ErrorIfExists).grid(table)
     }
     println(thrown.getMessage)
   }
@@ -95,10 +95,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     val df = spark.read.grid[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
+    df.filter(df("routing") > 500).write.mode(SaveMode.Append).grid(table)
     assert(spark.read.grid(table).count() == 500)
 
-    df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Overwrite).save(table)
+    df.filter(df("routing") <= 200).write.mode(SaveMode.Overwrite).grid(table)
     assert(spark.read.grid(table).count() == 200)
   }
 
@@ -107,10 +107,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     val table = randomString()
     val spark = ie.spark
     val df = spark.read.grid[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
+    df.filter(df("routing") > 500).write.mode(SaveMode.Append).grid(table)
     assert(spark.read.grid(table).count() == 500)
 
-    df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Ignore).save(table)
+    df.filter(df("routing") <= 200).write.mode(SaveMode.Ignore).grid(table)
     assert(spark.read.grid(table).count() == 500)
   }
 
@@ -120,11 +120,11 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     val df = spark.read.grid[Data]
     // persist with modified schema
-    df.select("id", "data").write.grid.save(table)
+    df.select("id", "data").write.grid(table)
     // persist with original schema
-    df.write.grid.mode(SaveMode.Overwrite).save(table)
+    df.write.mode(SaveMode.Overwrite).grid(table)
     // persist with modified schema again
-    df.select("id").write.grid.mode(SaveMode.Overwrite).save(table)
+    df.select("id").write.mode(SaveMode.Overwrite).grid(table)
   }
 
   /**
