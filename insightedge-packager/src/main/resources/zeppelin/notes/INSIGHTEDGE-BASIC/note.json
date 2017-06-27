@@ -436,7 +436,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Loading Class As DataFrame (simpler syntax)",
+      "title": "Loading Class As DataFrame",
       "text": "%spark\nval df \u003d spark.read.grid[Product]\n",
       "dateUpdated": "Jun 20, 2017 9:55:54 AM",
       "config": {
@@ -463,7 +463,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Saving DataFrame as collection (simpler syntax)",
+      "title": "Saving DataFrame as collection",
       "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5)\n    .write.grid.mode(SaveMode.Overwrite).save(\"smallStock\")\n",
       "dateUpdated": "Jun 27, 2017 10:14:03 AM",
       "config": {
@@ -490,7 +490,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Loading Collection as DataFrame (simpler syntax)",
+      "title": "Loading Collection as DataFrame",
       "text": "%spark\nval df \u003d spark.read.grid(\"smallStock\")\n\nval outOfStock \u003d df.filter(df(\"quantity\") equalTo 0).count()\n",
       "dateUpdated": "Jun 27, 2017 10:14:03 AM",
       "config": {
@@ -517,7 +517,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Loading Class As Dataset (simpler syntax)",
+      "title": "Loading Class As Dataset",
       "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\n",
       "user": "anonymous",
       "dateUpdated": "Jun 27, 2017 9:32:29 AM",
@@ -545,7 +545,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Saving Dataset as collection (simpler syntax)",
+      "title": "Saving Dataset as collection",
       "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 )\n    .write.grid.mode(SaveMode.Overwrite).save(\"bigStock\")\n",
       "user": "anonymous",
       "dateUpdated": "Jun 27, 2017 10:45:12 AM",
@@ -573,7 +573,7 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Loading Collection as Dataset (simpler syntax)",
+      "title": "Loading Collection as Dataset",
       "text": "%spark\nval ds \u003d spark.read.grid(\"bigStock\").as[Product]\n\nval outOfStock \u003d ds.filter( o \u003d\u003e o.quantity \u003d\u003d 5 ).count()\n",
       "user": "anonymous",
       "dateUpdated": "Jun 27, 2017 10:45:35 AM",
