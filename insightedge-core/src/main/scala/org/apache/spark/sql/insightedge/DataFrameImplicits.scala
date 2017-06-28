@@ -17,7 +17,7 @@
 package org.apache.spark.sql.insightedge
 
 import org.apache.spark.sql.types.{Metadata, MetadataBuilder}
-import org.apache.spark.sql.{DataFrame, DataFrameReader, DataFrameWriter}
+import org.apache.spark.sql._
 
 import scala.reflect._
 
@@ -39,22 +39,20 @@ trait DataFrameImplicits {
   }
 
   implicit class DataFrameReaderWrapper(val reader: DataFrameReader) {
-    def grid = {
-      reader.format(InsightEdgeFormat)
+
+    def grid(collection: String): DataFrame = {
+      reader.format(InsightEdgeFormat).load(collection)
     }
 
-    def loadClass[R: ClassTag]: DataFrame = {
+    def grid[R: ClassTag]: DataFrame = {
       reader.format(InsightEdgeFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
   }
 
   implicit class DataFrameWriterWrapper(val writer: DataFrameWriter[_]) {
-    def grid(collection: String) = {
-      writer.format(InsightEdgeFormat).option("collection", collection)
-    }
 
-    def grid = {
-      writer.format(InsightEdgeFormat)
+    def grid(collection: String) = {
+      writer.format(InsightEdgeFormat).save(collection)
     }
   }
 

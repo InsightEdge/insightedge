@@ -17,7 +17,6 @@
 package org.apache.spark.sql.insightedge.dataset
 
 import org.apache.spark.sql.AnalysisException
-import org.apache.spark.sql.insightedge.JPerson
 import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{Data, JData}
@@ -26,31 +25,20 @@ import org.scalatest.fixture
 
 class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "read empty classes" taggedAs ScalaSpaceClass in { ie=>
-    val spark = ie.spark
-    spark.sql(
-      s"""
-         |create temporary table dataTable
-         |using org.apache.spark.sql.insightedge
-         |options (class "${classOf[Data].getName}")
-      """.stripMargin)
-
-    assert(spark.sql("select * from dataTable where data is null").collect().length == 0)
-  }
-
   it should "select one field" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
-    val increasedRouting = ds.select(ds("routing") + 10).first().getAs[Long](0)
+    val ds = spark.read.grid[Data].as[Data]
+    val increasedRouting = ds.select( ds("routing") + 10).first().getAs[Long](0)
     assert(increasedRouting >= 10)
   }
 
   it should "select one field [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
-    val ds = spark.read.grid.loadClass[JData]
+    implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
+    val ds = spark.read.grid[JData].as[JData]
     ds.printSchema()
 
     val increasedRouting = ds.select(ds("routing") + 10).first().getAs[Long](0)
@@ -61,16 +49,18 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
-    val count = ds.filter(ds("routing") > 500).count()
-    assert(count == 500)
+    val ds = spark.read.grid[Data].as[Data]
+    val count1 = ds.filter(ds("routing") > 500).count()
+    val count2 = ds.filter( o => o.routing > 500).count()
+    assert(count1 == 500)
+    assert(count2 == 500)
   }
 
   it should "group by field" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid[Data].as[Data]
     val count = ds.groupBy("routing").count().count()
     assert(count == 1000)
   }
@@ -79,7 +69,7 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
     implicit val jDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JData])
-    val ds = spark.read.grid.loadClass[JData].as[JData]
+    val ds = spark.read.grid[JData].as[JData]
     val count = ds.groupBy("routing").count().count()
     assert(count == 1000)
   }
@@ -88,19 +78,9 @@ class DataSetQuerySpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val spark = ie.spark
     import spark.implicits._
-    val ds = spark.read.grid.loadClass[Data].as[Data]
+    val ds = spark.read.grid[Data].as[Data]
     intercept[AnalysisException] {
       val count = ds.select(ds("abc")).count()
     }
   }
-
-  it should "fail to load class" taggedAs ScalaSpaceClass in { ie=>
-    val thrown = intercept[ClassNotFoundException] {
-      val spark = ie.spark
-      spark.read.grid.option("class", "non.existing.Class").load()
-    }
-    assert(thrown.getMessage equals "non.existing.Class")
-  }
-
-
 }

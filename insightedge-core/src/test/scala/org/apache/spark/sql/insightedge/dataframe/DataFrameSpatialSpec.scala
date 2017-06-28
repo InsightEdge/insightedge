@@ -69,7 +69,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     }
     val spark = ie.spark
     // pushed down to XAP
-    val df = spark.read.grid.loadClass[SpatialData]
+    val df = spark.read.grid[SpatialData]
     df.printSchema()
     asserts(df)
 
@@ -82,7 +82,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     ie.spaceProxy.write(new JSpatialData(1L, point(0, 0)))
     val spark = ie.spark
     // pushed down to XAP
-    val df = spark.read.grid.loadClass[JSpatialData]
+    val df = spark.read.grid[JSpatialData]
     df.printSchema()
     zeroPointCheck(df, "point")
 
@@ -95,7 +95,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     ie.spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
     val spark = ie.spark
     // pushed down to XAP
-    val df = spark.read.grid.loadClass[SpatialEmbeddedData]
+    val df = spark.read.grid[SpatialEmbeddedData]
     df.printSchema()
     zeroPointCheck(df, "location.point")
 
@@ -107,7 +107,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
   it should "dataframe: work with new columns via udf" in { ie =>
     ie.spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[SpatialData]
+    val df = spark.read.grid[SpatialData]
     val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)
     val unwrappedDf = df.withColumn("locationX", toPointX(df("point")))
     unwrappedDf.printSchema()
@@ -121,7 +121,7 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid.loadClass[SpatialData].write.grid(collectionName).save()
+    spark.read.grid[SpatialData].write.grid(collectionName)
 
     val data = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(data.getProperty[Any]("routing").isInstanceOf[Long])

@@ -32,10 +32,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
+    val df = spark.read.grid[Data]
+    df.filter(df("routing") > 500).write.mode(SaveMode.Overwrite).grid(table)
 
-    val readDf = spark.read.grid.load(table)
+    val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
     assert(count == 500)
 
@@ -46,10 +46,10 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeJDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[JData]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Overwrite).save(table)
+    val df = spark.read.grid[JData]
+    df.filter(df("routing") > 500).write.mode(SaveMode.Overwrite).grid(table)
 
-    val readDf = spark.read.grid.load(table)
+    val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
     assert(count == 500)
 
@@ -70,7 +70,7 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
       .format("org.apache.spark.sql.insightedge")
       .save(table)
 
-    val readDf = spark.read.grid.load(table)
+    val readDf = spark.read.grid(table)
     val count = readDf.select("routing").count()
     assert(count == 500)
 
@@ -81,11 +81,11 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
+    val df = spark.read.grid[Data]
+    df.filter(df("routing") > 500).write.mode(SaveMode.ErrorIfExists).grid(table)
 
     val thrown = intercept[IllegalStateException] {
-      df.filter(df("routing") < 500).write.grid.mode(SaveMode.ErrorIfExists).save(table)
+      df.filter(df("routing") < 500).write.mode(SaveMode.ErrorIfExists).grid(table)
     }
     println(thrown.getMessage)
   }
@@ -94,37 +94,37 @@ class DataFramePersistSpec extends fixture.FlatSpec with InsightEdge {
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
-    assert(spark.read.grid.load(table).count() == 500)
+    val df = spark.read.grid[Data]
+    df.filter(df("routing") > 500).write.mode(SaveMode.Append).grid(table)
+    assert(spark.read.grid(table).count() == 500)
 
-    df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Overwrite).save(table)
-    assert(spark.read.grid.load(table).count() == 200)
+    df.filter(df("routing") <= 200).write.mode(SaveMode.Overwrite).grid(table)
+    assert(spark.read.grid(table).count() == 200)
   }
 
   it should "not write with Ignore mode" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
-    df.filter(df("routing") > 500).write.grid.mode(SaveMode.Append).save(table)
-    assert(spark.read.grid.load(table).count() == 500)
+    val df = spark.read.grid[Data]
+    df.filter(df("routing") > 500).write.mode(SaveMode.Append).grid(table)
+    assert(spark.read.grid(table).count() == 500)
 
-    df.filter(df("routing") <= 200).write.grid.mode(SaveMode.Ignore).save(table)
-    assert(spark.read.grid.load(table).count() == 500)
+    df.filter(df("routing") <= 200).write.mode(SaveMode.Ignore).grid(table)
+    assert(spark.read.grid(table).count() == 500)
   }
 
   it should "override document schema" taggedAs ScalaSpaceClass in { ie=>
     writeDataSeqToDataGrid(1000)
     val table = randomString()
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[Data]
+    val df = spark.read.grid[Data]
     // persist with modified schema
-    df.select("id", "data").write.grid.save(table)
+    df.select("id", "data").write.grid(table)
     // persist with original schema
-    df.write.grid.mode(SaveMode.Overwrite).save(table)
+    df.write.mode(SaveMode.Overwrite).grid(table)
     // persist with modified schema again
-    df.select("id").write.grid.mode(SaveMode.Overwrite).save(table)
+    df.select("id").write.mode(SaveMode.Overwrite).grid(table)
   }
 
   /**

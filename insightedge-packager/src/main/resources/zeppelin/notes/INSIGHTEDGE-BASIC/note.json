@@ -1,15 +1,15 @@
 {
   "paragraphs": [
     {
-      "text": "%md\n> If you see 'Interpreter binding' above, just hit `Save` without deselecting any interpreters.\n\n## Welcome to InsightEdge tutorial.\n\n##### This tutorial shows some of basic features of InsightEdge:\n* saving RDDs\n* loading RDDs\n* loading RDDs via SQL queries\n* loading DataFrames\n* querying tables created with DataFrames\n* persisting DataFrames to Data Grid\n\n##### This is a live tutorial, you can run the code yourself. _(click `Run` button in each paragraph from top to bottom)_",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "text": "%md\n\u003e If you see \u0027Interpreter binding\u0027 above, just hit `Save` without deselecting any interpreters.\n\n## Welcome to InsightEdge tutorial.\n\n##### This tutorial shows some of basic features of InsightEdge:\n* saving RDDs\n* loading RDDs\n* loading RDDs via SQL queries\n* loading DataFrames\n* querying tables created with DataFrames\n* persisting DataFrames to Data Grid\n\n##### This is a live tutorial, you can run the code yourself. _(click `Run` button in each paragraph from top to bottom)_",
+      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
       "config": {
         "tableHide": false,
         "editorSetting": {
           "language": "markdown",
           "editOnDblClick": true
         },
-        "colWidth": 12,
+        "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
         "results": {},
@@ -24,30 +24,28 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<blockquote>\n  <p>If you see &lsquo;Interpreter binding&rsquo; above, just hit <code>Save</code> without deselecting any interpreters.</p>\n</blockquote>\n<h2>Welcome to InsightEdge tutorial.</h2>\n<h5>This tutorial shows some of basic features of InsightEdge:</h5>\n<ul>\n  <li>saving RDDs</li>\n  <li>loading RDDs</li>\n  <li>loading RDDs via SQL queries</li>\n  <li>loading DataFrames</li>\n  <li>querying tables created with DataFrames</li>\n  <li>persisting DataFrames to Data Grid</li>\n</ul>\n<h5>This is a live tutorial, you can run the code yourself. <em>(click <code>Run</code> button in each paragraph from top to bottom)</em></h5>\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003cblockquote\u003e\n  \u003cp\u003eIf you see \u0026lsquo;Interpreter binding\u0026rsquo; above, just hit \u003ccode\u003eSave\u003c/code\u003e without deselecting any interpreters.\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003ch2\u003eWelcome to InsightEdge tutorial.\u003c/h2\u003e\n\u003ch5\u003eThis tutorial shows some of basic features of InsightEdge:\u003c/h5\u003e\n\u003cul\u003e\n  \u003cli\u003esaving RDDs\u003c/li\u003e\n  \u003cli\u003eloading RDDs\u003c/li\u003e\n  \u003cli\u003eloading RDDs via SQL queries\u003c/li\u003e\n  \u003cli\u003eloading DataFrames\u003c/li\u003e\n  \u003cli\u003equerying tables created with DataFrames\u003c/li\u003e\n  \u003cli\u003epersisting DataFrames to Data Grid\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch5\u003eThis is a live tutorial, you can run the code yourself. \u003cem\u003e(click \u003ccode\u003eRun\u003c/code\u003e button in each paragraph from top to bottom)\u003c/em\u003e\u003c/h5\u003e\n\u003c/div\u003e"
           }
         ]
       },
       "apps": [],
       "jobName": "paragraph_1497940953964_119234876",
       "id": "20170620-093024_406952967",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:2846"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%md\n## Defining data model.\n\n##### `%define` allows you to append custom code to spark jobs. This is a nice place to write your model classes. To learn about syntax, please, refer to [Data Modeling](http://insightedge.io/docs/010/2_modeling.html).\n##### Two things to keep in mind when working with `%define`:\n1. you can only call `%define` before `%spark` interpreter, thus changing model requires reloading the interpreter\n    - code in `%define` is compiled and packed into temporary jars\n    - these jars are added as dependencies to spark jobs\n2. each model change must be supplied with new version because Data Grid won't allow overwriting model schema\n    - put `v#` as a subpackage for data model (e.g. `package model.v1`)\n    - increment `v#` each time you make a change and update `import model.v#._` statement",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "text": "%md\n## Defining data model.\n\n##### `%define` allows you to append custom code to spark jobs. This is a nice place to write your model classes. To learn about syntax, please, refer to [Data Modeling](http://insightedge.io/docs/010/2_modeling.html).\n##### Two things to keep in mind when working with `%define`:\n1. you can only call `%define` before `%spark` interpreter, thus changing model requires reloading the interpreter\n    - code in `%define` is compiled and packed into temporary jars\n    - these jars are added as dependencies to spark jobs\n2. each model change must be supplied with new version because Data Grid won\u0027t allow overwriting model schema\n    - put `v#` as a subpackage for data model (e.g. `package model.v1`)\n    - increment `v#` each time you make a change and update `import model.v#._` statement",
+      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
       "config": {
         "tableHide": false,
         "editorSetting": {
           "language": "markdown",
           "editOnDblClick": true
         },
-        "colWidth": 12,
+        "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
         "results": {},
@@ -62,29 +60,28 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>Defining data model.</h2>\n<h5><code>%define</code> allows you to append custom code to spark jobs. This is a nice place to write your model classes. To learn about syntax, please, refer to <a href=\"http://insightedge.io/docs/010/2_modeling.html\">Data Modeling</a>.</h5>\n<h5>Two things to keep in mind when working with <code>%define</code>:</h5>\n<ol>\n  <li>you can only call <code>%define</code> before <code>%spark</code> interpreter, thus changing model requires reloading the interpreter\n    <ul>\n      <li>code in <code>%define</code> is compiled and packed into temporary jars</li>\n      <li>these jars are added as dependencies to spark jobs</li>\n    </ul>\n  </li>\n  <li>each model change must be supplied with new version because Data Grid won&rsquo;t allow overwriting model schema\n    <ul>\n      <li>put <code>v#</code> as a subpackage for data model (e.g. <code>package model.v1</code>)</li>\n      <li>increment <code>v#</code> each time you make a change and update <code>import model.v#._</code> statement</li>\n    </ul>\n  </li>\n</ol>\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003eDefining data model.\u003c/h2\u003e\n\u003ch5\u003e\u003ccode\u003e%define\u003c/code\u003e allows you to append custom code to spark jobs. This is a nice place to write your model classes. To learn about syntax, please, refer to \u003ca href\u003d\"http://insightedge.io/docs/010/2_modeling.html\"\u003eData Modeling\u003c/a\u003e.\u003c/h5\u003e\n\u003ch5\u003eTwo things to keep in mind when working with \u003ccode\u003e%define\u003c/code\u003e:\u003c/h5\u003e\n\u003col\u003e\n  \u003cli\u003eyou can only call \u003ccode\u003e%define\u003c/code\u003e before \u003ccode\u003e%spark\u003c/code\u003e interpreter, thus changing model requires reloading the interpreter\n    \u003cul\u003e\n      \u003cli\u003ecode in \u003ccode\u003e%define\u003c/code\u003e is compiled and packed into temporary jars\u003c/li\u003e\n      \u003cli\u003ethese jars are added as dependencies to spark jobs\u003c/li\u003e\n    \u003c/ul\u003e\n  \u003c/li\u003e\n  \u003cli\u003eeach model change must be supplied with new version because Data Grid won\u0026rsquo;t allow overwriting model schema\n    \u003cul\u003e\n      \u003cli\u003eput \u003ccode\u003ev#\u003c/code\u003e as a subpackage for data model (e.g. \u003ccode\u003epackage model.v1\u003c/code\u003e)\u003c/li\u003e\n      \u003cli\u003eincrement \u003ccode\u003ev#\u003c/code\u003e each time you make a change and update \u003ccode\u003eimport model.v#._\u003c/code\u003e statement\u003c/li\u003e\n    \u003c/ul\u003e\n  \u003c/li\u003e\n\u003c/ol\u003e\n\u003c/div\u003e"
           }
         ]
       },
       "apps": [],
       "jobName": "paragraph_1497940953964_119234876",
       "id": "20170620-093134_1087314216",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2847"
+      "progressUpdateIntervalMs": 500
     },
     {
       "title": "Product model",
-      "text": "%define\npackage model.v1\n\nimport org.insightedge.scala.annotation._\nimport scala.beans.{BeanProperty, BooleanBeanProperty}\n\ncase class Product(\n\n                    @BeanProperty\n                    @SpaceId\n                    var id: Long,\n\n                    @BeanProperty\n                    var description: String,\n\n                    @BeanProperty\n                    var quantity: Int,\n\n                    @BooleanBeanProperty\n                    var featuredProduct: Boolean\n\n                  ) {\n\n  def this() = this(-1, null, -1, false)\n\n}",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "text": "%define\npackage model.v1\n\nimport org.insightedge.scala.annotation._\nimport scala.beans.{BeanProperty, BooleanBeanProperty}\n\ncase class Product(\n\n                    @BeanProperty\n                    @SpaceId\n                    var id: Long,\n\n                    @BeanProperty\n                    var description: String,\n\n                    @BeanProperty\n                    var quantity: Int,\n\n                    @BooleanBeanProperty\n                    var featuredProduct: Boolean\n\n                  ) {\n\n  def this() \u003d this(-1, null, -1, false)\n\n}",
+      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 12,
+        "colWidth": 12.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -97,22 +94,21 @@
       "apps": [],
       "jobName": "paragraph_1497940953965_118850127",
       "id": "20170620-093154_1933571106",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2848"
+      "progressUpdateIntervalMs": 500
     },
     {
       "title": "Importing Model",
       "text": "%spark\nimport model.v1._\n",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 12,
+        "colWidth": 12.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -125,22 +121,21 @@
       "apps": [],
       "jobName": "paragraph_1497940953965_118850127",
       "id": "20170620-093235_1886252813",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2849"
+      "progressUpdateIntervalMs": 500
     },
     {
       "title": "Saving RDD",
-      "text": "%spark\nimport scala.util.Random\n\ndef normal(top:Int): Int = {\n    val iterations = 10\n    val normal = (0 to iterations).foldLeft(0.0){(sum, index) => sum + Math.random()} / iterations\n    (normal * top).toInt\n}\n\nval rdd = sc.parallelize(1 to 100000).map { i => Product(i, \"Description of product \" + i, Math.abs(normal(100) - 30), Random.nextDouble() < 0.2) }\nrdd.saveToGrid()\n",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "text": "%spark\nimport scala.util.Random\n\ndef normal(top:Int): Int \u003d {\n    val iterations \u003d 10\n    val normal \u003d (0 to iterations).foldLeft(0.0){(sum, index) \u003d\u003e sum + Math.random()} / iterations\n    (normal * top).toInt\n}\n\nval rdd \u003d sc.parallelize(1 to 100000).map { i \u003d\u003e Product(i, \"Description of product \" + i, Math.abs(normal(100) - 30), Random.nextDouble() \u003c 0.2) }\nrdd.saveToGrid()\n",
+      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 12,
+        "colWidth": 12.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -153,22 +148,21 @@
       "apps": [],
       "jobName": "paragraph_1497940953965_118850127",
       "id": "20170620-093337_2060899833",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2850"
+      "progressUpdateIntervalMs": 500
     },
     {
       "title": "Loading RDD",
-      "text": "%spark\nval plainRdd = sc.gridRdd[Product]()\nval count = plainRdd.count()\n",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "text": "%spark\nval plainRdd \u003d sc.gridRdd[Product]()\nval count \u003d plainRdd.count()\n",
+      "dateUpdated": "Jun 27, 2017 9:26:14 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 4,
+        "colWidth": 6.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -181,22 +175,21 @@
       "apps": [],
       "jobName": "paragraph_1497940953965_118850127",
       "id": "20170620-093424_256644097",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2851"
+      "progressUpdateIntervalMs": 500
     },
     {
       "title": "Loading RDD with SQL",
-      "text": "%spark\nval sqlRdd = sc.gridSql[Product](\"quantity < ?\", Seq(5))\nval count = sqlRdd.count()\n",
-      "dateUpdated": "2017-06-20T09:42:50+0300",
+      "text": "%spark\nval sqlRdd \u003d sc.gridSql[Product](\"quantity \u003c ?\", Seq(5))\nval count \u003d sqlRdd.count()\n",
+      "dateUpdated": "Jun 27, 2017 9:26:20 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 4,
+        "colWidth": 6.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -209,22 +202,21 @@
       "apps": [],
       "jobName": "paragraph_1497940953966_120004374",
       "id": "20170620-093458_2093934595",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2852"
+      "progressUpdateIntervalMs": 500
     },
     {
       "title": "Loading DataFrame",
-      "text": "%spark\nval df = spark.read.grid.loadClass[Product]\ndf.printSchema()\ndf.createOrReplaceTempView(\"product\")\nval lowStock = df.filter(df(\"quantity\") < 5).count()\n",
-      "dateUpdated": "2017-06-20T09:55:20+0300",
+      "text": "%spark\nval df \u003d spark.read.grid[Product]\ndf.printSchema()\ndf.createOrReplaceTempView(\"product\")\nval lowStock \u003d df.filter(df(\"quantity\") \u003c 5).count()\n",
+      "dateUpdated": "Jun 27, 2017 9:26:25 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 4,
+        "colWidth": 6.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -237,22 +229,49 @@
       "apps": [],
       "jobName": "paragraph_1497940953966_120004374",
       "id": "20170620-093540_604441252",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2853"
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading Dataset",
+      "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\nds.printSchema()\nds.createOrReplaceTempView(\"product\")\nval lowStock \u003d ds.filter(o \u003d\u003e o.quantity \u003c 5).count()\n",
+      "user": "anonymous",
+      "dateUpdated": "Jun 27, 2017 9:27:56 AM",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false
+        },
+        "colWidth": 6.0,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "results": {},
+        "enabled": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1498544788753_165373580",
+      "id": "20170627-092628_140244547",
+      "dateCreated": "Jun 27, 2017 9:26:28 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
     },
     {
       "text": "%md\n#### After executing `df.createOrReplaceTempView(\"product\")`, you can run SQL queries on the `product` table to perform interactive analysis",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
       "config": {
         "tableHide": false,
         "editorSetting": {
           "language": "markdown",
           "editOnDblClick": true
         },
-        "colWidth": 12,
+        "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
         "results": {},
@@ -267,31 +286,31 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h4>After executing <code>df.createOrReplaceTempView(&quot;product&quot;)</code>, you can run SQL queries on the <code>product</code> table to perform interactive analysis</h4>\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch4\u003eAfter executing \u003ccode\u003edf.createOrReplaceTempView(\u0026quot;product\u0026quot;)\u003c/code\u003e, you can run SQL queries on the \u003ccode\u003eproduct\u003c/code\u003e table to perform interactive analysis\u003c/h4\u003e\n\u003c/div\u003e"
           }
         ]
       },
       "apps": [],
       "jobName": "paragraph_1497940953966_120004374",
       "id": "20170620-093628_1219065086",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2854"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%sql\nselect\n    (case when featuredProduct <> 0 then 'featured' ELSE 'not-featured' END) as featured,\n    count(featuredProduct) as count \nfrom product\ngroup by featuredProduct \norder by featuredProduct \n",
+      "title": "Number of featured/usual products",
+      "text": "%sql\nselect\n    (case when featuredProduct \u003c\u003e 0 then \u0027featured\u0027 ELSE \u0027not-featured\u0027 END) as featured,\n    count(featuredProduct) as count \nfrom product\ngroup by featuredProduct \norder by featuredProduct \n",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T09:51:14+0300",
+      "dateUpdated": "Jun 20, 2017 9:51:14 AM",
       "config": {
-        "colWidth": 6,
+        "colWidth": 6.0,
         "enabled": true,
         "results": {
           "0": {
             "graph": {
               "mode": "multiBarChart",
-              "height": 300,
+              "height": 300.0,
               "optionOpen": false
             },
             "helium": {}
@@ -311,25 +330,23 @@
       "apps": [],
       "jobName": "paragraph_1497941414243_-1909715761",
       "id": "20170620-095014_288553858",
-      "dateCreated": "2017-06-20T09:50:14+0300",
+      "dateCreated": "Jun 20, 2017 9:50:14 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:3646",
-      "title": "Number of featured/usual products"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%sql\nselect quantity, count(quantity) as count \nfrom product \nwhere featuredProduct = ${featured=true,true|false}\ngroup by quantity \norder by quantity \n",
+      "title": "Number of products by quantity",
+      "text": "%sql\nselect quantity, count(quantity) as count \nfrom product \nwhere featuredProduct \u003d ${featured\u003dtrue,true|false}\ngroup by quantity \norder by quantity \n",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T09:54:13+0300",
+      "dateUpdated": "Jun 20, 2017 9:54:13 AM",
       "config": {
-        "colWidth": 6,
+        "colWidth": 6.0,
         "enabled": true,
         "results": {
           "0": {
             "graph": {
               "mode": "multiBarChart",
-              "height": 300,
+              "height": 300.0,
               "optionOpen": false
             },
             "helium": {}
@@ -349,19 +366,16 @@
       "apps": [],
       "jobName": "paragraph_1497941479267_451411618",
       "id": "20170620-095119_566430160",
-      "dateCreated": "2017-06-20T09:51:19+0300",
+      "dateCreated": "Jun 20, 2017 9:51:19 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:3729",
-      "title": "Number of products by quantity"
+      "progressUpdateIntervalMs": 500
     },
     {
       "text": "%md\n#### `DataFrames` can be persisted to Data Grid and then loaded back. This allows you to share processed data between applications\n",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T09:54:29+0300",
+      "dateUpdated": "Jun 20, 2017 9:54:29 AM",
       "config": {
-        "colWidth": 12,
+        "colWidth": 12.0,
         "enabled": true,
         "results": {},
         "editorSetting": {
@@ -376,32 +390,31 @@
         "params": {},
         "forms": {}
       },
-      "apps": [],
-      "jobName": "paragraph_1497941658976_2101877131",
-      "id": "20170620-095418_1849917370",
-      "dateCreated": "2017-06-20T09:54:18+0300",
-      "status": "FINISHED",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:3798",
-      "dateFinished": "2017-06-20T09:54:29+0300",
-      "dateStarted": "2017-06-20T09:54:29+0300",
       "results": {
         "code": "SUCCESS",
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h4><code>DataFrames</code> can be persisted to Data Grid and then loaded back. This allows you to share processed data between applications</h4>\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch4\u003e\u003ccode\u003eDataFrames\u003c/code\u003e can be persisted to Data Grid and then loaded back. This allows you to share processed data between applications\u003c/h4\u003e\n\u003c/div\u003e"
           }
         ]
-      }
+      },
+      "apps": [],
+      "jobName": "paragraph_1497941658976_2101877131",
+      "id": "20170620-095418_1849917370",
+      "dateCreated": "Jun 20, 2017 9:54:18 AM",
+      "dateStarted": "Jun 20, 2017 9:54:29 AM",
+      "dateFinished": "Jun 20, 2017 9:54:29 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
     },
     {
+      "title": "Importing Spark SQL classes",
       "text": "%spark\nimport org.apache.spark.sql._",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T09:54:58+0300",
+      "dateUpdated": "Jun 20, 2017 9:54:58 AM",
       "config": {
-        "colWidth": 12,
+        "colWidth": 12.0,
         "enabled": true,
         "results": {},
         "editorSetting": {
@@ -418,23 +431,20 @@
       "apps": [],
       "jobName": "paragraph_1497941682959_500349705",
       "id": "20170620-095442_1227966258",
-      "dateCreated": "2017-06-20T09:54:42+0300",
+      "dateCreated": "Jun 20, 2017 9:54:42 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:3879",
-      "title": "Importing Spark SQL classes"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Loading Class As DataFrame (simpler syntax)",
-      "text": "%spark\nval df = spark.read.grid.loadClass[Product]\n",
-      "dateUpdated": "2017-06-20T09:55:54+0300",
+      "title": "Loading Class As DataFrame",
+      "text": "%spark\nval df \u003d spark.read.grid[Product]\n",
+      "dateUpdated": "Jun 20, 2017 9:55:54 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 4,
+        "colWidth": 4.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -447,22 +457,21 @@
       "apps": [],
       "jobName": "paragraph_1497940953966_120004374",
       "id": "20170620-093634_46944201",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2855"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Saving DataFrame as collection (simpler syntax)",
-      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") < 5)\n    .write.grid.mode(SaveMode.Overwrite).save(\"smallStock\")\n",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "title": "Saving DataFrame as collection",
+      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5)\n    .write.mode(SaveMode.Overwrite).grid(\"smallStock\")\n",
+      "dateUpdated": "Jun 27, 2017 10:14:03 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 4,
+        "colWidth": 4.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -475,22 +484,21 @@
       "apps": [],
       "jobName": "paragraph_1497940953966_120004374",
       "id": "20170620-093742_927375323",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2856"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Loading Collection as DataFrame (simpler syntax)",
-      "text": "%spark\nval df = spark.read.grid.load(\"smallStock\")\n\nval outOfStock = df.filter(df(\"quantity\") equalTo 0).count()\n",
-      "dateUpdated": "2017-06-20T09:55:44+0300",
+      "title": "Loading Collection as DataFrame",
+      "text": "%spark\nval df \u003d spark.read.grid(\"smallStock\")\n\nval outOfStock \u003d df.filter(df(\"quantity\") equalTo 0).count()\n",
+      "dateUpdated": "Jun 27, 2017 10:14:03 AM",
       "config": {
         "editorSetting": {
           "language": "scala",
           "editOnDblClick": false
         },
-        "colWidth": 4,
+        "colWidth": 4.0,
         "editorMode": "ace/mode/scala",
         "title": true,
         "results": {},
@@ -503,22 +511,105 @@
       "apps": [],
       "jobName": "paragraph_1497940953966_120004374",
       "id": "20170620-093814_941295066",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2857"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%md\n## Congratulations, it's done.\n##### You can create your own notebook in 'Notebook' menu. Good luck!\n",
-      "dateUpdated": "2017-06-20T09:42:33+0300",
+      "title": "Loading Class As Dataset",
+      "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\n",
+      "user": "anonymous",
+      "dateUpdated": "Jun 27, 2017 9:32:29 AM",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "results": {},
+        "enabled": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1498545073087_-149521231",
+      "id": "20170627-093113_46231033",
+      "dateCreated": "Jun 27, 2017 9:31:13 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Saving Dataset as collection",
+      "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 )\n    .write.mode(SaveMode.Overwrite).grid(\"bigStock\")\n",
+      "user": "anonymous",
+      "dateUpdated": "Jun 27, 2017 10:45:12 AM",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "results": {},
+        "enabled": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1498545159187_-743896462",
+      "id": "20170627-093239_990726752",
+      "dateCreated": "Jun 27, 2017 9:32:39 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading Collection as Dataset",
+      "text": "%spark\nval ds \u003d spark.read.grid(\"bigStock\").as[Product]\n\nval outOfStock \u003d ds.filter( o \u003d\u003e o.quantity \u003d\u003d 5 ).count()\n",
+      "user": "anonymous",
+      "dateUpdated": "Jun 27, 2017 10:45:35 AM",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "title": true,
+        "results": {},
+        "enabled": true,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1498545209603_-24507963",
+      "id": "20170627-093329_1824810522",
+      "dateCreated": "Jun 27, 2017 9:33:29 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n## Congratulations, it\u0027s done.\n##### You can create your own notebook in \u0027Notebook\u0027 menu. Good luck!\n",
+      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
       "config": {
         "tableHide": false,
         "editorSetting": {
           "language": "markdown",
           "editOnDblClick": true
         },
-        "colWidth": 12,
+        "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
         "results": {},
@@ -533,25 +624,24 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "<div class=\"markdown-body\">\n<h2>Congratulations, it&rsquo;s done.</h2>\n<h5>You can create your own notebook in &lsquo;Notebook&rsquo; menu. Good luck!</h5>\n</div>"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003eCongratulations, it\u0026rsquo;s done.\u003c/h2\u003e\n\u003ch5\u003eYou can create your own notebook in \u0026lsquo;Notebook\u0026rsquo; menu. Good luck!\u003c/h5\u003e\n\u003c/div\u003e"
           }
         ]
       },
       "apps": [],
       "jobName": "paragraph_1497940953967_119619625",
       "id": "20170620-093845_67106827",
-      "dateCreated": "2017-06-20T09:42:33+0300",
+      "dateCreated": "Jun 20, 2017 9:42:33 AM",
       "status": "READY",
       "errorMessage": "",
-      "progressUpdateIntervalMs": 500,
-      "$$hashKey": "object:2858"
+      "progressUpdateIntervalMs": 500
     }
   ],
   "name": "InsightEdge Basics",
   "id": "INSIGHTEDGE-BASIC",
   "angularObjects": {
-    "2CKP7X6T5:shared_process": [],
-    "2CN28R7JH:shared_process": []
+    "2CN2AMUF4:shared_process": [],
+    "2CNBV9DVK:shared_process": []
   },
   "config": {
     "looknfeel": "default",

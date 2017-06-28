@@ -84,7 +84,7 @@ private[insightedge] case class InsightEdgeDocumentRelation(
           throw new IllegalStateException(
             s"""SaveMode is set to ErrorIfExists and collection "$collection" already exists and contains data.
                 |Perhaps you meant to set the DataFrame write mode to Append?
-                |Example: df.write.grid.mode(SaveMode.Append).save("$collection")""".stripMargin)
+                |Example: df.write.mode(SaveMode.Append).grid("$collection")""".stripMargin)
         }
 
       case Ignore =>

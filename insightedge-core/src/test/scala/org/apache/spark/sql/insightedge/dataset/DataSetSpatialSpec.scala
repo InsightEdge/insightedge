@@ -31,7 +31,7 @@ import org.scalatest.fixture
 
 class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
 
-  it should "dataset: find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in { ie =>
+  it should "find with spatial operations at xap and spark" taggedAs ScalaSpaceClass in { ie =>
     val searchedCircle = circle(point(0, 0), 1.0)
     val searchedRect = rectangle(0, 2, 0, 2)
     val searchedPoint = point(1, 1)
@@ -70,7 +70,7 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     val spark = ie.spark
     import spark.implicits._
     // pushed down to XAP
-    val ds = spark.read.grid.loadClass[SpatialData].as[SpatialData]
+    val ds = spark.read.grid[SpatialData].as[SpatialData]
     ds.printSchema()
     asserts(ds)
 
@@ -78,28 +78,31 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     val pds = ds.persist()
     asserts(pds)
   }
-/*
-  it should "dataset: find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { ie =>
+
+  /*
+  Does not work , known encoder issue: Dataset usage with nested java spatial class, that on of its fields interface ( Point, not PointImpl )
+  java.lang.UnsupportedOperationException: Cannot infer type for class org.openspaces.spatial.shapes.Point because it is not bean-compliant
+
+  it should "find with spatial operations at xap and spark [java]" taggedAs JavaSpaceClass in { ie =>
     ie.spaceProxy.write(new JSpatialData(1L, point(0, 0)))
     val spark = ie.spark
     // pushed down to XAP
     implicit val jSpatialDataEncoder = org.apache.spark.sql.Encoders.bean(classOf[JSpatialData])
-    val ds = spark.read.grid.loadClass[JSpatialData].as[JSpatialData]
+    val ds = spark.read.grid[JSpatialData].as[JSpatialData]
     ds.printSchema()
     zeroPointCheckJSpatialData(ds, "point")
 
     // executed in expressions on Spark
     val pds = ds.persist()
     zeroPointCheckJSpatialData(pds, "point")
-  }
-  */
+  }*/
 
-  it should "dataset: work with shapes embedded on second level" taggedAs ScalaSpaceClass in { ie =>
+  it should "work with shapes embedded on second level" taggedAs ScalaSpaceClass in { ie =>
     ie.spaceProxy.write(SpatialEmbeddedData(id = null, Location(point(0, 0))))
     val spark = ie.spark
     import spark.implicits._
     // pushed down to XAP
-    val ds = spark.read.grid.loadClass[SpatialEmbeddedData].as[SpatialEmbeddedData]
+    val ds = spark.read.grid[SpatialEmbeddedData].as[SpatialEmbeddedData]
     ds.printSchema()
     zeroPointCheckSpatialData(ds, "location.point")
 
@@ -108,10 +111,10 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     zeroPointCheckSpatialData(pds, "location.point")
   }
 
-  it should "dataset: work with new columns via udf" in { ie =>
+  it should "work with new columns via udf" in { ie =>
     ie.spaceProxy.write(SpatialData(id = null, routing = 1, null, null, point(1, 1)))
     val spark = ie.spark
-    val df = spark.read.grid.loadClass[SpatialData]
+    val df = spark.read.grid[SpatialData]
     val toPointX = udf((f: Any) => f.asInstanceOf[Point].getX)
     val unwrappedDf = df.withColumn("locationX", toPointX(df("point")))
     unwrappedDf.printSchema()
@@ -120,12 +123,12 @@ class DataSetSpatialSpec extends fixture.FlatSpec with InsightEdge {
     assert(row.getAs[Double]("locationX") == 1)
   }
 
-  it should "dataset: persist shapes as shapes" taggedAs ScalaSpaceClass in { ie =>
+  it should "persist shapes as shapes" taggedAs ScalaSpaceClass in { ie =>
     ie.spaceProxy.write(SpatialData(id = null, routing = 1, circle(point(0, 0), 1.0), rectangle(0, 2, 0, 2), point(1, 1)))
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid.loadClass[SpatialData].write.grid(collectionName).save()
+    spark.read.grid[SpatialData].write.grid(collectionName)
 
     val data = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(data.getProperty[Any]("routing").isInstanceOf[Long])
