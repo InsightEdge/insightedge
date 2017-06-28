@@ -1,0 +1,22 @@
+#!/bin/bash
+
+IE_FINAL_BUILD_NUMBER="$IE_BUILD_NUMBER"
+if [ "$MODE" == "NIGHTLY" ]; then
+    IE_FINAL_BUILD_NUMBER="$IE_BUILD_NUMBER-$RUNNING_BUILD_NUMBER"
+fi
+
+
+if [ "$MODE" == "NIGHTLY" ]; then
+    IE_MAVEN_VERSION="$IE_VERSION-$IE_MILESTONE-$IE_FINAL_BUILD_NUMBER"
+elif [ "$MODE" == "MILESTONE" ]; then
+    IE_MAVEN_VERSION="$IE_VERSION-$IE_MILESTONE"
+elif [ "$MODE" == "GA" ]; then
+    IE_MAVEN_VERSION="$IE_VERSION"
+else
+    echo "Unknown mode [$MODE]"
+    exit 1
+fi
+
+
+echo "IE_FINAL_BUILD_NUMBER=${IE_FINAL_BUILD_NUMBER}" >> env.sh
+echo "IE_MAVEN_VERSION=${IE_MAVEN_VERSION}" >> env.sh
