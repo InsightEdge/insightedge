@@ -236,7 +236,7 @@
     },
     {
       "title": "Loading Dataset",
-      "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\nds.printSchema()\nds.createOrReplaceTempView(\"product\")\nval lowStock \u003d ds.filter(o \u003d\u003e o.quantity \u003c 5).count()\n",
+      "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\nds.printSchema()\nval lowStock \u003d ds.filter(o \u003d\u003e o.quantity \u003c 5).count()\n",
       "user": "anonymous",
       "dateUpdated": "Jun 27, 2017 9:27:56 AM",
       "config": {
