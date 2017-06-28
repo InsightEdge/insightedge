@@ -1,4 +1,6 @@
 #!/bin/bash
+set -x
+OUTPUT_FILE=$( dirname "${BASH_SOURCE[0]}" )/env.sh
 
 IE_FINAL_BUILD_NUMBER="$IE_BUILD_NUMBER"
 if [ "$MODE" == "NIGHTLY" ]; then
@@ -18,5 +20,5 @@ else
 fi
 
 
-echo "IE_FINAL_BUILD_NUMBER=${IE_FINAL_BUILD_NUMBER}" >> env.sh
-echo "IE_MAVEN_VERSION=${IE_MAVEN_VERSION}" >> env.sh
+echo "IE_FINAL_BUILD_NUMBER=${IE_FINAL_BUILD_NUMBER}" > ${OUTPUT_FILE}
+echo "IE_MAVEN_VERSION=${IE_MAVEN_VERSION}" >> ${OUTPUT_FILE}
