@@ -17,12 +17,14 @@
 package org.apache.spark.sql.insightedge
 
 import org.apache.spark.internal.Logging
+import org.apache.spark.sql._
+import org.apache.spark.sql.execution.streaming.Sink
 import org.apache.spark.sql.insightedge.DefaultSource._
 import org.apache.spark.sql.insightedge.relation.{InsightEdgeAbstractRelation, InsightEdgeClassRelation, InsightEdgeDocumentRelation}
 import org.apache.spark.sql.insightedge.udt.GeoUDTRegistration
 import org.apache.spark.sql.sources._
+import org.apache.spark.sql.streaming.OutputMode
 import org.apache.spark.sql.types.StructType
-import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 import org.apache.spark.util.Utils
 import org.insightedge.spark.utils.InsightEdgeConstants._
 
@@ -32,6 +34,8 @@ class DefaultSource
   extends RelationProvider
     with SchemaRelationProvider
     with CreatableRelationProvider
+    with StreamSinkProvider
+    with DataSourceRegister
     with Logging {
 
   override def createRelation(sqlContext: SQLContext, parameters: Map[String, String]): BaseRelation = {
@@ -49,6 +53,14 @@ class DefaultSource
     val relation = buildRelation(sqlContext, parameters, Some(data.schema))
     relation.insert(data, mode)
     relation
+  }
+
+  def createSink(
+                  sqlContext: SQLContext,
+                  parameters: Map[String, String],
+                  partitionColumns: Seq[String],
+                  outputMode: OutputMode): Sink = {
+    new MySink(sqlContext, parameters, partitionColumns, outputMode)
   }
 
   private def buildRelation(sqlContext: SQLContext,
@@ -78,6 +90,7 @@ class DefaultSource
     ClassTag[Any](Utils.classForName(path))
   }
 
+  override def shortName(): String = "MyIeSink"
 }
 
 case class InsightEdgeSourceOptions(
@@ -91,4 +104,47 @@ object DefaultSource {
   val InsightEdgeCollectionProperty = "collection"
   val InsightEdgeReadBufferSizeProperty = "readBufferSize"
   val InsightEdgeSplitCountProperty = "splitCount"
+}
+
+class MySink(sqlContext: SQLContext,
+             parameters: Map[String, String],
+             partitionColumns: Seq[String],
+             outputMode: OutputMode) extends Sink with Logging {
+  override def addBatch(batchId: Long, data: DataFrame): Unit = {
+    println("---- MySink ---")
+    println("---------- sqlContext -------")
+    println(sqlContext)
+    println("----------")
+
+    println("---------- parameters -------")
+    println(parameters)
+    println("----------")
+
+    println("---------- partitionColumns -------")
+    println(partitionColumns)
+    println("----------")
+
+    println("---------- outputMode -------")
+    println(outputMode)
+    println("----------")
+
+    println("---------- data -------")
+    println(data)
+
+
+    println("printSchema:")
+    data.printSchema()
+    println("END - printSchema:")
+    println("show: ")
+    data.show()
+    println("----------")
+    println("##########")
+    val collection = data.collect()
+    println("collection: " + collection)
+    println("new dataframe:")
+    data.sparkSession.createDataFrame(data.sparkSession.sparkContext.parallelize(collection), data.schema)
+      .show()
+    println("##########")
+
+  }
 }
