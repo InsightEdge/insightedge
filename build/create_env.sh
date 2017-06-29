@@ -25,9 +25,9 @@ function setIEMavenVersion {
     validate "MILESTONE"
     validate "IE_FINAL_BUILD_NUMBER"
     if [ "$MODE" == "NIGHTLY" ]; then
-        IE_MAVEN_VERSION="$IE_VERSION-$IE_MILESTONE-$IE_FINAL_BUILD_NUMBER"
+        IE_MAVEN_VERSION="$IE_VERSION-$MILESTONE-$IE_FINAL_BUILD_NUMBER"
     elif [ "$MODE" == "MILESTONE" ]; then
-        IE_MAVEN_VERSION="$IE_VERSION-$IE_MILESTONE"
+        IE_MAVEN_VERSION="$IE_VERSION-$MILESTONE"
     elif [ "$MODE" == "GA" ]; then
         IE_MAVEN_VERSION="$IE_VERSION"
     else
