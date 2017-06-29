@@ -1,36 +1,21 @@
 #!/bin/bash
 set -x
-if [ "$MODE" == "NIGHTLY" ]; then
-    IE_BUILD_NUMBER="$IE_BUILD_NUMBER-$BUILD_NUMBER"
-fi
-export FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-$IE_BUILD_NUMBER"
 
-export pom_version
-if [ "$MODE" == "NIGHTLY" ];then
-        pom_version="${IE_VERSION}-${MILESTONE}-${IE_BUILD_NUMBER}"
-elif [ "$MODE" == "MILESTONE" ];then
-        pom_version="${IE_VERSION}-${MILESTONE}"
-elif [ "$MODE" == "GA" ];then
-        pom_version="${IE_VERSION}"
-else
-    echo "unspecified mode: $MODE exiting"
-    exit 1
+if [ $# -eq 1 ]; then
+    if [ ! -e "$1" ]; then
+        echo "File [$1] does not exist."
+        exit 1
+    else
+        source $1
+    fi
 fi
 
-echo "livnat my env:"
-env
-    #if [ $# -ne 1 ]; then
-#    echo "Usage: $0 ie-release-params.sh"
-#    exit 1
-#fi
-#
-#source "$1"
 
 function uniquify_timer_triggered_nightly_git_tag_name {
     if [[ "$TAG_NAME" == *NIGHTLY ]]
     then
         TAG_NAME="${TAG_NAME}-$(date +'%A')"
-	LONG_TAG_NAME="${TAG_NAME}-$(date '+%Y-%m-%d-%H-%M-%S')"
+	    LONG_TAG_NAME="${TAG_NAME}-$(date '+%Y-%m-%d-%H-%M-%S')"
     fi
 }
 
@@ -59,7 +44,7 @@ function rename_poms {
 # replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${FINAL_IE_BUILD_VERSION}</insightedge.version>
 function rename_ie_version  {
     local trimmed_version="<insightedge\.version>.*<\/insightedge\.version>"
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$pom_version<\/insightedge.version>/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$IE_MAVEN_VERSION<\/insightedge.version>/" \{\} \;
 }
 
 # replace all occurrences of <xap.version>x.y.z-SNAPSHOT</xap.version> with <xap.version>${XAP_RELEASE_VERSION}</xap.version>
@@ -394,7 +379,7 @@ function publish_ie {
         export NEWMAN_PASSWORD=${newmanPassword="root"}
         export NEWMAN_BUILD_BRANCH=${branch}
         export NEWMAN_BUILD_NUMBER=${buildNumber}
-        export NEWMAN_BUILD_TAGS=${newmanTags}
+        export NEWMAN_BUILD_TAGS=${NEWMAN_TAGS}
         export NEWMAN_BUILD_TESTS_METADATA=${WEB_PATH_TO_BUILD}/ie-integration-tests.json
         export NEWMAN_BUILD_SHAS_FILE=${WEB_PATH_TO_BUILD}/metadata.txt
         export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/integration-tests-sources.zip,${WEB_PATH_TO_BUILD}/${communityZipFileName},${WEB_PATH_TO_BUILD}/${premiumZipFileName},${WEB_PATH_TO_BUILD}/newman-artifacts.zip
