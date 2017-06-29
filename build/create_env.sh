@@ -20,9 +20,9 @@ function setIEFinalBuildNumber {
 }
 
 function setIEFinalBuildVersion {
-    validate "$IE_VERSION"
-    validate "$MILESTONE"
-    validate "$IE_FINAL_BUILD_NUMBER"
+    validate "IE_VERSION"
+    validate "MILESTONE"
+    validate "IE_FINAL_BUILD_NUMBER"
     FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-$IE_FINAL_BUILD_NUMBER"
 }
 function setIEMavenVersion {
