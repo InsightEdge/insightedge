@@ -8,4 +8,5 @@ object BuildUtils {
   val BuildEdition = Option(System.getProperty("dist.edition")).getOrElse(throw new Exception("System property 'dist.edition' is not set"))
   val GitBranch = Option(System.getProperty("git.branch")).getOrElse(throw new Exception("System property 'git.branch' is not set"))
   val IEHome = Option(System.getProperty("dist.dir")).getOrElse(throw new Exception("System property 'dist.dir' is not set"))
-} 
+  val TestFolder = Option(System.getProperty("test.folder")).getOrElse(throw new Exception("System property 'test.folder' is not set"))
+}

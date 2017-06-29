@@ -51,10 +51,16 @@ object InsightEdgeAdminUtils extends Assertions{
 
   private val parser = new JSONParser()
 
+  private val testFolder: String = BuildUtils.TestFolder
+  private val sharedOutputFolder = s"$testFolder/output"
+  private val ieLogsPath = "/opt/insightedge/logs"
+
   def loadInsightEdgeSlaveContainer(masterIp: String): String = {
+    println(s"slave - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
     val hostConfig = HostConfig
       .builder()
       .appendBinds(IE_HOME + ":/opt/insightedge")
+      .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
       .build()
 
     val containerConfig = ContainerConfig.builder()
@@ -79,12 +85,15 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def loadInsightEdgeMasterContainer(): String = {
+    println(s"master - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
+
     val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
     val portBindings = Map(ZeppelinPort -> randomPort).asJava
     val hostConfig = HostConfig
       .builder()
       .portBindings(portBindings)
       .appendBinds(IE_HOME + ":/opt/insightedge")
+      .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
       .build()
 
     val containerConfig = ContainerConfig.builder()
