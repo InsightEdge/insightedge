@@ -15,6 +15,7 @@
         <dist.edition></dist.edition>
         <dist.dir>${project.basedir}/../../insightedge-packager/target/${dist.edition}</dist.dir>
         <git.branch></git.branch>
+        <test.folder></test.folder>
     </properties>
 
 
@@ -159,8 +160,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir}</argLine>
-                    <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Dgit.branch=${git.branch}</argLine>
+                    <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Dgit.branch=${git.branch} -Ddist.dir=${dist.dir} -Dtest.folder=${test.folder}</argLine>
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <junitxml>.</junitxml>
                     <filereports>scalatest.txt</filereports>
@@ -322,7 +322,7 @@
                         <artifactId>scalatest-maven-plugin</artifactId>
                         <configuration>
                             <tagsToExclude>_</tagsToExclude> <!-- Workaround to reset previous value-->
-                            <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir} -Dgit.branch=${git.branch}</argLine>
+                            <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir} -Dgit.branch=${git.branch} -Dtest.folder=${test.folder}</argLine>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -368,7 +368,7 @@
                         <groupId>org.scalatest</groupId>
                         <artifactId>scalatest-maven-plugin</artifactId>
                         <configuration>
-                            <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir} -Dgit.branch=${git.branch}</argLine>
+                            <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir} -Dgit.branch=${git.branch} -Dtest.folder=${test.folder}</argLine>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -408,7 +408,7 @@
                         <configuration>
                             <tagsToExclude>_</tagsToExclude> <!-- Workaround to reset previous value-->
                             <tagsToInclude>org.insightedge.spark.utils.LongRunningTest</tagsToInclude>
-                            <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir}</argLine>
+                            <argLine>-Ddist.edition=${dist.edition} -Ddist.version=${project.version} -Ddist.dir=${dist.dir} -Dtest.folder=${test.folder}</argLine>
                         </configuration>
                     </plugin>
                     <plugin>

@@ -18,6 +18,7 @@ package org.insightedge.spark.fixture
 
 import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
+import org.insightedge.spark.utils.BuildUtils
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.libs.ws.ning.NingWSClient
 
@@ -43,15 +44,23 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   private val docker = DefaultDockerClient.fromEnv().build()
   private var zeppelinMappedPort: String = _
 
+  private val testFolder = BuildUtils.TestFolder
+  private val sharedOutputFolder = testFolder + "/output"
+
+  private val ieLogsPath="/opt/gigaspaces-insightedge/logs"
+
   val wsClient = NingWSClient()
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
     println("Starting docker container")
-
+    println(s"sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
     val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
     val portBindings = Map(ZeppelinPort -> randomPort).asJava
-    val hostConfig = HostConfig.builder().portBindings(portBindings).build()
+    val hostConfig = HostConfig.builder()
+      .portBindings(portBindings)
+      .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
+      .build()
 
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
