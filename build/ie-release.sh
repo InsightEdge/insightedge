@@ -105,7 +105,7 @@ function mvn_install {
     elif [ "$rep" == "IE_Example" ]; then
         cmd="mvn -B -Dmaven.repo.local=$M2/repository test package -DskipTests"
      elif [ "$rep" == "IE_ZEPPELIN" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.1 -Pscala-2.11 -Pbuild-distr"
+        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean install -DskipTests -Drat.skip=true -Pspark-2.1 -Pscala-2.11 -Pbuild-distr"
     fi
 
     echo "****************************************************************************************************"
@@ -127,9 +127,9 @@ function package_ie {
     pushd "$1"
 
      if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.1-bin-hadoop2.7.tgz -Ddist.xap=$XAP_OPEN_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.xap=$XAP_OPEN_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
      elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.1-bin-hadoop2.7.tgz -Ddist.xap=$XAP_PREMIUM_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.xap=$XAP_PREMIUM_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
     fi
     echo "****************************************************************************************************"
     echo "Installing $rep"
@@ -460,10 +460,10 @@ function release_ie {
     rename_poms "$ie_zeppelin_folder"
 
 
-    if [ ! -f "$WORKSPACE/spark-2.1.1-bin-hadoop2.7.tgz" ]
+    if [ ! -f "$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz" ]
     then
         announce_step "Downloading spark distribution"
-        wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz -P ${WORKSPACE}
+        wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.7.tgz -P ${WORKSPACE}
         echo "Finished downloading spark"
     else
         echo "Found Spark distribution, download is skipped"
