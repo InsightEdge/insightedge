@@ -38,7 +38,7 @@ function rename_poms {
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
     # Find each pom.xml under $1 and replace every $trimmed_version with $IE_FINAL_BUILD_NUMBER
 
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$pom_version/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$IE_MAVEN_VERSION/" \{\} \;
 }
 
 # replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${IE_FINAL_BUILD_NUMBER}</insightedge.version>
