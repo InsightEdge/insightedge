@@ -19,6 +19,12 @@ function setIEFinalBuildNumber {
     fi
 }
 
+function setIEBuildVersion {
+    validate "$IE_VERSION"
+    validate "$MILESTONE"
+    validate "$IE_FINAL_BUILD_NUMBER"
+    FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-$IE_FINAL_BUILD_NUMBER"
+}
 function setIEMavenVersion {
     validate "MODE"
     validate "IE_VERSION"
@@ -68,8 +74,11 @@ function store {
 #RUNNING_BUILD_NUMBER="10"
 
 setIEFinalBuildNumber
+setIEFinalBuildVersion
 setIEMavenVersion
+
 store "IE_FINAL_BUILD_NUMBER"
+store "FINAL_IE_BUILD_VERSION"
 store "IE_MAVEN_VERSION"
 store "BRANCH"
 store "IE_VERSION"
