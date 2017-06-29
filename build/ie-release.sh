@@ -105,7 +105,7 @@ function mvn_install {
     elif [ "$rep" == "IE_Example" ]; then
         cmd="mvn -B -Dmaven.repo.local=$M2/repository test package -DskipTests"
      elif [ "$rep" == "IE_ZEPPELIN" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean install -DskipTests -Drat.skip=true -Pspark-2.1 -Pscala-2.11 -Pbuild-distr"
+        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.1 -Pscala-2.11 -Pbuild-distr"
     fi
 
     echo "****************************************************************************************************"
