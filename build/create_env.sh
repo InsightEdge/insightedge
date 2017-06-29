@@ -19,7 +19,7 @@ function setIEFinalBuildNumber {
     fi
 }
 
-function setIEBuildVersion {
+function setIEFinalBuildVersion {
     validate "$IE_VERSION"
     validate "$MILESTONE"
     validate "$IE_FINAL_BUILD_NUMBER"
