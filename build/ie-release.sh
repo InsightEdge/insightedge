@@ -30,18 +30,18 @@ function get_folder {
 }
 
 
-# Rename all version of each pom.xml in $1 folder to $FINAL_IE_BUILD_VERSION
+# Rename all version of each pom.xml in $1 folder to $IE_FINAL_BUILD_NUMBER
 function rename_poms {
     # Find current version from the pom.xml file in $1 folder.
     local version="$(grep -m1 '<version>' $1/pom.xml | sed 's/<version>\(.*\)<\/version>/\1/')"
     # Since grep return the whole line there are spaces that needed to trim.
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
-    # Find each pom.xml under $1 and replace every $trimmed_version with $FINAL_IE_BUILD_VERSION
+    # Find each pom.xml under $1 and replace every $trimmed_version with $IE_FINAL_BUILD_NUMBER
 
     find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$pom_version/" \{\} \;
 }
 
-# replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${FINAL_IE_BUILD_VERSION}</insightedge.version>
+# replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${IE_FINAL_BUILD_NUMBER}</insightedge.version>
 function rename_ie_version  {
     local trimmed_version="<insightedge\.version>.*<\/insightedge\.version>"
     find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$IE_MAVEN_VERSION<\/insightedge.version>/" \{\} \;
@@ -127,9 +127,9 @@ function package_ie {
     pushd "$1"
 
      if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_OPEN_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -Dinsightedge.full.build.version=${IE_FINAL_BUILD_NUMBER} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_OPEN_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
      elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_PREMIUM_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -Dinsightedge.full.build.version=${IE_FINAL_BUILD_NUMBER} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz -Ddist.xap=$XAP_PREMIUM_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
     fi
     echo "****************************************************************************************************"
     echo "Installing $rep"
@@ -174,7 +174,7 @@ function mvn_deploy {
 # It assume the branch is the local temp branch,
 function commit_changes {
     local folder="$1"
-    local msg="Modify poms to $FINAL_IE_BUILD_VERSION in temp branch that was built on top of $BRANCH"
+    local msg="Modify poms to $IE_FINAL_BUILD_NUMBER in temp branch that was built on top of $BRANCH"
 
     pushd "$folder"
     git add -u
@@ -242,12 +242,12 @@ function upload_ie_zip {
 
     if [ "$2" = "ie-community" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/community/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-community.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_IE_BUILD_VERSION}"
+       zipFileName="gigaspaces-insightedge-${IE_FINAL_BUILD_NUMBER}-community.zip"
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_FINAL_BUILD_NUMBER}"
     elif [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-premium.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_IE_BUILD_VERSION}"
+       zipFileName="gigaspaces-insightedge-${IE_FINAL_BUILD_NUMBER}-premium.zip"
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_FINAL_BUILD_NUMBER}"
 
     fi
 
@@ -321,8 +321,8 @@ function announce_step {
 function publish_ie {
 
     baseOutputFolder="${WORKSPACE}/insightedge/insightedge-packager/target/"
-    premiumZipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-premium.zip"
-    communityZipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-community.zip"
+    premiumZipFileName="gigaspaces-insightedge-${IE_FINAL_BUILD_NUMBER}-premium.zip"
+    communityZipFileName="gigaspaces-insightedge-${IE_FINAL_BUILD_NUMBER}-community.zip"
 
     host=${storageHost}
     echo "host=${host}"
@@ -411,7 +411,7 @@ function release_ie {
     local ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
     local ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
 
-    local temp_branch_name="$BRANCH-$FINAL_IE_BUILD_VERSION"
+    local temp_branch_name="$BRANCH-$IE_FINAL_BUILD_NUMBER"
     local ie_folder="$(get_folder $ie_url)"
     local ie_exm_folder="$(get_folder $ie_exm_url)"
     local ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
