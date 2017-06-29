@@ -460,10 +460,10 @@ function release_ie {
     rename_poms "$ie_zeppelin_folder"
 
 
-    if [ ! -f "$WORKSPACE/spark-1.6.1-bin-hadoop2.6.tgz" ]
+    if [ ! -f "$WORKSPACE/spark-2.1.1-bin-hadoop2.7.tgz" ]
     then
         announce_step "Downloading spark distribution"
-        wget https://d3kbcqa49mib13.cloudfront.net/spark-1.6.1-bin-hadoop2.6.tgz -P ${WORKSPACE}
+        wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz -P ${WORKSPACE}
         echo "Finished downloading spark"
     else
         echo "Found Spark distribution, download is skipped"
