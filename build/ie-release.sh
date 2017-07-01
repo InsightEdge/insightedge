@@ -94,22 +94,14 @@ function clean_m2 {
     fi
 }
 
-# Call maven install from directory $1
-# In case of none zero exit code exit code stop the release
-function mvn_install {
-    local rep="$2"
-    pushd "$1"
-
-    if [ "$rep" == "IE" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
-    elif [ "$rep" == "IE_Example" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository test package -DskipTests"
-     elif [ "$rep" == "IE_ZEPPELIN" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.1 -Pscala-2.11 -Pbuild-distr"
-    fi
-
+function execute_command {
+    # $1 = title
+    # $2 = directory
+    # $3 = command
+    local cmd="$3"
+    pushd "$2"
     echo "****************************************************************************************************"
-    echo "Installing $rep"
+    echo "$1"
     echo "Executing cmd: $cmd"
     echo "****************************************************************************************************"
     eval "$cmd"
@@ -119,29 +111,36 @@ function mvn_install {
     then
         echo "[ERROR] Failed While installing using maven in folder: $1, command is: $cmd, exit code is: $r"
         exit "$r"
+    fi
+
+
+}
+# Call maven install from directory $1
+# In case of none zero exit code exit code stop the release
+function mvn_install {
+    local rep="$2"
+    if [ "$rep" == "IE" ]; then
+        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
+        execute_command "Installing $rep" "$1" "$cmd"
+    elif [ "$rep" == "IE_Example" ]; then
+        cmd="mvn -B -Dmaven.repo.local=$M2/repository test package -DskipTests"
+        execute_command "Installing $rep" "$1" "$cmd"
+    elif [ "$rep" == "IE_ZEPPELIN" ]; then
+        cmd="./dev/change_scala_version.sh 2.11"
+        execute_command "Changing scala version - $rep" "$1" "$cmd"
+        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.1 -Pscala-2.11 -Pbuild-distr"
+        execute_command "Installing $rep" "$1" "$cmd"
     fi
 }
 
 function package_ie {
     local rep="$2"
-    pushd "$1"
-
-     if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
+    if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.xap=$XAP_OPEN_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
-     elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
+        execute_command "Packaging $rep" "$1" "$cmd"
+    elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -Dinsightedge.full.build.version=${FINAL_IE_BUILD_VERSION} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.xap=$XAP_PREMIUM_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
-    fi
-    echo "****************************************************************************************************"
-    echo "Installing $rep"
-    echo "Executing cmd: $cmd"
-    echo "****************************************************************************************************"
-    eval "$cmd"
-    local r="$?"
-    popd
-    if [ "$r" -ne 0 ]
-    then
-        echo "[ERROR] Failed While installing using maven in folder: $1, command is: $cmd, exit code is: $r"
-        exit "$r"
+        execute_command "Packaging $rep" "$1" "$cmd"
     fi
 }
 
@@ -152,22 +151,9 @@ function package_ie {
 # In case of none zero exit code exit code stop the release
 function mvn_deploy {
 
-    pushd "$1"
     # TODO remove XAP_RELEASE_VERSION
     cmd="mvn -B -Dmaven.repo.local=$M2/repository -DskipTests deploy -Dxap.version=${XAP_RELEASE_VERSION}"
-    echo "****************************************************************************************************"
-    echo "Maven deploy"
-    echo "Executing cmd: $cmd"
-    echo "****************************************************************************************************"
-    eval "$cmd"
-    local r="$?"
-    popd
-    if [ "$r" -ne 0 ]
-    then
-        echo "[ERROR] Failed While installing using maven in folder: $1, command is: $cmd, exit code is: $r"
-        exit "$r"
-    fi
-
+    execute_command "Maven deploy" "$1" "$cmd"
 }
 
 # Commit local changes and create a tag in dir $1.
