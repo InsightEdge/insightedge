@@ -238,11 +238,11 @@ function upload_ie_zip {
     if [ "$2" = "ie-community" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/community/"
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-community.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_IE_BUILD_VERSION}"
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
     elif [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-premium.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_IE_BUILD_VERSION}"
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
 
     fi
 
