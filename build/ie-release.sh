@@ -135,11 +135,20 @@ function mvn_install {
 
 function package_ie {
     local rep="$2"
+
+    local ie_sha=${IE_SHA}
+    if [ ! -z "${LONG_TAG_NAME}" ]
+    then
+	    ie_sha="${LONG_TAG_NAME}"
+    fi
+
+    local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+
     if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.xap=$XAP_OPEN_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-community -Ddist.xap=$XAP_OPEN_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.xap=$XAP_PREMIUM_URL -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -Ppackage-premium -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
     fi
 }
@@ -455,6 +464,8 @@ function release_ie {
         echo "Found Spark distribution, download is skipped"
     fi
 
+    export IE_SHA="$TAG_NAME"
+    export LONG_TAG_NAME="$LONG_TAG_NAME"
 
     announce_step "executing maven install on ie"
     mvn_install "$ie_folder" "IE"
