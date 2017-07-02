@@ -165,9 +165,8 @@ object Utils {
     pW.close()
   }
 
-  val GIT_HASH_LENGTH = 40
   def validateHash(hash: Option[String]): Unit = {
-    if (hash.isDefined && hash.get.length != GIT_HASH_LENGTH) {
+    if (hash.isDefined && hash.get.length > 0) {
       throw new IllegalArgumentException("Invalid commit hash: " + hash.get)
     }
   }
