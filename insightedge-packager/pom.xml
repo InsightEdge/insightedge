@@ -87,6 +87,10 @@
                         <jvmArg>-Ddist.examples=${dist.examples}</jvmArg>
                         <!-- Hash of last commit, optional -->
                         <jvmArg>-Dlast.commit.hash=${last.commit.hash}</jvmArg>
+                        <jvmArg>-Dinsightedge.version=${insightedge.version}</jvmArg>
+                        <jvmArg>-Dinsightedge.milestone=${insightedge.milestone}</jvmArg>
+                        <jvmArg>-Dinsightedge.build.number=${insightedge.build.number}</jvmArg>
+                        <jvmArg>-Dxap.version=${xap.version}</jvmArg>
                     </jvmArgs>
                 </configuration>
             </plugin>
