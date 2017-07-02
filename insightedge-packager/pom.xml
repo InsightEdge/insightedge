@@ -15,11 +15,12 @@
     <properties>
         <xap.download.phase>none</xap.download.phase>
         <xap.dist.filename>xap-premium.zip</xap.dist.filename>
+        <insightedge.version>1.1.0</insightedge.version>
+        <insightedge.milestone>m1</insightedge.milestone>
         <insightedge.build.number>10000-1</insightedge.build.number>
         <insightedge.branch>master</insightedge.branch>
-        <insightedge.full.build.version>1.0.1-m1-11001</insightedge.full.build.version>
-        <insightedge.premium.filename>gigaspaces-insightedge-${insightedge.full.build.version}-premium.zip</insightedge.premium.filename>
-        <insightedge.community.filename>gigaspaces-insightedge-${insightedge.full.build.version}-community.zip</insightedge.community.filename>
+        <insightedge.premium.filename>gigaspaces-insightedge-${insightedge.version}-${insightedge.milestone}-${insightedge.build.number}-premium.zip</insightedge.premium.filename>
+        <insightedge.community.filename>gigaspaces-insightedge-${insightedge.version}-${insightedge.milestone}-${insightedge.build.number}-community.zip</insightedge.community.filename>
     </properties>
 
     <dependencies>

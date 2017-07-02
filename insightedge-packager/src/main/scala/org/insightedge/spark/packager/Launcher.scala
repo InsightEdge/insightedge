@@ -40,7 +40,11 @@ object Launcher {
 
   def main(args: Array[String]) {
     val project = parameter("Project folder" -> "project.directory")
-    val version = parameter("Project version" -> "project.version")
+    val version = parameter("InsightEdge version" -> "insightedge.version")
+    val milestone = parameter("Project milestone" -> "insightedge.milestone")
+    val buildNumber = parameter("Project build number" -> "insightedge.build.number")
+    val artifactVersion = parameter("Project maven artifact version" -> "project.version")
+    val xapVersion = parameter("XAP version" -> "xap.version")
     val edition = parameter("Distribution edition" -> "dist.edition")
     val lastCommitHash = optionalParameter("Last commit hash" -> "last.commit.hash")
     val output = parameter("Output folder" -> "output.exploded.directory")
@@ -62,7 +66,14 @@ object Launcher {
     run("Adding InsightEdge license and VERSION file") {
       copy(s"$project/LICENSE.md", s"$output/INSIGHTEDGE-LICENSE.md")
       val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
-      val versionInfo = s"Version: $version\nHash: ${lastCommitHash.getOrElse("")}\nTimestamp: $timestamp\nEdition: $edition"
+      val versionInfo = s"Version: $version\n" +
+        s"Edition: $edition\n" +
+        s"Milestone: $milestone\n" +
+        s"BuildNumber: $buildNumber\n" +
+        s"Timestamp: $timestamp\n" +
+        s"Hash: ${lastCommitHash.getOrElse("")}\n" +
+        s"ArtifactVersion: $artifactVersion\n" +
+        s"XAPVersion: $xapVersion"
       writeToFile(s"$output/VERSION", versionInfo)
     }
 

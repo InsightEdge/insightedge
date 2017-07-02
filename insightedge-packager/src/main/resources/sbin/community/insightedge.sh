@@ -8,10 +8,13 @@ source $INSIGHTEDGE_HOME/sbin/common-insightedge.sh
 
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
-VERSION=`grep "Version" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-EDITION=`grep "Edition" $INSIGHTEDGE_HOME/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-ARTIFACT="gigaspaces-insightedge-$VERSION-$EDITION"
-ARTIFACT_EC2="https://s3.amazonaws.com/insightedge/builds/$ARTIFACT.zip"
+IE_VERSION=`grep -w "Version" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+ARTIFACT_VERSION=`grep -w "ArtifactVersion" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+MILESTONE=`grep -w "Milestone" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+BUILD_NUMBER=`grep -w "BuildNumber" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+EDITION=`grep -w "Edition" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+ARTIFACT="gigaspaces-insightedge-${IE_VERSION}-${MILESTONE}-${BUILD_NUMBER}-${EDITION}"
+ARTIFACT_EC2="https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/insightedge/${IE_VERSION}/${ARTIFACT_VERSION}/${ARTIFACT}.zip"
 
 # override this variable with custom command if you want your distribution to be downloaded from custom location
 # for customization, call before insightedge.sh:
