@@ -166,7 +166,7 @@ object Utils {
   }
 
   def validateHash(hash: Option[String]): Unit = {
-    if (hash.isDefined && hash.get.length > 0) {
+    if (hash.isDefined && hash.get.length == 0) {
       throw new IllegalArgumentException("Invalid commit hash: " + hash.get)
     }
   }
