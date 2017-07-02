@@ -30,6 +30,17 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>org.openspaces</id>
+            <url>s3://gigaspaces-maven-repository-eu</url>
+        </snapshotRepository>
+        <repository>
+            <id>org.openspaces</id>
+            <url>s3://gigaspaces-maven-repository-eu</url>
+        </repository>
+    </distributionManagement>
+
     <modules>
         <module>insightedge-core</module>
         <module>insightedge-scala</module>
@@ -129,5 +140,41 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>com.gigaspaces</groupId>
+                <artifactId>xap-build-plugin</artifactId>
+                <version>12.1.0-m9-16708-358</version>
+                <configuration>
+                    <user>${user}</user>
+                    <key>${key}</key>
+                    <container>${container}</container>
+                    <type />
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <extensions>
+            <extension>
+                <groupId>org.kuali.maven.wagons</groupId>
+                <artifactId>maven-s3-wagon</artifactId>
+                <version>1.1.20</version>
+            </extension>
+        </extensions>
+
+    </build>
 
 </project>

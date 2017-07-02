@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
+set -x
 #
 # Starts a cluster of containers and installs InsightEdge there.
 #
 
-VER=1.1.0-SNAPSHOT
 
 if [ "$#" -ne 2 ]; then
     echo "Illegal number of parameters."
@@ -19,10 +19,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/stop.sh
 
 # Run cluster containers
-docker run --name master -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
-docker run --name slave1 -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
-docker run --name slave2 -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
-docker run --name client -P -d --link master:master --link slave1:slave1 --link slave2:slave2 -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install:$VER
+docker run --name master -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install
+docker run --name slave1 -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install
+docker run --name slave2 -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install
+docker run --name client -P -d --link master:master --link slave1:slave1 --link slave2:slave2 -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-cluster-install
 
 # Give permissions to ie-user for mounted folder, and keep write permissions for the group (basically, for host)
 docker exec master bash -c 'chown -R ie-user /download & chmod -R g+rw /download'

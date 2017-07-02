@@ -11,11 +11,11 @@ if [ "$#" -ne 4 ]; then
 fi
 
 LOCAL_DOWNLOAD_DIR=$1
-VERSION=$2
+IE_VERSION=$2
 BRANCH=$3
 MVN_OR_SBT=$4
 echo "Local download dir: $LOCAL_DOWNLOAD_DIR"
-echo "Version: $VERSION"
+echo "IE Version: $IE_VERSION"
 echo "Git branch: $BRANCH"
 echo "Build option: $MVN_OR_SBT"
 
@@ -25,7 +25,7 @@ $DIR/stop.sh
 
 #validate test not getting error after trying to stop all containers
 set -e
-docker run --name maven-install-libs-test-image -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-maven-install-libs:$VERSION
+docker run --name maven-install-libs-test-image -P -d -v $LOCAL_DOWNLOAD_DIR:/download insightedge-tests-maven-install-libs
 
 docker exec --user ie-user maven-install-libs-test-image /home/ie-user/install-libs-test.sh $BRANCH $MVN_OR_SBT
 

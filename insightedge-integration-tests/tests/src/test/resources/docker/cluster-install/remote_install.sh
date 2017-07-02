@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 #
 # Starts InsightEdge installation on cluster and verifies installation with smoke test.
 # Executed in Client container by ie-user.

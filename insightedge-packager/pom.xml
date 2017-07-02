@@ -17,8 +17,9 @@
         <xap.dist.filename>xap-premium.zip</xap.dist.filename>
         <insightedge.build.number>10000-1</insightedge.build.number>
         <insightedge.branch>master</insightedge.branch>
-        <insightedge.premium.filename>gigaspaces-insightedge-${project.version}-premium.zip</insightedge.premium.filename>
-        <insightedge.community.filename>gigaspaces-insightedge-${project.version}-community.zip</insightedge.community.filename>
+        <insightedge.full.build.version>1.0.1-m1-11001</insightedge.full.build.version>
+        <insightedge.premium.filename>gigaspaces-insightedge-${insightedge.full.build.version}-premium.zip</insightedge.premium.filename>
+        <insightedge.community.filename>gigaspaces-insightedge-${insightedge.full.build.version}-community.zip</insightedge.community.filename>
     </properties>
 
     <dependencies>
@@ -56,6 +57,13 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
 
             <!-- Common for all packaging profiles, does not have execution without a profile -->
@@ -121,28 +129,7 @@
                     <executable>${update-git-info-script}</executable>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>package-tests</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/tests/integration-tests.xml</descriptor>
-                            </descriptors>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <finalName>integration-tests-sources</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <attach>false</attach>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
 
@@ -177,7 +164,7 @@
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-${project.version}-community
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.full.build.version}-community
                                         </jvmArg>
                                         <!-- Distribution edition -->
                                         <jvmArg>-Ddist.edition=community</jvmArg>
@@ -218,7 +205,7 @@
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-${project.version}-premium
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.full.build.version}-premium
                                         </jvmArg>
                                         <!-- Distribution edition -->
                                         <jvmArg>-Ddist.edition=premium</jvmArg>
@@ -314,17 +301,8 @@
 
 
         <profile>
-            <id>publish-artifacts</id>
-            <properties>
-                <storage.host>hercules</storage.host>
-                <storage.port>80</storage.port>
-                <storage.user>tgrid</storage.user>
-                <newman.host>xap-newman</newman.host>
-                <newman.port>8443</newman.port>
-                <newman.username>root</newman.username>
-                <newman.password>root</newman.password>
-                <newman.tags />
-            </properties>
+            <id>build-resources</id>
+
             <build>
                 <plugins>
                     <plugin>
@@ -347,56 +325,20 @@
                                     <attach>false</attach>
                                 </configuration>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.googlecode.maven-download-plugin</groupId>
-                        <artifactId>download-maven-plugin</artifactId>
-                        <version>1.3.0</version>
-                        <executions>
                             <execution>
-                                <id>download newman jar</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>wget</goal>
-                                </goals>
-                                <configuration>
-                                    <skipCache>true</skipCache>
-                                    <url>http://xap-test.s3.amazonaws.com/qa/newman/newman-submitter-1.0.jar</url>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.5.0</version>
-                        <executions>
-                            <execution>
-                                <id>copy and publish artifacts</id>
+                                <id>package-tests</id>
                                 <phase>process-resources</phase>
                                 <goals>
-                                    <goal>exec</goal>
+                                    <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <environmentVariables>
-                                        <storageHost>${storage.host}</storageHost>
-                                        <storagePort>${storage.port}</storagePort>
-                                        <storageUser>${storage.user}</storageUser>
-                                        <buildNumber>${insightedge.build.number}</buildNumber>
-                                        <buildVersion>${project.version}</buildVersion>
-                                        <branch>${insightedge.branch}</branch>
-                                        <baseOutputFolder>${project.build.directory}</baseOutputFolder>
-                                        <communityZipFileName>${insightedge.community.filename}</communityZipFileName>
-                                        <premiumZipFileName>${insightedge.premium.filename}</premiumZipFileName>
-                                        <newmanHost>${newman.host}</newmanHost>
-                                        <newmanPort>${newman.port}</newmanPort>
-                                        <newmanUsername>${newman.username}</newmanUsername>
-                                        <newmanPassword>${newman.password}</newmanPassword>
-                                        <newmanTags>${newman.tags}</newmanTags>
-                                    </environmentVariables>
-                                    <executable>${project.basedir}/publish-artifacts.sh</executable>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/tests/integration-tests.xml</descriptor>
+                                    </descriptors>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <finalName>integration-tests-sources</finalName>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                    <attach>false</attach>
                                 </configuration>
                             </execution>
                         </executions>
