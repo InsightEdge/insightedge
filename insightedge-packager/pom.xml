@@ -332,7 +332,7 @@
                             </execution>
                             <execution>
                                 <id>package-tests</id>
-                                <phase>process-resources</phase>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
@@ -366,28 +366,6 @@
             </properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.6</version>
-                        <executions>
-                            <execution>
-                                <id>package-newman artifacts</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>src/main/assembly/tests/ie-newman-artifacts.xml</descriptor>
-                                    </descriptors>
-                                    <finalName>newman-artifacts</finalName>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <attach>false</attach>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>com.googlecode.maven-download-plugin</groupId>
                         <artifactId>download-maven-plugin</artifactId>

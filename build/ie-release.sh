@@ -249,7 +249,7 @@ function upload_ie_zip {
 
     sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
 
-    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Pbuild-resources -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath} -Dput.container=gigaspaces-repository-eu"
+    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath} -Dput.container=gigaspaces-repository-eu"
 
     echo "****************************************************************************************************"
     echo "uploading $2 zip"
@@ -314,7 +314,7 @@ function announce_step {
 # upload zip to s3.
 
 function publish_ie {
-    local cmd="package -pl insightedge-packager -P publish-artifacts  -DskipTests=true -Dinsightedge.version=${IE_VERSION} -Dinsightedge.branch=$BRANCH -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -Dnewman.tags=$NEWMAN_TAGS -Dmaven.repo.local=$M2/repository"
+    local cmd="mvn package -pl insightedge-packager -P publish-artifacts  -DskipTests=true -Dinsightedge.version=${IE_VERSION} -Dinsightedge.branch=$BRANCH -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -Dnewman.tags=$NEWMAN_TAGS -Dmaven.repo.local=$M2/repository"
     execute_command "Publish IE to Newman" "$1" "$cmd"
 }
 
