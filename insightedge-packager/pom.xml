@@ -402,7 +402,7 @@
                                         <storagePort>${storage.port}</storagePort>
                                         <storageUser>${storage.user}</storageUser>
                                         <buildNumber>${insightedge.build.number}</buildNumber>
-                                        <buildVersion>${project.version}</buildVersion>
+                                        <buildVersion>${insightedge.version}</buildVersion>
                                         <branch>${insightedge.branch}</branch>
                                         <baseOutputFolder>${project.build.directory}</baseOutputFolder>
                                         <communityZipFileName>${insightedge.community.filename}</communityZipFileName>
