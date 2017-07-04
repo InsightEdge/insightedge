@@ -41,6 +41,22 @@ function rename_poms {
     find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$IE_MAVEN_VERSION/" \{\} \;
 }
 
+# Rename all version of each build.sbt in $1 folder to $IE_MAVEN_VERSION
+function rename_sbt {
+    # Find current version from the build.sbt file in $1 folder.
+    local version="$(grep -m1 'insightEdgeVersion' build.sbt | sed 's/.*"\(.*\)".*/\1/')"
+    # Since grep return the whole line there are spaces that needed to trim.
+    local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
+    # Find each pom.xml under $1 and replace every $trimmed_version with $IE_MAVEN_VERSION
+
+    if [ "$trimmed_version" == "" ]; then
+        echo "Unable to find insightEdgeVersion variable in build.sbt"
+        exit 1
+    fi
+
+    find "$1" -name "build.sbt" -exec sed -i "s/$trimmed_version/$IE_MAVEN_VERSION/" \{\} \;
+}
+
 # replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${FINAL_IE_BUILD_VERSION}</insightedge.version>
 function rename_ie_version  {
     local trimmed_version="<insightedge\.version>.*<\/insightedge\.version>"
@@ -370,6 +386,7 @@ function release_ie {
 
     announce_step "rename version in poms [ie example]"
     rename_poms "$ie_exm_folder"
+    rename_sbt "$ie_exm_folder"
 
     announce_step "rename ie version in poms [ie zeppelin]"
     rename_ie_version "$ie_zeppelin_folder"
