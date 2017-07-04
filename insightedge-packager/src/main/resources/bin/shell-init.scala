@@ -10,5 +10,4 @@ val ieConfig = InsightEdgeConfig(space, Some(groups), Some(locators))
 spark.stop()
 
 val spark = SparkSession.builder.master(master).appName("my init shell").insightEdgeConfig(ieConfig).getOrCreate()
-val conf = new SparkConf().setAll(sc.getConf.getAll).setInsightEdgeConfig(ieConfig)
 val sc = spark.sparkContext
