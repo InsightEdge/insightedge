@@ -61,7 +61,7 @@ export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH"
 
 # Load the PySpark shell.py script when ./pyspark is used interactively:
 export OLD_PYTHONSTARTUP="$PYTHONSTARTUP"
-export PYTHONSTARTUP="${SPARK_HOME}/python/pyspark/shell.py"
+export PYTHONSTARTUP="${SPARK_HOME}/bin/shell-init.py"
 
 # For pyspark tests
 if [[ -n "$SPARK_TESTING" ]]; then
