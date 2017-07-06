@@ -50,11 +50,11 @@ function main() {
     # (see https://github.com/sbt/sbt/issues/562).
     stty -icanon min 1 -echo > /dev/null 2>&1
     export SPARK_SUBMIT_OPTS="$SPARK_SUBMIT_OPTS -Djline.terminal=unix"
-    "${SPARK_HOME}"/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@"
+    "${SPARK_HOME}"/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i shell-init.scala
     stty icanon echo > /dev/null 2>&1
   else
     export SPARK_SUBMIT_OPTS
-    "${SPARK_HOME}"/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@"
+    "${SPARK_HOME}"/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i ${SPARK_HOME}/bin/shell-init.scala
   fi
 }
 
