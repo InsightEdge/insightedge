@@ -144,7 +144,7 @@ function mvn_install {
     elif [ "$rep" == "IE_ZEPPELIN" ]; then
         cmd="./dev/change_scala_version.sh 2.11"
         execute_command "Changing scala version - $rep" "$1" "$cmd"
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.1 -Pscala-2.11 -Pbuild-distr"
+        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.1 -Dspark.version=2.1.1 -Pscala-2.11 -Pbuild-distr"
         execute_command "Installing $rep" "$1" "$cmd"
     fi
 }
@@ -158,7 +158,7 @@ function package_ie {
 	    ie_sha="${LONG_TAG_NAME}"
     fi
 
-    local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
+    local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.1-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
 
     if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-community -Ddist.xap=$XAP_OPEN_URL ${package_args}"
@@ -394,10 +394,10 @@ function release_ie {
     rename_poms "$ie_zeppelin_folder"
 
 
-    if [ ! -f "$WORKSPACE/spark-2.1.0-bin-hadoop2.7.tgz" ]
+    if [ ! -f "$WORKSPACE/spark-2.1.1-bin-hadoop2.7.tgz" ]
     then
         announce_step "Downloading spark distribution"
-        wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.0-bin-hadoop2.7.tgz -P ${WORKSPACE}
+        wget https://d3kbcqa49mib13.cloudfront.net/spark-2.1.1-bin-hadoop2.7.tgz -P ${WORKSPACE}
         echo "Finished downloading spark"
     else
         echo "Found Spark distribution, download is skipped"
