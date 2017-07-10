@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -e
 # This scripts installs InsightEdge artifacts(jars) to local maven repository
 
 
