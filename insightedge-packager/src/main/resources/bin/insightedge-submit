@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x -e
+set -e
 
 if [ -z "${INSIGHTEDGE_HOME}" ]; then
   export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
