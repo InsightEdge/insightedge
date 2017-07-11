@@ -11,15 +11,14 @@ exit /b
 rem populates INSIGHTEDGE_JARS variable with a list of InsightEdge jars
 :GET_LIBS
   set SEPARATOR=%~2
-  set USE_WILDCARDS=%~3
+
   set INSIGHTEDGE_JARS=%INSIGHTEDGE_HOME%\lib\insightedge-core.jar%SEPARATOR%%INSIGHTEDGE_HOME%\lib\insightedge-scala.jar
-  if "%USE_WILDCARDS%"=="true" (
-    set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\required\*%SEPARATOR%
-    set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*%SEPARATOR%
-  ) else (
-    for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\required\*) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
-    for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
-  )
+  for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\required\*) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
+  for %%d in (%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*) do set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%%d
+
+  set INSIGHTEDGE_JARS_WILDCARDS=%INSIGHTEDGE_HOME%\lib\*
+  set INSIGHTEDGE_JARS_WILDCARDS=!INSIGHTEDGE_JARS_WILDCARDS!%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\required\*%SEPARATOR%
+  set INSIGHTEDGE_JARS_WILDCARDS=!INSIGHTEDGE_JARS_WILDCARDS!%SEPARATOR%%INSIGHTEDGE_HOME%\datagrid\lib\optional\spatial\*%SEPARATOR%
 exit /b
 
 rem sets HADOOP_HOME if not specified by user - fixes error due to missing winutils

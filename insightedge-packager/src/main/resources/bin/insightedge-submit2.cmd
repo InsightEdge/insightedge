@@ -7,7 +7,7 @@ set PYTHONHASHSEED=0
 
 rem build INSIGHTEDGE_JARS string
 set INSIGHTEDGE_JARS=
-call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS "," "false"
+call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS ","
 
 call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" SET_HADOOP_HOME
 
@@ -29,7 +29,7 @@ for /f %%i in ("%USER_ARGUMENTS: =!NEWLINE!%") do (
 )
 if "%APPENDED_JARS%" == "false" (
   rem pyspark-shell arguments order is different
-  set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_JARS:,=;%
+  set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_JARS_WILDCARDS:,=;%
   if "%1" == "pyspark-shell-main" (
     set ARGUMENTS=!ARGUMENTS! --jars %INSIGHTEDGE_JARS% --conf spark.driver.extraClassPath=!INSIGHTEDGE_CLASSPATH! --conf spark.executor.extraClassPath=!INSIGHTEDGE_CLASSPATH!
   ) else (

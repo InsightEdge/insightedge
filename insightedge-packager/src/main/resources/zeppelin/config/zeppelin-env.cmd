@@ -58,7 +58,7 @@ if "x%INSIGHTEDGE_HOME%"=="x" (
    set INSIGHTEDGE_HOME=%~dp0..
 )
 
-call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS "," "false"
+call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS ","
 
 set SPARK_HOME=%INSIGHTEDGE_HOME%
 set SPARK_SUBMIT_OPTIONS=--jars %INSIGHTEDGE_JARS%
