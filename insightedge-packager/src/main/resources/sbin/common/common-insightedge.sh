@@ -3,46 +3,48 @@
 # combines insightedge + datagrid libs into a $1-separated string
 # SPARK_JAR=$(get_libs ',')    will give you    /<home>/insightedge-core-<version>.jar,/<home>/gigaspaces-scala-<version>.jar,...
 # CLASSPATH=$(get_libs ':')    will give you    /<home>/insightedge-core-<version>.jar:/<home>/gigaspaces-scala-<version>.jar:...
+export XAP_PATH=$(cd $(dirname ${BASH_SOURCE[0]}) ; cd ../../ ; pwd)
+export IE_PATH=$(cd $(dirname ${BASH_SOURCE[0]}) ; cd ../ ; pwd)
+export IE_SPARK_PATH=$(cd $(dirname ${BASH_SOURCE[0]}) ; cd ../spark ; pwd)
+export IE_ZEPPELIN_PATH=$(cd $(dirname ${BASH_SOURCE[0]}) ; cd ../zeppelin ; pwd)
 get_libs() {
     local separator=$1
 
-    local datagrid="$INSIGHTEDGE_HOME/datagrid"
-    local result="$(find $INSIGHTEDGE_HOME/lib -name "insightedge-core.jar")"
-    result="$result$separator$(find $INSIGHTEDGE_HOME/lib -name "insightedge-scala.jar")"
-    result="$result$separator$(echo $datagrid/lib/required/*.jar | tr ' ' $separator)"
-    result="$result$separator$(echo $datagrid/lib/optional/spatial/*.jar | tr ' ' $separator)"
+    local result="$(find ${IE_PATH}/lib -name "insightedge-core.jar")"
+    result="$result$separator$(find ${IE_PATH}/lib -name "insightedge-scala.jar")"
+    result="$result$separator$(echo ${XAP_PATH}/lib/required/*.jar | tr ' ' ${separator})"
+    result="$result$separator$(echo ${XAP_PATH}/lib/optional/spatial/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
 # split get_libs function for zeppelin interpreter
 get_xap_required_jars() {
     local separator=$1
-    local datagrid="$INSIGHTEDGE_HOME/datagrid"
-    local result="$result$separator$(echo $datagrid/lib/required/*.jar | tr ' ' $separator)"
+    local result="$result$separator$(echo ${XAP_PATH}/lib/required/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
 get_xap_spatial_libs() {
     local separator=$1
-    local datagrid="$INSIGHTEDGE_HOME/datagrid"
-    local result="$result$separator$(echo $datagrid/lib/optional/spatial/*.jar | tr ' ' $separator)"
+    local result="$result$separator$(echo ${XAP_PATH}/lib/optional/spatial/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
 get_spark_basic_jars() {
     local separator=$1
-    local spark_jars="$INSIGHTEDGE_HOME/jars"
+    local spark_jars="$IE_SPARK_PATH/jars"
     local result="$result$separator$(echo $spark_jars/*.jar | tr ' ' $separator)"
     echo $result
 }
 
 get_ie_lib() {
     local separator=$1
-    local ie_lib="$INSIGHTEDGE_HOME/lib"
+    local ie_lib="$IE_PATH/lib"
     local result="$result$separator$(echo $ie_lib/*.jar | tr ' ' $separator)"
     echo $result
 }
 
+#TODO Check home variable
 install_insightedge() {
     local install=$1
     local artifact=$2
@@ -82,15 +84,13 @@ local_zeppelin() {
 }
 
 stop_zeppelin() {
-    local home=$1
     step_title "--- Stopping Zeppelin"
-    $home/sbin/stop-zeppelin.sh
+    ${IE_PATH}/sbin/stop-zeppelin.sh
 }
 
 start_zeppelin() {
-    local home=$1
     step_title "--- Starting Zeppelin"
-    $home/sbin/start-zeppelin.sh
+    ${IE_PATH}/sbin/start-zeppelin.sh
 }
 
 start_spark_master() {
@@ -99,7 +99,7 @@ start_spark_master() {
 
     echo ""
     step_title "--- Starting Spark master at $master"
-    $home/sbin/start-master.sh -h $master
+    ${IE_SPARK_PATH}/sbin/start-master.sh -h $master
     step_title "--- Spark master started"
 }
 
@@ -108,7 +108,7 @@ stop_spark_master() {
 
     echo ""
     step_title "--- Stopping Spark master"
-    $home/sbin/stop-master.sh
+    ${IE_SPARK_PATH}/sbin/stop-master.sh
     step_title "--- Spark master stopped"
 }
 
@@ -118,7 +118,7 @@ start_spark_slave() {
 
     echo ""
     step_title "--- Starting Spark slave"
-    $home/sbin/start-slave.sh spark://$master:7077
+    ${IE_SPARK_PATH}/sbin/start-slave.sh spark://$master:7077
     step_title "--- Spark slave started"
 }
 
@@ -127,7 +127,7 @@ stop_spark_slave() {
 
     echo ""
     step_title "--- Stopping Spark slave"
-    $home/sbin/stop-slave.sh
+    ${IE_SPARK_PATH}/sbin/stop-slave.sh
     step_title "--- Spark slave stopped"
 }
 

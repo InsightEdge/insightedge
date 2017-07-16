@@ -61,7 +61,7 @@ fi
 . ${INSIGHTEDGE_HOME}/sbin/common-insightedge.sh
 INSIGHTEDGE_JARS=$(get_libs ',')
 
-export SPARK_HOME="$INSIGHTEDGE_HOME"                  # (required) When it is defined, load it instead of Zeppelin embedded Spark libraries
+export SPARK_HOME="$IE_SPARK_PATH"                  # (required) When it is defined, load it instead of Zeppelin embedded Spark libraries
 export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
 
 

@@ -141,14 +141,17 @@ object Launcher {
         unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/winutils", cutRootFolder = true)
       }
 
-      run("Making scripts executable") {
-        permissions(s"$insightEdgeHome/bin/", read = Some(true), write = Some(true), execute = Some(true))
-        permissions(insightEdgeHome, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
-      }
 
       run("Unpacking spark") {
         untgz(spark, s"$insightEdgeHome/spark", cutRootFolder = true)
       }
+
+      run("Making scripts executable") {
+        permissions(s"$insightEdgeHome/bin/", read = Some(true), write = Some(true), execute = Some(true))
+        permissions(s"$insightEdgeHome/spark/bin/", read = Some(true), write = Some(true), execute = Some(true))
+        permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
+      }
+
 
       run("Packing installation") {
         new File(outputFile).getParentFile.mkdirs()
