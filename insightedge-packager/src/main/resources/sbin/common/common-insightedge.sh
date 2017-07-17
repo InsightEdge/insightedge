@@ -166,6 +166,6 @@ display_logo() {
     echo "   _| |_| | | \\__ \\ | (_| | | | | |_| |___| (_| | (_| |  __/"
     echo "  |_____|_| |_|___/_|\\__, |_| |_|\\__|______\\__,_|\\__, |\\___|"
     echo "                      __/ |                       __/ |     "
-    echo "                     |___/                       |___/   version: $VERSION"
+    echo "                     |___/                       |___/   version: $IE_VERSION"
     echo "                                                         edition: $EDITION"
 }
