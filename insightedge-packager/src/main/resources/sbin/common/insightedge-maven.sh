@@ -2,33 +2,33 @@
 set -e
 # This scripts installs InsightEdge artifacts(jars) to local maven repository
 
-
-if [ -z "${INSIGHTEDGE_HOME}" ]; then
-  INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
+if [ -z "${I9E_HOME}" ]; then
+  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
+export IE_PATH_INTERNAL="${I9E_HOME}/insightedge"
 
 echo "Installing InsightEdge artifacts"
 
 mvn install:install-file \
     -Dpackaging=pom \
-    -Dfile=${INSIGHTEDGE_HOME}/tools/maven/poms/insightedge-package/pom.xml \
-    -DpomFile=${INSIGHTEDGE_HOME}/tools/maven/poms/insightedge-package/pom.xml
+    -Dfile=${IE_PATH_INTERNAL}/tools/maven/poms/insightedge-package/pom.xml \
+    -DpomFile=${IE_PATH_INTERNAL}/tools/maven/poms/insightedge-package/pom.xml
 
 mvn install:install-file \
  -DgroupId=org.gigaspaces.insightedge \
  -DcreateChecksum=true \
  -DartifactId=insightedge-core \
- -DpomFile=${INSIGHTEDGE_HOME}/tools/maven/poms/insightedge-core/pom.xml \
+ -DpomFile=${IE_PATH_INTERNAL}/tools/maven/poms/insightedge-core/pom.xml \
  -Dpackaging=jar \
- -Dfile=${INSIGHTEDGE_HOME}/lib/insightedge-core.jar
+ -Dfile=${IE_PATH_INTERNAL}/lib/insightedge-core.jar
 
 mvn install:install-file \
  -DgroupId=org.gigaspaces.insightedge \
  -DcreateChecksum=true \
  -DartifactId=insightedge-scala \
- -DpomFile=${INSIGHTEDGE_HOME}/tools/maven/poms/insightedge-scala/pom.xml \
+ -DpomFile=${IE_PATH_INTERNAL}/tools/maven/poms/insightedge-scala/pom.xml \
  -Dpackaging=jar \
- -Dfile=${INSIGHTEDGE_HOME}/lib/insightedge-scala.jar
+ -Dfile=${IE_PATH_INTERNAL}/lib/insightedge-scala.jar
 
 # Install spring.aopalliance to local maven repo (fixes SBT builds)
 mvn dependency:get \

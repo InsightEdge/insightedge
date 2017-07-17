@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 get_spark_path() {
-    echo ${INSIGHTEDGE_HOME}/spark
+    echo ${I9E_HOME}/insightedge/spark
 }
 get_ie_path() {
-    echo ${INSIGHTEDGE_HOME}
+    echo ${I9E_HOME}/insightedge
 }
 get_xap_path() {
-    echo ${INSIGHTEDGE_HOME}/..
+    echo ${I9E_HOME}
 }
 # combines insightedge + datagrid libs into a $1-separated string
 # SPARK_JAR=$(get_libs ',')    will give you    /<home>/insightedge-core-<version>.jar,/<home>/gigaspaces-scala-<version>.jar,...
@@ -93,13 +93,13 @@ local_zeppelin() {
 stop_zeppelin() {
     local home=$1
     step_title "--- Stopping Zeppelin"
-    $home/sbin/stop-zeppelin.sh
+    $home/insightedge/sbin/stop-zeppelin.sh
 }
 
 start_zeppelin() {
     local home=$1
     step_title "--- Starting Zeppelin"
-    $home/sbin/start-zeppelin.sh
+    $home/insightedge/sbin/start-zeppelin.sh
 }
 
 start_spark_master() {
@@ -108,7 +108,7 @@ start_spark_master() {
 
     echo ""
     step_title "--- Starting Spark master at $master"
-    $home/spark/sbin/start-master.sh -h $master
+    $home/insightedge/spark/sbin/start-master.sh -h $master
     step_title "--- Spark master started"
 }
 
@@ -117,7 +117,7 @@ stop_spark_master() {
 
     echo ""
     step_title "--- Stopping Spark master"
-    $home/spark/sbin/stop-master.sh
+    $home/insightedge/spark/sbin/stop-master.sh
     step_title "--- Spark master stopped"
 }
 
@@ -127,7 +127,7 @@ start_spark_slave() {
 
     echo ""
     step_title "--- Starting Spark slave"
-    $home/spark/sbin/start-slave.sh spark://$master:7077
+    $home/insightedge/spark/sbin/start-slave.sh spark://$master:7077
     step_title "--- Spark slave started"
 }
 
@@ -136,7 +136,7 @@ stop_spark_slave() {
 
     echo ""
     step_title "--- Stopping Spark slave"
-    $home/spark/sbin/stop-slave.sh
+    $home/insightedge/spark/sbin/stop-slave.sh
     step_title "--- Spark slave stopped"
 }
 

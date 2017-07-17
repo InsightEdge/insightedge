@@ -1,18 +1,19 @@
 #!/bin/bash
 
-if [ -z "${INSIGHTEDGE_HOME}" ]; then
-  export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
+if [ -z "${I9E_HOME}" ]; then
+  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
+export IE_PATH_INTERNAL="${I9E_HOME}/insightedge"
 
-source $INSIGHTEDGE_HOME/sbin/common-insightedge.sh
+source ${IE_PATH_INTERNAL}/sbin/common-insightedge.sh
 
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
-IE_VERSION=`grep -w "Version" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-ARTIFACT_VERSION=`grep -w "ArtifactVersion" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-MILESTONE=`grep -w "Milestone" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-BUILD_NUMBER=`grep -w "BuildNumber" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-EDITION=`grep -w "Edition" ${INSIGHTEDGE_HOME}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+IE_VERSION=`grep -w "Version" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+ARTIFACT_VERSION=`grep -w "ArtifactVersion" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+MILESTONE=`grep -w "Milestone" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+BUILD_NUMBER=`grep -w "BuildNumber" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+EDITION=`grep -w "Edition" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 ARTIFACT="gigaspaces-insightedge-${IE_VERSION}-${MILESTONE}-${BUILD_NUMBER}-${EDITION}"
 ARTIFACT_EC2="https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/insightedge/${IE_VERSION}/${ARTIFACT_VERSION}/${ARTIFACT}.zip"
 
@@ -107,24 +108,24 @@ display_usage() {
     echo "     environment |  restarts grid manager with 1G heap size"
     echo "                 |  restarts grid lookup service at 127.0.0.1:4174 with group 'insightedge'"
     echo ""
-    echo " $script --mode master --path \$INSIGHTEDGE_HOME --master 127.0.0.1"
+    echo " $script --mode master --path \$I9E_HOME --master 127.0.0.1"
     echo ""
     echo "   Restart slave |  restarts spark slave that points to master at spark://127.0.0.1:7077"
     echo "        on local |  restarts 2 grid containers with 1G heap size"
     echo "     environment |"
     echo ""
-    echo " $script --mode slave --path \$INSIGHTEDGE_HOME --master 127.0.0.1"
+    echo " $script --mode slave --path \$I9E_HOME --master 127.0.0.1"
     echo ""
     echo "    Deploy empty |  deploys insightedge-space with 2 primary instances"
     echo "           space |  deploys insightedge-space with 2 primary instances"
     echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
-    echo " $script --mode deploy --path \$INSIGHTEDGE_HOME --master 127.0.0.1"
+    echo " $script --mode deploy --path \$I9E_HOME --master 127.0.0.1"
     echo ""
     echo "  Undeploy space |  undeploys insightedge-space"
     echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
-    echo " $script --mode undeploy --path \$INSIGHTEDGE_HOME --master 127.0.0.1"
+    echo " $script --mode undeploy --path \$I9E_HOME --master 127.0.0.1"
     echo ""
     echo "  Remote install |  connects to remote via ssh"
     echo "        on slave |  installs insightedge to home folder"
@@ -282,7 +283,7 @@ redefine_defaults() {
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
     if [ "$IE_PATH" = "$EMPTY" ]; then
-        IE_PATH="$INSIGHTEDGE_HOME"
+        IE_PATH="$I9E_HOME"
     fi
 }
 
@@ -368,7 +369,7 @@ deploy_space() {
 
     echo ""
     step_title "--- Deploying space: $space [$topology] (locator: $locator, group: $group)"
-    $home/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
+    $home/insightedge/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
     step_title "--- Done deploying space: $space"
 }
 
@@ -380,7 +381,7 @@ undeploy_space() {
 
     echo ""
     step_title "--- Undeploying space: $space (locator: $locator, group: $group)"
-    $home/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
+    $home/insightedge/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
     step_title "--- Done undeploying space: $space"
 }
 
@@ -402,7 +403,7 @@ start_grid_master() {
 
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node (locator: $locator, group: $group, heap: $size)"
-    $home/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
+    $home/insightedge/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
     step_title "--- Gigaspaces datagrid management node started"
 }
 
@@ -411,7 +412,7 @@ stop_grid_master() {
 
     echo ""
     step_title "--- Stopping datagrid master"
-    $home/sbin/stop-datagrid-master.sh
+    $home/insightedge/sbin/stop-datagrid-master.sh
     step_title "--- Datagrid master stopped"
 }
 
@@ -425,7 +426,7 @@ start_grid_slave() {
 
     echo ""
     step_title "--- Starting Gigaspaces datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
-    $home/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
+    $home/insightedge/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
     step_title "--- Gigaspaces datagrid node started"
 }
 
@@ -434,7 +435,7 @@ stop_grid_slave() {
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
-    $home/sbin/stop-datagrid-slave.sh
+    $home/insightedge/sbin/stop-datagrid-slave.sh
     step_title "--- Datagrid slave instances stopped"
 }
 

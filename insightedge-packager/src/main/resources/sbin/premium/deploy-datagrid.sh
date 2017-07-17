@@ -2,8 +2,8 @@
 
 # Deploys the Gigaspaces Datagrid space on specified cluster.
 
-if [ -z "${INSIGHTEDGE_HOME}" ]; then
-  export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
+if [ -z "${I9E_HOME}" ]; then
+  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
 
@@ -17,7 +17,7 @@ main() {
     export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
     export XAP_LOOKUP_GROUPS=$GRID_GROUP
     await_master_start #TODO: revisit in IE-87
-    $IE_PATH/../bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
+    ${IE_PATH}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
 }
 
 display_usage() {
@@ -98,14 +98,14 @@ redefine_defaults() {
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
     if [ $IE_PATH == "[]" ]; then
-        IE_PATH="$INSIGHTEDGE_HOME"
+        IE_PATH="$I9E_HOME"
     fi
 }
 
 await_master_start() {
     TIMEOUT=60
     echo "  awaiting datagrid master ..."
-    while [ -z "$(${IE_PATH}/../bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
+    while [ -z "$(${IE_PATH}/bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
         if [ $TIMEOUT -le 0 ]; then
           echo "Datagrid master is not available within timeout"
           exit 1
