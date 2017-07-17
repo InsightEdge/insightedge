@@ -8,9 +8,8 @@ fi
 if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
   export INSIGHTEDGE_LOG_DIR="${INSIGHTEDGE_HOME}/logs"
 fi
-source $INSIGHTEDGE_HOME/sbin/common-insightedge.sh
-
 THIS_SCRIPT_NAME=`basename "$0"`
+export XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
 
 main() {
     define_defaults
@@ -26,7 +25,7 @@ main() {
     export XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave"
     export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
     export XAP_LOOKUP_GROUPS=$GRID_GROUP
-    nohup ${XAP_PATH}/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
+    nohup $IE_PATH/datagrid/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
     echo "Datagrid slave started (log: $log)"
 }
 

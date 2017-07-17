@@ -34,4 +34,4 @@ process_args(){
 }
 ARGS=$(process_args "$@")
 
-exec "${IE_SPARK_PATH}"/bin/spark-class org.apache.spark.deploy.SparkSubmit $ARGS
+exec "${INSIGHTEDGE_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit $ARGS

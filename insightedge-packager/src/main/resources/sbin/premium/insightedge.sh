@@ -368,7 +368,7 @@ deploy_space() {
 
     echo ""
     step_title "--- Deploying space: $space [$topology] (locator: $locator, group: $group)"
-    $INSIGHTEDGE_HOME/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
+    $home/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
     step_title "--- Done deploying space: $space"
 }
 
@@ -380,7 +380,7 @@ undeploy_space() {
 
     echo ""
     step_title "--- Undeploying space: $space (locator: $locator, group: $group)"
-    $INSIGHTEDGE_HOME/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
+    $home/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
     step_title "--- Done undeploying space: $space"
 }
 
@@ -402,7 +402,7 @@ start_grid_master() {
 
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node (locator: $locator, group: $group, heap: $size)"
-    $INSIGHTEDGE_HOME/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
+    $home/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
     step_title "--- Gigaspaces datagrid management node started"
 }
 
@@ -411,7 +411,7 @@ stop_grid_master() {
 
     echo ""
     step_title "--- Stopping datagrid master"
-    $INSIGHTEDGE_HOME/sbin/stop-datagrid-master.sh
+    $home/sbin/stop-datagrid-master.sh
     step_title "--- Datagrid master stopped"
 }
 
@@ -425,7 +425,7 @@ start_grid_slave() {
 
     echo ""
     step_title "--- Starting Gigaspaces datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
-    $INSIGHTEDGE_HOME/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
+    $home/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
     step_title "--- Gigaspaces datagrid node started"
 }
 
@@ -434,7 +434,7 @@ stop_grid_slave() {
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
-    $INSIGHTEDGE_HOME/sbin/stop-datagrid-slave.sh
+    $home/sbin/stop-datagrid-slave.sh
     step_title "--- Datagrid slave instances stopped"
 }
 
