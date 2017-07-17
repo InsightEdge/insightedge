@@ -62,7 +62,7 @@ object Launcher {
     validateHash(lastCommitHash)
 
     //remove directory
-    remove (output);
+    remove(output)
     run("Unpacking datagrid " + grid + " to   "  + output) {
       unzip(grid, s"$output", cutRootFolder = true)
     }
@@ -155,7 +155,7 @@ object Launcher {
 
       run("Packing installation") {
         new File(outputFile).getParentFile.mkdirs()
-        zip(insightEdgeHome, outputFile, outputPrefix)
+        zip(output, outputFile, outputPrefix)
       }
 
 //      run("Removing spark R integration") {
