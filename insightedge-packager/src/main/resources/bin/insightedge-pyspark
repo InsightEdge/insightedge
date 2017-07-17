@@ -22,7 +22,7 @@ if [ -z "${INSIGHTEDGE_HOME}" ]; then
 fi
 
 if [ -z "${SPARK_HOME}" ]; then
-  source "${INSIGHTEDGE_HOME}/spark/bin/find-spark-home"
+  export SPARK_HOME="${INSIGHTEDGE_HOME}/spark/"
 fi
 
 source "${SPARK_HOME}"/bin/load-spark-env.sh

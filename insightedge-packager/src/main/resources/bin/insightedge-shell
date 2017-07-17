@@ -33,7 +33,7 @@ fi
 set -o posix
 
 if [ -z "${SPARK_HOME}" ]; then
-  source "${INSIGHTEDGE_HOME}"/spark/bin/find-spark-home
+  export SPARK_HOME="${INSIGHTEDGE_HOME}/spark/"
 fi
 
 export _SPARK_CMD_USAGE="Usage: ./bin/insightedge-shell [options]"
