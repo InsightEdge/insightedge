@@ -16,8 +16,8 @@ chmod -R 755 ${JOB_DIR}/build/insightedge/spark/bin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/sbin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/conf/*
 
-cp ${JOB_DIR}/build/insightedge/conf/spark-defaults.conf.template ${JOB_DIR}/build/insightedge/conf/spark-defaults.conf
-echo "spark.eventLog.enabled=true" > ${JOB_DIR}/build/insightedge/conf/spark-defaults.conf
+cp ${JOB_DIR}/build/insightedge/spark/conf/spark-defaults.conf.template ${JOB_DIR}/build/insightedge/spark/conf/spark-defaults.conf
+echo "spark.eventLog.enabled=true" > ${JOB_DIR}/build/insightedge/spark/conf/spark-defaults.conf
 
 
 mvn -f ${JOB_DIR}/insightedge-integration-tests/tests/pom.xml -P run-integration-tests-${DIST_EDITION} -P run-external -DwildcardSuites=$1 -Ddist.dir=${JOB_DIR}/build -Dgit.branch=${GIT_BRANCH} -Dtest.folder=${TEST_FOLDER} verify
