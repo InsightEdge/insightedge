@@ -312,7 +312,7 @@
                     <groupId>org.gigaspaces.insightedge</groupId>
                     <artifactId>insightedge-scala</artifactId>
                     <scope>system</scope>
-                    <systemPath>${dist.dir}/lib/insightedge-scala.jar</systemPath>
+                    <systemPath>${dist.dir}/insightegde/lib/insightedge-scala.jar</systemPath>
                 </dependency>
             </dependencies>
             <build>
@@ -359,7 +359,7 @@
                     <groupId>org.gigaspaces.insightedge</groupId>
                     <artifactId>insightedge-scala</artifactId>
                     <scope>system</scope>
-                    <systemPath>${dist.dir}/lib/insightedge-scala.jar</systemPath>
+                    <systemPath>${dist.dir}/insightedge/lib/insightedge-scala.jar</systemPath>
                 </dependency>
             </dependencies>
             <build>
