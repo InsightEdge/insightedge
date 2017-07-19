@@ -25,7 +25,7 @@
       "progressUpdateIntervalMs": 500,
       "focus": true,
       "$$hashKey": "object:1037",
-      "text": "%pyspark\nimport os\njsonFilePath = os.environ[\"INSIGHTEDGE_HOME\"] + \"/data/sf_salaries_sample.json\"\njsonDf = spark.read.json(jsonFilePath)",
+      "text": "%pyspark\nimport os\njsonFilePath = os.environ[\"I9E_HOME\"] + \"/insightedge/data/sf_salaries_sample.json\"\njsonDf = spark.read.json(jsonFilePath)",
       "dateUpdated": "2017-06-20T10:38:24+0300",
       "title": "Load SF salaries dataset from file"
     },
