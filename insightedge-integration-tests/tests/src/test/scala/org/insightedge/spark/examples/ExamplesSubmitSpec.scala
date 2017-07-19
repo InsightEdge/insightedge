@@ -40,10 +40,10 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
     exampleClassNames.foreach { className =>
       val fullClassName = s"org.insightedge.examples.$className"
       val command =
-        s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
+        s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
           |--class $fullClassName
           |--master spark://127.0.0.1:7077
-          |/opt/gigaspaces-insightedge/quickstart/scala/insightedge-examples.jar""".stripMargin
+          |/opt/gigaspaces-insightedge/insightedge/quickstart/scala/insightedge-examples.jar""".stripMargin
 
       val exitCode = dockerExec(containerId, command)
       assert(exitCode == 0)
@@ -53,10 +53,10 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
   "insightedge-submit.sh " should "fail with wrong space name" in {
     val spaceName = "non-existing-space"
     val command =
-      s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
+      s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
           |--class org.insightedge.examples.basic.SaveRdd
           |--master spark://127.0.0.1:7077
-          |/opt/gigaspaces-insightedge/quickstart/scala/insightedge-examples.jar
+          |/opt/gigaspaces-insightedge/insightedge/quickstart/scala/insightedge-examples.jar
           |spark://127.0.0.1:7077
           |$spaceName
           |insightedge
@@ -68,9 +68,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   "insightedge-submit.sh " should "submit sf_salaries.py python example" in {
     val command =
-      s"""/opt/gigaspaces-insightedge/bin/insightedge-submit
+      s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
           |--master spark://127.0.0.1:7077
-          |/opt/gigaspaces-insightedge/quickstart/python/sf_salaries.py""".stripMargin
+          |/opt/gigaspaces-insightedge/insightedge/quickstart/python/sf_salaries.py""".stripMargin
 
     val exitCode = dockerExec(containerId, command)
     assert(exitCode == 0)
