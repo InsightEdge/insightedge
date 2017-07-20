@@ -144,7 +144,7 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def startSparkHistoryServer(masterContainerId: String): Unit = {
-    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/sbin/start-history-server.sh"))
+    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/insightedge/spark/sbin/start-history-server.sh"))
     val execIdHistoryServer = execCreationHistoryServer.id()
     val streamHistoryServer = docker.execStart(execIdHistoryServer)
   }
