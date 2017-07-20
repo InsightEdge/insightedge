@@ -14,7 +14,7 @@ else
     mv gigaspaces-insightedge* build
     mv resources/gigaspaces-insightedge*premium*.zip build/
     chmod 775 build/insightedge/sbin/insightedge-maven.sh
-    ##??I9E_HOME=`pwd`/build/
+    I9E_HOME=`pwd`/build/
     pushd build/insightedge/sbin/
     . insightedge-maven.sh
     popd
