@@ -144,15 +144,18 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def startSparkHistoryServer(masterContainerId: String): Unit = {
+    println("called startSparkHistoryServer")
     val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/insightedge/spark/sbin/start-history-server.sh"))
     val execIdHistoryServer = execCreationHistoryServer.id()
     val streamHistoryServer = docker.execStart(execIdHistoryServer)
   }
 
   def restartSparkHistoryServer(): Unit = {
+    println("called restartSparkHistoryServer")
     var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
-    println("history server pid " + historyServerPid)
+    println("killing history server with pid " + historyServerPid)
     InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
+    println("starting spark history server")
     InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
   }
 
@@ -202,13 +205,17 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def execAndReturnProcessStdout(containerId: String, command: String): String = {
+    println(s"executing [$command] on container $containerId, will print its stdout")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
     val execId = execCreation.id()
     val output = docker.execStart(execId)
-    output.readFully()
+    val outputString = output.readFully()
+    println(s"output of command [$command] on container $containerId is: $outputString")
+    outputString
   }
 
   def exec(containerId: String, command: String): Unit = {
+    println(s"executing [$command] on container $containerId")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command))
     val execId = execCreation.id()
     val output = docker.execStart(execId)
