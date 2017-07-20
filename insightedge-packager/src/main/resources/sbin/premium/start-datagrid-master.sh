@@ -2,14 +2,16 @@
 
 # Starts the Gigaspaces Datagrid master on the machine this script is executed on.
 
-if [ -z "${INSIGHTEDGE_HOME}" ]; then
-  export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
+if [ -z "${I9E_HOME}" ]; then
+  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
+
 if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
-  export INSIGHTEDGE_LOG_DIR="${INSIGHTEDGE_HOME}/logs"
+  export INSIGHTEDGE_LOG_DIR="${I9E_HOME}/insightedge/logs"
 fi
+
 THIS_SCRIPT_NAME=`basename "$0"`
-export XAP_HOME=${INSIGHTEDGE_HOME}/datagrid
+export XAP_HOME=${I9E_HOME}
 
 main() {
     define_defaults
@@ -26,7 +28,7 @@ main() {
     export XAP_LOOKUP_LOCATORS=$GRID_LOCATOR
     export XAP_LOOKUP_GROUPS=$GRID_GROUP
     export XAP_NIC_ADDRESS=$CLUSTER_MASTER
-    nohup $IE_PATH/datagrid/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
+    nohup ${IE_PATH}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
     echo "Datagrid master started (log: $log)"
 }
 
@@ -102,7 +104,7 @@ redefine_defaults() {
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
     if [ $IE_PATH == "[]" ]; then
-        IE_PATH="$INSIGHTEDGE_HOME"
+        IE_PATH="$I9E_HOME"
     fi
 }
 

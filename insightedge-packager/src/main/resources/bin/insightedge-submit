@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-if [ -z "${INSIGHTEDGE_HOME}" ]; then
-  export INSIGHTEDGE_HOME="$(cd "`dirname "$0"`"/..; pwd)"
+if [ -z "${I9E_HOME}" ]; then
+  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
 
 # disable randomized hash for string in Python 3.3+
 export PYTHONHASHSEED=0
 
 # add datagrid and InsightEdge JARs to job --jars
-. ${INSIGHTEDGE_HOME}/sbin/common-insightedge.sh
+. ${I9E_HOME}/insightedge/sbin/common-insightedge.sh
 INSIGHTEDGE_JARS=$(get_libs ',')
 
 process_args(){
@@ -34,4 +34,4 @@ process_args(){
 }
 ARGS=$(process_args "$@")
 
-exec "${INSIGHTEDGE_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit $ARGS
+exec "${I9E_HOME}"/insightedge/spark/bin/spark-class org.apache.spark.deploy.SparkSubmit $ARGS

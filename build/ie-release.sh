@@ -419,10 +419,6 @@ function release_ie {
     mvn_install "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
-    announce_step "package ie community package"
-    package_ie "$ie_folder" "IE_PACKAGE_COMMUNITY"
-    echo "Done package ie community"
-
     announce_step "package ie premium package"
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
@@ -447,9 +443,6 @@ function release_ie {
 
     announce_step "publish ie to hercules and newman"
     publish_ie "$ie_folder"
-
-    announce_step "uploading ie-community zip"
-    upload_ie_zip "$ie_folder" "ie-community"
 
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"

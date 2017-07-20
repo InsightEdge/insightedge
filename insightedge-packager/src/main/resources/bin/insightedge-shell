@@ -25,14 +25,18 @@ case "$(uname)" in
   CYGWIN*) cygwin=true;;
 esac
 
+if [ -z "${I9E_HOME}" ]; then
+  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
+fi
+
 # Enter posix mode for bash
 set -o posix
 
 if [ -z "${SPARK_HOME}" ]; then
-  source "$(dirname "$0")"/find-spark-home
+  export SPARK_HOME="${I9E_HOME}/insightedge/spark/"
 fi
 
-export _SPARK_CMD_USAGE="Usage: ./bin/spark-shell [options]"
+export _SPARK_CMD_USAGE="Usage: ./bin/insightedge-shell [options]"
 
 # SPARK-4161: scala does not assume use of the java classpath,
 # so we need to add the "-Dscala.usejavacp=true" flag manually. We
@@ -50,11 +54,11 @@ function main() {
     # (see https://github.com/sbt/sbt/issues/562).
     stty -icanon min 1 -echo > /dev/null 2>&1
     export SPARK_SUBMIT_OPTS="$SPARK_SUBMIT_OPTS -Djline.terminal=unix"
-    "${SPARK_HOME}"/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i shell-init.scala
+    "${I9E_HOME}"/insightedge/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i shell-init.scala
     stty icanon echo > /dev/null 2>&1
   else
     export SPARK_SUBMIT_OPTS
-    "${SPARK_HOME}"/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i ${SPARK_HOME}/bin/shell-init.scala
+    "${I9E_HOME}"/insightedge/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i ${I9E_HOME}/insightedge/bin/shell-init.scala
   fi
 }
 

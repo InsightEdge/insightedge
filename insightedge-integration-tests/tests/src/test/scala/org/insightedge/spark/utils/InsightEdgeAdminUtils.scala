@@ -66,7 +66,7 @@ object InsightEdgeAdminUtils extends Assertions{
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
       .image(ImageName)
-      .cmd("bash", "-c", "/opt/insightedge/sbin/insightedge.sh --mode slave --master " + masterIp + " && sleep 2h")
+      .cmd("bash", "-c", "/opt/insightedge/insightedge/sbin/insightedge.sh --mode slave --master " + masterIp + " && sleep 2h")
       .env("XAP_LOOKUP_LOCATORS=" + masterIp)
       .env("XAP_NIC_ADDRESS=#local:ip#")
       .build()
@@ -101,7 +101,7 @@ object InsightEdgeAdminUtils extends Assertions{
       .image(ImageName)
       .exposedPorts(ZeppelinPort, "4174")
       .env("XAP_NIC_ADDRESS=#local:ip#")
-      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/sbin/insightedge.sh --mode master --master $MY_IP && sleep 2h")
+      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/sbin/insightedge.sh --mode master --master $MY_IP && sleep 2h")
       .build()
 
     ieMasterCounter += 1
@@ -113,7 +113,7 @@ object InsightEdgeAdminUtils extends Assertions{
     // Start container
     docker.startContainer(containerId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/sbin/insightedge.sh --mode zeppelin --master $MY_IP"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/sbin/insightedge.sh --mode zeppelin --master $MY_IP"))
     val execId = execCreation.id()
     val stream = docker.execStart(execId)
 
@@ -144,15 +144,18 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def startSparkHistoryServer(masterContainerId: String): Unit = {
-    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/sbin/start-history-server.sh"))
+    println("called startSparkHistoryServer")
+    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/insightedge/spark/sbin/start-history-server.sh"))
     val execIdHistoryServer = execCreationHistoryServer.id()
     val streamHistoryServer = docker.execStart(execIdHistoryServer)
   }
 
   def restartSparkHistoryServer(): Unit = {
+    println("called restartSparkHistoryServer")
     var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
-    println("history server pid " + historyServerPid)
+    println("killing history server with pid " + historyServerPid)
     InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
+    println("starting spark history server")
     InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
   }
 
@@ -202,13 +205,17 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def execAndReturnProcessStdout(containerId: String, command: String): String = {
+    println(s"executing [$command] on container $containerId, will print its stdout")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
     val execId = execCreation.id()
     val output = docker.execStart(execId)
-    output.readFully()
+    val outputString = output.readFully()
+    println(s"output of command [$command] on container $containerId is: $outputString")
+    outputString
   }
 
   def exec(containerId: String, command: String): Unit = {
+    println(s"executing [$command] on container $containerId")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command))
     val execId = execCreation.id()
     val output = docker.execStart(execId)
@@ -220,14 +227,14 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def deployDataGrid(containerId: String, masterIp: String, topology: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/sbin/insightedge.sh --mode deploy --topology " + topology + " --master " + masterIp))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/sbin/insightedge.sh --mode deploy --topology " + topology + " --master " + masterIp))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/sbin/insightedge.sh --mode undeploy --master " + masterIp))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/sbin/insightedge.sh --mode undeploy --master " + masterIp))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }

@@ -53,15 +53,16 @@
 # export SPARK_SUBMIT_OPTIONS                   # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
 # export SPARK_APP_NAME                         # (optional) The name of spark application.
 
-if [ -z "${INSIGHTEDGE_HOME}" ]; then
-  export INSIGHTEDGE_HOME=..
+if [ -z "${I9E_HOME}" ]; then
+  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../../..; pwd)"
 fi
 
+
 # add datagrid and InsightEdge JARs to job --jars
-. ${INSIGHTEDGE_HOME}/sbin/common-insightedge.sh
+. ${I9E_HOME}/insightedge/sbin/common-insightedge.sh
 INSIGHTEDGE_JARS=$(get_libs ',')
 
-export SPARK_HOME="$INSIGHTEDGE_HOME"                  # (required) When it is defined, load it instead of Zeppelin embedded Spark libraries
+export SPARK_HOME="${I9E_HOME}/insightedge/spark"                  # (required) When it is defined, load it instead of Zeppelin embedded Spark libraries
 export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
 
 

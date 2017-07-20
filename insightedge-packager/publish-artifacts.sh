@@ -28,11 +28,7 @@ base_path="/home/giga/backup-store/insightedge"
 build_path="${version}/${branch}/${buildNumber}"
 path_on_server="${base_path}/${build_path}"
 
-communityZipFilePath=${baseOutputFolder}/community/${communityZipFileName}
 premiumZipFilePath=${baseOutputFolder}/premium/${premiumZipFileName}
-
-echo "check if insightedge community zip exists"
-ls -l ${communityZipFilePath}
 
 echo "check if insightedge premium zip exists"
 ls -l ${premiumZipFilePath}
@@ -43,7 +39,7 @@ ssh ${user}@${host} chown -R "${user}:domain\ users" ${base_path}/${version}
 ssh ${user}@${host} chmod -R 755 ${base_path}/${version}
 
 echo "coping resources to: [$host] to folder in server:[${path_on_server}]"
-scp ${communityZipFilePath} ${premiumZipFilePath} ${baseOutputFolder}/*.json ${baseOutputFolder}/integration-tests-sources.zip ${baseOutputFolder}/metadata.txt ${baseOutputFolder}/newman-artifacts.zip ${user}@${host}:${path_on_server}
+scp ${premiumZipFilePath} ${baseOutputFolder}/*.json ${baseOutputFolder}/integration-tests-sources.zip ${baseOutputFolder}/metadata.txt ${baseOutputFolder}/newman-artifacts.zip ${user}@${host}:${path_on_server}
 ssh ${user}@${host} chmod -R 755 ${path_on_server}
 
 echo "starting newman submitter process..."
@@ -64,7 +60,7 @@ if [ -f $sumbitter_jar ]; then
     export NEWMAN_BUILD_TAGS=${newmanTags}
     export NEWMAN_BUILD_TESTS_METADATA=${WEB_PATH_TO_BUILD}/ie-integration-tests.json
     export NEWMAN_BUILD_SHAS_FILE=${WEB_PATH_TO_BUILD}/metadata.txt
-    export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/integration-tests-sources.zip,${WEB_PATH_TO_BUILD}/${communityZipFileName},${WEB_PATH_TO_BUILD}/${premiumZipFileName},${WEB_PATH_TO_BUILD}/newman-artifacts.zip
+    export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/integration-tests-sources.zip,${WEB_PATH_TO_BUILD}/${premiumZipFileName},${WEB_PATH_TO_BUILD}/newman-artifacts.zip
 
     echo "NEWMAN_BUILD_BRANCH=${NEWMAN_BUILD_BRANCH}"
     echo "NEWMAN_BUILD_NUMBER=${NEWMAN_BUILD_NUMBER}"
