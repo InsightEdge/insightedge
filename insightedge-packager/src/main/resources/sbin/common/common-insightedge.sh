@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 get_spark_path() {
-    echo ${I9E_HOME}/insightedge/spark
+    echo ${XAP_HOME}/insightedge/spark
 }
 get_ie_path() {
-    echo ${I9E_HOME}/insightedge
+    echo ${XAP_HOME}/insightedge
 }
 get_xap_path() {
-    echo ${I9E_HOME}
+    echo ${XAP_HOME}
 }
 # combines insightedge + datagrid libs into a $1-separated string
 # SPARK_JAR=$(get_libs ',')    will give you    /<home>/insightedge-core-<version>.jar,/<home>/gigaspaces-scala-<version>.jar,...

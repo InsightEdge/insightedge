@@ -25,15 +25,15 @@ case "$(uname)" in
   CYGWIN*) cygwin=true;;
 esac
 
-if [ -z "${I9E_HOME}" ]; then
-  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
+if [ -z "${XAP_HOME}" ]; then
+  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
 
 # Enter posix mode for bash
 set -o posix
 
 if [ -z "${SPARK_HOME}" ]; then
-  export SPARK_HOME="${I9E_HOME}/insightedge/spark/"
+  export SPARK_HOME="${XAP_HOME}/insightedge/spark/"
 fi
 
 export _SPARK_CMD_USAGE="Usage: ./bin/insightedge-shell [options]"
@@ -54,11 +54,11 @@ function main() {
     # (see https://github.com/sbt/sbt/issues/562).
     stty -icanon min 1 -echo > /dev/null 2>&1
     export SPARK_SUBMIT_OPTS="$SPARK_SUBMIT_OPTS -Djline.terminal=unix"
-    "${I9E_HOME}"/insightedge/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i shell-init.scala
+    "${XAP_HOME}"/insightedge/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i shell-init.scala
     stty icanon echo > /dev/null 2>&1
   else
     export SPARK_SUBMIT_OPTS
-    "${I9E_HOME}"/insightedge/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i ${I9E_HOME}/insightedge/bin/shell-init.scala
+    "${XAP_HOME}"/insightedge/bin/insightedge-submit --class org.apache.spark.repl.Main --name "Spark shell" "$@" -i ${XAP_HOME}/insightedge/bin/shell-init.scala
   fi
 }
 

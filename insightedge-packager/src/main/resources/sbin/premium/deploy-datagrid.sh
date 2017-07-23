@@ -2,8 +2,8 @@
 
 # Deploys the Gigaspaces Datagrid space on specified cluster.
 
-if [ -z "${I9E_HOME}" ]; then
-  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
+if [ -z "${XAP_HOME}" ]; then
+  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
 
@@ -98,7 +98,7 @@ redefine_defaults() {
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
     if [ $IE_PATH == "[]" ]; then
-        IE_PATH="$I9E_HOME"
+        IE_PATH="$XAP_HOME"
     fi
 }
 

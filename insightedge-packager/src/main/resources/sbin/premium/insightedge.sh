@@ -1,19 +1,19 @@
 #!/bin/bash
 
-if [ -z "${I9E_HOME}" ]; then
-  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
+if [ -z "${XAP_HOME}" ]; then
+  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
-export IE_PATH_INTERNAL="${I9E_HOME}/insightedge"
 
-source ${IE_PATH_INTERNAL}/sbin/common-insightedge.sh
+source ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
 
+IE_DIR_INTERNAL="${XAP_HOME}/insightedge"
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
-IE_VERSION=`grep -w "Version" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-ARTIFACT_VERSION=`grep -w "ArtifactVersion" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-MILESTONE=`grep -w "Milestone" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-BUILD_NUMBER=`grep -w "BuildNumber" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-EDITION=`grep -w "Edition" ${IE_PATH_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+IE_VERSION=`grep -w "Version" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+ARTIFACT_VERSION=`grep -w "ArtifactVersion" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+MILESTONE=`grep -w "Milestone" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+BUILD_NUMBER=`grep -w "BuildNumber" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+EDITION=`grep -w "Edition" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 ARTIFACT="gigaspaces-insightedge-${IE_VERSION}-${MILESTONE}-${BUILD_NUMBER}-${EDITION}"
 ARTIFACT_EC2="https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/insightedge/${IE_VERSION}/${ARTIFACT_VERSION}/${ARTIFACT}.zip"
 
@@ -108,24 +108,24 @@ display_usage() {
     echo "     environment |  restarts grid manager with 1G heap size"
     echo "                 |  restarts grid lookup service at 127.0.0.1:4174 with group 'insightedge'"
     echo ""
-    echo " $script --mode master --path \$I9E_HOME --master 127.0.0.1"
+    echo " $script --mode master --path \$XAP_HOME --master 127.0.0.1"
     echo ""
     echo "   Restart slave |  restarts spark slave that points to master at spark://127.0.0.1:7077"
     echo "        on local |  restarts 2 grid containers with 1G heap size"
     echo "     environment |"
     echo ""
-    echo " $script --mode slave --path \$I9E_HOME --master 127.0.0.1"
+    echo " $script --mode slave --path \$XAP_HOME --master 127.0.0.1"
     echo ""
     echo "    Deploy empty |  deploys insightedge-space with 2 primary instances"
     echo "           space |  deploys insightedge-space with 2 primary instances"
     echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
-    echo " $script --mode deploy --path \$I9E_HOME --master 127.0.0.1"
+    echo " $script --mode deploy --path \$XAP_HOME --master 127.0.0.1"
     echo ""
     echo "  Undeploy space |  undeploys insightedge-space"
     echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
-    echo " $script --mode undeploy --path \$I9E_HOME --master 127.0.0.1"
+    echo " $script --mode undeploy --path \$XAP_HOME --master 127.0.0.1"
     echo ""
     echo "  Remote install |  connects to remote via ssh"
     echo "        on slave |  installs insightedge to home folder"
@@ -283,7 +283,7 @@ redefine_defaults() {
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
     if [ "$IE_PATH" = "$EMPTY" ]; then
-        IE_PATH="$I9E_HOME"
+        IE_PATH="$XAP_HOME"
     fi
 }
 

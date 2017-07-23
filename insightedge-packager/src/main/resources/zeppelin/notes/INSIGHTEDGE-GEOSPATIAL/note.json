@@ -70,7 +70,7 @@
       "title": "School Model"
     },
     {
-      "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.openspaces.spatial.ShapeFactory._\n\nval home = scala.sys.env(\"I9E_HOME\")\n\nval schoolsData = spark.read.json(s\"$home/insightedge/data/montgomery_schools.json\")\nschoolsData.show()\n\nval schoolsRdd = schoolsData.rdd.map(row => new School(\n    id = null,\n    row.getAs[String](\"name\"),\n    row.getAs[String](\"category\"),\n    row.getAs[String](\"city\"),\n    row.getAs[String](\"address\"),\n    row.getAs[String](\"phone\"),\n    point(row.getAs[Double](\"longitude\"), row.getAs[Double](\"latitude\"))\n))\n\nschoolsRdd.saveToGrid()",
+      "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.openspaces.spatial.ShapeFactory._\n\nval home = scala.sys.env(\"XAP_HOME\")\n\nval schoolsData = spark.read.json(s\"$home/insightedge/data/montgomery_schools.json\")\nschoolsData.show()\n\nval schoolsRdd = schoolsData.rdd.map(row => new School(\n    id = null,\n    row.getAs[String](\"name\"),\n    row.getAs[String](\"category\"),\n    row.getAs[String](\"city\"),\n    row.getAs[String](\"address\"),\n    row.getAs[String](\"phone\"),\n    point(row.getAs[Double](\"longitude\"), row.getAs[Double](\"latitude\"))\n))\n\nschoolsRdd.saveToGrid()",
       "user": "anonymous",
       "dateUpdated": "2017-06-20T10:08:38+0300",
       "config": {

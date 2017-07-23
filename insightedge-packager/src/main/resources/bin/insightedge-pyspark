@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-if [ -z "${I9E_HOME}" ]; then
-  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
+if [ -z "${XAP_HOME}" ]; then
+  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
 
 if [ -z "${SPARK_HOME}" ]; then
-  export SPARK_HOME="${I9E_HOME}/insightedge/spark/"
+  export SPARK_HOME="${XAP_HOME}/insightedge/spark/"
 fi
 
 source "${SPARK_HOME}"/bin/load-spark-env.sh
@@ -65,7 +65,7 @@ export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.4-src.zip:$PYTHONPATH"
 
 # Load the PySpark shell.py script when ./pyspark is used interactively:
 export OLD_PYTHONSTARTUP="$PYTHONSTARTUP"
-export PYTHONSTARTUP="${I9E_HOME}/insightedge/bin/shell-init.py"
+export PYTHONSTARTUP="${XAP_HOME}/insightedge/bin/shell-init.py"
 
 # For pyspark tests
 if [[ -n "$SPARK_TESTING" ]]; then
@@ -78,4 +78,4 @@ fi
 
 export PYSPARK_DRIVER_PYTHON
 export PYSPARK_DRIVER_PYTHON_OPTS
-exec "${I9E_HOME}"/insightedge/bin/insightedge-submit pyspark-shell-main --name "PySparkShell" "$@"
+exec "${XAP_HOME}"/insightedge/bin/insightedge-submit pyspark-shell-main --name "PySparkShell" "$@"

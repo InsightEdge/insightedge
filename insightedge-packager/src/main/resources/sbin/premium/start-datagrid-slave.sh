@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
 # Starts the Gigaspaces Datagrid slave on the machine this script is executed on.
-if [ -z "${I9E_HOME}" ]; then
-  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
+if [ -z "${XAP_HOME}" ]; then
+  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
 if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
-  export INSIGHTEDGE_LOG_DIR="${I9E_HOME}/insightedge/logs"
+  export INSIGHTEDGE_LOG_DIR="${XAP_HOME}/insightedge/logs"
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
-export XAP_HOME=${I9E_HOME}/
 
 main() {
     define_defaults
@@ -106,7 +105,7 @@ redefine_defaults() {
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
     fi
     if [ $IE_PATH == "[]" ]; then
-        IE_PATH="$I9E_HOME"
+        IE_PATH="$XAP_HOME"
     fi
 }
 

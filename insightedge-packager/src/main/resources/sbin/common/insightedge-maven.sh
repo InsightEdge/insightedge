@@ -2,10 +2,10 @@
 set -e
 # This scripts installs InsightEdge artifacts(jars) to local maven repository
 
-if [ -z "${I9E_HOME}" ]; then
-  export I9E_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
+if [ -z "${XAP_HOME}" ]; then
+  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
 fi
-export IE_PATH_INTERNAL="${I9E_HOME}/insightedge"
+export IE_PATH_INTERNAL="${XAP_HOME}/insightedge"
 
 echo "Installing InsightEdge artifacts"
 
