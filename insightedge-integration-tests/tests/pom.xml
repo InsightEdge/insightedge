@@ -164,7 +164,7 @@
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <junitxml>.</junitxml>
                     <filereports>scalatest.txt</filereports>
-                    <tagsToExclude>org.insightedge.spark.utils.LongRunningTest${tagsToExcludes}</tagsToExclude>
+                    <tagsToExclude>org.insightedge.spark.utils.LongRunningTest</tagsToExclude>
                 </configuration>
             </plugin>
             <plugin>
@@ -289,13 +289,13 @@
 
     <!--don't change the profile names, newman relies on it!-->
     <profiles>
-        <profile>
+        <!--<profile>
             <id>run-integration-tests-community</id>
             <properties>
                 <dist.edition>community</dist.edition>
                 <tagsToExcludes>,org.insightedge.spark.utils.PremiumOnlyTest</tagsToExcludes>
             </properties>
-        </profile>
+        </profile>-->
 
         <profile>
             <id>run-integration-tests-premium</id>

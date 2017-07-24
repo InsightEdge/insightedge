@@ -16,7 +16,7 @@
 
 package org.insightedge.spark.failover
 
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
+import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
