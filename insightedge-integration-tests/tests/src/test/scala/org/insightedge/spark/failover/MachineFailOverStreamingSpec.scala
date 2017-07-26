@@ -16,7 +16,7 @@
 
 package org.insightedge.spark.failover
 
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
+import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -55,7 +55,7 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit StreamExample example while destroying slave machine" taggedAs PremiumOnlyTest in {
+  "insightedge-submit.sh " should "submit StreamExample example while destroying slave machine"  in {
 
     val fullClassName = s"org.insightedge.spark.jobs.StreamExample"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()

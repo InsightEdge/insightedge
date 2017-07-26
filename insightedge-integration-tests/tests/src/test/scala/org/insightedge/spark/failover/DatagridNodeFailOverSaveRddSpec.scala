@@ -17,9 +17,9 @@
 package org.insightedge.spark.failover
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils, PremiumOnlyTest}
 import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
+import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
 
 import scala.collection.immutable.Nil
 
@@ -59,7 +59,7 @@ class DatagridNodeFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit SaveRdd while restarting datagrid primary node" taggedAs PremiumOnlyTest in {
+  "insightedge-submit.sh " should "submit SaveRdd while restarting datagrid primary node" in {
 
     val fullClassName = s"org.insightedge.spark.jobs.SaveRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()

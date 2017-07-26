@@ -17,6 +17,7 @@
 package org.insightedge.spark.fixture
 
 import com.spotify.docker.client.DefaultDockerClient
+import com.spotify.docker.client.messages.HostConfig.Bind
 import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
 import org.insightedge.spark.utils.BuildUtils
 import org.scalatest.{BeforeAndAfterAll, Suite}
