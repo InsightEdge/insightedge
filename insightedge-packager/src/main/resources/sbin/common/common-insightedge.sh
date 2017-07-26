@@ -52,34 +52,6 @@ get_ie_lib() {
     echo $result
 }
 
-install_insightedge() {
-    local install=$1
-    local artifact=$2
-    local command=$3
-    local home=$4
-
-    if [ $install == "false" ]; then
-        return
-    fi
-
-    echo ""
-    step_title "--- Installing InsightEdge ($artifact) at $home"
-    echo "- Cleaning up $home"
-    rm -rf $home
-    mkdir $home
-    cd $home
-    echo "- Downloading $artifact"
-    eval $command
-    echo "- Unpacking $artifact"
-    unzip ${artifact}.zip > insightedge-unzip.log
-    rm ${artifact}.zip
-    echo "- Extracting files from subfolder"
-    mv ${artifact}/** .
-    echo "- Removing $artifact bundle"
-    rm -rf ${artifact}
-    step_title "--- Installation complete"
-}
-
 local_zeppelin() {
     local home=$1
     local master=$2

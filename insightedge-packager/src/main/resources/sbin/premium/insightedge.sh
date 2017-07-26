@@ -47,12 +47,6 @@ main() {
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         display_demo_help $CLUSTER_MASTER
         ;;
-      "remote-master")
-        remote_master $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY
-        ;;
-      "remote-slave")
-        remote_slave $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY
-        ;;
       "deploy")
         deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         ;;
@@ -78,8 +72,6 @@ display_usage() {
     echo "                 |       undeploy:      undeploys space from grid"
     echo "                 |       zeppelin:      locally starts zeppelin"
     echo "                 |       demo:          locally starts datagrid master, datagrid slave and zeppelin, deploys empty space"
-    echo "                 |       remote-master: executes 'master' mode on remote system (use for automation)"
-    echo "                 |       remote-slave:  executes 'slave' mode on remote system (use for automation)"
     echo "                 |       shutdown:      stops 'master', 'slave' and 'zeppelin'"
     echo " -m, --master    |  * cluster master IP or hostname"
     echo " -l, --locator   |    lookup locators for the grid components                    | default master:4174"
@@ -94,12 +86,6 @@ display_usage() {
     echo " -t, --topology  |    (deploy mode) number of space primary and backup instances | default 2,0"
     echo "                 |             format:  <num-of-primaries>,<num-of-backups-per-primary>"
     echo "                 |             example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
-    echo " -p, --path      | ** (remote modes) path to insightedge installation"
-    echo " -i, --install   |    if specified, a fresh insightedge distribution will be installed to specified path"
-    echo "                 |             warning: folder specified in path will be fully removed and recreated"
-    echo " -h, --hosts     | ** (remote modes) comma separated list of remote nodes: IPs or hostnames"
-    echo " -u, --user      | ** (remote modes) username"
-    echo " -k, --key       |    (remote modes) identity file"
     echo ""
     local script="./sbin/$THIS_SCRIPT_NAME"
     echo "Examples:"
@@ -127,30 +113,6 @@ display_usage() {
     echo ""
     echo " $script --mode undeploy --path \$XAP_HOME --master 127.0.0.1"
     echo ""
-    echo "  Remote install |  connects to remote via ssh"
-    echo "        on slave |  installs insightedge to home folder"
-    echo ""
-    echo " $script --mode remote-slave --hosts 10.0.0.2 \\"
-    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
-    echo "   --install --path ~/$ARTIFACT --master 10.0.0.1"
-    echo ""
-    echo " Cluster restart |  connects to cluster members via ssh"
-    echo "      automation |  restarts components"
-    echo ""
-    echo " MASTER=10.0.0.1"
-    echo " SLAVES=10.0.0.2,10.0.0.3,10.0.0.4"
-    echo " IEPATH=~/$ARTIFACT"
-    echo " $script --mode undeploy \\"
-    echo "   --master \$MASTER --group dev-env --name insightedge-dev-space"
-    echo " $script --mode remote-master --hosts \$MASTER \\"
-    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
-    echo "   --path \$IEPATH --master \$MASTER --group dev-env --size 2G"
-    echo " $script --mode remote-slave --hosts \$SLAVES \\"
-    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
-    echo "   --path \$IEPATH --master \$MASTER --group dev-env --size 2G --container 4"
-    echo " $script --mode deploy \\"
-    echo "   --master \$MASTER --group dev-env --name insightedge-dev-space --topology 12,0"
-    echo ""
     exit 1
 }
 
@@ -166,9 +128,6 @@ define_defaults() {
     GSC_COUNT="2"
     SPACE_NAME="insightedge-space"
     SPACE_TOPOLOGY="2,0"
-    REMOTE_HOSTS=$EMPTY
-    REMOTE_USER=$EMPTY
-    REMOTE_KEY=$EMPTY
 }
 
 parse_options() {
@@ -181,9 +140,6 @@ parse_options() {
         "-p" | "--path")
           shift
           IE_PATH=$1
-          ;;
-        "-i" | "--install")
-          IE_INSTALL="true"
           ;;
         "-m" | "--master")
           shift
@@ -213,18 +169,6 @@ parse_options() {
           shift
           SPACE_TOPOLOGY=$1
           ;;
-        "-h" | "--hosts")
-          shift
-          REMOTE_HOSTS=$1
-          ;;
-        "-u" | "--user")
-          shift
-          REMOTE_USER=$1
-          ;;
-        "-k" | "--key")
-          shift
-          REMOTE_KEY=$1
-          ;;
         *)
           echo "Unknown option: $1"
           display_usage
@@ -245,8 +189,6 @@ check_options() {
        [ $MODE != "slave" ] && \
        [ $MODE != "zeppelin" ] && \
        [ $MODE != "demo" ] && \
-       [ $MODE != "remote-master" ] && \
-       [ $MODE != "remote-slave" ] && \
        [ $MODE != "shutdown" ] && \
        [ $MODE != "deploy" ] && \
        [ $MODE != "undeploy" ]; then
@@ -259,20 +201,6 @@ check_options() {
       display_usage
     fi
 
-    if [[ $MODE == remote-* ]]; then
-        if [ "$REMOTE_USER" == "$EMPTY" ]; then
-            error_line "--user is required in remote modes"
-            display_usage
-        fi
-        if [ "$REMOTE_HOSTS" == "$EMPTY" ]; then
-            error_line "--hosts is required in remote modes"
-            display_usage
-        fi
-        if [ "$IE_PATH" == "$EMPTY" ]; then
-          error_line "--path is required"
-          display_usage
-        fi
-    fi
 }
 
 redefine_defaults() {
@@ -297,7 +225,6 @@ local_master() {
     local group=$7
     local size=$8
 
-    install_insightedge $install $artifact "$download" $home
     stop_grid_master $home
     stop_spark_master $home
     start_grid_master $home $locator $group $size
@@ -315,49 +242,10 @@ local_slave() {
     local containers=$8
     local size=$9
 
-    install_insightedge $install $artifact "$download" $home
     stop_grid_slave $home
     stop_spark_slave $home
     start_grid_slave $home $master $locator $group $containers $size
     start_spark_slave $home $master
-}
-
-remote_master() {
-    local hosts=${1//,/ }
-    local user=$2
-    local key=$3
-
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE"
-    for host in $hosts; do
-        echo ""
-        step_title "---- Connecting to master at $host"
-        if [ "$key" == "$EMPTY" ]; then
-          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
-        else
-          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
-        fi
-        echo ""
-        step_title "---- Disconnected from $host"
-    done
-}
-
-remote_slave() {
-    local hosts=${1//,/ }
-    local user=$2
-    local key=$3
-
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE"
-    for host in $hosts; do
-        echo ""
-        step_title "---- Connecting to slave at $host"
-        if [ "$key" == "$EMPTY" ]; then
-          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
-        else
-          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
-        fi
-        echo ""
-        step_title "---- Disconnected from $host"
-    done
 }
 
 deploy_space() {
