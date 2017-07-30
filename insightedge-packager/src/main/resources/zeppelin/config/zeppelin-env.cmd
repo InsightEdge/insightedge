@@ -54,13 +54,13 @@ REM set SPARK_APP_NAME                         REM (optional) The name of spark 
 
 rem setlocal enableextensions enabledelayedexpansion
 
-if "x%INSIGHTEDGE_HOME%"=="x" (
-   set INSIGHTEDGE_HOME=%~dp0..
-)
 
-call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS ","
 
-set SPARK_HOME=%INSIGHTEDGE_HOME%
+
+
+call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
+
+set SPARK_HOME=%XAP_HOME%\insightedge\spark
 set SPARK_SUBMIT_OPTIONS=--jars %INSIGHTEDGE_JARS%
 
 REM Use embedded spark binaries
