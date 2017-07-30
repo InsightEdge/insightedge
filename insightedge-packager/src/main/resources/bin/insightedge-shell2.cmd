@@ -1,7 +1,6 @@
 @echo off
 
-set SPARK_HOME=%~dp0..
-set INSIGHTEDGE_HOME=%~dp0..
+
 set _SPARK_CMD_USAGE=Usage: .\bin\insightedge-shell.cmd [options]
 
 rem SPARK-4161: scala does not assume use of the java classpath,
@@ -16,4 +15,4 @@ if "x%SPARK_SUBMIT_OPTS%"=="x" (
 set SPARK_SUBMIT_OPTS="%SPARK_SUBMIT_OPTS% -Dscala.usejavacp=true"
 
 :run_shell
-%INSIGHTEDGE_HOME%\bin\insightedge-submit2.cmd --class org.apache.spark.repl.Main --name "Spark shell" %* -i %INSIGHTEDGE_HOME%\bin\shell-init.scala
+%XAP_HOME%\insightedge\bin\insightedge-submit2.cmd --class org.apache.spark.repl.Main --name "Spark shell" %* -i %XAP_HOME%\insightedge\bin\shell-init.scala
