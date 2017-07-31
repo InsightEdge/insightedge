@@ -85,7 +85,7 @@ if "x%MODE%"=="xdemo" (
   echo --- Zeppelin server stopped
   echo --- Starting Zeppelin server
   rem add spark, datagrid and InsightEdge JARs to Zeppelin classpath
-  set ZEPPELIN_CLASSPATH_OVERRIDES="%XAP_HOME%\insightedge\lib\*";"%XAP_HOME%\lib\required\*";
+  set ZEPPELIN_CLASSPATH_OVERRIDES="%XAP_HOME%\insightedge\lib\*";"%XAP_HOME%\lib\required\*";"%XAP_HOME%\insightedge\spark\jars\*";
   %XAP_HOME%\insightedge\sbin\win-daemon.cmd start zeppelin zeppelin\bin\zeppelin.cmd
   echo --- Zeppelin server can be accessed at http://127.0.0.1:8090
   

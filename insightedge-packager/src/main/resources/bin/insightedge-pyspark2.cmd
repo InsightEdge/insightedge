@@ -1,5 +1,5 @@
 @echo off
-call ../../
+
 
 call ..\..\bin\setenv.bat
 
