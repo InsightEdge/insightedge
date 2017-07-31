@@ -148,7 +148,7 @@ object Launcher {
       }
 
       run("copy spark submit to spark/bin") {
-        copy(s"$resources/bin/spark-submit.cmd", s"$insightEdgeHome/spark/bin")
+        copy(s"$resources/bin/spark-submit.cmd", s"$insightEdgeHome/spark/bin/")
         remove(s"$insightEdgeHome/bin/spark-submit.cmd")
       }
 
