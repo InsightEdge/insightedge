@@ -54,9 +54,7 @@ REM set SPARK_APP_NAME                         REM (optional) The name of spark 
 
 rem setlocal enableextensions enabledelayedexpansion
 
-
-
-
+call %~dp0..\..\..\bin\setenv.bat
 
 call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
 
