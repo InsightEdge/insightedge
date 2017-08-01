@@ -53,12 +53,12 @@ get_ie_lib() {
 }
 
 local_zeppelin() {
-    local master=$1
+    local zeppelin_host=$1
     echo ""
     step_title "--- Restarting Zeppelin server"
     stop_zeppelin
     start_zeppelin
-    step_title "--- Zeppelin server can be accessed at http://${XAP_NIC_ADDRESS}:8090"
+    step_title "--- Zeppelin server can be accessed at http://${zeppelin_host}:8090"
 }
 
 stop_zeppelin() {
@@ -72,8 +72,8 @@ start_zeppelin() {
 }
 
 start_spark_master() {
+    local master_hostname=$1
     echo ""
-    local master_hostname=${XAP_NIC_ADDRESS}
     step_title "--- Starting Spark master at ${master_hostname}"
     ${XAP_HOME}/insightedge/spark/sbin/start-master.sh -h ${master_hostname}
     step_title "--- Spark master started"
@@ -91,7 +91,7 @@ start_spark_slave() {
 
     echo ""
     step_title "--- Starting Spark slave"
-    ${XAP_HOME}/insightedge/spark/sbin/start-slave.sh -h ${XAP_NIC_ADDRESS} spark://$master #TODO how to provide multiple spark master urls
+    ${XAP_HOME}/insightedge/spark/sbin/start-slave.sh spark://${master}:7077
     step_title "--- Spark slave started"
 }
 
@@ -103,12 +103,12 @@ stop_spark_slave() {
 }
 
 display_demo_help() {
-    local master=$1
+    local zeppelin_host=$1
 
     printf '\e[0;34m\n'
     echo "Demo steps:"
     echo "1. make sure steps above were successfully executed"
-    echo "2. Open Web Notebook at http://$master:8090 and run any of the available examples"
+    echo "2. Open Web Notebook at http://${zeppelin_host}:8090 and run any of the available examples"
     printf "\e[0m\n"
 }
 

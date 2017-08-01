@@ -18,26 +18,26 @@ main() {
     display_logo
     case "$MODE" in
       "master")
-        local_master
+        local_master $@
         ;;
       "slave")
-        local_slave $CLUSTER_MASTER $GSC_COUNT
+        local_slave $@
         ;;
       "zeppelin")
-        local_zeppelin $CLUSTER_MASTER
+        local_zeppelin 127.0.0.1 #TODO
         ;;
       "demo")
-        local_master
-        local_slave $CLUSTER_MASTER $GSC_COUNT
-        deploy_space $SPACE_NAME $SPACE_TOPOLOGY
-        local_zeppelin $CLUSTER_MASTER
-        display_demo_help $CLUSTER_MASTER
+        local_master $@
+        local_slave $@
+        deploy_space $@
+        local_zeppelin 127.0.0.1 #TODO
+        display_demo_help 127.0.0.1 #TODO
         ;;
       "deploy")
-        deploy_space $SPACE_NAME $SPACE_TOPOLOGY
+        deploy_space $@
         ;;
       "undeploy")
-        undeploy_space $SPACE_NAME
+        undeploy_space $@
         ;;
       "shutdown")
         shutdown_all
@@ -158,44 +158,37 @@ check_options() {
 
 redefine_defaults() {
     if [ "$CLUSTER_MASTER" = "$EMPTY" ]; then
-        CLUSTER_MASTER="127.0.0.1:7077"
+        CLUSTER_MASTER="127.0.0.1"
     fi
 }
 
 local_master() {
     stop_grid_master
     stop_spark_master
-    start_grid_master
-    start_spark_master
+    start_grid_master $@
+    start_spark_master ${CLUSTER_MASTER}
 }
 
 local_slave() {
-    local master=$1
-    local containers=$2
 
     stop_grid_slave
     stop_spark_slave
-    start_grid_slave ${containers}
-    start_spark_slave ${master}
+    start_grid_slave $@
+    start_spark_slave ${CLUSTER_MASTER}
 }
 
 deploy_space() {
-    local space=$1
-    local topology=$2
-
     echo ""
-    step_title "--- Deploying space: $space [$topology]"
-    ${XAP_HOME}/insightedge/sbin/deploy-datagrid.sh --name $space --topology $topology
-    step_title "--- Done deploying space: $space"
+#    step_title "--- Deploying space: $space [$topology]"
+    ${XAP_HOME}/insightedge/sbin/deploy-datagrid.sh $@
+#    step_title "--- Done deploying space: $space"
 }
 
 undeploy_space() {
-    local space=$1
-
     echo ""
-    step_title "--- Undeploying space: $space"
-    ${XAP_HOME}/insightedge/sbin/undeploy-datagrid.sh --name $space
-    step_title "--- Done undeploying space: $space"
+#    step_title "--- Undeploying space: $space"
+    ${XAP_HOME}/insightedge/sbin/undeploy-datagrid.sh $@
+#    step_title "--- Done undeploying space: $space"
 }
 
 shutdown_all() {
@@ -209,7 +202,7 @@ shutdown_all() {
 start_grid_master() {
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node"
-    ${XAP_HOME}/insightedge/sbin/start-datagrid-master.sh
+    ${XAP_HOME}/insightedge/sbin/start-datagrid-master.sh $@
     step_title "--- Gigaspaces datagrid management node started"
 }
 
@@ -221,12 +214,10 @@ stop_grid_master() {
 }
 
 start_grid_slave() {
-    local containers=$1
-
     echo ""
-    step_title "--- Starting Gigaspaces datagrid node ($containers)"
-    ${XAP_HOME}/insightedge/sbin/start-datagrid-slave.sh --container ${containers}
-    step_title "--- Gigaspaces datagrid node started"
+#    step_title "--- Starting Gigaspaces datagrid node ($containers)"
+    ${XAP_HOME}/insightedge/sbin/start-datagrid-slave.sh $@
+#    step_title "--- Gigaspaces datagrid node started"
 }
 
 stop_grid_slave() {
