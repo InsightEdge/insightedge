@@ -53,25 +53,22 @@ get_ie_lib() {
 }
 
 local_zeppelin() {
-    local home=$1
-    local master=$2
+    local master=$1
     echo ""
     step_title "--- Restarting Zeppelin server"
-    stop_zeppelin $1
-    start_zeppelin $1
-    step_title "--- Zeppelin server can be accessed at http://$master:8090"
+    stop_zeppelin
+    start_zeppelin
+    step_title "--- Zeppelin server can be accessed at http://${XAP_NIC_ADDRESS}:8090"
 }
 
 stop_zeppelin() {
-    local home=$1
     step_title "--- Stopping Zeppelin"
-    $home/insightedge/sbin/stop-zeppelin.sh
+    ${XAP_HOME}/insightedge/sbin/stop-zeppelin.sh
 }
 
 start_zeppelin() {
-    local home=$1
     step_title "--- Starting Zeppelin"
-    $home/insightedge/sbin/start-zeppelin.sh
+    ${XAP_HOME}/insightedge/sbin/start-zeppelin.sh
 }
 
 start_spark_master() {

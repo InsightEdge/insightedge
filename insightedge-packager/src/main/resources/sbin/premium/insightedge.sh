@@ -24,13 +24,13 @@ main() {
         local_slave $CLUSTER_MASTER $GSC_COUNT
         ;;
       "zeppelin")
-        local_zeppelin $IE_PATH $CLUSTER_MASTER
+        local_zeppelin $CLUSTER_MASTER
         ;;
       "demo")
         local_master
         local_slave $CLUSTER_MASTER $GSC_COUNT
         deploy_space $SPACE_NAME $SPACE_TOPOLOGY
-        local_zeppelin $IE_PATH $CLUSTER_MASTER
+        local_zeppelin $CLUSTER_MASTER
         display_demo_help $CLUSTER_MASTER
         ;;
       "deploy")
@@ -40,7 +40,7 @@ main() {
         undeploy_space $SPACE_NAME
         ;;
       "shutdown")
-        shutdown_all $IE_PATH
+        shutdown_all
         ;;
     esac
 }
@@ -233,13 +233,11 @@ undeploy_space() {
 }
 
 shutdown_all() {
-    local home=$1
-
-    stop_zeppelin $home
-    stop_grid_master $home
+    stop_zeppelin
+    stop_grid_master
     stop_grid_slave
-    stop_spark_master $home
-    stop_spark_slave $home
+    stop_spark_master
+    stop_spark_slave
 }
 
 start_grid_master() {
