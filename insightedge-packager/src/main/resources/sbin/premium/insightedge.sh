@@ -1,28 +1,14 @@
 #!/bin/bash
-
-if [ -z "${XAP_HOME}" ]; then
-  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
-fi
-
+set -x
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source ${DIRNAME}/../../bin/setenv.sh
 source ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
 
 IE_DIR_INTERNAL="${XAP_HOME}/insightedge"
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
 IE_VERSION=`grep -w "Version" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-ARTIFACT_VERSION=`grep -w "ArtifactVersion" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-MILESTONE=`grep -w "Milestone" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-BUILD_NUMBER=`grep -w "BuildNumber" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 EDITION=`grep -w "Edition" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-ARTIFACT="gigaspaces-insightedge-${IE_VERSION}-${MILESTONE}-${BUILD_NUMBER}-${EDITION}"
-ARTIFACT_EC2="https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/insightedge/${IE_VERSION}/${ARTIFACT_VERSION}/${ARTIFACT}.zip"
-
-# override this variable with custom command if you want your distribution to be downloaded from custom location
-# for customization, call before insightedge.sh:
-# export ARTIFACT_DOWNLOAD_COMMAND="curl -L -O http://.../gigaspaces-insightedge.zip"
-if [ -z "${ARTIFACT_DOWNLOAD_COMMAND}" ]; then
-  export ARTIFACT_DOWNLOAD_COMMAND="curl -L -O $ARTIFACT_EC2"
-fi
 
 main() {
     define_defaults
@@ -32,17 +18,17 @@ main() {
     display_logo
     case "$MODE" in
       "master")
-        local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
+        local_master
         ;;
       "slave")
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
+        local_slave $CLUSTER_MASTER $GSC_COUNT
         ;;
       "zeppelin")
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         ;;
       "demo")
-        local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
+        local_master
+        local_slave $CLUSTER_MASTER $GSC_COUNT
         deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         display_demo_help $CLUSTER_MASTER
@@ -196,16 +182,11 @@ check_options() {
          display_usage
     fi
 
-    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
-      error_line "--master is required"
-      display_usage
-    fi
-
 }
 
 redefine_defaults() {
     if [ "$CLUSTER_MASTER" = "$EMPTY" ]; then
-        CLUSTER_MASTER="127.0.0.1"
+        CLUSTER_MASTER="127.0.0.1:7077"
     fi
     if [ "$GRID_LOCATOR" = "$EMPTY" ]; then
         GRID_LOCATOR="$CLUSTER_MASTER:4174"
@@ -216,36 +197,20 @@ redefine_defaults() {
 }
 
 local_master() {
-    local home=$1
-    local install=$2
-    local artifact=$3
-    local download=$4
-    local master=$5
-    local locator=$6
-    local group=$7
-    local size=$8
-
-    stop_grid_master $home
-    stop_spark_master $home
-    start_grid_master $home $locator $group $size
-    start_spark_master $home $master
+    stop_grid_master
+    stop_spark_master
+    start_grid_master
+    start_spark_master
 }
 
 local_slave() {
-    local home=$1
-    local install=$2
-    local artifact=$3
-    local download=$4
-    local master=$5
-    local locator=$6
-    local group=$7
-    local containers=$8
-    local size=$9
+    local master=$1
+    local containers=$2
 
-    stop_grid_slave $home
-    stop_spark_slave $home
-    start_grid_slave $home $master $locator $group $containers $size
-    start_spark_slave $home $master
+    stop_grid_slave
+    stop_spark_slave
+    start_grid_slave ${containers}
+    start_spark_slave ${master}
 }
 
 deploy_space() {
@@ -278,52 +243,39 @@ shutdown_all() {
 
     stop_zeppelin $home
     stop_grid_master $home
-    stop_grid_slave $home
+    stop_grid_slave
     stop_spark_master $home
     stop_spark_slave $home
 }
 
 start_grid_master() {
-    local home=$1
-    local locator=$2
-    local group=$3
-    local size=$4
-
     echo ""
-    step_title "--- Starting Gigaspaces datagrid management node (locator: $locator, group: $group, heap: $size)"
-    $home/insightedge/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
+    step_title "--- Starting Gigaspaces datagrid management node"
+    ${XAP_HOME}/insightedge/sbin/start-datagrid-master.sh
     step_title "--- Gigaspaces datagrid management node started"
 }
 
 stop_grid_master() {
-    local home=$1
-
     echo ""
     step_title "--- Stopping datagrid master"
-    $home/insightedge/sbin/stop-datagrid-master.sh
+    ${XAP_HOME}/insightedge/sbin/stop-datagrid-master.sh
     step_title "--- Datagrid master stopped"
 }
 
 start_grid_slave() {
-    local home=$1
-    local master=$2
-    local locator=$3
-    local group=$4
-    local containers=$5
-    local size=$6
+    local containers=$1
 
     echo ""
-    step_title "--- Starting Gigaspaces datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
-    $home/insightedge/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
+    step_title "--- Starting Gigaspaces datagrid node ($containers)"
+    ${XAP_HOME}/insightedge/sbin/start-datagrid-slave.sh --container ${containers}
     step_title "--- Gigaspaces datagrid node started"
 }
 
 stop_grid_slave() {
-    local home=$1
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
-    $home/insightedge/sbin/stop-datagrid-slave.sh
+    ${XAP_HOME}/insightedge/sbin/stop-datagrid-slave.sh
     step_title "--- Datagrid slave instances stopped"
 }
 

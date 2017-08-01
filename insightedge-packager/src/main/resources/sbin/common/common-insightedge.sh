@@ -75,40 +75,33 @@ start_zeppelin() {
 }
 
 start_spark_master() {
-    local home=$1
-    local master=$2
-
     echo ""
-    step_title "--- Starting Spark master at $master"
-    $home/insightedge/spark/sbin/start-master.sh -h $master
+    local master_hostname=${XAP_NIC_ADDRESS}
+    step_title "--- Starting Spark master at ${master_hostname}"
+    ${XAP_HOME}/insightedge/spark/sbin/start-master.sh -h ${master_hostname}
     step_title "--- Spark master started"
 }
 
 stop_spark_master() {
-    local home=$1
-
     echo ""
     step_title "--- Stopping Spark master"
-    $home/insightedge/spark/sbin/stop-master.sh
+    ${XAP_HOME}/insightedge/spark/sbin/stop-master.sh
     step_title "--- Spark master stopped"
 }
 
 start_spark_slave() {
-    local home=$1
-    local master=$2
+    local master=$1
 
     echo ""
     step_title "--- Starting Spark slave"
-    $home/insightedge/spark/sbin/start-slave.sh spark://$master:7077
+    ${XAP_HOME}/insightedge/spark/sbin/start-slave.sh -h ${XAP_NIC_ADDRESS} spark://$master #TODO how to provide multiple spark master urls
     step_title "--- Spark slave started"
 }
 
 stop_spark_slave() {
-    local home=$1
-
     echo ""
     step_title "--- Stopping Spark slave"
-    $home/insightedge/spark/sbin/stop-slave.sh
+    ${XAP_HOME}/insightedge/spark/sbin/stop-slave.sh
     step_title "--- Spark slave stopped"
 }
 
