@@ -147,10 +147,10 @@ object Launcher {
         untgz(spark, s"$insightEdgeHome/spark", cutRootFolder = true)
       }
 
-        /*run("copy spark submit to spark/bin") {
-        copy(s"$resources/bin/spark-submit.cmd", s"$insightEdgeHome/spark/bin/")
+        run("copy spark submit to spark/bin") {
+        copy(s"$resources/bin/spark-submit.cmd", s"$insightEdgeHome/spark/bin")
         remove(s"$insightEdgeHome/bin/spark-submit.cmd")
-      }*/
+      }
 
 
       run("Making scripts executable") {
