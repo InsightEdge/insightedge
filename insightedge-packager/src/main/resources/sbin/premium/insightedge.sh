@@ -205,8 +205,8 @@ deploy_space() {
               shift
               ;;
             *)
-              echo "Unknown option: $1"
-              display_usage
+#              echo "Unknown option: $1"
+#              display_usage
               ;;
           esac
           shift
@@ -291,8 +291,8 @@ undeploy_space() {
               shift
               ;;
             *)
-              echo "Unknown option: $1"
-              display_usage
+#              echo "Unknown option: $1"
+#              display_usage
               ;;
           esac
           shift
@@ -340,8 +340,8 @@ start_grid_master() {
               shift
               ;;
             *)
-              echo "Unknown option: $1"
-              display_usage
+#              echo "Unknown option: $1"
+#              display_usage
               ;;
           esac
           shift
@@ -350,7 +350,7 @@ start_grid_master() {
 
     check_already_started() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
-        if [ ! -z $pid ]; then
+        if [ ! -z "$pid" ]; then
             echo "Datagrid master is already running. pid: $pid"
 #            exit
             return
@@ -376,7 +376,7 @@ stop_grid_master() {
 
     do_stop_grid_master() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
-        if [ -z $pid ]; then
+        if [ -z "$pid" ]; then
             echo "Datagrid master is not running"
             return
 #            exit
@@ -436,8 +436,8 @@ start_grid_slave() {
               shift
               ;;
             *)
-              echo "Unknown option: $1"
-              display_usage
+#              echo "Unknown option: $1"
+#              display_usage
               ;;
           esac
           shift
@@ -447,7 +447,7 @@ start_grid_slave() {
 
     check_already_started() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
-        if [ ! -z $pid ]; then
+        if [ ! -z "$pid" ]; then
             echo "Datagrid slave is already running. pid: $pid"
             return
 #            exit
@@ -475,7 +475,7 @@ stop_grid_slave() {
 
     do_stop_grid_slave() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
-        if [ -z $pid ]; then
+        if [ -z "$pid" ]; then
             echo "Datagrid slave is not running"
 #            exit
             return
@@ -496,7 +496,7 @@ stop_grid_slave() {
         echo "Datagrid slave stopped"
     }
 
-    do_stop
+    do_stop_grid_slave
     step_title "--- Datagrid slave instances stopped"
 }
 
