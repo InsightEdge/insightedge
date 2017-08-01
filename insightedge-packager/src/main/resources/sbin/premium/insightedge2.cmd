@@ -1,6 +1,6 @@
 @echo off
 
-call ..\..\bin\setenv.bat
+call %~dp0..\..\bin\setenv.bat
 rem Test that an argument was given
 if "x%2"=="x" (
   echo Usage: insigthedge.cmd --mode ^(demo^|shutdown^)
@@ -46,7 +46,7 @@ if "x%MODE%"=="xdemo" (
   %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop spark-master
   echo --- Spark master stopped
   echo --- Starting Spark master at 127.0.0.1
-  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start spark-master %SPARK_HOME%\bin\spark-class org.apache.spark.deploy.master.Master --ip 127.0.0.1
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start spark-master spark\bin\spark-class org.apache.spark.deploy.master.Master --ip 127.0.0.1
   echo --- Spark master started
 
   rem prints a newline
@@ -55,7 +55,7 @@ if "x%MODE%"=="xdemo" (
   %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop spark-worker
   echo --- Spark worker stopped
   echo --- Starting Spark worker targetting spark://127.0.0.1:7077
-  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start spark-worker %SPARK_HOME%\bin\spark-class org.apache.spark.deploy.worker.Worker spark://127.0.0.1:7077 --ip 127.0.0.1
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start spark-worker spark\bin\spark-class org.apache.spark.deploy.worker.Worker spark://127.0.0.1:7077 --ip 127.0.0.1
   echo --- Spark worker started
     
   echo.
@@ -63,7 +63,7 @@ if "x%MODE%"=="xdemo" (
   %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop datagrid-master
   echo --- Datagrid master stopped
   echo --- Starting Gigaspaces datagrid management node ^(locator: 127.0.0.1:4174, group: insightedge^)
-  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start datagrid-master %XAP_HOME%\bin\gs-agent.bat gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start datagrid-master ..\bin\gs-agent.bat gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1
   echo --- Gigaspaces datagrid management node started
   
   echo.
@@ -71,7 +71,7 @@ if "x%MODE%"=="xdemo" (
   %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop datagrid-slave
   echo --- Datagrid slave stopped
   echo --- Starting Gigaspaces datagrid node ^(locator: 127.0.0.1:4174, group: insightedge, containers: 2^)
-  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start datagrid-slave %XAP_HOME%\bin\gs-agent.bat gsa.gsc 2 gsa.global.gsm 0 gsa.global.lus 0
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start datagrid-slave ..\bin\gs-agent.bat gsa.gsc 2 gsa.global.gsm 0 gsa.global.lus 0
   echo --- Gigaspaces datagrid node started
   
   echo.

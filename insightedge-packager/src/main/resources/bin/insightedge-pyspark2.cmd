@@ -1,7 +1,7 @@
 @echo off
 
 
-call ..\..\bin\setenv.bat
+call %~dp0..\..\bin\setenv.bat
 
 rem Figure out where the Spark framework is installed
 

@@ -1,6 +1,6 @@
 
 
-call ..\..\bin\setenv.bat
+call %~dp0..\..\bin\setenv.bat
 
 
 
