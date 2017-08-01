@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source ${DIRNAME}/../../bin/setenv.sh
+
+if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
+  export INSIGHTEDGE_LOG_DIR="${XAP_HOME}/insightedge/logs"
+fi
 
 get_spark_path() {
     echo ${XAP_HOME}/insightedge/spark

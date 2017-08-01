@@ -1,8 +1,7 @@
 #!/bin/bash
 
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
-source ${DIRNAME}/../../bin/setenv.sh
-source ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
+source ${DIRNAME}/common-insightedge.sh
 
 IE_DIR_INTERNAL="${XAP_HOME}/insightedge"
 EMPTY="[]"
@@ -154,6 +153,11 @@ check_options() {
          display_usage
     fi
 
+
+    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
+      error_line "--master is required"
+      display_usage
+    fi
 }
 
 redefine_defaults() {
@@ -179,16 +183,130 @@ local_slave() {
 
 deploy_space() {
     echo ""
-#    step_title "--- Deploying space: $space [$topology]"
-    ${XAP_HOME}/insightedge/sbin/deploy-datagrid.sh $@
-#    step_title "--- Done deploying space: $space"
+    step_title "--- Deploying space"
+
+    define_defaults() {
+        SPACE_NAME="insightedge-space"
+        SPACE_TOPOLOGY="2,0"
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "-n" | "--name")
+              shift
+              SPACE_NAME=$1
+              ;;
+            "-t" | "--topology")
+              shift
+              SPACE_TOPOLOGY=$1
+              ;;
+            "--mode")
+              shift
+              ;;
+            *)
+              echo "Unknown option: $1"
+              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+    await_master_start() {
+        TIMEOUT=60
+        echo "  awaiting datagrid master ..."
+        while [ -z "$(${XAP_HOME}/bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
+            if [ $TIMEOUT -le 0 ]; then
+              echo "Datagrid master is not available within timeout"
+              return
+              #exit 1
+            fi
+            TIMEOUT=$((TIMEOUT - 10))
+            echo "  .. ($TIMEOUT sec)"
+        done
+    }
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage:"
+        echo " -n, --name      |   name of the deployed space                                 | default insightedge-space"
+        echo " -t, --topology  |   number of space primary and backup instances               | default 2,0"
+        echo "                 |            format:  <num-of-primaries>,<num-of-backups-per-primary>"
+        echo "                 |            example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo "Examples:"
+        echo "    Deploy space |  deploys 8 primary and 8 backup partitions of 'my-space' on cluster"
+        echo ""
+        echo " $script -n my-space -t 8,1"
+        echo ""
+#        exit 1
+        return
+    }
+
+    define_defaults
+    parse_options $@
+
+    echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY]"
+    await_master_start #TODO: revisit in IE-87
+    ${XAP_HOME}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
+
+    step_title "--- Done deploying space"
 }
 
 undeploy_space() {
     echo ""
-#    step_title "--- Undeploying space: $space"
-    ${XAP_HOME}/insightedge/sbin/undeploy-datagrid.sh $@
-#    step_title "--- Done undeploying space: $space"
+    step_title "--- Undeploying space"
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: * - required"
+        echo " -n, --name      |   name of the deployed space                                 | default insightedge-space"
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo "Examples:"
+        echo "  Undeploy space |  undeploys 'my-space' from cluster"
+        echo ""
+        echo " $script -m 10.0.0.1 -n my-space"
+        echo ""
+#        exit 1
+        return
+    }
+
+    define_defaults() {
+        SPACE_NAME="insightedge-space"
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "-n" | "--name")
+              shift
+              SPACE_NAME=$1
+              ;;
+            "--mode")
+              shift
+              ;;
+            *)
+              echo "Unknown option: $1"
+              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+
+    define_defaults
+    parse_options $@
+
+    echo "Undeploying space: $SPACE_NAME"
+    ${XAP_HOME}/bin/gs.sh undeploy $SPACE_NAME
+
+    step_title "--- Done undeploying space"
 }
 
 shutdown_all() {
@@ -202,29 +320,183 @@ shutdown_all() {
 start_grid_master() {
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node"
-    ${XAP_HOME}/insightedge/sbin/start-datagrid-master.sh $@
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: "
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo " $script"
+        echo ""
+        return
+#        exit 1
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "--mode")
+              shift
+              ;;
+            *)
+              echo "Unknown option: $1"
+              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+    check_already_started() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
+        if [ ! -z $pid ]; then
+            echo "Datagrid master is already running. pid: $pid"
+#            exit
+            return
+        fi
+    }
+
+    parse_options $@
+    check_already_started
+
+    mkdir -p "$INSIGHTEDGE_LOG_DIR"
+    log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
+    echo "Starting datagrid master"
+    export XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master"
+    nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
+    echo "Datagrid master started (log: $log)"
+
     step_title "--- Gigaspaces datagrid management node started"
 }
 
 stop_grid_master() {
     echo ""
     step_title "--- Stopping datagrid master"
-    ${XAP_HOME}/insightedge/sbin/stop-datagrid-master.sh
+
+    do_stop_grid_master() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
+        if [ -z $pid ]; then
+            echo "Datagrid master is not running"
+            return
+#            exit
+        fi
+        echo "Stopping datagrid master (pid: $pid)..."
+
+        kill -SIGTERM $pid
+
+        TIMEOUT=60
+        while ps -p $pid > /dev/null; do
+        if [ $TIMEOUT -le 0 ]; then
+            break
+        fi
+            echo "  waiting termination ($TIMEOUT sec)"
+            ((TIMEOUT--))
+            sleep 1
+        done
+        echo "Datagrid master stopped"
+    }
+
+    do_stop_grid_master
     step_title "--- Datagrid master stopped"
 }
 
 start_grid_slave() {
     echo ""
-#    step_title "--- Starting Gigaspaces datagrid node ($containers)"
-    ${XAP_HOME}/insightedge/sbin/start-datagrid-slave.sh $@
-#    step_title "--- Gigaspaces datagrid node started"
+    step_title "--- Starting Gigaspaces datagrid node"
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: "
+        echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo "Examples:"
+        echo "  Start datagrid |  starts 8 containers"
+        echo ""
+        echo " $script -c 8"
+        echo ""
+#        exit 1
+        return
+    }
+
+    define_defaults() {
+        GSC_COUNT="2"
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "-c" | "--container")
+              shift
+              GSC_COUNT=$1
+              ;;
+            "--mode")
+              shift
+              ;;
+            *)
+              echo "Unknown option: $1"
+              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+
+    check_already_started() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
+        if [ ! -z $pid ]; then
+            echo "Datagrid slave is already running. pid: $pid"
+            return
+#            exit
+        fi
+    }
+
+    define_defaults
+    parse_options $@
+    check_already_started
+
+    mkdir -p "$INSIGHTEDGE_LOG_DIR"
+    log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave.out"
+    echo "Starting datagrid slave (containers: $GSC_COUNT)"
+    export XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave"
+    nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
+    echo "Datagrid slave started (log: $log)"
+
+    step_title "--- Gigaspaces datagrid node started"
 }
 
 stop_grid_slave() {
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
-    ${XAP_HOME}/insightedge/sbin/stop-datagrid-slave.sh
+
+    do_stop_grid_slave() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
+        if [ -z $pid ]; then
+            echo "Datagrid slave is not running"
+#            exit
+            return
+        fi
+        echo "Stopping datagrid slave (pid: $pid)..."
+
+        kill -SIGTERM $pid
+
+        TIMEOUT=60
+        while ps -p $pid > /dev/null; do
+        if [ $TIMEOUT -le 0 ]; then
+            break
+        fi
+            echo "  waiting termination ($TIMEOUT sec)"
+            ((TIMEOUT--))
+            sleep 1
+        done
+        echo "Datagrid slave stopped"
+    }
+
+    do_stop
     step_title "--- Datagrid slave instances stopped"
 }
 
