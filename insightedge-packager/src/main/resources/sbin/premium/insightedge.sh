@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/../../bin/setenv.sh
 source ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
@@ -29,15 +29,15 @@ main() {
       "demo")
         local_master
         local_slave $CLUSTER_MASTER $GSC_COUNT
-        deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
+        deploy_space $SPACE_NAME $SPACE_TOPOLOGY
         local_zeppelin $IE_PATH $CLUSTER_MASTER
         display_demo_help $CLUSTER_MASTER
         ;;
       "deploy")
-        deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
+        deploy_space $SPACE_NAME $SPACE_TOPOLOGY
         ;;
       "undeploy")
-        undeploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME
+        undeploy_space $SPACE_NAME
         ;;
       "shutdown")
         shutdown_all $IE_PATH
@@ -214,27 +214,21 @@ local_slave() {
 }
 
 deploy_space() {
-    local home=$1
-    local locator=$2
-    local group=$3
-    local space=$4
-    local topology=$5
+    local space=$1
+    local topology=$2
 
     echo ""
-    step_title "--- Deploying space: $space [$topology] (locator: $locator, group: $group)"
-    $home/insightedge/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
+    step_title "--- Deploying space: $space [$topology]"
+    ${XAP_HOME}/insightedge/sbin/deploy-datagrid.sh --name $space --topology $topology
     step_title "--- Done deploying space: $space"
 }
 
 undeploy_space() {
-    local home=$1
-    local locator=$2
-    local group=$3
-    local space=$4
+    local space=$1
 
     echo ""
-    step_title "--- Undeploying space: $space (locator: $locator, group: $group)"
-    $home/insightedge/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
+    step_title "--- Undeploying space: $space"
+    ${XAP_HOME}/insightedge/sbin/undeploy-datagrid.sh --name $space
     step_title "--- Done undeploying space: $space"
 }
 
