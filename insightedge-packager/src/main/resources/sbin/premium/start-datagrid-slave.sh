@@ -10,7 +10,51 @@ if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
 fi
 THIS_SCRIPT_NAME=`basename "$0"`
 
-main() {
+start_datagrid_slave() {
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: "
+        echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo "Examples:"
+        echo "  Start datagrid |  starts 8 containers"
+        echo ""
+        echo " $script -c 8"
+        echo ""
+        exit 1
+    }
+
+    define_defaults() {
+        GSC_COUNT="2"
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "-c" | "--container")
+              shift
+              GSC_COUNT=$1
+              ;;
+            *)
+              echo "Unknown option: $1"
+              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+
+    check_already_started() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
+        if [ ! -z $pid ]; then
+            echo "Datagrid slave is already running. pid: $pid"
+            exit
+        fi
+    }
+
     define_defaults
     parse_options $@
     check_already_started
@@ -23,48 +67,4 @@ main() {
     echo "Datagrid slave started (log: $log)"
 }
 
-display_usage() {
-    sleep 3
-    echo ""
-    echo "Usage: "
-    echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
-    echo ""
-    local script="./sbin/$THIS_SCRIPT_NAME"
-    echo "Examples:"
-    echo "  Start datagrid |  starts 8 containers"
-    echo ""
-    echo " $script -c 8"
-    echo ""
-    exit 1
-}
-
-define_defaults() {
-    GSC_COUNT="2"
-}
-
-parse_options() {
-    while [ "$1" != "" ]; do
-      case $1 in
-        "-c" | "--container")
-          shift
-          GSC_COUNT=$1
-          ;;
-        *)
-          echo "Unknown option: $1"
-          display_usage
-          ;;
-      esac
-      shift
-    done
-}
-
-
-check_already_started() {
-    pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
-    if [ ! -z $pid ]; then
-        echo "Datagrid slave is already running. pid: $pid"
-        exit
-    fi
-}
-
-main "$@"
+start_datagrid_slave "$@"

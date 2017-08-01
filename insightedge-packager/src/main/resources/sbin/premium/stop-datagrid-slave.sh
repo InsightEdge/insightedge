@@ -2,7 +2,7 @@
 
 # Stops the Gigaspaces Datagrid slave on the machine this script is executed on.
 
-main() {
+stop_datagrid_slave() {
     pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
     if [ -z $pid ]; then
         echo "Datagrid slave is not running"
@@ -24,4 +24,4 @@ main() {
     echo "Datagrid slave stopped"
 }
 
-main "$@"
+stop_datagrid_slave "$@"

@@ -11,7 +11,16 @@ fi
 
 THIS_SCRIPT_NAME=`basename "$0"`
 
-main() {
+start_datagrid_master() {
+
+    check_already_started() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
+        if [ ! -z $pid ]; then
+            echo "Datagrid master is already running. pid: $pid"
+            exit
+        fi
+    }
+
     check_already_started
 
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
@@ -23,12 +32,5 @@ main() {
 }
 
 
-check_already_started() {
-    pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
-    if [ ! -z $pid ]; then
-        echo "Datagrid master is already running. pid: $pid"
-        exit
-    fi
-}
 
-main "$@"
+start_datagrid_master "$@"
