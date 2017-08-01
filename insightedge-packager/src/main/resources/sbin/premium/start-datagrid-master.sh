@@ -12,6 +12,31 @@ fi
 THIS_SCRIPT_NAME=`basename "$0"`
 
 start_datagrid_master() {
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: "
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo " $script"
+        echo ""
+        exit 1
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "--mode")
+              shift
+              ;;
+            *)
+              echo "Unknown option: $1"
+              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
 
     check_already_started() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
@@ -21,6 +46,7 @@ start_datagrid_master() {
         fi
     }
 
+    parse_options $@
     check_already_started
 
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
@@ -30,7 +56,5 @@ start_datagrid_master() {
     nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
     echo "Datagrid master started (log: $log)"
 }
-
-
 
 start_datagrid_master "$@"
