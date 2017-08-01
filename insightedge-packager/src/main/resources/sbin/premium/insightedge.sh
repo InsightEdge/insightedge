@@ -1,8 +1,7 @@
 #!/bin/bash
 
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
-source ${DIRNAME}/../../bin/setenv.sh
-source ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
+source ${DIRNAME}/common-insightedge.sh
 
 IE_DIR_INTERNAL="${XAP_HOME}/insightedge"
 EMPTY="[]"
@@ -209,7 +208,25 @@ shutdown_all() {
 start_grid_master() {
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node"
-    ${XAP_HOME}/insightedge/sbin/start-datagrid-master.sh
+
+    check_already_started() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
+        if [ ! -z $pid ]; then
+            echo "Datagrid master is already running. pid: $pid"
+            exit
+        fi
+    }
+
+    check_already_started
+
+    mkdir -p "$INSIGHTEDGE_LOG_DIR"
+    log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
+    echo "Starting datagrid master"
+    export XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master"
+    nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
+    echo "Datagrid master started (log: $log)"
+
+
     step_title "--- Gigaspaces datagrid management node started"
 }
 
