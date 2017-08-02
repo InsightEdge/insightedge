@@ -1,21 +1,28 @@
 @echo off
 
+call %~dp0..\..\bin\setenv.bat
 rem Test that an argument was given
 if "x%2"=="x" (
   echo Usage: insigthedge.cmd --mode ^(demo^|shutdown^)
   exit /b 1
 )
 
+
+
 set MODE=%2
-set INSIGHTEDGE_HOME=%~dp0..
 set XAP_LOOKUP_LOCATORS=127.0.0.1:4174
 set XAP_LOOKUP_GROUPS=insightedge
 set NIC_ADDR=127.0.0.1
 rem sets HADOOP_HOME if not specified by user - fixed NPE due to missing winutils
 if "x%HADOOP_HOME%"=="x" (
-  set HADOOP_HOME=%INSIGHTEDGE_HOME%\winutils
+  set HADOOP_HOME=%XAP_HOME%\insightedge\winutils
 )
-for /f "tokens=1,2" %%a in (%INSIGHTEDGE_HOME%\VERSION) do (
+
+if "x%SPARK_HOME%"=="x" (
+  set SPARK_HOME=%XAP_HOME%\insightedge\spark
+)
+
+for /f "tokens=1,2" %%a in (%XAP_HOME%\insightedge\VERSION) do (
   if "x%%a"=="xVersion:" (
     set VERSION=%%b
   )
@@ -36,50 +43,50 @@ echo                                                          edition: %EDITION%
 
 if "x%MODE%"=="xdemo" (
   echo --- Stopping Spark master
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-master
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop spark-master
   echo --- Spark master stopped
   echo --- Starting Spark master at 127.0.0.1
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start spark-master bin\spark-class org.apache.spark.deploy.master.Master --ip 127.0.0.1
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start spark-master spark\bin\spark-class org.apache.spark.deploy.master.Master --ip 127.0.0.1
   echo --- Spark master started
 
   rem prints a newline
   echo.
   echo --- Stopping Spark worker
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-worker
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop spark-worker
   echo --- Spark worker stopped
   echo --- Starting Spark worker targetting spark://127.0.0.1:7077
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start spark-worker bin\spark-class org.apache.spark.deploy.worker.Worker spark://127.0.0.1:7077 --ip 127.0.0.1
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start spark-worker spark\bin\spark-class org.apache.spark.deploy.worker.Worker spark://127.0.0.1:7077 --ip 127.0.0.1
   echo --- Spark worker started
     
   echo.
   echo --- Stopping Datagrid master
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-master
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop datagrid-master
   echo --- Datagrid master stopped
   echo --- Starting Gigaspaces datagrid management node ^(locator: 127.0.0.1:4174, group: insightedge^)
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-master datagrid\bin\gs-agent.bat gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start datagrid-master ..\bin\gs-agent.bat gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1
   echo --- Gigaspaces datagrid management node started
   
   echo.
   echo --- Stopping Datagrid slave
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-slave
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop datagrid-slave
   echo --- Datagrid slave stopped
   echo --- Starting Gigaspaces datagrid node ^(locator: 127.0.0.1:4174, group: insightedge, containers: 2^)
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start datagrid-slave datagrid\bin\gs-agent.bat gsa.gsc 2 gsa.global.gsm 0 gsa.global.lus 0
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start datagrid-slave ..\bin\gs-agent.bat gsa.gsc 2 gsa.global.gsm 0 gsa.global.lus 0
   echo --- Gigaspaces datagrid node started
   
   echo.
   echo --- Deploying space: insightedge-space [2,0]  ^(locator: 127.0.0.1:4174, group: insightedge^)
-  %INSIGHTEDGE_HOME%\datagrid\bin\gs.bat deploy-space -cluster schema=partitioned-sync2backup total_members=2,0 insightedge-space
+  %XAP_HOME%\bin\gs.bat deploy-space -cluster schema=partitioned-sync2backup total_members=2,0 insightedge-space
   echo --- Done deploying space: insightedge-space
   
   echo.
   echo --- Stopping Zeppelin server
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop zeppelin
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop zeppelin
   echo --- Zeppelin server stopped
   echo --- Starting Zeppelin server
   rem add spark, datagrid and InsightEdge JARs to Zeppelin classpath
-  set ZEPPELIN_CLASSPATH_OVERRIDES="%INSIGHTEDGE_HOME%\lib\*";"%INSIGHTEDGE_HOME%\datagrid\lib\required\*";
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd start zeppelin zeppelin\bin\zeppelin.cmd
+  set ZEPPELIN_CLASSPATH_OVERRIDES="%XAP_HOME%\insightedge\lib\*";"%XAP_HOME%\lib\required\*";"%XAP_HOME%\insightedge\spark\jars\*";
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd start zeppelin zeppelin\bin\zeppelin.cmd
   echo --- Zeppelin server can be accessed at http://127.0.0.1:8090
   
   echo.
@@ -93,27 +100,27 @@ if "x%MODE%"=="xdemo" (
 
 if "x%MODE%"=="xshutdown" (
   echo --- Stopping Spark master
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-master
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop spark-master
   echo --- Spark master stopped
   
   echo.
   echo --- Stopping Spark worker
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop spark-worker
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop spark-worker
   echo --- Spark worker stopped
   
   echo.
   echo --- Stopping Datagrid master
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-master
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop datagrid-master
   echo --- Datagrid master stopped
   
   echo.
   echo --- Stopping Datagrid slave
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop datagrid-slave
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop datagrid-slave
   echo --- Datagrid slave stopped
   
   echo.
   echo --- Stopping Zeppelin server
-  %INSIGHTEDGE_HOME%\sbin\win-daemon.cmd stop zeppelin
+  %XAP_HOME%\insightedge\sbin\win-daemon.cmd stop zeppelin
   echo --- Zeppelin server stopped
   exit /b
 )

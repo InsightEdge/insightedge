@@ -1,15 +1,20 @@
 @echo off
 
-set INSIGHTEDGE_HOME=%~dp0..
+call %~dp0..\..\bin\setenv.bat
+
+if "x%SPARK_HOME%"=="x" (
+  set SPARK_HOME=%XAP_HOME%\insightedge\spark
+)
+
 
 rem disable randomized hash for string in Python 3.3+
 set PYTHONHASHSEED=0
 
 rem build INSIGHTEDGE_JARS string
 set INSIGHTEDGE_JARS=
-call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" GET_LIBS ","
+call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
 
-call "%INSIGHTEDGE_HOME%\sbin\common-insightedge.cmd" SET_HADOOP_HOME
+call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" SET_HADOOP_HOME
 
 rem do not remove empty lines after "set NEWLINE=^"!
 set NEWLINE=^
@@ -38,4 +43,4 @@ if "%APPENDED_JARS%" == "false" (
 )
 
 set CLASS=org.apache.spark.deploy.SparkSubmit
-%~dp0spark-class2.cmd %CLASS% %ARGUMENTS%
+ %SPARK_HOME%\bin\spark-class2.cmd %CLASS% %ARGUMENTS%

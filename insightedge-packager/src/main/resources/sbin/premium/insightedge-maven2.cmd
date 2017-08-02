@@ -1,31 +1,31 @@
 @echo off
 
-if "x%INSIGHTEDGE_HOME%"=="x" (
-    set INSIGHTEDGE_HOME=%~dp0..
-)
+call %~dp0..\..\bin\setenv.bat
+
+
 
 echo Installing InsightEdge %INSIGHTEDGE_VER% artifacts
 
 call mvn install:install-file ^
     -Dpackaging=pom ^
-    -Dfile=%INSIGHTEDGE_HOME%\tools\maven\poms\insightedge-package\pom.xml ^
-    -DpomFile=%INSIGHTEDGE_HOME%\tools\maven\poms\insightedge-package\pom.xml
+    -Dfile=%XAP_HOME%\insightedge\tools\maven\poms\insightedge-package\pom.xml ^
+    -DpomFile=%XAP_HOME%\insightedge\tools\maven\poms\insightedge-package\pom.xml
 
 call mvn install:install-file ^
  -DgroupId=org.gigaspaces.insightedge ^
  -DcreateChecksum=true ^
  -DartifactId=insightedge-core ^
- -DpomFile=%INSIGHTEDGE_HOME%\tools\maven\poms\insightedge-core\pom.xml ^
+ -DpomFile=%XAP_HOME%\insightedge\tools\maven\poms\insightedge-core\pom.xml ^
  -Dpackaging=jar ^
- -Dfile=%INSIGHTEDGE_HOME%\lib\insightedge-core.jar
+ -Dfile=%XAP_HOME%\insightedge\lib\insightedge-core.jar
 
 call mvn install:install-file ^
  -DgroupId=org.gigaspaces.insightedge ^
  -DcreateChecksum=true ^
  -DartifactId=insightedge-scala ^
- -DpomFile=%INSIGHTEDGE_HOME%\tools\maven\poms\insightedge-scala\pom.xml ^
+ -DpomFile=%XAP_HOME%\insightedge\tools\maven\poms\insightedge-scala\pom.xml ^
  -Dpackaging=jar ^
- -Dfile=%INSIGHTEDGE_HOME%\lib\insightedge-scala.jar
+ -Dfile=%XAP_HOME%\insightedge\lib\insightedge-scala.jar
 
 rem Install spring.aopalliance to local maven repo (fixes SBT builds)
 call mvn dependency:get ^

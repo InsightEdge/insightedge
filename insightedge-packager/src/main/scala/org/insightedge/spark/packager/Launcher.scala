@@ -76,10 +76,11 @@ object Launcher {
 
 
       run("Adding integration scripts") {
-        copy(s"$resources/bin", s"$insightEdgeHome/bin")
+        copy(s"$resources/bin", s"$insightEdgeHome/bin")		
         copy(s"$resources/sbin/common/", s"$insightEdgeHome/sbin/")
         copy(s"$resources/sbin/$edition/", s"$insightEdgeHome/sbin/")
       }
+	  
 
       run("Adding InsightEdge license and VERSION file") {
         copy(s"$project/LICENSE.md", s"$insightEdgeHome/INSIGHTEDGE-LICENSE.md")
@@ -145,6 +146,12 @@ object Launcher {
       run("Unpacking spark") {
         untgz(spark, s"$insightEdgeHome/spark", cutRootFolder = true)
       }
+
+        run("copy spark submit to spark/bin") {
+        copy(s"$resources/bin/spark-submit.cmd", s"$insightEdgeHome/spark/bin/spark-submit.cmd")
+        remove(s"$insightEdgeHome/bin/spark-submit.cmd")
+      }
+
 
       run("Making scripts executable") {
         permissions(s"$insightEdgeHome/bin/", read = Some(true), write = Some(true), execute = Some(true))
