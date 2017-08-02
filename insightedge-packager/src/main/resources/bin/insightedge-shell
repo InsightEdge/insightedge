@@ -20,21 +20,17 @@
 #
 # Shell script for starting the Spark Shell REPL
 
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source ${DIRNAME}/../sbin/common-insightedge.sh
+
 cygwin=false
 case "$(uname)" in
   CYGWIN*) cygwin=true;;
 esac
 
-if [ -z "${XAP_HOME}" ]; then
-  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
-fi
-
 # Enter posix mode for bash
 set -o posix
 
-if [ -z "${SPARK_HOME}" ]; then
-  export SPARK_HOME="${XAP_HOME}/insightedge/spark/"
-fi
 
 export _SPARK_CMD_USAGE="Usage: ./bin/insightedge-shell [options]"
 

@@ -1,28 +1,12 @@
 #!/bin/bash
 
-if [ -z "${XAP_HOME}" ]; then
-  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
-fi
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source ${DIRNAME}/common-insightedge.sh
 
-source ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
-
-IE_DIR_INTERNAL="${XAP_HOME}/insightedge"
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
-IE_VERSION=`grep -w "Version" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-ARTIFACT_VERSION=`grep -w "ArtifactVersion" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-MILESTONE=`grep -w "Milestone" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-BUILD_NUMBER=`grep -w "BuildNumber" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-EDITION=`grep -w "Edition" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-ARTIFACT="gigaspaces-insightedge-${IE_VERSION}-${MILESTONE}-${BUILD_NUMBER}-${EDITION}"
-ARTIFACT_EC2="https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/insightedge/${IE_VERSION}/${ARTIFACT_VERSION}/${ARTIFACT}.zip"
-
-# override this variable with custom command if you want your distribution to be downloaded from custom location
-# for customization, call before insightedge.sh:
-# export ARTIFACT_DOWNLOAD_COMMAND="curl -L -O http://.../gigaspaces-insightedge.zip"
-if [ -z "${ARTIFACT_DOWNLOAD_COMMAND}" ]; then
-  export ARTIFACT_DOWNLOAD_COMMAND="curl -L -O $ARTIFACT_EC2"
-fi
+IE_VERSION=`grep -w "Version" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+EDITION=`grep -w "Edition" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 
 main() {
     define_defaults
@@ -32,35 +16,29 @@ main() {
     display_logo
     case "$MODE" in
       "master")
-        local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
+        local_master $@
         ;;
       "slave")
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
+        local_slave $@
         ;;
       "zeppelin")
-        local_zeppelin $IE_PATH $CLUSTER_MASTER
+        local_zeppelin 127.0.0.1 #TODO
         ;;
       "demo")
-        local_master $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE
-        local_slave $IE_PATH $IE_INSTALL $ARTIFACT "$ARTIFACT_DOWNLOAD_COMMAND" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE
-        deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
-        local_zeppelin $IE_PATH $CLUSTER_MASTER
-        display_demo_help $CLUSTER_MASTER
-        ;;
-      "remote-master")
-        remote_master $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY
-        ;;
-      "remote-slave")
-        remote_slave $REMOTE_HOSTS $REMOTE_USER $REMOTE_KEY
+        local_master $@
+        local_slave $@
+        deploy_space $@
+        local_zeppelin 127.0.0.1 #TODO
+        display_demo_help 127.0.0.1 #TODO
         ;;
       "deploy")
-        deploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME $SPACE_TOPOLOGY
+        deploy_space $@
         ;;
       "undeploy")
-        undeploy_space $IE_PATH $GRID_LOCATOR $GRID_GROUP $SPACE_NAME
+        undeploy_space $@
         ;;
       "shutdown")
-        shutdown_all $IE_PATH
+        shutdown_all
         ;;
     esac
 }
@@ -70,7 +48,7 @@ display_usage() {
     echo ""
     display_logo
     echo ""
-    echo "Usage: * - required, ** - required in some modes"
+    echo "Usage: * - required"
     echo "     --mode      |  * insightedge mode:"
     echo "                 |       master:        locally restarts spark master and grid manager"
     echo "                 |       slave:         locally restarts spark slave and grid containers"
@@ -78,78 +56,37 @@ display_usage() {
     echo "                 |       undeploy:      undeploys space from grid"
     echo "                 |       zeppelin:      locally starts zeppelin"
     echo "                 |       demo:          locally starts datagrid master, datagrid slave and zeppelin, deploys empty space"
-    echo "                 |       remote-master: executes 'master' mode on remote system (use for automation)"
-    echo "                 |       remote-slave:  executes 'slave' mode on remote system (use for automation)"
     echo "                 |       shutdown:      stops 'master', 'slave' and 'zeppelin'"
     echo " -m, --master    |  * cluster master IP or hostname"
-    echo " -l, --locator   |    lookup locators for the grid components                    | default master:4174"
-    echo " -g, --group     |    lookup groups for the grid components                      | default insightedge"
-    echo "                 |               usage: if you have several clusters in one LAN,"
-    echo "                 |                      it's recommended to have unique group per cluster"
-    echo " -s, --size      |    grid container/manager heap size                           | default 1G"
-    echo "                 |             format:  java-style heap size string"
-    echo "                 |             example: '1G', '4096M'"
     echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
     echo " -n, --name      |    (deploy/undeploy modes) name of the deployed space         | default insightedge-space"
     echo " -t, --topology  |    (deploy mode) number of space primary and backup instances | default 2,0"
     echo "                 |             format:  <num-of-primaries>,<num-of-backups-per-primary>"
     echo "                 |             example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
-    echo " -p, --path      | ** (remote modes) path to insightedge installation"
-    echo " -i, --install   |    if specified, a fresh insightedge distribution will be installed to specified path"
-    echo "                 |             warning: folder specified in path will be fully removed and recreated"
-    echo " -h, --hosts     | ** (remote modes) comma separated list of remote nodes: IPs or hostnames"
-    echo " -u, --user      | ** (remote modes) username"
-    echo " -k, --key       |    (remote modes) identity file"
     echo ""
     local script="./sbin/$THIS_SCRIPT_NAME"
     echo "Examples:"
     echo "  Restart master |  restarts spark master at spark://127.0.0.1:7077"
     echo "        on local |  restarts spark master web UI at http://127.0.0.1:8080"
-    echo "     environment |  restarts grid manager with 1G heap size"
-    echo "                 |  restarts grid lookup service at 127.0.0.1:4174 with group 'insightedge'"
+    echo "     environment |  restarts grid manager"
+    echo "                 |  restarts grid lookup service"
     echo ""
-    echo " $script --mode master --path \$XAP_HOME --master 127.0.0.1"
+    echo " $script --mode master --master 127.0.0.1"
     echo ""
     echo "   Restart slave |  restarts spark slave that points to master at spark://127.0.0.1:7077"
-    echo "        on local |  restarts 2 grid containers with 1G heap size"
+    echo "        on local |  restarts 2 grid containers"
     echo "     environment |"
     echo ""
-    echo " $script --mode slave --path \$XAP_HOME --master 127.0.0.1"
+    echo " $script --mode slave --master 127.0.0.1"
     echo ""
     echo "    Deploy empty |  deploys insightedge-space with 2 primary instances"
     echo "           space |  deploys insightedge-space with 2 primary instances"
-    echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
-    echo " $script --mode deploy --path \$XAP_HOME --master 127.0.0.1"
+    echo " $script --mode deploy"
     echo ""
     echo "  Undeploy space |  undeploys insightedge-space"
-    echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
-    echo " $script --mode undeploy --path \$XAP_HOME --master 127.0.0.1"
-    echo ""
-    echo "  Remote install |  connects to remote via ssh"
-    echo "        on slave |  installs insightedge to home folder"
-    echo ""
-    echo " $script --mode remote-slave --hosts 10.0.0.2 \\"
-    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
-    echo "   --install --path ~/$ARTIFACT --master 10.0.0.1"
-    echo ""
-    echo " Cluster restart |  connects to cluster members via ssh"
-    echo "      automation |  restarts components"
-    echo ""
-    echo " MASTER=10.0.0.1"
-    echo " SLAVES=10.0.0.2,10.0.0.3,10.0.0.4"
-    echo " IEPATH=~/$ARTIFACT"
-    echo " $script --mode undeploy \\"
-    echo "   --master \$MASTER --group dev-env --name insightedge-dev-space"
-    echo " $script --mode remote-master --hosts \$MASTER \\"
-    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
-    echo "   --path \$IEPATH --master \$MASTER --group dev-env --size 2G"
-    echo " $script --mode remote-slave --hosts \$SLAVES \\"
-    echo "   --user insightedge --key ~/.ssh/dev-env.pem \\"
-    echo "   --path \$IEPATH --master \$MASTER --group dev-env --size 2G --container 4"
-    echo " $script --mode deploy \\"
-    echo "   --master \$MASTER --group dev-env --name insightedge-dev-space --topology 12,0"
+    echo " $script --mode undeploy"
     echo ""
     exit 1
 }
@@ -157,18 +94,10 @@ display_usage() {
 define_defaults() {
     # '[]' means 'empty'
     MODE=$EMPTY
-    IE_PATH=$EMPTY
-    IE_INSTALL="false"
     CLUSTER_MASTER=$EMPTY
-    GRID_LOCATOR=$EMPTY
-    GRID_GROUP="insightedge"
-    GSC_SIZE="1G"
     GSC_COUNT="2"
     SPACE_NAME="insightedge-space"
     SPACE_TOPOLOGY="2,0"
-    REMOTE_HOSTS=$EMPTY
-    REMOTE_USER=$EMPTY
-    REMOTE_KEY=$EMPTY
 }
 
 parse_options() {
@@ -178,28 +107,9 @@ parse_options() {
           shift
           MODE=$1
           ;;
-        "-p" | "--path")
-          shift
-          IE_PATH=$1
-          ;;
-        "-i" | "--install")
-          IE_INSTALL="true"
-          ;;
         "-m" | "--master")
           shift
           CLUSTER_MASTER=$1
-          ;;
-        "-l" | "--locator")
-          shift
-          GRID_LOCATOR=$1
-          ;;
-        "-g" | "--group")
-          shift
-          GRID_GROUP=$1
-          ;;
-        "-s" | "--size")
-          shift
-          GSC_SIZE=$1
           ;;
         "-c" | "--container")
           shift
@@ -212,18 +122,6 @@ parse_options() {
         "-t" | "--topology")
           shift
           SPACE_TOPOLOGY=$1
-          ;;
-        "-h" | "--hosts")
-          shift
-          REMOTE_HOSTS=$1
-          ;;
-        "-u" | "--user")
-          shift
-          REMOTE_USER=$1
-          ;;
-        "-k" | "--key")
-          shift
-          REMOTE_KEY=$1
           ;;
         *)
           echo "Unknown option: $1"
@@ -245,8 +143,6 @@ check_options() {
        [ $MODE != "slave" ] && \
        [ $MODE != "zeppelin" ] && \
        [ $MODE != "demo" ] && \
-       [ $MODE != "remote-master" ] && \
-       [ $MODE != "remote-slave" ] && \
        [ $MODE != "shutdown" ] && \
        [ $MODE != "deploy" ] && \
        [ $MODE != "undeploy" ]; then
@@ -254,24 +150,10 @@ check_options() {
          display_usage
     fi
 
-    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
+
+    if [[ "$CLUSTER_MASTER" == "$EMPTY" ]] && [[ $MODE == "master" || $MODE == "slave" ]]; then
       error_line "--master is required"
       display_usage
-    fi
-
-    if [[ $MODE == remote-* ]]; then
-        if [ "$REMOTE_USER" == "$EMPTY" ]; then
-            error_line "--user is required in remote modes"
-            display_usage
-        fi
-        if [ "$REMOTE_HOSTS" == "$EMPTY" ]; then
-            error_line "--hosts is required in remote modes"
-            display_usage
-        fi
-        if [ "$IE_PATH" == "$EMPTY" ]; then
-          error_line "--path is required"
-          display_usage
-        fi
     fi
 }
 
@@ -279,163 +161,337 @@ redefine_defaults() {
     if [ "$CLUSTER_MASTER" = "$EMPTY" ]; then
         CLUSTER_MASTER="127.0.0.1"
     fi
-    if [ "$GRID_LOCATOR" = "$EMPTY" ]; then
-        GRID_LOCATOR="$CLUSTER_MASTER:4174"
-    fi
-    if [ "$IE_PATH" = "$EMPTY" ]; then
-        IE_PATH="$XAP_HOME"
-    fi
 }
 
 local_master() {
-    local home=$1
-    local install=$2
-    local artifact=$3
-    local download=$4
-    local master=$5
-    local locator=$6
-    local group=$7
-    local size=$8
-
-    install_insightedge $install $artifact "$download" $home
-    stop_grid_master $home
-    stop_spark_master $home
-    start_grid_master $home $locator $group $size
-    start_spark_master $home $master
+    stop_grid_master
+    stop_spark_master
+    start_grid_master $@
+    start_spark_master ${CLUSTER_MASTER}
 }
 
 local_slave() {
-    local home=$1
-    local install=$2
-    local artifact=$3
-    local download=$4
-    local master=$5
-    local locator=$6
-    local group=$7
-    local containers=$8
-    local size=$9
 
-    install_insightedge $install $artifact "$download" $home
-    stop_grid_slave $home
-    stop_spark_slave $home
-    start_grid_slave $home $master $locator $group $containers $size
-    start_spark_slave $home $master
-}
-
-remote_master() {
-    local hosts=${1//,/ }
-    local user=$2
-    local key=$3
-
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_SIZE"
-    for host in $hosts; do
-        echo ""
-        step_title "---- Connecting to master at $host"
-        if [ "$key" == "$EMPTY" ]; then
-          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
-        else
-          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_master $args"
-        fi
-        echo ""
-        step_title "---- Disconnected from $host"
-    done
-}
-
-remote_slave() {
-    local hosts=${1//,/ }
-    local user=$2
-    local key=$3
-
-    local args="$IE_PATH $IE_INSTALL $ARTIFACT \"$ARTIFACT_DOWNLOAD_COMMAND\" $CLUSTER_MASTER $GRID_LOCATOR $GRID_GROUP $GSC_COUNT $GSC_SIZE"
-    for host in $hosts; do
-        echo ""
-        step_title "---- Connecting to slave at $host"
-        if [ "$key" == "$EMPTY" ]; then
-          ssh -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
-        else
-          ssh -i $key -oStrictHostKeyChecking=no $user@$host "$(typeset -f); local_slave $args"
-        fi
-        echo ""
-        step_title "---- Disconnected from $host"
-    done
+    stop_grid_slave
+    stop_spark_slave
+    start_grid_slave $@
+    start_spark_slave ${CLUSTER_MASTER}
 }
 
 deploy_space() {
-    local home=$1
-    local locator=$2
-    local group=$3
-    local space=$4
-    local topology=$5
-
     echo ""
-    step_title "--- Deploying space: $space [$topology] (locator: $locator, group: $group)"
-    $home/insightedge/sbin/deploy-datagrid.sh --locator $locator --group $group --name $space --topology $topology
-    step_title "--- Done deploying space: $space"
+    step_title "--- Deploying space"
+
+    define_defaults() {
+        SPACE_NAME="insightedge-space"
+        SPACE_TOPOLOGY="2,0"
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "-n" | "--name")
+              shift
+              SPACE_NAME=$1
+              ;;
+            "-t" | "--topology")
+              shift
+              SPACE_TOPOLOGY=$1
+              ;;
+            "--mode")
+              shift
+              ;;
+            *)
+#              echo "Unknown option: $1"
+#              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+    await_master_start() {
+        TIMEOUT=60
+        echo "  awaiting datagrid master ..."
+        while [ -z "$(${XAP_HOME}/bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
+            if [ $TIMEOUT -le 0 ]; then
+              echo "Datagrid master is not available within timeout"
+              return
+              #exit 1
+            fi
+            TIMEOUT=$((TIMEOUT - 10))
+            echo "  .. ($TIMEOUT sec)"
+        done
+    }
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage:"
+        echo " -n, --name      |   name of the deployed space                                 | default insightedge-space"
+        echo " -t, --topology  |   number of space primary and backup instances               | default 2,0"
+        echo "                 |            format:  <num-of-primaries>,<num-of-backups-per-primary>"
+        echo "                 |            example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo "Examples:"
+        echo "    Deploy space |  deploys 8 primary and 8 backup partitions of 'my-space' on cluster"
+        echo ""
+        echo " $script -n my-space -t 8,1"
+        echo ""
+#        exit 1
+        return
+    }
+
+    define_defaults
+    parse_options $@
+
+    echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY]"
+    await_master_start #TODO: revisit in IE-87
+    ${XAP_HOME}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
+
+    step_title "--- Done deploying space"
 }
 
 undeploy_space() {
-    local home=$1
-    local locator=$2
-    local group=$3
-    local space=$4
-
     echo ""
-    step_title "--- Undeploying space: $space (locator: $locator, group: $group)"
-    $home/insightedge/sbin/undeploy-datagrid.sh --locator $locator --group $group --name $space
-    step_title "--- Done undeploying space: $space"
+    step_title "--- Undeploying space"
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: * - required"
+        echo " -n, --name      |   name of the deployed space                                 | default insightedge-space"
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo "Examples:"
+        echo "  Undeploy space |  undeploys 'my-space' from cluster"
+        echo ""
+        echo " $script -m 10.0.0.1 -n my-space"
+        echo ""
+#        exit 1
+        return
+    }
+
+    define_defaults() {
+        SPACE_NAME="insightedge-space"
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "-n" | "--name")
+              shift
+              SPACE_NAME=$1
+              ;;
+            "--mode")
+              shift
+              ;;
+            *)
+#              echo "Unknown option: $1"
+#              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+
+    define_defaults
+    parse_options $@
+
+    echo "Undeploying space: $SPACE_NAME"
+    ${XAP_HOME}/bin/gs.sh undeploy $SPACE_NAME
+
+    step_title "--- Done undeploying space"
 }
 
 shutdown_all() {
-    local home=$1
-
-    stop_zeppelin $home
-    stop_grid_master $home
-    stop_grid_slave $home
-    stop_spark_master $home
-    stop_spark_slave $home
+    stop_zeppelin
+    stop_grid_master
+    stop_grid_slave
+    stop_spark_master
+    stop_spark_slave
 }
 
 start_grid_master() {
-    local home=$1
-    local locator=$2
-    local group=$3
-    local size=$4
-
     echo ""
-    step_title "--- Starting Gigaspaces datagrid management node (locator: $locator, group: $group, heap: $size)"
-    $home/insightedge/sbin/start-datagrid-master.sh --master $master --locator $locator --group $group --size $size
+    step_title "--- Starting Gigaspaces datagrid management node"
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: "
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo " $script"
+        echo ""
+        return
+#        exit 1
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "--mode")
+              shift
+              ;;
+            *)
+#              echo "Unknown option: $1"
+#              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+    check_already_started() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
+        if [ ! -z "$pid" ]; then
+            echo "Datagrid master is already running. pid: $pid"
+#            exit
+            return
+        fi
+    }
+
+    parse_options $@
+    check_already_started
+
+    mkdir -p "$INSIGHTEDGE_LOG_DIR"
+    local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
+    echo "Starting datagrid master"
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
+    echo "Datagrid master started (log: $log)"
+
     step_title "--- Gigaspaces datagrid management node started"
 }
 
 stop_grid_master() {
-    local home=$1
-
     echo ""
     step_title "--- Stopping datagrid master"
-    $home/insightedge/sbin/stop-datagrid-master.sh
+
+    do_stop_grid_master() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
+        if [ -z "$pid" ]; then
+            echo "Datagrid master is not running"
+            return
+#            exit
+        fi
+        echo "Stopping datagrid master (pid: $pid)..."
+
+        kill -SIGTERM $pid
+
+        TIMEOUT=60
+        while ps -p $pid > /dev/null; do
+        if [ $TIMEOUT -le 0 ]; then
+            break
+        fi
+            echo "  waiting termination ($TIMEOUT sec)"
+            ((TIMEOUT--))
+            sleep 1
+        done
+        echo "Datagrid master stopped"
+    }
+
+    do_stop_grid_master
     step_title "--- Datagrid master stopped"
 }
 
 start_grid_slave() {
-    local home=$1
-    local master=$2
-    local locator=$3
-    local group=$4
-    local containers=$5
-    local size=$6
-
     echo ""
-    step_title "--- Starting Gigaspaces datagrid node (locator: $locator, group: $group, heap: $size, containers: $containers)"
-    $home/insightedge/sbin/start-datagrid-slave.sh --master $master --locator $locator --group $group --container $containers --size $size
+    step_title "--- Starting Gigaspaces datagrid node"
+
+    display_usage() {
+        sleep 3
+        echo ""
+        echo "Usage: "
+        echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
+        echo ""
+        local script="./sbin/$THIS_SCRIPT_NAME"
+        echo "Examples:"
+        echo "  Start datagrid |  starts 8 containers"
+        echo ""
+        echo " $script -c 8"
+        echo ""
+#        exit 1
+        return
+    }
+
+    define_defaults() {
+        GSC_COUNT="2"
+    }
+
+    parse_options() {
+        while [ "$1" != "" ]; do
+          case $1 in
+            "-c" | "--container")
+              shift
+              GSC_COUNT=$1
+              ;;
+            "--mode")
+              shift
+              ;;
+            *)
+#              echo "Unknown option: $1"
+#              display_usage
+              ;;
+          esac
+          shift
+        done
+    }
+
+
+    check_already_started() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
+        if [ ! -z "$pid" ]; then
+            echo "Datagrid slave is already running. pid: $pid"
+            return
+#            exit
+        fi
+    }
+
+    define_defaults
+    parse_options $@
+    check_already_started
+
+    mkdir -p "$INSIGHTEDGE_LOG_DIR"
+    local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave.out"
+    echo "Starting datagrid slave (containers: $GSC_COUNT)"
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
+    echo "Datagrid slave started (log: $log)"
+
     step_title "--- Gigaspaces datagrid node started"
 }
 
 stop_grid_slave() {
-    local home=$1
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
-    $home/insightedge/sbin/stop-datagrid-slave.sh
+
+    do_stop_grid_slave() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
+        if [ -z "$pid" ]; then
+            echo "Datagrid slave is not running"
+#            exit
+            return
+        fi
+        echo "Stopping datagrid slave (pid: $pid)..."
+
+        kill -SIGTERM $pid
+
+        TIMEOUT=60
+        while ps -p $pid > /dev/null; do
+        if [ $TIMEOUT -le 0 ]; then
+            break
+        fi
+            echo "  waiting termination ($TIMEOUT sec)"
+            ((TIMEOUT--))
+            sleep 1
+        done
+        echo "Datagrid slave stopped"
+    }
+
+    do_stop_grid_slave
     step_title "--- Datagrid slave instances stopped"
 }
 

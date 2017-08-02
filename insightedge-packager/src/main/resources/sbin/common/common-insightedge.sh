@@ -1,152 +1,112 @@
 #!/usr/bin/env bash
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source ${DIRNAME}/../../bin/setenv.sh
 
-get_spark_path() {
-    echo ${XAP_HOME}/insightedge/spark
-}
-get_ie_path() {
-    echo ${XAP_HOME}/insightedge
-}
-get_xap_path() {
-    echo ${XAP_HOME}
-}
+if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
+  export INSIGHTEDGE_LOG_DIR="${XAP_HOME}/insightedge/logs"
+fi
+
+if [ -z "${SPARK_HOME}" ]; then
+  export SPARK_HOME="${XAP_HOME}/insightedge/spark"
+fi
+
 # combines insightedge + datagrid libs into a $1-separated string
 # SPARK_JAR=$(get_libs ',')    will give you    /<home>/insightedge-core-<version>.jar,/<home>/gigaspaces-scala-<version>.jar,...
 # CLASSPATH=$(get_libs ':')    will give you    /<home>/insightedge-core-<version>.jar:/<home>/gigaspaces-scala-<version>.jar:...
 get_libs() {
     local separator=$1
 
-    local datagrid="$(get_xap_path)"
-    local result="$(find $(get_ie_path)/lib -name "insightedge-core.jar")"
-    result="$result$separator$(find $(get_ie_path)/lib -name "insightedge-scala.jar")"
-    result="$result$separator$(echo ${datagrid}/lib/required/*.jar | tr ' ' $separator)"
-    result="$result$separator$(echo ${datagrid}/lib/optional/spatial/*.jar | tr ' ' $separator)"
+    local result="$(find ${XAP_HOME}/insightedge/lib -name "insightedge-core.jar")"
+    result="$result$separator$(find ${XAP_HOME}/insightedge/lib -name "insightedge-scala.jar")"
+    result="$result$separator$(echo ${XAP_HOME}/lib/required/*.jar | tr ' ' ${separator})"
+    result="$result$separator$(echo ${XAP_HOME}/lib/optional/spatial/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
 # split get_libs function for zeppelin interpreter
 get_xap_required_jars() {
     local separator=$1
-    local datagrid="$(get_xap_path)"
-    local result="$result$separator$(echo $datagrid/lib/required/*.jar | tr ' ' $separator)"
+    local result="$result$separator$(echo ${XAP_HOME}/lib/required/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
 get_xap_spatial_libs() {
     local separator=$1
-    local datagrid="$(get_xap_path)"
-    local result="$result$separator$(echo $datagrid/lib/optional/spatial/*.jar | tr ' ' $separator)"
+    local result="$result$separator$(echo ${XAP_HOME}/lib/optional/spatial/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
 get_spark_basic_jars() {
     local separator=$1
-    local spark_jars="$(get_spark_path)/jars"
-    local result="$result$separator$(echo $spark_jars/*.jar | tr ' ' $separator)"
+    local spark_jars="${SPARK_HOME}/jars"
+    local result="$result$separator$(echo ${spark_jars}/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
 get_ie_lib() {
     local separator=$1
-    local ie_lib="$(get_ie_path)/lib"
-    local result="$result$separator$(echo $ie_lib/*.jar | tr ' ' $separator)"
+    local ie_lib="${XAP_HOME}/insightedge/lib"
+    local result="$result$separator$(echo ${ie_lib}/*.jar | tr ' ' ${separator})"
     echo $result
 }
 
-install_insightedge() {
-    local install=$1
-    local artifact=$2
-    local command=$3
-    local home=$4
-
-    if [ $install == "false" ]; then
-        return
-    fi
-
-    echo ""
-    step_title "--- Installing InsightEdge ($artifact) at $home"
-    echo "- Cleaning up $home"
-    rm -rf $home
-    mkdir $home
-    cd $home
-    echo "- Downloading $artifact"
-    eval $command
-    echo "- Unpacking $artifact"
-    unzip ${artifact}.zip > insightedge-unzip.log
-    rm ${artifact}.zip
-    echo "- Extracting files from subfolder"
-    mv ${artifact}/** .
-    echo "- Removing $artifact bundle"
-    rm -rf ${artifact}
-    step_title "--- Installation complete"
-}
-
 local_zeppelin() {
-    local home=$1
-    local master=$2
+    local zeppelin_host=$1
     echo ""
     step_title "--- Restarting Zeppelin server"
-    stop_zeppelin $1
-    start_zeppelin $1
-    step_title "--- Zeppelin server can be accessed at http://$master:8090"
+    stop_zeppelin
+    start_zeppelin
+    step_title "--- Zeppelin server can be accessed at http://${zeppelin_host}:8090"
 }
 
 stop_zeppelin() {
-    local home=$1
     step_title "--- Stopping Zeppelin"
-    $home/insightedge/sbin/stop-zeppelin.sh
+    ${XAP_HOME}/insightedge/sbin/stop-zeppelin.sh
 }
 
 start_zeppelin() {
-    local home=$1
     step_title "--- Starting Zeppelin"
-    $home/insightedge/sbin/start-zeppelin.sh
+    ${XAP_HOME}/insightedge/sbin/start-zeppelin.sh
 }
 
 start_spark_master() {
-    local home=$1
-    local master=$2
-
+    local master_hostname=$1
     echo ""
-    step_title "--- Starting Spark master at $master"
-    $home/insightedge/spark/sbin/start-master.sh -h $master
+    step_title "--- Starting Spark master at ${master_hostname}"
+    ${SPARK_HOME}/sbin/start-master.sh -h ${master_hostname}
     step_title "--- Spark master started"
 }
 
 stop_spark_master() {
-    local home=$1
-
     echo ""
     step_title "--- Stopping Spark master"
-    $home/insightedge/spark/sbin/stop-master.sh
+    ${SPARK_HOME}/sbin/stop-master.sh
     step_title "--- Spark master stopped"
 }
 
 start_spark_slave() {
-    local home=$1
-    local master=$2
+    local master=$1
 
     echo ""
     step_title "--- Starting Spark slave"
-    $home/insightedge/spark/sbin/start-slave.sh spark://$master:7077
+    ${SPARK_HOME}/sbin/start-slave.sh spark://${master}:7077
     step_title "--- Spark slave started"
 }
 
 stop_spark_slave() {
-    local home=$1
-
     echo ""
     step_title "--- Stopping Spark slave"
-    $home/insightedge/spark/sbin/stop-slave.sh
+    ${SPARK_HOME}/sbin/stop-slave.sh
     step_title "--- Spark slave stopped"
 }
 
 display_demo_help() {
-    local master=$1
+    local zeppelin_host=$1
 
     printf '\e[0;34m\n'
     echo "Demo steps:"
     echo "1. make sure steps above were successfully executed"
-    echo "2. Open Web Notebook at http://$master:8090 and run any of the available examples"
+    echo "2. Open Web Notebook at http://${zeppelin_host}:8090 and run any of the available examples"
     printf "\e[0m\n"
 }
 
