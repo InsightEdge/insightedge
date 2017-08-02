@@ -82,7 +82,7 @@ display_usage() {
     echo "    Deploy empty |  deploys insightedge-space with 2 primary instances"
     echo "           space |  deploys insightedge-space with 2 primary instances"
     echo ""
-    echo " $script --mode deploy --master 127.0.0.1"
+    echo " $script --mode deploy"
     echo ""
     echo "  Undeploy space |  undeploys insightedge-space"
     echo ""
@@ -151,7 +151,7 @@ check_options() {
     fi
 
 
-    if [ "$CLUSTER_MASTER" == "$EMPTY" ] && [ $MODE != "demo" ] && [ $MODE != "shutdown" ]; then
+    if [[ "$CLUSTER_MASTER" == "$EMPTY" ]] && [[ $MODE == "master" || $MODE == "slave" ]]; then
       error_line "--master is required"
       display_usage
     fi
