@@ -1,5 +1,10 @@
 @echo off
 
+call %~dp0..\..\bin\setenv.bat
+
+if "x%SPARK_HOME%"=="x" (
+  set SPARK_HOME=%XAP_HOME%\insightedge\spark
+)
 
 
 rem disable randomized hash for string in Python 3.3+
@@ -38,4 +43,4 @@ if "%APPENDED_JARS%" == "false" (
 )
 
 set CLASS=org.apache.spark.deploy.SparkSubmit
- spark-class2.cmd %CLASS% %ARGUMENTS%
+ %SPARK_HOME%\bin\spark-class2.cmd %CLASS% %ARGUMENTS%
