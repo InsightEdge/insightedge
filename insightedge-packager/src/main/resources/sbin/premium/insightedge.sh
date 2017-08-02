@@ -3,11 +3,10 @@
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/common-insightedge.sh
 
-IE_DIR_INTERNAL="${XAP_HOME}/insightedge"
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
-IE_VERSION=`grep -w "Version" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-EDITION=`grep -w "Edition" ${IE_DIR_INTERNAL}/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+IE_VERSION=`grep -w "Version" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+EDITION=`grep -w "Edition" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 
 main() {
     define_defaults
@@ -49,7 +48,7 @@ display_usage() {
     echo ""
     display_logo
     echo ""
-    echo "Usage: * - required, ** - required in some modes"
+    echo "Usage: * - required"
     echo "     --mode      |  * insightedge mode:"
     echo "                 |       master:        locally restarts spark master and grid manager"
     echo "                 |       slave:         locally restarts spark slave and grid containers"
@@ -69,25 +68,23 @@ display_usage() {
     echo "Examples:"
     echo "  Restart master |  restarts spark master at spark://127.0.0.1:7077"
     echo "        on local |  restarts spark master web UI at http://127.0.0.1:8080"
-    echo "     environment |  restarts grid manager with 1G heap size"
-    echo "                 |  restarts grid lookup service at 127.0.0.1:4174 with group 'insightedge'"
+    echo "     environment |  restarts grid manager"
+    echo "                 |  restarts grid lookup service"
     echo ""
-    echo " $script --mode master"
+    echo " $script --mode master --master 127.0.0.1"
     echo ""
     echo "   Restart slave |  restarts spark slave that points to master at spark://127.0.0.1:7077"
-    echo "        on local |  restarts 2 grid containers with 1G heap size"
+    echo "        on local |  restarts 2 grid containers"
     echo "     environment |"
     echo ""
     echo " $script --mode slave --master 127.0.0.1"
     echo ""
     echo "    Deploy empty |  deploys insightedge-space with 2 primary instances"
     echo "           space |  deploys insightedge-space with 2 primary instances"
-    echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
     echo " $script --mode deploy --master 127.0.0.1"
     echo ""
     echo "  Undeploy space |  undeploys insightedge-space"
-    echo "                 |  cluster is searched with 127.0.0.1:4174 locator and 'insightedge' group"
     echo ""
     echo " $script --mode undeploy"
     echo ""
