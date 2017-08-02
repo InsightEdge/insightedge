@@ -358,10 +358,9 @@ start_grid_master() {
     check_already_started
 
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
-    log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
+    local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
     echo "Starting datagrid master"
-    export XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master"
-    nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
     echo "Datagrid master started (log: $log)"
 
     step_title "--- Gigaspaces datagrid management node started"
@@ -456,10 +455,9 @@ start_grid_slave() {
     check_already_started
 
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
-    log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave.out"
+    local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave.out"
     echo "Starting datagrid slave (containers: $GSC_COUNT)"
-    export XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave"
-    nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
     echo "Datagrid slave started (log: $log)"
 
     step_title "--- Gigaspaces datagrid node started"
