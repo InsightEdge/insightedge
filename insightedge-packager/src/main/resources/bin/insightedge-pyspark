@@ -17,13 +17,8 @@
 # limitations under the License.
 #
 
-if [ -z "${XAP_HOME}" ]; then
-  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
-fi
-
-if [ -z "${SPARK_HOME}" ]; then
-  export SPARK_HOME="${XAP_HOME}/insightedge/spark/"
-fi
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source ${DIRNAME}/../sbin/common-insightedge.sh
 
 source "${SPARK_HOME}"/bin/load-spark-env.sh
 export _SPARK_CMD_USAGE="Usage: ./bin/insightedge-pyspark [options]"

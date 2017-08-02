@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-if [ -z "${XAP_HOME}" ]; then
-  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../..; pwd)"
-fi
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source ${DIRNAME}/../sbin/common-insightedge.sh
 
 # disable randomized hash for string in Python 3.3+
 export PYTHONHASHSEED=0
 
 # add datagrid and InsightEdge JARs to job --jars
-. ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
 INSIGHTEDGE_JARS=$(get_libs ',')
 
 process_args(){
