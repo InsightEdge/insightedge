@@ -96,15 +96,6 @@ object Launcher {
         writeToFile(s"$insightEdgeHome/VERSION", versionInfo)
       }
 
-      run("Replacing README.md") {
-        remove(s"$insightEdgeHome/README.md")
-        copy(s"$project/README.md", s"$insightEdgeHome/README.md")
-      }
-
-      run("Removing CHANGES.txt ") {
-        remove(s"$insightEdgeHome/CHANGES.txt")
-      }
-
       run("Adding integration libs") {
         copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
         copy(s"$project/insightedge-scala/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-scala") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
@@ -119,7 +110,7 @@ object Launcher {
       run("Adding examples") {
         unzip(s"$examples", s"$insightEdgeHome/quickstart", cutRootFolder = false)
       }
-      run("Adding datasets") {
+      run("Adding files to data folder") {
         copy(s"$resources/data/", s"$insightEdgeHome/data")
       }
 
@@ -165,58 +156,8 @@ object Launcher {
         zip(output, outputFile, outputPrefix)
       }
 
-//      run("Removing spark R integration") {
-//        remove(s"$insightEdgeHome/R")
-//        remove(s"$insightEdgeHome/bin/sparkR")
-//        remove(s"$insightEdgeHome/bin/sparkR.cmd")
-//        remove(s"$insightEdgeHome/bin/sparkR2.cmd")
-//      }
-
-
-
     }
 
-
-    /*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        r
-        if (edition.equals("community")) {
-          run("Adding template space configuration (community only)") {
-            copy(s"$resources/sbin/community/template/insightedge-datagrid.xml", s"$output/datagrid/deploy/templates/insightedge-datagrid/META-INF/spring/pu.xml")
-          }
-          run("Adding geospatial jars to pu-common (community only)") {
-            copy(s"$output/datagrid/lib/optional/spatial", s"$output/datagrid/lib/optional/pu-common")
-          }
-        }
-
-
-
-
-
-        //do not remove
-        run("Removing Hadoop examples") {
-          remove(s"$output/lib/spark-examples-1.6.0-hadoop2.6.0.jar")
-        }
-
-
-
-        run("Packing installation") {
-          new File(outputFile).getParentFile.mkdirs()
-          zip(output, outputFile, outputPrefix)
-        }*/
   }
 
   def parameter(tuple: (String, String)): String = {
