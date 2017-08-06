@@ -232,28 +232,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>build-cluster-install-image</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                        <configuration>
-                            <imageName>insightedge-tests-cluster-install</imageName>
-                            <dockerDirectory>
-                                ${main.basedir}/insightedge-integration-tests/tests/src/test/resources/docker/cluster-install
-                            </dockerDirectory>
-                            <resources>
-                                <resource>
-                                    <targetPath>/</targetPath>
-                                    <directory>
-                                        ${main.basedir}/insightedge-integration-tests/tests/src/test/resources/docker/cluster-install
-                                    </directory>
-                                    <!--<include>ie-user.pem</include>-->
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>build-maven-install-libs-image</id>
                         <phase>none</phase>
                         <goals>
@@ -342,10 +320,6 @@
                                 <id>build-demo-mode-image</id>
                                 <phase>none</phase>
                             </execution>
-                            <execution>
-                                <id>build-cluster-install-image</id>
-                                <phase>none</phase>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
@@ -388,10 +362,6 @@
                                 <id>build-demo-mode-image</id>
                                 <phase>pre-integration-test</phase>
                             </execution>
-                            <execution>
-                                <id>build-cluster-install-image</id>
-                                <phase>pre-integration-test</phase>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
@@ -426,10 +396,6 @@
                                 <id>build-demo-mode-image</id>
                                 <phase>none</phase>
                             </execution>
-                            <execution>
-                                <id>build-cluster-install-image</id>
-                                <phase>none</phase>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
@@ -461,10 +427,6 @@
                             </execution>
                             <execution>
                                 <id>build-demo-mode-image</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>build-cluster-install-image</id>
                                 <phase>none</phase>
                             </execution>
                         </executions>
