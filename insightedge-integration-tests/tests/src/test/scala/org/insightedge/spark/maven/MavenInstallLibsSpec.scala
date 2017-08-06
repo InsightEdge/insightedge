@@ -21,7 +21,7 @@ import java.io.File
 import org.insightedge.spark.utils.BuildUtils._
 import org.insightedge.spark.utils.ProcessUtils._
 import org.insightedge.spark.utils.FsUtils._
-import org.insightedge.spark.utils.{BuildUtils, LongRunningTest}
+import org.insightedge.spark.utils.{BuildUtils, LongRunningTestTag}
 import org.scalatest.{BeforeAndAfter, FlatSpec}
 
 /**
@@ -31,7 +31,7 @@ class MavenInstallLibsSpec extends FlatSpec with BeforeAndAfter {
 
   val scriptsDir = getClass.getClassLoader.getResource("docker/maven-install-libs").getFile
 
-  "install-libs-test.sh" should "install libs into local maven repo using Maven" taggedAs LongRunningTest in {
+  "install-libs-test.sh" should "install libs into local maven repo using Maven" taggedAs LongRunningTestTag in {
     println(s"Edition: $BuildEdition")
     println(s"Version: $BuildVersion")
     println(s"Git branch: $GitBranch")
