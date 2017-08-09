@@ -110,7 +110,8 @@ object Launcher {
       run("Adding examples") {
         unzip(s"$examples", s"$insightEdgeHome/quickstart", cutRootFolder = false)
       }
-      run("Adding files to data folder") {
+      run("Adding InsightEdge resources") {
+        copy(s"$resources/conf/", s"$insightEdgeHome/conf")
         copy(s"$resources/data/", s"$insightEdgeHome/data")
       }
 
@@ -138,9 +139,8 @@ object Launcher {
         untgz(spark, s"$insightEdgeHome/spark", cutRootFolder = true)
       }
 
-        run("copy spark submit to spark/bin") {
-        copy(s"$resources/bin/spark-submit.cmd", s"$insightEdgeHome/spark/bin/spark-submit.cmd")
-        remove(s"$insightEdgeHome/bin/spark-submit.cmd")
+      run("Injecting InsightEdge spark overrides") {
+        copy(s"$resources/spark/", s"$insightEdgeHome/spark")
       }
 
 
