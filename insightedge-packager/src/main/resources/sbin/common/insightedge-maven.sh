@@ -22,14 +22,6 @@ mvn install:install-file \
  -Dpackaging=jar \
  -Dfile=${IE_PATH_INTERNAL}/lib/insightedge-core.jar
 
-mvn install:install-file \
- -DgroupId=org.gigaspaces.insightedge \
- -DcreateChecksum=true \
- -DartifactId=insightedge-scala \
- -DpomFile=${IE_PATH_INTERNAL}/tools/maven/poms/insightedge-scala/pom.xml \
- -Dpackaging=jar \
- -Dfile=${IE_PATH_INTERNAL}/lib/insightedge-scala.jar
-
 # Install spring.aopalliance to local maven repo (fixes SBT builds)
 mvn dependency:get \
  -Dartifact=org.aopalliance:com.springsource.org.aopalliance:1.0.0 \

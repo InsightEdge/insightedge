@@ -12,7 +12,7 @@ rem populates INSIGHTEDGE_JARS variable with a list of InsightEdge jars
 :GET_LIBS
   set SEPARATOR=%~2
 
-  set INSIGHTEDGE_JARS=%XAP_HOME%\insightedge\lib\insightedge-core.jar%SEPARATOR%%XAP_HOME%\insightedge\lib\insightedge-scala.jar
+  set INSIGHTEDGE_JARS=%XAP_HOME%\insightedge\lib\insightedge-core.jar
   REM get jars with * instead of full path
   REM set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%XAP_HOME%\lib\required\*%SEPARATOR%
   REM set INSIGHTEDGE_JARS=!INSIGHTEDGE_JARS!%SEPARATOR%%XAP_HOME%\lib\optional\spatial\*%SEPARATOR%

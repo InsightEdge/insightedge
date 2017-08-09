@@ -17,7 +17,6 @@ get_libs() {
     local separator=$1
 
     local result="$(find ${XAP_HOME}/insightedge/lib -name "insightedge-core.jar")"
-    result="$result$separator$(find ${XAP_HOME}/insightedge/lib -name "insightedge-scala.jar")"
     result="$result$separator$(echo ${XAP_HOME}/lib/required/*.jar | tr ' ' ${separator})"
     result="$result$separator$(echo ${XAP_HOME}/lib/optional/spatial/*.jar | tr ' ' ${separator})"
     echo $result

@@ -98,13 +98,11 @@ object Launcher {
 
       run("Adding integration libs") {
         copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
-        copy(s"$project/insightedge-scala/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-scala") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
       }
 
       run("Adding poms of integration libs") {
         copy(s"$project/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-package/pom.xml")
         copy(s"$project/insightedge-core/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-core/pom.xml")
-        copy(s"$project/insightedge-scala/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-scala/pom.xml")
       }
 
       run("Adding examples") {

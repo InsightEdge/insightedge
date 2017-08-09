@@ -50,7 +50,7 @@
 
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
-            <artifactId>insightedge-scala</artifactId>
+            <artifactId>insightedge-core</artifactId>
         </dependency>
         <!-- Scala -->
         <dependency>
@@ -288,9 +288,9 @@
             <dependencies>
                 <dependency>
                     <groupId>org.gigaspaces.insightedge</groupId>
-                    <artifactId>insightedge-scala</artifactId>
+                    <artifactId>insightedge-core</artifactId>
                     <scope>system</scope>
-                    <systemPath>${dist.dir}/insightedge/lib/insightedge-scala.jar</systemPath>
+                    <systemPath>${dist.dir}/insightedge/lib/insightedge-core.jar</systemPath>
                 </dependency>
             </dependencies>
             <build>
@@ -331,9 +331,9 @@
             <dependencies>
                 <dependency>
                     <groupId>org.gigaspaces.insightedge</groupId>
-                    <artifactId>insightedge-scala</artifactId>
+                    <artifactId>insightedge-core</artifactId>
                     <scope>system</scope>
-                    <systemPath>${dist.dir}/insightedge/lib/insightedge-scala.jar</systemPath>
+                    <systemPath>${dist.dir}/insightedge/lib/insightedge-core.jar</systemPath>
                 </dependency>
             </dependencies>
             <build>
