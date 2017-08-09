@@ -10,3 +10,5 @@ rem Source XAP environment:
 call %~dp0..\..\bin\setenv.bat
 rem Set InsightEdge defaults:
 if not defined HADOOP_HOME set HADOOP_HOME=%XAP_HOME%\insightedge\winutils
+
+set INSIGHTEDGE_CORE_CP=%XAP_HOME%\insightedge\lib\*

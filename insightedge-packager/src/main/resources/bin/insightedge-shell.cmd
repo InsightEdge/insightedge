@@ -1,6 +1,3 @@
 @echo off
-
-rem This is the entry point for running Spark shell. To avoid polluting the
-rem environment, it just launches a new cmd to do the real work.
-
-cmd /V /E /C %~dp0insightedge-shell2.cmd %*
+call %~dp0..\conf\insightedge-env.cmd
+"%SPARK_HOME%\bin\spark-shell2.cmd" -i %~dp0shell-init.scala --driver-class-path=%INSIGHTEDGE_CORE_CP% %*
