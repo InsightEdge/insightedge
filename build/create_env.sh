@@ -59,7 +59,6 @@ function store {
 #IE_VERSION=1.1.0
 #MILESTONE=ga
 #XAP_RELEASE_VERSION=12.1.1
-#XAP_OPEN_URL="http://hercules/12.1.1/12.1.1-ga-build/17100/gigaspaces-xap-open-12.1.1-ga-b17100.zip"
 #XAP_PREMIUM_URL="http://hercules/12.1.1/12.1.1-ga-build/17100/gigaspaces-xap-premium-12.1.1-ga-b17100.zip"
 #TAG_NAME="1.0.0-ga-NIGHTLY"
 #IE_BUILD_NUMBER="11000"
@@ -81,7 +80,6 @@ store "BRANCH"
 store "IE_VERSION"
 store "MILESTONE"
 store "XAP_RELEASE_VERSION"
-store "XAP_OPEN_URL"
 store "XAP_PREMIUM_URL"
 store "TAG_NAME"
 store "M2"

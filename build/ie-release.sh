@@ -160,12 +160,11 @@ function package_ie {
 
     local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.1.1-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples=$WORKSPACE/insightedge-examples/target/insightedge-examples-all.zip"
 
-    if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-community -Ddist.xap=$XAP_OPEN_URL ${package_args}"
-        execute_command "Packaging $rep" "$1" "$cmd"
-    elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
+    if [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
+    else
+        echo "Unknown type $rep in package_ie"
     fi
 }
 
@@ -251,15 +250,12 @@ function upload_ie_zip {
     local targetPath
     local sourceZipFileLocation="insightedge-packager/target/"
 
-    if [ "$2" = "ie-community" ]; then
-       sourceZipFileLocation="${sourceZipFileLocation}/community/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-community.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
-    elif [ "$2" = "ie-premium" ]; then
+    if [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-premium.zip"
        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
-
+    else
+        echo "Unknown type $2 in upload_ie_zip"
     fi
 
 
@@ -341,8 +337,6 @@ function publish_ie {
 
 function release_ie {
     env
-    local xap_open_url="git@github.com:xap/xap.git"
-    local xap_url="git@github.com:Gigaspaces/xap-premium.git"
     local ie_url="git@github.com:InsightEdge/insightedge.git"
     local ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
     local ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
