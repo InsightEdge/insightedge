@@ -72,13 +72,11 @@ if [ -f $sumbitter_jar ]; then
     java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
     echo "finished newman submitter process successfully"
 
-    echo "append I9E build to xap build in newman - only if RELEASE " # represented by MODE=NIGHTLY in newman or JOB_BASE_NAME == ie-release
-    if [ "$JOB_BASE_NAME" == "ie-release" ]; then
-        IFS='-' read -r -a array <<< "$XAP_RELEASE_VERSION"
-        local_xap_build_number="${array[2]}"-"${array[3]}"
+    echo "append I9E build to xap build in newman - only if RELEASE "
+    if [ ! -z "$APPEND_TO_XAP_BUILD_NUMBER" ]; then
 
         export NEWMAN_APPEND_TO_BUILD="true"
-        export NEWMAN_BUILD_NUMBER=$local_xap_build_number
+        export NEWMAN_BUILD_NUMBER=$APPEND_TO_XAP_BUILD_NUMBER
         export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/${premiumZipFileName}
         export NEWMAN_BUILD_TAGS="APPENDED_I9E"
 
