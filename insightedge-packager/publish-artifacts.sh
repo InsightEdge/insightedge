@@ -83,8 +83,8 @@ if [ -f $sumbitter_jar ]; then
         export NEWMAN_BUILD_TAGS="APPENDED_I9E"
 
         # nullify unused params
-        export NEWMAN_BUILD_TESTS_METADATA=""
-        export NEWMAN_BUILD_SHAS_FILE=""
+        unset NEWMAN_BUILD_TESTS_METADATA
+        unset NEWMAN_BUILD_SHAS_FILE
 
         echo "NEWMAN params at appending I9E to xap "
         echo "NEWMAN_BUILD_BRANCH=${NEWMAN_BUILD_BRANCH}"
