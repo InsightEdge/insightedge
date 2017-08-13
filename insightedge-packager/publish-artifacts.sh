@@ -85,6 +85,7 @@ if [ -f $sumbitter_jar ]; then
         # nullify unused params
         unset NEWMAN_BUILD_TESTS_METADATA
         unset NEWMAN_BUILD_SHAS_FILE
+        unset NEWMAN_BUILD_BRANCH
 
         echo "NEWMAN params at appending I9E to xap "
         echo "NEWMAN_BUILD_BRANCH=${NEWMAN_BUILD_BRANCH}"
@@ -95,7 +96,7 @@ if [ -f $sumbitter_jar ]; then
         echo "NEWMAN_BUILD_SHAS_FILE=${NEWMAN_BUILD_SHAS_FILE}"
         echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
 
-        echo "appending I9E build [$NEWMAN_BUILD_RESOURCES] to newman build with build number [$NEWMAN_BUILD_NUMBER]"
+        echo "appending I9E build [$NEWMAN_BUILD_NUMBER] to newman build with build number [$NEWMAN_BUILD_NUMBER]"
         java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
 
         echo "finished appending!"
