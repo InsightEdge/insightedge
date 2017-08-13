@@ -71,6 +71,37 @@ if [ -f $sumbitter_jar ]; then
     echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
     java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
     echo "finished newman submitter process successfully"
+
+    echo "append I9E build to xap build in newman - only if RELEASE " # represented by MODE=NIGHTLY in newman or JOB_BASE_NAME == ie-release
+    if [ "$JOB_BASE_NAME" == "ie-release" ]; then
+        IFS='-' read -r -a array <<< "$XAP_RELEASE_VERSION"
+        local_xap_build_number="${array[2]}"-"${array[3]}"
+
+        export NEWMAN_APPEND_TO_BUILD="true"
+        export NEWMAN_BUILD_NUMBER=$local_xap_build_number
+        export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/${premiumZipFileName}
+        export NEWMAN_BUILD_TAGS="APPENDED_I9E"
+
+        # nullify unused params
+        export NEWMAN_BUILD_TESTS_METADATA=""
+        export NEWMAN_BUILD_SHAS_FILE=""
+
+        echo "NEWMAN params at appending I9E to xap "
+        echo "NEWMAN_BUILD_BRANCH=${NEWMAN_BUILD_BRANCH}"
+        echo "NEWMAN_BUILD_NUMBER=${NEWMAN_BUILD_NUMBER}"
+        echo "NEWMAN_HOST=${NEWMAN_HOST}"
+        echo "NEWMAN_USER_NAME=${NEWMAN_USER_NAME}"
+        echo "NEWMAN_BUILD_TESTS_METADATA=${NEWMAN_BUILD_TESTS_METADATA}"
+        echo "NEWMAN_BUILD_SHAS_FILE=${NEWMAN_BUILD_SHAS_FILE}"
+        echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
+
+        echo "appending I9E build [$NEWMAN_BUILD_RESOURCES] to newman build with build number [$NEWMAN_BUILD_NUMBER]"
+        java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
+
+        echo "finished appending!"
+
+    fi
+
 else
     echo "skipping newman submitter process because the file ${sumbitter_jar} does not exists"
     exit 1
