@@ -27,14 +27,9 @@ import org.insightedge.spark.utils.{BucketIdSeq, GridProxyFactory}
 import scala.reflect._
 import scala.util.Random
 
-class InsightEdgeSparkContext(@transient val sc: SparkContext) extends Serializable {
+class InsightEdgeSparkContext(@transient val sc: SparkContext, val ieConfig: InsightEdgeConfig) extends Serializable {
 
   lazy val gridSqlContext = new SQLContext(sc)
-
-  val ieConfig = {
-    val sparkConf = sc.getConf
-    InsightEdgeConfig.fromSparkConf(sparkConf)
-  }
 
   def grid = GridProxyFactory.getOrCreateClustered(ieConfig)
 
