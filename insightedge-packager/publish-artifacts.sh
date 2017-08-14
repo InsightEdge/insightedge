@@ -55,6 +55,36 @@ if [ -f $sumbitter_jar ]; then
     export NEWMAN_USER_NAME=${newmanUsername="root"}
     export NEWMAN_PASSWORD=${newmanPassword="root"}
 
+    # append happen before create I9E build in newman to avoid collision of build number in release
+    if [ ! -z "$APPEND_TO_XAP_BUILD_NUMBER" ]; then
+        echo "append I9E build to xap build in newman - only if RELEASE "
+
+        export NEWMAN_APPEND_TO_BUILD="true"
+        export NEWMAN_BUILD_NUMBER=$APPEND_TO_XAP_BUILD_NUMBER
+        export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/${premiumZipFileName}
+        export NEWMAN_BUILD_TAGS="APPENDED_I9E"
+
+        echo "NEWMAN params at appending I9E to xap "
+        echo "NEWMAN_BUILD_BRANCH=${NEWMAN_BUILD_BRANCH}"
+        echo "NEWMAN_BUILD_NUMBER=${NEWMAN_BUILD_NUMBER}"
+        echo "NEWMAN_HOST=${NEWMAN_HOST}"
+        echo "NEWMAN_USER_NAME=${NEWMAN_USER_NAME}"
+        echo "NEWMAN_BUILD_TESTS_METADATA=${NEWMAN_BUILD_TESTS_METADATA}"
+        echo "NEWMAN_BUILD_SHAS_FILE=${NEWMAN_BUILD_SHAS_FILE}"
+        echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
+
+        echo "appending I9E build [$NEWMAN_BUILD_RESOURCES] to newman build with build number [$NEWMAN_BUILD_NUMBER]"
+        java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
+
+        unset NEWMAN_APPEND_TO_BUILD
+        unset NEWMAN_BUILD_NUMBER
+        unset NEWMAN_BUILD_RESOURCES
+        unset NEWMAN_BUILD_TAGS
+
+        echo "finished appending!"
+
+    fi
+
     export NEWMAN_BUILD_BRANCH=${branch}
     export NEWMAN_BUILD_NUMBER=${buildNumber}
     export NEWMAN_BUILD_TAGS=${newmanTags}
@@ -71,34 +101,6 @@ if [ -f $sumbitter_jar ]; then
     echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
     java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
     echo "finished newman submitter process successfully"
-
-    echo "append I9E build to xap build in newman - only if RELEASE "
-    if [ ! -z "$APPEND_TO_XAP_BUILD_NUMBER" ]; then
-
-        export NEWMAN_APPEND_TO_BUILD="true"
-        export NEWMAN_BUILD_NUMBER=$APPEND_TO_XAP_BUILD_NUMBER
-        export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/${premiumZipFileName}
-        export NEWMAN_BUILD_TAGS="APPENDED_I9E"
-
-        # nullify unused params
-        unset NEWMAN_BUILD_TESTS_METADATA
-        unset NEWMAN_BUILD_SHAS_FILE
-
-        echo "NEWMAN params at appending I9E to xap "
-        echo "NEWMAN_BUILD_BRANCH=${NEWMAN_BUILD_BRANCH}"
-        echo "NEWMAN_BUILD_NUMBER=${NEWMAN_BUILD_NUMBER}"
-        echo "NEWMAN_HOST=${NEWMAN_HOST}"
-        echo "NEWMAN_USER_NAME=${NEWMAN_USER_NAME}"
-        echo "NEWMAN_BUILD_TESTS_METADATA=${NEWMAN_BUILD_TESTS_METADATA}"
-        echo "NEWMAN_BUILD_SHAS_FILE=${NEWMAN_BUILD_SHAS_FILE}"
-        echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
-
-        echo "appending I9E build [$NEWMAN_BUILD_RESOURCES] to newman build with build number [$NEWMAN_BUILD_NUMBER]"
-        java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
-
-        echo "finished appending!"
-
-    fi
 
 else
     echo "skipping newman submitter process because the file ${sumbitter_jar} does not exists"
