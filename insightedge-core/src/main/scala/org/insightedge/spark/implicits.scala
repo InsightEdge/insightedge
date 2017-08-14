@@ -63,7 +63,7 @@ object implicits {
   trait BasicImplicits {
 
     implicit def insightEdgeSparkContext(sc: SparkContext): InsightEdgeSparkContext = {
-      insightEdgeSparkContextCache.getOrElseUpdate(sc, new InsightEdgeSparkContext(sc))
+      insightEdgeSparkContextCache.getOrElseUpdate(sc, new InsightEdgeSparkContext(sc, InsightEdgeConfig.fromSparkConf(sc.getConf)))
     }
 
     implicit def saveToDataGridExtension[R: ClassTag](rdd: RDD[R]): InsightEdgeRDDFunctions[R] = {
@@ -84,7 +84,20 @@ object implicits {
       }
     }
 
+    implicit class SparkContextExtension(sc: SparkContext) {
+      def initializeInsightEdgeContext(ieConfig: InsightEdgeConfig) : SparkContext = {
+        insightEdgeSparkContextCache.getOrElseUpdate(sc, new InsightEdgeSparkContext(sc, ieConfig))
+        sc
+      }
+    }
+
     implicit class SparkSessionExtension(sparkSession: SparkSession) {
+
+      def initializeInsightEdgeContext(ieConfig: InsightEdgeConfig) : SparkSession = {
+        insightEdgeSparkContextCache.getOrElseUpdate(sparkSession.sparkContext, new InsightEdgeSparkContext(sparkSession.sparkContext, ieConfig))
+        sparkSession
+      }
+
       /**
         * Stops internal Spark context and cleans all resources (connections to Data Grid, etc)
         */
