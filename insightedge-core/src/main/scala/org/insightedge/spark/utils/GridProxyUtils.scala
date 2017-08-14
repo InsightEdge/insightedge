@@ -18,12 +18,9 @@ package org.insightedge.spark.utils
 
 import java.lang.Math._
 
-import com.j_spaces.core.IJSpace
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.impl.InsightEdgePartition
 import org.insightedge.spark.utils.InsightEdgeConstants.{BucketsCount, DefaultSplitCount}
-import org.openspaces.core.space.UrlSpaceConfigurer
-import org.openspaces.core.{GigaSpace, GigaSpaceConfigurer}
 
 import scala.collection.JavaConversions._
 import scala.reflect._
@@ -32,33 +29,6 @@ import scala.reflect._
  * @author Oleksiy_Dyagilev
  */
 private[spark] object GridProxyUtils extends Logging {
-
-  def createSpace(ieConfig: InsightEdgeConfig): IJSpace = {
-    val spaceUri = s"jini://*/*/${ieConfig.spaceName}"
-    val urlSpaceConfigurer = new UrlSpaceConfigurer(spaceUri)
-    ieConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
-    ieConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
-    System.setProperty("com.gs.protectiveMode.ambiguousQueryRoutingUsage", "false")
-    urlSpaceConfigurer.space()
-  }
-
-  def createGridProxy(ieConfig: InsightEdgeConfig): GigaSpace = {
-    profileWithInfo("createClusteredProxy") {
-      new GigaSpaceConfigurer(this.createSpace(ieConfig)).create()
-    }
-  }
-
-  def createDirectProxy(gsPartition: InsightEdgePartition, ieConfig: InsightEdgeConfig): GigaSpace = {
-    profileWithInfo("createDirectProxy") {
-      val spaceName = ieConfig.spaceName
-      val url = s"jini://*/${gsPartition.gridContainerName}/$spaceName"
-      val urlSpaceConfigurer = new UrlSpaceConfigurer(url)
-      ieConfig.lookupGroups.foreach(urlSpaceConfigurer.lookupGroups)
-      ieConfig.lookupLocators.foreach(urlSpaceConfigurer.lookupLocators)
-      new GigaSpaceConfigurer(urlSpaceConfigurer.space()).clustered(false).create()
-    }
-  }
-
 
   def buildGridPartitions[R : ClassTag](ieConfig: InsightEdgeConfig, splitCount: Option[Int], supportsBuckets: Boolean): Seq[InsightEdgePartition] = {
     profileWithInfo("lookupInsightEdgePartitions") {
@@ -123,5 +93,4 @@ private[spark] object GridProxyUtils extends Logging {
   }
 
   private def profileWithInfo[T](message: String)(block: => T): T = Profiler.profile(message)(logInfo(_))(block)
-
 }

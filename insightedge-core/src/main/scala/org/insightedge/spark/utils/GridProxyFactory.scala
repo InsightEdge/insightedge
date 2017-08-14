@@ -17,33 +17,34 @@
 package org.insightedge.spark.utils
 
 import org.insightedge.spark.context.InsightEdgeConfig
-import org.insightedge.spark.impl.InsightEdgePartition
-import org.openspaces.core.GigaSpace
+import org.openspaces.core.{GigaSpace, GigaSpaceConfigurer}
+import org.openspaces.core.space.SpaceProxyConfigurer
 
 /**
  * Ensures single GigaSpaces instance per JVM (Spark worker)
  *
  * @author Oleksiy_Dyagilev
  */
-object GridProxyFactory {
+object GridProxyFactory extends Logging  {
+
+  System.setProperty("com.gs.protectiveMode.ambiguousQueryRoutingUsage", "false")
 
   private val clusterProxyCache = new LocalCache[InsightEdgeConfig, GigaSpace]()
-  private val directProxyCache = new LocalCache[String, GigaSpace]()
 
   def getOrCreateClustered(ieConfig: InsightEdgeConfig): GigaSpace = {
-    clusterProxyCache.getOrElseUpdate(ieConfig, GridProxyUtils.createGridProxy(ieConfig))
+    clusterProxyCache.getOrElseUpdate(ieConfig, createSpaceProxy(ieConfig))
   }
 
   def clusteredCacheSize(): Int = clusterProxyCache.size()
 
-  def getOrCreateDirect(partition: InsightEdgePartition, ieConfig: InsightEdgeConfig): GigaSpace = {
-    directProxyCache.getOrElseUpdate(directProxyKey(partition), GridProxyUtils.createDirectProxy(partition, ieConfig))
+  private def createSpaceProxy(ieConfig: InsightEdgeConfig) : GigaSpace = {
+    profileWithInfo("createSpaceProxy") {
+      val spaceConfigurer = new SpaceProxyConfigurer(ieConfig.spaceName)
+      ieConfig.lookupGroups.foreach(spaceConfigurer.lookupGroups)
+      ieConfig.lookupLocators.foreach(spaceConfigurer.lookupLocators)
+      new GigaSpaceConfigurer(spaceConfigurer).create()
+    }
   }
 
-  def directCacheSize(): Int = directProxyCache.size()
-
-  protected def directProxyKey(p: InsightEdgePartition): String = {
-    s"${p.hostName}:${p.gridContainerName}}"
-  }
-
+  private def profileWithInfo[T](message: String)(block: => T): T = Profiler.profile(message)(logInfo(_))(block)
 }
