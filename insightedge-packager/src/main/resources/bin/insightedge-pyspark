@@ -18,7 +18,7 @@
 #
 
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
-source ${DIRNAME}/../sbin/common-insightedge.sh
+source ${DIRNAME}/../conf/insightedge-env.sh
 
 source "${SPARK_HOME}"/bin/load-spark-env.sh
 export _SPARK_CMD_USAGE="Usage: ./bin/insightedge-pyspark [options]"
@@ -73,4 +73,4 @@ fi
 
 export PYSPARK_DRIVER_PYTHON
 export PYSPARK_DRIVER_PYTHON_OPTS
-exec "${XAP_HOME}"/insightedge/bin/insightedge-submit pyspark-shell-main --name "PySparkShell" "$@"
+exec "${SPARK_HOME}/bin/spark-submit" pyspark-shell-main --name "PySparkShell" --driver-class-path=${INSIGHTEDGE_CORE_CP} "$@"
