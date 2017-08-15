@@ -53,17 +53,10 @@
 # export SPARK_SUBMIT_OPTIONS                   # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
 # export SPARK_APP_NAME                         # (optional) The name of spark application.
 
-if [ -z "${XAP_HOME}" ]; then
-  export XAP_HOME="$(cd $(dirname ${BASH_SOURCE[0]})/../../..; pwd)"
-fi
+#DIRNAME=$(dirname ${BASH_SOURCE[0]})
+#source ${DIRNAME}/../../conf/insightedge-env.sh
 
-
-# add datagrid and InsightEdge JARs to job --jars
-. ${XAP_HOME}/insightedge/sbin/common-insightedge.sh
-INSIGHTEDGE_JARS=$(get_libs ',')
-
-export SPARK_HOME="${XAP_HOME}/insightedge/spark"                  # (required) When it is defined, load it instead of Zeppelin embedded Spark libraries
-export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
+#export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
 
 
 ## Use embedded spark binaries ##

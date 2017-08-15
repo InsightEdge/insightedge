@@ -2,34 +2,6 @@
 set -e
 
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
-source ${DIRNAME}/../sbin/common-insightedge.sh
+source ${DIRNAME}/../conf/insightedge-env.sh
 
-# disable randomized hash for string in Python 3.3+
-export PYTHONHASHSEED=0
-
-# add datagrid and InsightEdge JARs to job --jars
-INSIGHTEDGE_JARS=$(get_libs ',')
-
-process_args(){
-    ARGUMENTS=""
-    for i in "$@"
-        do
-            if [[ $i == "--jars" ]]; then
-                ARGUMENTS+="--jars $INSIGHTEDGE_JARS,"
-            else ARGUMENTS+="$i "
-            fi
-        done
-    if [[ ! $ARGUMENTS =~ .*--jars.* ]]
-    then
-       # pyspark-shell arguments order is different
-      if [[ $1 == "pyspark-shell-main" ]]; then
-        ARGUMENTS="$ARGUMENTS --jars $INSIGHTEDGE_JARS"
-      else
-        ARGUMENTS=" --jars $INSIGHTEDGE_JARS $ARGUMENTS"
-      fi
-    fi
-    echo $ARGUMENTS
-}
-ARGS=$(process_args "$@")
-
-exec "${SPARK_HOME}"/bin/spark-class org.apache.spark.deploy.SparkSubmit $ARGS
+"${SPARK_HOME}"/bin/spark-submit --driver-class-path=${INSIGHTEDGE_CORE_CP} $@
