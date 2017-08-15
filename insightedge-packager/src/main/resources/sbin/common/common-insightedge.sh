@@ -60,12 +60,12 @@ local_zeppelin() {
 
 stop_zeppelin() {
     step_title "--- Stopping Zeppelin"
-    ${XAP_HOME}/insightedge/sbin/stop-zeppelin.sh
+    "${XAP_HOME}/insightedge/zeppelin/bin/zeppelin-daemon.sh" stop
 }
 
 start_zeppelin() {
     step_title "--- Starting Zeppelin"
-    ${XAP_HOME}/insightedge/sbin/start-zeppelin.sh
+    "${XAP_HOME}/insightedge/zeppelin/bin/zeppelin-daemon.sh" start
 }
 
 start_spark_master() {
