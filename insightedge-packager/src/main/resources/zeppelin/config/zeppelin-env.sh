@@ -53,12 +53,6 @@
 # export SPARK_SUBMIT_OPTIONS                   # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
 # export SPARK_APP_NAME                         # (optional) The name of spark application.
 
-#DIRNAME=$(dirname ${BASH_SOURCE[0]})
-#source ${DIRNAME}/../../conf/insightedge-env.sh
-
-#export SPARK_SUBMIT_OPTIONS="--jars $INSIGHTEDGE_JARS" # (optional) extra options to pass to spark submit. eg) "--driver-memory 512M --executor-memory 1G".
-
-
 ## Use embedded spark binaries ##
 ## without SPARK_HOME defined, Zeppelin still able to run spark interpreter process using embedded spark binaries.
 ## however, it is not encouraged when you can define SPARK_HOME
@@ -94,3 +88,7 @@
 #### Zeppelin impersonation configuration
 # export ZEPPELIN_IMPERSONATE_CMD       # Optional, when user want to run interpreter as end web user. eg) 'sudo -H -u ${ZEPPELIN_IMPERSONATE_USER} bash -c '
 # export ZEPPELIN_IMPERSONATE_SPARK_PROXY_USER  #Optional, by default is true; can be set to false if you don't want to use --proxy-user option with Spark interpreter when impersonation enabled
+
+# Source InsightEdge environment:
+DIRNAME=$(dirname ${BASH_SOURCE[0]})
+source "${DIRNAME}/../../conf/insightedge-env.sh"
