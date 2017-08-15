@@ -17,7 +17,7 @@ if [ -z "${SPARK_HOME}" ]; then
     export SPARK_HOME="${XAP_HOME}/insightedge/spark"
 fi
 
-export INSIGHTEDGE_CORE_CP="${XAP_HOME}/insightedge/lib/*:${GS_JARS}"
+export INSIGHTEDGE_CORE_CP="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
 
 # Spark Submit
 export SPARK_SUBMIT_OPTS="-Dscala.usejavacp=true -Dspark.driver.extraClassPath=${INSIGHTEDGE_CORE_CP} -Dspark.executor.extraClassPath=${INSIGHTEDGE_CORE_CP}"
