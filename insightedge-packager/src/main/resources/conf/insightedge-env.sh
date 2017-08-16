@@ -25,3 +25,7 @@ if [ -z "$SPARK_SUBMIT_OPTS" ]; then
 fi
 # Zeppelin
 export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
+
+if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
+  export INSIGHTEDGE_LOG_DIR="${XAP_HOME}/insightedge/logs"
+fi

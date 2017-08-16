@@ -22,14 +22,14 @@ main() {
         local_slave $@
         ;;
       "zeppelin")
-        local_zeppelin 127.0.0.1 #TODO
+        local_zeppelin
         ;;
       "demo")
         local_master $@
         local_slave $@
         deploy_space $@
-        local_zeppelin 127.0.0.1 #TODO
-        display_demo_help 127.0.0.1 #TODO
+        local_zeppelin
+        display_demo_help
         ;;
       "deploy")
         deploy_space $@
@@ -166,12 +166,11 @@ redefine_defaults() {
 
 
 local_zeppelin() {
-    local zeppelin_host=$1
     echo ""
     step_title "--- Restarting Zeppelin server"
     stop_zeppelin
     start_zeppelin
-    step_title "--- Zeppelin server can be accessed at http://${zeppelin_host}:9090"
+    step_title "--- Zeppelin server can be accessed at http://${XAP_NIC_ADDRESS}:9090"
 }
 
 stop_zeppelin() {
@@ -192,12 +191,6 @@ start_spark_master() {
     step_title "--- Spark master started"
 }
 
-stop_spark_master() {
-    echo ""
-    step_title "--- Stopping Spark master"
-    ${SPARK_HOME}/sbin/stop-master.sh
-    step_title "--- Spark master stopped"
-}
 
 start_spark_slave() {
     local master=$1
@@ -208,20 +201,13 @@ start_spark_slave() {
     step_title "--- Spark slave started"
 }
 
-stop_spark_slave() {
-    echo ""
-    step_title "--- Stopping Spark slave"
-    ${SPARK_HOME}/sbin/stop-slave.sh
-    step_title "--- Spark slave stopped"
-}
-
 display_demo_help() {
     local zeppelin_host=$1
 
     printf '\e[0;34m\n'
     echo "Demo steps:"
     echo "1. make sure steps above were successfully executed"
-    echo "2. Open Web Notebook at http://${zeppelin_host}:9090 and run any of the available examples"
+    echo "2. Open Web Notebook at http://${XAP_NIC_ADDRESS}:9090 and run any of the available examples"
     printf "\e[0m\n"
 }
 
@@ -249,17 +235,12 @@ display_logo() {
 
 local_master() {
     stop_grid_master
-    stop_spark_master
     start_grid_master $@
-    start_spark_master ${CLUSTER_MASTER}
 }
 
 local_slave() {
-
     stop_grid_slave
-    stop_spark_slave
     start_grid_slave $@
-    start_spark_slave ${CLUSTER_MASTER}
 }
 
 deploy_space() {
@@ -394,8 +375,6 @@ shutdown_all() {
     stop_zeppelin
     stop_grid_master
     stop_grid_slave
-    stop_spark_master
-    stop_spark_slave
 }
 
 start_grid_master() {
@@ -444,7 +423,7 @@ start_grid_master() {
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
     echo "Starting datagrid master"
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc 0 gsa.global.gsm 0 gsa.gsm 1 gsa.global.lus 0 gsa.lus 1 > $log 2>&1 &
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master > $log 2>&1 &
     echo "Datagrid master started (log: $log)"
 
     step_title "--- Gigaspaces datagrid management node started"
@@ -541,7 +520,7 @@ start_grid_slave() {
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave.out"
     echo "Starting datagrid slave (containers: $GSC_COUNT)"
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" nohup ${XAP_HOME}/bin/gs-agent.sh gsa.gsc $GSC_COUNT gsa.global.gsm 0 gsa.global.lus 0  > $log 2>&1 &
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" nohup ${XAP_HOME}/bin/gs-agent.sh --gsc=$GSC_COUNT --spark_worker  > $log 2>&1 &
     echo "Datagrid slave started (log: $log)"
 
     step_title "--- Gigaspaces datagrid node started"
