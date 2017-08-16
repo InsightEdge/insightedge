@@ -20,9 +20,7 @@ fi
 export INSIGHTEDGE_CORE_CP="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
 
 # Spark Submit
-export SPARK_SUBMIT_OPTS="-Dscala.usejavacp=true -Dspark.driver.extraClassPath=${INSIGHTEDGE_CORE_CP} -Dspark.executor.extraClassPath=${INSIGHTEDGE_CORE_CP}"
+export SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=${INSIGHTEDGE_CORE_CP} -Dspark.executor.extraClassPath=${INSIGHTEDGE_CORE_CP}"
 
 # Zeppelin
 export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
-#export SPARK_SUBMIT_OPTIONS="--conf spark.executor.extraClassPath=${INSIGHTEDGE_CORE_CP}"
-
