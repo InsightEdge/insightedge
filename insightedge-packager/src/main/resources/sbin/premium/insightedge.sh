@@ -171,7 +171,7 @@ local_zeppelin() {
     step_title "--- Restarting Zeppelin server"
     stop_zeppelin
     start_zeppelin
-    step_title "--- Zeppelin server can be accessed at http://${zeppelin_host}:8090"
+    step_title "--- Zeppelin server can be accessed at http://${zeppelin_host}:9090"
 }
 
 stop_zeppelin() {
@@ -221,7 +221,7 @@ display_demo_help() {
     printf '\e[0;34m\n'
     echo "Demo steps:"
     echo "1. make sure steps above were successfully executed"
-    echo "2. Open Web Notebook at http://${zeppelin_host}:8090 and run any of the available examples"
+    echo "2. Open Web Notebook at http://${zeppelin_host}:9090 and run any of the available examples"
     printf "\e[0m\n"
 }
 
