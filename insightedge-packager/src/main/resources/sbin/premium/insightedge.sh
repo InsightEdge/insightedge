@@ -12,7 +12,6 @@ main() {
     define_defaults
     parse_options $@
     check_options
-    redefine_defaults
     display_logo
     case "$MODE" in
       "master")
@@ -94,7 +93,6 @@ display_usage() {
 define_defaults() {
     # '[]' means 'empty'
     MODE=$EMPTY
-    CLUSTER_MASTER=$EMPTY
     GSC_COUNT="2"
     SPACE_NAME="insightedge-space"
     SPACE_TOPOLOGY="2,0"
@@ -106,10 +104,6 @@ parse_options() {
         "--mode")
           shift
           MODE=$1
-          ;;
-        "-m" | "--master")
-          shift
-          CLUSTER_MASTER=$1
           ;;
         "-c" | "--container")
           shift
@@ -149,20 +143,7 @@ check_options() {
          error_line "unknown mode selected with --mode: $MODE"
          display_usage
     fi
-
-
-    if [[ "$CLUSTER_MASTER" == "$EMPTY" ]] && [[ $MODE == "master" || $MODE == "slave" ]]; then
-      error_line "--master is required"
-      display_usage
-    fi
 }
-
-redefine_defaults() {
-    if [ "$CLUSTER_MASTER" = "$EMPTY" ]; then
-        CLUSTER_MASTER="127.0.0.1"
-    fi
-}
-
 
 
 local_zeppelin() {
