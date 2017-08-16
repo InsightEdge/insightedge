@@ -87,12 +87,12 @@ if "x%MODE%"=="xdemo" (
   rem add spark, datagrid and InsightEdge JARs to Zeppelin classpath
   set ZEPPELIN_CLASSPATH_OVERRIDES="%XAP_HOME%\insightedge\lib\*";"%XAP_HOME%\lib\required\*";"%XAP_HOME%\insightedge\spark\jars\*";
   %XAP_HOME%\insightedge\sbin\win-daemon.cmd start zeppelin zeppelin\bin\zeppelin.cmd
-  echo --- Zeppelin server can be accessed at http://127.0.0.1:8090
+  echo --- Zeppelin server can be accessed at http://127.0.0.1:9090
   
   echo.
   echo Demo steps:
   echo 1. make sure steps above were successfully executed
-  echo 2. Open Web Notebook at http://127.0.0.1:8090 and run any of the available examples
+  echo 2. Open Web Notebook at http://127.0.0.1:9090 and run any of the available examples
   
   exit /b
 )
