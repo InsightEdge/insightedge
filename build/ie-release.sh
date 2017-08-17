@@ -261,10 +261,7 @@ function upload_ie_zip {
 
     sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
 
-    export S3_USER=`sed '/^\#/d' /home/jenkins/.m2/upload.properties | grep 's3_user'  | tail -n 1 | cut -d "=" -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'`
-    export S3_KEY=`sed '/^\#/d' /home/jenkins/.m2/upload.properties | grep 's3_key'  | tail -n 1 | cut -d "=" -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'`
-
-    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath} -Duser=$S3_USER -Dkey=$S3_KEY -Dcontainer=gigaspaces-repository-eu"
+    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath} -Dput.container=gigaspaces-repository-eu"
 
     echo "****************************************************************************************************"
     echo "uploading $2 zip"
