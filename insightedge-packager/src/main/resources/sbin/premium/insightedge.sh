@@ -9,41 +9,39 @@ IE_VERSION=`grep -w "Version" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{pr
 EDITION=`grep -w "Edition" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 
 main() {
-    define_defaults
-    parse_options $@
-    check_options
     display_logo
-    case "$MODE" in
-      "master")
-        local_master $@
+    local option=$1
+    shift
+    case "$option" in
+      "")
+        display_usage
         ;;
-      "slave")
-        local_slave $@
-        ;;
-      "zeppelin")
-        local_zeppelin
+      "-h")
+        display_usage
         ;;
       "demo")
-        local_master $@
-        local_slave $@
-        deploy_space $@
-        local_zeppelin
-        display_demo_help
+        main_demo $@
         ;;
-      "deploy")
-        deploy_space $@
+      "run")
+        main_run $@
+        ;;
+      "deploy-space")
+        main_deploy_space $@
         ;;
       "undeploy")
-        undeploy_space $@
+        main_undeploy $@
         ;;
       "shutdown")
-        shutdown_all
+        main_shutdown $@
+        ;;
+      *)
+        echo "Unknown option [$option]"
         ;;
     esac
 }
 
 display_usage() {
-    sleep 3
+    sleep 1
     echo ""
     display_logo
     echo ""
@@ -56,7 +54,6 @@ display_usage() {
     echo "                 |       zeppelin:      locally starts zeppelin"
     echo "                 |       demo:          locally starts datagrid master, datagrid slave and zeppelin, deploys empty space"
     echo "                 |       shutdown:      stops 'master', 'slave' and 'zeppelin'"
-    echo " -m, --master    |  * cluster master IP or hostname"
     echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
     echo " -n, --name      |    (deploy/undeploy modes) name of the deployed space         | default insightedge-space"
     echo " -t, --topology  |    (deploy mode) number of space primary and backup instances | default 2,0"
@@ -90,63 +87,8 @@ display_usage() {
     exit 1
 }
 
-define_defaults() {
-    # '[]' means 'empty'
-    MODE=$EMPTY
-    GSC_COUNT="2"
-    SPACE_NAME="insightedge-space"
-    SPACE_TOPOLOGY="2,0"
-}
 
-parse_options() {
-    while [ "$1" != "" ]; do
-      case $1 in
-        "--mode")
-          shift
-          MODE=$1
-          ;;
-        "-c" | "--container")
-          shift
-          GSC_COUNT=$1
-          ;;
-        "-n" | "--name")
-          shift
-          SPACE_NAME=$1
-          ;;
-        "-t" | "--topology")
-          shift
-          SPACE_TOPOLOGY=$1
-          ;;
-        *)
-          echo "Unknown option: $1"
-          display_usage
-          ;;
-      esac
-      shift
-    done
-}
-
-check_options() {
-    # check required options
-    if [ "$MODE" == "$EMPTY" ]; then
-      error_line "--mode is required"
-      display_usage
-    fi
-
-    if [ $MODE != "master" ] && \
-       [ $MODE != "slave" ] && \
-       [ $MODE != "zeppelin" ] && \
-       [ $MODE != "demo" ] && \
-       [ $MODE != "shutdown" ] && \
-       [ $MODE != "deploy" ] && \
-       [ $MODE != "undeploy" ]; then
-         error_line "unknown mode selected with --mode: $MODE"
-         display_usage
-    fi
-}
-
-
-local_zeppelin() {
+local_zeppelin() { ###
     echo ""
     step_title "--- Restarting Zeppelin server"
     stop_zeppelin
@@ -164,23 +106,6 @@ start_zeppelin() {
     "${XAP_HOME}/insightedge/zeppelin/bin/zeppelin-daemon.sh" start
 }
 
-start_spark_master() {
-    local master_hostname=$1
-    echo ""
-    step_title "--- Starting Spark master at ${master_hostname}"
-    ${SPARK_HOME}/sbin/start-master.sh -h ${master_hostname}
-    step_title "--- Spark master started"
-}
-
-
-start_spark_slave() {
-    local master=$1
-
-    echo ""
-    step_title "--- Starting Spark slave"
-    ${SPARK_HOME}/sbin/start-slave.sh spark://${master}:7077
-    step_title "--- Spark slave started"
-}
 
 display_demo_help() {
     local zeppelin_host=$1
@@ -200,6 +125,11 @@ error_line() {
     printf "\e[31mError: $1\e[0m\n"
 }
 
+function handle_error {
+    error_line "$@"
+    exit 1
+}
+
 display_logo() {
     echo "   _____           _       _     _   ______    _            "
     echo "  |_   _|         (_)     | |   | | |  ____|  | |           "
@@ -213,43 +143,63 @@ display_logo() {
 }
 
 
-
-local_master() {
-    stop_grid_master
-    start_grid_master $@
+local_master() {  ###
+    stop_ie_master
+    start_ie_master $@
 }
 
-local_slave() {
-    stop_grid_slave
-    start_grid_slave $@
+local_slave() { ###
+    stop_ie_worker
+    start_ie_worker $@
 }
 
-deploy_space() {
+
+# argument must be in format key=value, the function returns the value
+get_option_value() {
+    local arr=(${1//=/ })
+    echo ${arr[1]}
+}
+
+
+main_demo() {
+    main_shutdown
+
+
+    echo ""
+    step_title "--- Starting Gigaspaces datagrid local node"
+
+    mkdir -p "$INSIGHTEDGE_LOG_DIR"
+    local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-local.out"
+    echo "Starting ie local"
+
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker > $log 2>&1 &
+    echo "Datagrid master started (log: $log)"
+
+    step_title "--- Gigaspaces datagrid management node started"
+
+    main_deploy_space --topology=1,0 "insightedge-space"
+
+    start_zeppelin
+}
+
+
+
+main_deploy_space() {
     echo ""
     step_title "--- Deploying space"
 
-    define_defaults() {
-        SPACE_NAME="insightedge-space"
-        SPACE_TOPOLOGY="2,0"
-    }
-
-    parse_options() {
+    parse_deploy_options() {
         while [ "$1" != "" ]; do
-          case $1 in
-            "-n" | "--name")
-              shift
-              SPACE_NAME=$1
-              ;;
-            "-t" | "--topology")
-              shift
-              SPACE_TOPOLOGY=$1
-              ;;
-            "--mode")
-              shift
+          local option="$1"
+          case ${option} in
+            --topology=*)
+              SPACE_TOPOLOGY=$(get_option_value ${option})
+              if [ -z "${SPACE_TOPOLOGY}" ]; then handle_error "topology can't be empty"; fi
               ;;
             *)
-#              echo "Unknown option: $1"
-#              display_usage
+              echo "Unknown option: ${option}"
+              display_usage
+              exit
               ;;
           esac
           shift
@@ -272,93 +222,94 @@ deploy_space() {
 
     display_usage() {
         sleep 3
-        echo ""
-        echo "Usage:"
-        echo " -n, --name      |   name of the deployed space                                 | default insightedge-space"
-        echo " -t, --topology  |   number of space primary and backup instances               | default 2,0"
-        echo "                 |            format:  <num-of-primaries>,<num-of-backups-per-primary>"
-        echo "                 |            example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
-        echo ""
         local script="./sbin/$THIS_SCRIPT_NAME"
+        echo ""
+        echo "Usage: ${script} deploy-space [--topology=p,b] name"
+        echo ""
         echo "Examples:"
         echo "    Deploy space |  deploys 8 primary and 8 backup partitions of 'my-space' on cluster"
         echo ""
-        echo " $script -n my-space -t 8,1"
+        echo " $script deploy-space --topology=8,1 my-space"
         echo ""
 #        exit 1
         return
     }
 
-    define_defaults
-    parse_options $@
+    if [ $# -eq 0 ]; then
+        handle_error "space name is missing"
+    fi
+
+    local args=( "$@" )
+
+    #last argument is spaceName
+    local SPACE_NAME="${args[${#args[@]}-1]}"
+    local SPACE_TOPOLOGY="1,0"
+
+#    echo "LAST: ${args[${#args[@]}-1]}"
+    unset "args[${#args[@]}-1]"
+#    echo "New without last: ${args[@]}"
+
+    parse_deploy_options ${args[@]}
 
     echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY]"
     await_master_start #TODO: revisit in IE-87
-    ${XAP_HOME}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=$SPACE_TOPOLOGY $SPACE_NAME
+    ${XAP_HOME}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=${SPACE_TOPOLOGY} ${SPACE_NAME}
 
     step_title "--- Done deploying space"
 }
 
-undeploy_space() {
+main_undeploy() {
     echo ""
     step_title "--- Undeploying space"
 
     display_usage() {
+        local script="./sbin/$THIS_SCRIPT_NAME"
         sleep 3
         echo ""
-        echo "Usage: * - required"
-        echo " -n, --name      |   name of the deployed space                                 | default insightedge-space"
+        echo "Usage: $script undeploy [name]"
         echo ""
-        local script="./sbin/$THIS_SCRIPT_NAME"
         echo "Examples:"
         echo "  Undeploy space |  undeploys 'my-space' from cluster"
         echo ""
-        echo " $script -m 10.0.0.1 -n my-space"
+        echo " $script undeploy my-space"
         echo ""
 #        exit 1
         return
     }
 
-    define_defaults() {
-        SPACE_NAME="insightedge-space"
-    }
+    local spaceName="$1"
 
-    parse_options() {
-        while [ "$1" != "" ]; do
-          case $1 in
-            "-n" | "--name")
-              shift
-              SPACE_NAME=$1
-              ;;
-            "--mode")
-              shift
-              ;;
-            *)
-#              echo "Unknown option: $1"
-#              display_usage
-              ;;
-          esac
-          shift
-        done
-    }
+    if [ "$spaceName" == "" ]; then
+        #TODO better message
+        error_line "space name is missing"
+        display_usage
+        exit
+    elif [ $# -ne 1 ]; then
+        #TODO better message
+        error_line "too many arguments"
+        display_usage
+        exit
+    fi
 
-
-    define_defaults
-    parse_options $@
-
-    echo "Undeploying space: $SPACE_NAME"
-    ${XAP_HOME}/bin/gs.sh undeploy $SPACE_NAME
+    echo "Undeploying space: ${spaceName}"
+    ${XAP_HOME}/bin/gs.sh undeploy ${spaceName}
 
     step_title "--- Done undeploying space"
 }
 
-shutdown_all() {
+main_shutdown() {
+    if [ $# -ne 0 ]; then
+        #TODO better error message, maybe add/display usage for shutdown?
+        error_line "shutdown does not accept parameters"
+        return
+    fi
+
     stop_zeppelin
-    stop_grid_master
-    stop_grid_slave
+    stop_ie_master
+    stop_ie_worker
 }
 
-start_grid_master() {
+start_ie_master() {
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node"
 
@@ -410,11 +361,11 @@ start_grid_master() {
     step_title "--- Gigaspaces datagrid management node started"
 }
 
-stop_grid_master() {
+stop_ie_master() {
     echo ""
     step_title "--- Stopping datagrid master"
 
-    do_stop_grid_master() {
+    do_stop_ie_master() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
         if [ -z "$pid" ]; then
             echo "Datagrid master is not running"
@@ -437,11 +388,11 @@ stop_grid_master() {
         echo "Datagrid master stopped"
     }
 
-    do_stop_grid_master
+    do_stop_ie_master
     step_title "--- Datagrid master stopped"
 }
 
-start_grid_slave() {
+start_ie_worker() {
     echo ""
     step_title "--- Starting Gigaspaces datagrid node"
 
@@ -507,12 +458,12 @@ start_grid_slave() {
     step_title "--- Gigaspaces datagrid node started"
 }
 
-stop_grid_slave() {
+stop_ie_worker() {
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
 
-    do_stop_grid_slave() {
+    do_stop_ie_worker() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
         if [ -z "$pid" ]; then
             echo "Datagrid slave is not running"
@@ -535,7 +486,7 @@ stop_grid_slave() {
         echo "Datagrid slave stopped"
     }
 
-    do_stop_grid_slave
+    do_stop_ie_worker
     step_title "--- Datagrid slave instances stopped"
 }
 
