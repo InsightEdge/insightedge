@@ -53,6 +53,8 @@ REM set SPARK_SUBMIT_OPTIONS                   REM (optional) extra options to p
 REM set SPARK_APP_NAME                         REM (optional) The name of spark application.
 
 rem setlocal enableextensions enabledelayedexpansion
+
+echo "-------------------- dp :" %~dp0
 call %~dp0..\..\insightedge\conf\insightedge-env.cmd
 
 rem call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
