@@ -54,9 +54,6 @@ REM set SPARK_APP_NAME                         REM (optional) The name of spark 
 
 rem setlocal enableextensions enabledelayedexpansion
 
-echo "-------------------- dp :" %~dp0
-call %~dp0..\..\insightedge\conf\insightedge-env.cmd
-
 rem call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
 
 rem set SPARK_HOME=%XAP_HOME%\insightedge\spark
@@ -85,3 +82,6 @@ REM
 REM set ZEPPELINHUB_API_ADDRESS	       REM Refers to the address of the ZeppelinHub service in use
 REM set ZEPPELINHUB_API_TOKEN          REM Refers to the Zeppelin instance token of the user
 REM set ZEPPELINHUB_USER_KEY           REM Optional, when using Zeppelin with authentication.
+
+echo "-------------------- dp :" %~dp0
+call %~dp0..\..\insightedge\conf\insightedge-env.cmd

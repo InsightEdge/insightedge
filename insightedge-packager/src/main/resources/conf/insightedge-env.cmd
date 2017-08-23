@@ -8,21 +8,6 @@ rem * For more information see http://docs.gigaspaces.com/xap/12.2/dev-java/comm
 rem ***********************************************************************************************************
 rem Source XAP environment:
 
-@echo on
-
-echo "START OF I9E - ENV --> all env:"
-SET
-echo "END all env"
-
-echo "---- dp= [" %~dp0 "]"
-echo "---- HADOOP_HOME= [" %HADOOP_HOME% "]"
-echo "---- SPARK_HOME= [" %SPARK_HOME% "]"
-echo "---- INSIGHTEDGE_CORE_CP= [" %INSIGHTEDGE_CORE_CP% "]"
-echo "---- SPARK_SUBMIT_OPTS= [" %SPARK_SUBMIT_OPTS% "]"
-echo "---- ZEPPELIN_INTP_CLASSPATH_OVERRIDES= [" %ZEPPELIN_INTP_CLASSPATH_OVERRIDES% "]"
-
-@echo off
-
 call %~dp0..\..\bin\setenv.bat
 rem Set InsightEdge defaults:
 if not defined HADOOP_HOME set HADOOP_HOME=%XAP_HOME%\insightedge\winutils
@@ -37,14 +22,3 @@ IF "%SPARK_SUBMIT_OPTS%"=="" set SPARK_SUBMIT_OPTS=-Dspark.driver.extraClassPath
 
 rem Zeppelin
 set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CORE_CP%
-
-@echo on
-
-echo " #### END I9E - env "
-echo "---- HADOOP_HOME= [" %HADOOP_HOME% "]"
-echo "---- SPARK_HOME= [" %SPARK_HOME% "]"
-echo "---- INSIGHTEDGE_CORE_CP= [" %INSIGHTEDGE_CORE_CP% "]"
-echo "---- SPARK_SUBMIT_OPTS= [" %SPARK_SUBMIT_OPTS% "]"
-echo "---- ZEPPELIN_INTP_CLASSPATH_OVERRIDES= [" %ZEPPELIN_INTP_CLASSPATH_OVERRIDES% "]"
-
-@echo off
