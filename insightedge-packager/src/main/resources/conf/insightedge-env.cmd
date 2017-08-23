@@ -9,6 +9,28 @@ rem ****************************************************************************
 rem Source XAP environment:
 call %~dp0..\..\bin\setenv.bat
 rem Set InsightEdge defaults:
-if not defined HADOOP_HOME set HADOOP_HOME=%XAP_HOME%\insightedge\winutils
+if not defined HADOOP_HOME set HADOOP_HOME="%XAP_HOME%\insightedge\winutils"
 
-set INSIGHTEDGE_CORE_CP=%XAP_HOME%\insightedge\lib\*
+rem Set SPARK_HOME if not set
+if "%SPARK_HOME%"=="" (
+	set SPARK_HOME="%XAP_HOME%\insightedge\spark"
+)
+
+set INSIGHTEDGE_CORE_CP="%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*"
+
+rem Spark Submit
+if "%SPARK_SUBMIT_OPTS%"=="" (
+	set SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=%INSIGHTEDGE_CORE_CP% -Dspark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP%"
+)
+
+rem Zeppelin
+set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CORE_CP%
+
+if "%SPARK_LOCAL_IP%"=="" (
+    rem local manager
+    if "%XAP_MANAGER_SERVERS%"=="localhost" (
+    	set SPARK_LOCAL_IP=localhost
+    ) ELSE (
+        set SPARK_LOCAL_IP=%COMPUTERNAME%
+    )
+)

@@ -1,12 +1,11 @@
 @echo off
 
-
-call %~dp0..\..\bin\setenv.bat
+call %~dp0..\conf\insightedge-env.cmd
 
 rem Figure out where the Spark framework is installed
 
 if "x%SPARK_HOME%"=="x" (
-  set SPARK_HOME=%XAP_HOME%\insightedge\spark
+  set SPARK_HOME="%XAP_HOME%\insightedge\spark"
 )
 
 call %SPARK_HOME%\bin\load-spark-env.cmd
@@ -23,6 +22,6 @@ set PYTHONPATH=%SPARK_HOME%\python\lib\py4j-0.10.4-src.zip;%PYTHONPATH%
 
 rem Load the InsighEdge version of shell.py script:
 set OLD_PYTHONSTARTUP=%PYTHONSTARTUP%
-set PYTHONSTARTUP=%SPARK_HOME%\bin\shell-init.py
+set PYTHONSTARTUP=%XAP_HOME%\insightedge\bin\shell-init.py
 
-call %XAP_HOME%\insightedge\bin\insightedge-submit2.cmd pyspark-shell-main --name "PySparkShell" %*
+call "%SPARK_HOME%\bin\spark-submit" pyspark-shell-main --name "PySparkShell" --driver-class-path=%INSIGHTEDGE_CORE_CP% --conf spark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP% %*

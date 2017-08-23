@@ -54,13 +54,6 @@ REM set SPARK_APP_NAME                         REM (optional) The name of spark 
 
 rem setlocal enableextensions enabledelayedexpansion
 
-call %~dp0..\..\..\bin\setenv.bat
-
-call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
-
-set SPARK_HOME=%XAP_HOME%\insightedge\spark
-set SPARK_SUBMIT_OPTIONS=--jars %INSIGHTEDGE_JARS%
-
 REM Use embedded spark binaries
 REM without SPARK_HOME defined, Zeppelin still able to run spark interpreter process using embedded spark binaries.
 REM however, it is not encouraged when you can define SPARK_HOME
@@ -84,3 +77,5 @@ REM
 REM set ZEPPELINHUB_API_ADDRESS	       REM Refers to the address of the ZeppelinHub service in use
 REM set ZEPPELINHUB_API_TOKEN          REM Refers to the Zeppelin instance token of the user
 REM set ZEPPELINHUB_USER_KEY           REM Optional, when using Zeppelin with authentication.
+
+call %~dp0..\..\conf\insightedge-env.cmd
