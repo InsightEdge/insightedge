@@ -11,4 +11,13 @@ call %~dp0..\..\bin\setenv.bat
 rem Set InsightEdge defaults:
 if not defined HADOOP_HOME set HADOOP_HOME=%XAP_HOME%\insightedge\winutils
 
-set INSIGHTEDGE_CORE_CP=%XAP_HOME%\insightedge\lib\*
+rem Set SPARK_HOME if not set
+IF "%SPARK_HOME%"=="" set SPARK_HOME=%XAP_HOME%\insightedge\spark
+
+set INSIGHTEDGE_CORE_CP=%XAP_HOME%\insightedge\lib\*;%XAP_HOME%lib\required\*;%XAP_HOME%\lib\optional\spatial\*
+
+rem Spark Submit
+IF "%SPARK_SUBMIT_OPTS%"=="" set SPARK_SUBMIT_OPTS=-Dspark.driver.extraClassPath=%INSIGHTEDGE_CORE_CP% -Dspark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP%
+
+rem Zeppelin
+set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CORE_CP%

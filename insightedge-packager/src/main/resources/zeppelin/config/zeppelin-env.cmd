@@ -53,13 +53,12 @@ REM set SPARK_SUBMIT_OPTIONS                   REM (optional) extra options to p
 REM set SPARK_APP_NAME                         REM (optional) The name of spark application.
 
 rem setlocal enableextensions enabledelayedexpansion
+call %~dp0..\..\insightedge\conf\insightedge-env.cmd
 
-call %~dp0..\..\..\bin\setenv.bat
+rem call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
 
-call "%XAP_HOME%\insightedge\sbin\common-insightedge.cmd" GET_LIBS ","
-
-set SPARK_HOME=%XAP_HOME%\insightedge\spark
-set SPARK_SUBMIT_OPTIONS=--jars %INSIGHTEDGE_JARS%
+rem set SPARK_HOME=%XAP_HOME%\insightedge\spark
+rem set SPARK_SUBMIT_OPTIONS=--jars %INSIGHTEDGE_JARS%
 
 REM Use embedded spark binaries
 REM without SPARK_HOME defined, Zeppelin still able to run spark interpreter process using embedded spark binaries.
