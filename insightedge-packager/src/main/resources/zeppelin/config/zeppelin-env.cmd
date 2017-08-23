@@ -83,5 +83,4 @@ REM set ZEPPELINHUB_API_ADDRESS	       REM Refers to the address of the Zeppelin
 REM set ZEPPELINHUB_API_TOKEN          REM Refers to the Zeppelin instance token of the user
 REM set ZEPPELINHUB_USER_KEY           REM Optional, when using Zeppelin with authentication.
 
-echo "-------------------- dp :" %~dp0
-call %~dp0..\..\insightedge\conf\insightedge-env.cmd
+call %~dp0..\..\conf\insightedge-env.cmd
