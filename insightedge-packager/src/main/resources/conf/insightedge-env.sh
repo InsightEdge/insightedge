@@ -27,5 +27,10 @@ fi
 export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
 
 if [ -z "${SPARK_LOCAL_IP}" ]; then
-    export SPARK_LOCAL_IP=${XAP_NIC_ADDRESS}
+    # local manager
+    if [ -z "${XAP_MANAGER_SERVERS}" ]; then
+        export SPARK_LOCAL_IP="localhost"
+    else
+      export SPARK_LOCAL_IP="`hostanme`"
+    fi
 fi

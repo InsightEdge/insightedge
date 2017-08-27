@@ -28,5 +28,11 @@ set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CORE_CP%
 
 
 if "%SPARK_LOCAL_IP%"=="" (
-	set SPARK_HOME=%XAP_NIC_ADDRESS%
+    rem local manager
+    if "%XAP_MANAGER_SERVERS%"=="" (
+    	set SPARK_LOCAL_IP="localhost"
+    )
+    else (
+        set SPARK_LOCAL_IP=%COMPUTERNAME%
+    )
 )
