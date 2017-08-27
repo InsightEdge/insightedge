@@ -25,3 +25,7 @@ if [ -z "$SPARK_SUBMIT_OPTS" ]; then
 fi
 # Zeppelin
 export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
+
+if [ -z "${SPARK_LOCAL_IP}" ]; then
+    export SPARK_LOCAL_IP=${XAP_NIC_ADDRESS}
+fi

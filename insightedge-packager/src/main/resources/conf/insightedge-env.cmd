@@ -14,8 +14,8 @@ if not defined HADOOP_HOME set HADOOP_HOME="%XAP_HOME%\insightedge\winutils"
 rem Set SPARK_HOME if not set
 if "%SPARK_HOME%"=="" (
 	set SPARK_HOME="%XAP_HOME%\insightedge\spark"
-
 )
+
 rem set GS_JARS="%XAP_HOME%\lib\platform\ext\*";"%XAP_HOME%";"%XAP_HOME%\lib\required\*";"%XAP_HOME%\lib\optional\pu-common\*";"%XAP_CLASSPATH_EXT%"
 set INSIGHTEDGE_CORE_CP=%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*
 rem Spark Submit
@@ -25,3 +25,8 @@ if "%SPARK_SUBMIT_OPTS%"=="" (
 
 rem Zeppelin
 set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CORE_CP%
+
+
+if "%SPARK_LOCAL_IP%"=="" (
+	set SPARK_HOME=%XAP_NIC_ADDRESS%
+)
