@@ -31,6 +31,6 @@ if [ -z "${SPARK_LOCAL_IP}" ]; then
     if [ "${XAP_MANAGER_SERVERS}" = "localhost" ]; then
         export SPARK_LOCAL_IP="localhost"
     else
-      export SPARK_LOCAL_IP="`hostanme`"
+      export SPARK_LOCAL_IP="`hostname`"
     fi
 fi
