@@ -26,13 +26,11 @@ if "%SPARK_SUBMIT_OPTS%"=="" (
 rem Zeppelin
 set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CORE_CP%
 
-
 if "%SPARK_LOCAL_IP%"=="" (
     rem local manager
-    if "%XAP_MANAGER_SERVERS%"=="" (
-    	set SPARK_LOCAL_IP="localhost"
-    )
-    else (
+    if "%XAP_MANAGER_SERVERS%"=="localhost" (
+    	set SPARK_LOCAL_IP=localhost
+    ) ELSE (
         set SPARK_LOCAL_IP=%COMPUTERNAME%
     )
 )
