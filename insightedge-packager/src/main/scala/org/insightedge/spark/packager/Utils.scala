@@ -85,7 +85,7 @@ object Utils {
         zip.closeArchiveEntry()
       }
       else { // empty folder
-          val entry: ZipArchiveEntry = new ZipArchiveEntry(prefix + file.getAbsolutePath.replace(sourceFolder, "") + "/")
+          val entry: ZipArchiveEntry = new ZipArchiveEntry(prefix + file.getAbsolutePath.replace(sourceFolder, "") + File.separator)
           entry.setUnixMode(getUnixMode(file))
           zip.putArchiveEntry(entry)
           zip.closeArchiveEntry()
