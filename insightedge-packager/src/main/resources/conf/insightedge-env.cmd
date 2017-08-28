@@ -16,11 +16,11 @@ if "%SPARK_HOME%"=="" (
 	set SPARK_HOME="%XAP_HOME%\insightedge\spark"
 )
 
-rem set GS_JARS="%XAP_HOME%\lib\platform\ext\*";"%XAP_HOME%";"%XAP_HOME%\lib\required\*";"%XAP_HOME%\lib\optional\pu-common\*";"%XAP_CLASSPATH_EXT%"
-set INSIGHTEDGE_CORE_CP=%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*
+set INSIGHTEDGE_CORE_CP="%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*"
+
 rem Spark Submit
 if "%SPARK_SUBMIT_OPTS%"=="" (
-	set SPARK_SUBMIT_OPTS=-Dspark.driver.extraClassPath=%INSIGHTEDGE_CORE_CP% -Dspark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP%
+	set SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=%INSIGHTEDGE_CORE_CP% -Dspark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP%"
 )
 
 rem Zeppelin
