@@ -16,19 +16,19 @@
 
 package org.insightedge.spark.packager
 
-import java.io._
+import java.io.{File, _}
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.zip.{ZipArchiveEntry, ZipArchiveOutputStream}
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FileUtils._
-import org.apache.commons.io.filefilter.{AbstractFileFilter, IOFileFilter}
 import org.apache.commons.io.filefilter.TrueFileFilter._
+import org.apache.commons.io.filefilter.{AbstractFileFilter, IOFileFilter}
 
 import scala.collection.Iterator.continually
 import scala.collection.JavaConversions._
+import scala.collection.mutable.ListBuffer
 
 /**
   * @author Leonid_Poliakov
@@ -70,7 +70,11 @@ object Utils {
     val zip = new ZipArchiveOutputStream(new FileOutputStream(to))
     val source = new File(from)
     val sourceFolder = source.getAbsolutePath
-    for (file <- listFiles(source, TRUE, TRUE)) {
+
+    val filesAndEmptyDirectories = new ListBuffer[File]()
+    allfilesAndEmptyDirectories(from,filesAndEmptyDirectories)
+
+    for (file <- filesAndEmptyDirectories) {
       if (file.isFile) {
         val entry: ZipArchiveEntry = new ZipArchiveEntry(prefix + file.getAbsolutePath.replace(sourceFolder, ""))
         entry.setUnixMode(getUnixMode(file))
@@ -80,8 +84,35 @@ object Utils {
         IOUtils.closeQuietly(stream)
         zip.closeArchiveEntry()
       }
+      else { // empty folder
+      val entry: ZipArchiveEntry = new ZipArchiveEntry(prefix + file.getAbsolutePath.replace(sourceFolder, "") + File.separator)
+        entry.setUnixMode(getUnixMode(file))
+        zip.putArchiveEntry(entry)
+        zip.closeArchiveEntry()
+      }
     }
     IOUtils.closeQuietly(zip)
+  }
+
+  private def allfilesAndEmptyDirectories(directoryName : String, files : ListBuffer[File]): Unit = {
+    val directory :File = new File(directoryName)
+
+    // get all the files from a directory
+    val fList: Array[File] = directory.listFiles()
+    if(fList.length == 0){
+      files.add(directory)
+    }
+    else {
+      for (file <- fList) {
+        val fn: String = file.getName
+        if (file.isFile) {
+          files.add(file)
+        }
+        else if (file.isDirectory) {
+          allfilesAndEmptyDirectories(file.getAbsolutePath, files)
+        }
+      }
+    }
   }
 
   private def getUnixMode(file: File): Int = {
