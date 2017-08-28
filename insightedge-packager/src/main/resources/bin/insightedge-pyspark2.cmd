@@ -5,7 +5,7 @@ call %~dp0..\conf\insightedge-env.cmd
 rem Figure out where the Spark framework is installed
 
 if "x%SPARK_HOME%"=="x" (
-  set SPARK_HOME=%XAP_HOME%\insightedge\spark
+  set SPARK_HOME="%XAP_HOME%\insightedge\spark"
 )
 
 call %SPARK_HOME%\bin\load-spark-env.cmd
