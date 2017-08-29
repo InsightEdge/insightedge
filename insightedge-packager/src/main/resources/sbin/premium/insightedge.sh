@@ -14,10 +14,10 @@ main() {
     shift
     case "$option" in
       "")
-        display_usage
+        main_display_usage
         ;;
       "-h")
-        display_usage
+        main_display_usage
         ;;
       "demo")
         main_demo $@
@@ -40,60 +40,19 @@ main() {
     esac
 }
 
-display_usage() {
+main_display_usage() {
     sleep 1
     echo ""
     display_logo
-    echo ""
-    echo "Usage: * - required"
-    echo "     --mode      |  * insightedge mode:"
-    echo "                 |       master:        locally restarts spark master and grid manager"
-    echo "                 |       slave:         locally restarts spark slave and grid containers"
-    echo "                 |       deploy:        deploys empty space to grid"
-    echo "                 |       undeploy:      undeploys space from grid"
-    echo "                 |       zeppelin:      locally starts zeppelin"
-    echo "                 |       demo:          locally starts datagrid master, datagrid slave and zeppelin, deploys empty space"
-    echo "                 |       shutdown:      stops 'master', 'slave' and 'zeppelin'"
-    echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
-    echo " -n, --name      |    (deploy/undeploy modes) name of the deployed space         | default insightedge-space"
-    echo " -t, --topology  |    (deploy mode) number of space primary and backup instances | default 2,0"
-    echo "                 |             format:  <num-of-primaries>,<num-of-backups-per-primary>"
-    echo "                 |             example: '4,1' will deploy 8 instances - 4 primary and 4 backups"
-    echo ""
     local script="./sbin/$THIS_SCRIPT_NAME"
-    echo "Examples:"
-    echo "  Restart master |  restarts spark master at spark://127.0.0.1:7077"
-    echo "        on local |  restarts spark master web UI at http://127.0.0.1:8080"
-    echo "     environment |  restarts grid manager"
-    echo "                 |  restarts grid lookup service"
     echo ""
-    echo " $script --mode master --master 127.0.0.1"
-    echo ""
-    echo "   Restart slave |  restarts spark slave that points to master at spark://127.0.0.1:7077"
-    echo "        on local |  restarts 2 grid containers"
-    echo "     environment |"
-    echo ""
-    echo " $script --mode slave --master 127.0.0.1"
-    echo ""
-    echo "    Deploy empty |  deploys insightedge-space with 2 primary instances"
-    echo "           space |  deploys insightedge-space with 2 primary instances"
-    echo ""
-    echo " $script --mode deploy"
-    echo ""
-    echo "  Undeploy space |  undeploys insightedge-space"
-    echo ""
-    echo " $script --mode undeploy"
-    echo ""
+    echo "Usage: ${script} <command> <args>"
+    echo "     ${script} demo"
+    echo "     ${script} run [--master|--worker [--containers=N]|--zeppelin]"
+    echo "     ${script} deploy-space [space name]"
+    echo "     ${script} undeploy [space name]"
+    echo "     ${script} shutdown"
     exit 1
-}
-
-
-local_zeppelin() { ###
-    echo ""
-    step_title "--- Restarting Zeppelin server"
-    helper_stop_zeppelin
-    helper_start_zeppelin
-    step_title "--- Zeppelin server can be accessed at http://${XAP_NIC_ADDRESS}:9090"
 }
 
 helper_stop_zeppelin() {
@@ -115,13 +74,6 @@ helper_run_zeppelin() {
     ${XAP_HOME}/insightedge/zeppelin/bin/zeppelin.sh
 }
 
-display_demo_help() {
-    printf '\e[0;34m\n'
-    echo "Demo steps:"
-    echo "1. make sure steps above were successfully executed"
-    echo "2. Open Web Notebook at http://${XAP_NIC_ADDRESS}:9090 and run any of the available examples"
-    printf "\e[0m\n"
-}
 
 step_title() {
     printf "\e[32m$1\e[0m\n"
@@ -131,7 +83,7 @@ error_line() {
     printf "\e[31mError: $1\e[0m\n"
 }
 
-function handle_error {
+handle_error() {
     error_line "$@"
     exit 1
 }
@@ -157,6 +109,15 @@ get_option_value() {
 
 
 main_demo() {
+    display_demo_help() {
+        printf '\e[0;34m\n'
+        echo "Demo steps:"
+        echo "1. make sure steps above were successfully executed"
+        echo "2. Open Web Notebook at http://${XAP_NIC_ADDRESS}:9090 and run any of the available examples"
+        printf "\e[0m\n"
+    }
+
+
     if [ $# -ne 0 ]; then
         handle_error "demo does not accept parameters"
     fi
@@ -198,7 +159,7 @@ main_deploy_space() {
               ;;
             *)
               echo "Unknown option: ${option}"
-              display_usage
+              display_usage_deploy
               exit
               ;;
           esac
@@ -212,15 +173,15 @@ main_deploy_space() {
         while [ -z "$(${XAP_HOME}/bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
             if [ $TIMEOUT -le 0 ]; then
               echo "Datagrid master is not available within timeout"
-              return
-              #exit 1
+#              return
+              exit 1
             fi
             TIMEOUT=$((TIMEOUT - 10))
-#            echo "  .. ($TIMEOUT sec)"
+            echo "  .. ($TIMEOUT sec)"
         done
     }
 
-    display_usage() {
+    display_usage_deploy() {
         sleep 3
         local script="./sbin/$THIS_SCRIPT_NAME"
         echo ""
@@ -262,7 +223,7 @@ main_undeploy() {
     echo ""
     step_title "--- Undeploying space"
 
-    display_usage() {
+    display_usage_undeploy() {
         local script="./sbin/$THIS_SCRIPT_NAME"
         sleep 3
         echo ""
@@ -282,12 +243,12 @@ main_undeploy() {
     if [ "$spaceName" == "" ]; then
         #TODO better message
         error_line "space name is missing"
-        display_usage
+        display_usage_undeploy
         exit
     elif [ $# -ne 1 ]; then
         #TODO better message
         error_line "too many arguments"
-        display_usage
+        display_usage_undeploy
         exit
     fi
 
@@ -305,12 +266,12 @@ main_shutdown() {
     fi
 
     helper_stop_zeppelin
-    helper_stop_ie_master
-    helper_stop_ie_worker
+    helper_stop_master
+    helper_stop_worker
 }
 
 helper_run_master() {
-    display_usage_start_master() {
+    display_usage_run_master() {
         sleep 2
         echo ""
         echo "Usage: "
@@ -321,7 +282,7 @@ helper_run_master() {
         return
     }
 
-    check_already_started() {
+    check_already_started_run_master() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
         if [ ! -z "$pid" ]; then
             echo "Datagrid master is already running. pid: $pid"
@@ -331,7 +292,7 @@ helper_run_master() {
 
     if [ $# -ne 0 ]; then
         error_line "run master does not accept parameters"
-        display_usage_start_master
+        display_usage_run_master
         exit 1
     fi
 
@@ -341,13 +302,13 @@ helper_run_master() {
 
     echo ""
 
-    check_already_started
+    check_already_started_run_master
 
     step_title "--- Starting Gigaspaces datagrid management node"
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master
 }
 
-helper_stop_ie_master() {
+helper_stop_master() {
     echo ""
     step_title "--- Stopping datagrid master"
 
@@ -368,7 +329,7 @@ helper_stop_ie_master() {
                 echo "Timed out"
                 return
             fi
-#            echo "  waiting termination ($TIMEOUT sec)"
+            echo "  waiting termination ($TIMEOUT sec)"
             ((TIMEOUT--))
             sleep 1
         done
@@ -384,7 +345,7 @@ helper_run_worker() {
         sleep 3
         echo ""
         echo "Usage: "
-        echo " -c, --container |    number of grid containers to start    | default 2"
+        echo " --containers |    number of grid containers to start    | default 2"
         echo ""
         local script="./sbin/$THIS_SCRIPT_NAME"
         echo "Examples:"
@@ -405,7 +366,7 @@ helper_run_worker() {
           case ${option} in
             --containers=*)
               GSC_COUNT=$(get_option_value ${option})
-              if [ -z "${GSC_COUNT}" ]; then handle_error "containers can't be empty"; fi
+              if [ -z "${GSC_COUNT}" ]; then handle_error "--containers value can't be empty"; fi
               ;;
             *)
               echo "Unknown option: ${option}"
@@ -438,7 +399,7 @@ helper_run_worker() {
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" ${XAP_HOME}/bin/gs-agent.sh --gsc=$GSC_COUNT --spark_worker
 }
 
-helper_stop_ie_worker() {
+helper_stop_worker() {
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
@@ -458,9 +419,9 @@ helper_stop_ie_worker() {
         while ps -p $pid > /dev/null; do
             if [ $TIMEOUT -le 0 ]; then
                 echo "Timed out"
-                break
+                return
             fi
-#            echo "  waiting termination ($TIMEOUT sec)"
+            echo "  waiting termination ($TIMEOUT sec)"
             ((TIMEOUT--))
             sleep 1
         done
@@ -476,7 +437,7 @@ main_run() {
     shift
     case "$option" in
     "")
-        display_run_usage
+        display_run_usage #TODO
         ;;
     "--master")
         helper_run_master $@
