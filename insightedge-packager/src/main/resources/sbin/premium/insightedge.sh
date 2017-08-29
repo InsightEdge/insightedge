@@ -332,11 +332,10 @@ helper_start_master() {
     fi
 
     echo ""
-    step_title "--- Starting Gigaspaces datagrid management node"
 
     check_already_started
 
-    echo "Starting datagrid master"
+    step_title "--- Starting Gigaspaces datagrid management node"
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master
 }
 
