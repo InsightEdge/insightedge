@@ -141,17 +141,6 @@ display_logo() {
 }
 
 
-local_master() {  ###
-    helper_stop_ie_master
-    start_ie_master $@
-}
-
-local_slave() { ###
-    helper_stop_ie_worker
-    start_ie_worker $@
-}
-
-
 # argument must be in format key=value, the function returns the value
 get_option_value() {
     local arr=(${1//=/ })
@@ -312,56 +301,43 @@ main_shutdown() {
     helper_stop_ie_worker
 }
 
-start_ie_master() { ###
-    echo ""
-    step_title "--- Starting Gigaspaces datagrid management node"
-
-    display_usage() {
-        sleep 3
+helper_start_master() {
+    display_usage_start_master() {
+        sleep 2
         echo ""
         echo "Usage: "
         echo ""
         local script="./sbin/$THIS_SCRIPT_NAME"
-        echo " $script"
+        echo " $script run --master"
         echo ""
         return
-#        exit 1
-    }
-
-    parse_options() {
-        while [ "$1" != "" ]; do
-          case $1 in
-            "--mode")
-              shift
-              ;;
-            *)
-#              echo "Unknown option: $1"
-#              display_usage
-              ;;
-          esac
-          shift
-        done
     }
 
     check_already_started() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
         if [ ! -z "$pid" ]; then
             echo "Datagrid master is already running. pid: $pid"
-#            exit
-            return
+            exit 1
         fi
     }
 
-    parse_options $@
+    if [ $# -ne 0 ]; then
+        error_line "run master does not accept parameters"
+        display_usage_start_master
+        exit 1
+    fi
+
+    if [ -z "${XAP_MANAGER_SERVERS}" ]; then
+        handle_error "XAP_MANAGER_SERVERS is not set, please refer to the documentation"
+    fi
+
+    echo ""
+    step_title "--- Starting Gigaspaces datagrid management node"
+
     check_already_started
 
-    mkdir -p "$INSIGHTEDGE_LOG_DIR"
-    local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-master.out"
     echo "Starting datagrid master"
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master > $log 2>&1 &
-    echo "Datagrid master started (log: $log)"
-
-    step_title "--- Gigaspaces datagrid management node started"
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master
 }
 
 helper_stop_ie_master() {
@@ -493,6 +469,26 @@ helper_stop_ie_worker() {
 
     do_stop_ie_worker
     step_title "--- Datagrid slave instances stopped"
+}
+
+main_run() {
+    local option=$1
+    shift
+    case "$option" in
+    "")
+        display_run_usage
+        ;;
+    "--master")
+        helper_start_master $@
+        ;;
+    "--worker")
+        helper_start_worker
+        ;;
+    *)
+        echo "Unknown command $1"
+        exit 1
+        ;;
+    esac
 }
 
 main "$@"
