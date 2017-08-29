@@ -106,6 +106,14 @@ helper_start_zeppelin() {
     "${XAP_HOME}/insightedge/zeppelin/bin/zeppelin-daemon.sh" start
 }
 
+helper_run_zeppelin() {
+    if [ $# -ne 0 ]; then
+        error_line "run zeppelin does not accept parameters"
+        return
+    fi
+    step_title "--- Starting Zeppelin"
+    ${XAP_HOME}/insightedge/zeppelin/bin/zeppelin.sh
+}
 
 display_demo_help() {
     printf '\e[0;34m\n'
@@ -301,7 +309,7 @@ main_shutdown() {
     helper_stop_ie_worker
 }
 
-helper_start_master() {
+helper_run_master() {
     display_usage_start_master() {
         sleep 2
         echo ""
@@ -371,7 +379,7 @@ helper_stop_ie_master() {
     step_title "--- Datagrid master stopped"
 }
 
-helper_start_worker() {
+helper_run_worker() {
     display_usage_start_worker() {
         sleep 3
         echo ""
@@ -471,10 +479,13 @@ main_run() {
         display_run_usage
         ;;
     "--master")
-        helper_start_master $@
+        helper_run_master $@
         ;;
     "--worker")
-        helper_start_worker $@
+        helper_run_worker $@
+        ;;
+    "--zeppelin")
+        helper_run_zeppelin $@
         ;;
     *)
         echo "Unknown command $1"
