@@ -371,43 +371,38 @@ helper_stop_ie_master() {
     step_title "--- Datagrid master stopped"
 }
 
-start_ie_worker() { ####
-    echo ""
-    step_title "--- Starting Gigaspaces datagrid node"
-
-    display_usage() {
+helper_start_worker() {
+    display_usage_start_worker() {
         sleep 3
         echo ""
         echo "Usage: "
-        echo " -c, --container |    (slave modes) number of grid containers to start           | default 2"
+        echo " -c, --container |    number of grid containers to start    | default 2"
         echo ""
         local script="./sbin/$THIS_SCRIPT_NAME"
         echo "Examples:"
         echo "  Start datagrid |  starts 8 containers"
         echo ""
-        echo " $script -c 8"
+        echo " $script run --worker --containers 8"
         echo ""
-#        exit 1
         return
     }
 
-    define_defaults() {
+    define_defaults_start_worker() {
         GSC_COUNT="2"
     }
 
-    parse_options() {
+    parse_options_start_worker() {
         while [ "$1" != "" ]; do
-          case $1 in
-            "-c" | "--container")
-              shift
-              GSC_COUNT=$1
-              ;;
-            "--mode")
-              shift
+          local option="$1"
+          case ${option} in
+            --containers=*)
+              GSC_COUNT=$(get_option_value ${option})
+              if [ -z "${GSC_COUNT}" ]; then handle_error "containers can't be empty"; fi
               ;;
             *)
-#              echo "Unknown option: $1"
-#              display_usage
+              echo "Unknown option: ${option}"
+              display_usage_start_worker
+              exit
               ;;
           esac
           shift
@@ -415,26 +410,24 @@ start_ie_worker() { ####
     }
 
 
-    check_already_started() {
+
+    check_already_started_start_worker() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
         if [ ! -z "$pid" ]; then
             echo "Datagrid slave is already running. pid: $pid"
-            return
-#            exit
+#            return
+            exit 1
         fi
     }
 
-    define_defaults
-    parse_options $@
-    check_already_started
+    echo ""
+    step_title "--- Starting Gigaspaces datagrid node"
 
-    mkdir -p "$INSIGHTEDGE_LOG_DIR"
-    local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-slave.out"
-    echo "Starting datagrid slave (containers: $GSC_COUNT)"
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" nohup ${XAP_HOME}/bin/gs-agent.sh --gsc=$GSC_COUNT --spark_worker  > $log 2>&1 &
-    echo "Datagrid slave started (log: $log)"
+    define_defaults_start_worker
+    parse_options_start_worker $@
+    check_already_started_start_worker
 
-    step_title "--- Gigaspaces datagrid node started"
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" ${XAP_HOME}/bin/gs-agent.sh --gsc=$GSC_COUNT --spark_worker
 }
 
 helper_stop_ie_worker() {
@@ -481,7 +474,7 @@ main_run() {
         helper_start_master $@
         ;;
     "--worker")
-        helper_start_worker
+        helper_start_worker $@
         ;;
     *)
         echo "Unknown command $1"
