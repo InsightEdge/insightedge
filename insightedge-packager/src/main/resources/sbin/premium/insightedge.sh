@@ -108,8 +108,6 @@ start_zeppelin() {
 
 
 display_demo_help() {
-    local zeppelin_host=$1
-
     printf '\e[0;34m\n'
     echo "Demo steps:"
     echo "1. make sure steps above were successfully executed"
@@ -164,7 +162,6 @@ get_option_value() {
 main_demo() {
     main_shutdown
 
-
     echo ""
     step_title "--- Starting Gigaspaces datagrid local node"
 
@@ -180,6 +177,8 @@ main_demo() {
     main_deploy_space --topology=1,0 "insightedge-space"
 
     start_zeppelin
+
+    display_demo_help
 }
 
 
@@ -378,10 +377,11 @@ stop_ie_master() {
 
         TIMEOUT=60
         while ps -p $pid > /dev/null; do
-        if [ $TIMEOUT -le 0 ]; then
-            break
-        fi
-            echo "  waiting termination ($TIMEOUT sec)"
+            if [ $TIMEOUT -le 0 ]; then
+                echo "Timed out"
+                return
+            fi
+#            echo "  waiting termination ($TIMEOUT sec)"
             ((TIMEOUT--))
             sleep 1
         done
@@ -476,10 +476,11 @@ stop_ie_worker() {
 
         TIMEOUT=60
         while ps -p $pid > /dev/null; do
-        if [ $TIMEOUT -le 0 ]; then
-            break
-        fi
-            echo "  waiting termination ($TIMEOUT sec)"
+            if [ $TIMEOUT -le 0 ]; then
+                echo "Timed out"
+                break
+            fi
+#            echo "  waiting termination ($TIMEOUT sec)"
             ((TIMEOUT--))
             sleep 1
         done
