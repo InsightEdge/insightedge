@@ -91,17 +91,17 @@ display_usage() {
 local_zeppelin() { ###
     echo ""
     step_title "--- Restarting Zeppelin server"
-    stop_zeppelin
-    start_zeppelin
+    helper_stop_zeppelin
+    helper_start_zeppelin
     step_title "--- Zeppelin server can be accessed at http://${XAP_NIC_ADDRESS}:9090"
 }
 
-stop_zeppelin() {
+helper_stop_zeppelin() {
     step_title "--- Stopping Zeppelin"
     "${XAP_HOME}/insightedge/zeppelin/bin/zeppelin-daemon.sh" stop
 }
 
-start_zeppelin() {
+helper_start_zeppelin() {
     step_title "--- Starting Zeppelin"
     "${XAP_HOME}/insightedge/zeppelin/bin/zeppelin-daemon.sh" start
 }
@@ -142,12 +142,12 @@ display_logo() {
 
 
 local_master() {  ###
-    stop_ie_master
+    helper_stop_ie_master
     start_ie_master $@
 }
 
 local_slave() { ###
-    stop_ie_worker
+    helper_stop_ie_worker
     start_ie_worker $@
 }
 
@@ -160,6 +160,10 @@ get_option_value() {
 
 
 main_demo() {
+    if [ $# -ne 0 ]; then
+        handle_error "demo does not accept parameters"
+    fi
+
     main_shutdown
 
     echo ""
@@ -176,7 +180,7 @@ main_demo() {
 
     main_deploy_space --topology=1,0 "insightedge-space"
 
-    start_zeppelin
+    helper_start_zeppelin
 
     display_demo_help
 }
@@ -215,7 +219,7 @@ main_deploy_space() {
               #exit 1
             fi
             TIMEOUT=$((TIMEOUT - 10))
-            echo "  .. ($TIMEOUT sec)"
+#            echo "  .. ($TIMEOUT sec)"
         done
     }
 
@@ -303,12 +307,12 @@ main_shutdown() {
         return
     fi
 
-    stop_zeppelin
-    stop_ie_master
-    stop_ie_worker
+    helper_stop_zeppelin
+    helper_stop_ie_master
+    helper_stop_ie_worker
 }
 
-start_ie_master() {
+start_ie_master() { ###
     echo ""
     step_title "--- Starting Gigaspaces datagrid management node"
 
@@ -360,7 +364,7 @@ start_ie_master() {
     step_title "--- Gigaspaces datagrid management node started"
 }
 
-stop_ie_master() {
+helper_stop_ie_master() {
     echo ""
     step_title "--- Stopping datagrid master"
 
@@ -392,7 +396,7 @@ stop_ie_master() {
     step_title "--- Datagrid master stopped"
 }
 
-start_ie_worker() {
+start_ie_worker() { ####
     echo ""
     step_title "--- Starting Gigaspaces datagrid node"
 
@@ -458,7 +462,7 @@ start_ie_worker() {
     step_title "--- Gigaspaces datagrid node started"
 }
 
-stop_ie_worker() {
+helper_stop_ie_worker() {
 
     echo ""
     step_title "--- Stopping datagrid slave instances"
