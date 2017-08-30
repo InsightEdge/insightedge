@@ -5,8 +5,44 @@ source ${DIRNAME}/../conf/insightedge-env.sh
 
 EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
+script="./$THIS_SCRIPT_NAME"
 IE_VERSION=`grep -w "Version" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 EDITION=`grep -w "Edition" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
+
+display_logo() {
+    echo "   _____           _       _     _   ______    _            "
+    echo "  |_   _|         (_)     | |   | | |  ____|  | |           "
+    echo "    | |  _ __  ___ _  __ _| |__ | |_| |__   __| | __ _  ___ "
+    echo "    | | | '_ \\/ __| |/ _\` | '_ \\| __|  __| / _\` |/ _\` |/ _ \\"
+    echo "   _| |_| | | \\__ \\ | (_| | | | | |_| |___| (_| | (_| |  __/"
+    echo "  |_____|_| |_|___/_|\\__, |_| |_|\\__|______\\__,_|\\__, |\\___|"
+    echo "                      __/ |                       __/ |     "
+    echo "                     |___/                       |___/   version: $IE_VERSION"
+    echo "                                                         edition: $EDITION"
+}
+
+main_display_usage() {
+    sleep 1
+    echo ""
+    display_logo
+    local script="./sbin/$THIS_SCRIPT_NAME"
+    echo ""
+    echo "Usage: ${script} <command> <args>"
+    echo "  ${script} demo"
+    display_usage_run_inner
+    echo "  ${script} deploy-space [space name]"
+    echo "  ${script} undeploy [space name]"
+    echo "  ${script} shutdown"
+    exit 1
+}
+
+
+display_usage_run_inner() {
+    echo "  ${script} run --master                  |  Starts Gigaspaces master node"
+    echo "  ${script} run --worker [--containers=N] |  Starts Gigaspaces worker node with N GSCs, default to 0"
+    echo "  ${script} run --zeppelin                |  Starts Zeppelin"
+}
+
 
 main() {
     display_logo
@@ -35,25 +71,11 @@ main() {
         main_shutdown $@
         ;;
       *)
-        echo "Unknown option [$option]"
+        error_line "Unknown option [$option]"
         ;;
     esac
 }
 
-main_display_usage() {
-    sleep 1
-    echo ""
-    display_logo
-    local script="./sbin/$THIS_SCRIPT_NAME"
-    echo ""
-    echo "Usage: ${script} <command> <args>"
-    echo "     ${script} demo"
-    echo "     ${script} run [--master|--worker [--containers=N]|--zeppelin]"
-    echo "     ${script} deploy-space [space name]"
-    echo "     ${script} undeploy [space name]"
-    echo "     ${script} shutdown"
-    exit 1
-}
 
 helper_stop_zeppelin() {
     step_title "--- Stopping Zeppelin"
@@ -86,18 +108,6 @@ error_line() {
 handle_error() {
     error_line "$@"
     exit 1
-}
-
-display_logo() {
-    echo "   _____           _       _     _   ______    _            "
-    echo "  |_   _|         (_)     | |   | | |  ____|  | |           "
-    echo "    | |  _ __  ___ _  __ _| |__ | |_| |__   __| | __ _  ___ "
-    echo "    | | | '_ \\/ __| |/ _\` | '_ \\| __|  __| / _\` |/ _\` |/ _ \\"
-    echo "   _| |_| | | \\__ \\ | (_| | | | | |_| |___| (_| | (_| |  __/"
-    echo "  |_____|_| |_|___/_|\\__, |_| |_|\\__|______\\__,_|\\__, |\\___|"
-    echo "                      __/ |                       __/ |     "
-    echo "                     |___/                       |___/   version: $IE_VERSION"
-    echo "                                                         edition: $EDITION"
 }
 
 
@@ -158,7 +168,7 @@ main_deploy_space() {
               if [ -z "${SPACE_TOPOLOGY}" ]; then handle_error "topology can't be empty"; fi
               ;;
             *)
-              echo "Unknown option: ${option}"
+              error_line "Unknown option: ${option}"
               display_usage_deploy
               exit
               ;;
@@ -271,16 +281,6 @@ main_shutdown() {
 }
 
 helper_run_master() {
-    display_usage_run_master() {
-        sleep 2
-        echo ""
-        echo "Usage: "
-        echo ""
-        local script="./sbin/$THIS_SCRIPT_NAME"
-        echo " $script run --master"
-        echo ""
-        return
-    }
 
     check_already_started_run_master() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
@@ -291,8 +291,7 @@ helper_run_master() {
     }
 
     if [ $# -ne 0 ]; then
-        error_line "run master does not accept parameters"
-        display_usage_run_master
+        error_line "run --master does not accept parameters"
         exit 1
     fi
 
@@ -341,26 +340,24 @@ helper_stop_master() {
 }
 
 helper_run_worker() {
-    display_usage_start_worker() {
-        sleep 3
+    display_usage_run_worker() {
+        sleep 2s
         echo ""
-        echo "Usage: "
-        echo " --containers |    number of grid containers to start    | default 2"
+        echo "Usage: ${script} run --worker [--containers=N]"
+        echo "    --containers=N | number of grid containers to start, default is 0"
         echo ""
-        local script="./sbin/$THIS_SCRIPT_NAME"
         echo "Examples:"
-        echo "  Start datagrid |  starts 8 containers"
-        echo ""
-        echo " $script run --worker --containers 8"
+        echo "  Start Gigaspaces worker with 8 containers"
+        echo "      $script run --worker --containers 8"
         echo ""
         return
     }
 
-    define_defaults_start_worker() {
-        GSC_COUNT="2"
+    define_defaults_run_worker() {
+        GSC_COUNT="0"
     }
 
-    parse_options_start_worker() {
+    parse_options_run_worker() {
         while [ "$1" != "" ]; do
           local option="$1"
           case ${option} in
@@ -369,8 +366,8 @@ helper_run_worker() {
               if [ -z "${GSC_COUNT}" ]; then handle_error "--containers value can't be empty"; fi
               ;;
             *)
-              echo "Unknown option: ${option}"
-              display_usage_start_worker
+              error_line "Unknown option: ${option}"
+              display_usage_run_worker
               exit
               ;;
           esac
@@ -380,38 +377,38 @@ helper_run_worker() {
 
 
 
-    check_already_started_start_worker() {
-        pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
+    check_already_started_run_worker() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=worker | awk '{print $2}'`
         if [ ! -z "$pid" ]; then
-            echo "Datagrid slave is already running. pid: $pid"
+            echo "Datagrid worker is already running. pid: $pid"
 #            return
             exit 1
         fi
     }
 
     echo ""
-    step_title "--- Starting Gigaspaces datagrid node"
+    step_title "--- Starting Gigaspaces worker node"
 
-    define_defaults_start_worker
-    parse_options_start_worker $@
-    check_already_started_start_worker
+    define_defaults_run_worker
+    parse_options_run_worker $@
+    check_already_started_run_worker
 
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=slave" ${XAP_HOME}/bin/gs-agent.sh --gsc=$GSC_COUNT --spark_worker
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=worker" ${XAP_HOME}/bin/gs-agent.sh --gsc=${GSC_COUNT} --spark_worker
 }
 
 helper_stop_worker() {
 
     echo ""
-    step_title "--- Stopping datagrid slave instances"
+    step_title "--- Stopping datagrid worker instances"
 
-    do_stop_ie_worker() {
-        pid=`ps aux | grep -v grep | grep insightedge.marker=slave | awk '{print $2}'`
+    do_stop_worker() {
+        pid=`ps aux | grep -v grep | grep insightedge.marker=worker | awk '{print $2}'`
         if [ -z "$pid" ]; then
-            echo "Datagrid slave is not running"
+            echo "Datagrid worker is not running"
 #            exit
             return
         fi
-        echo "Stopping datagrid slave (pid: $pid)..."
+        echo "Stopping datagrid worker (pid: $pid)..."
 
         kill -SIGTERM $pid
 
@@ -425,19 +422,26 @@ helper_stop_worker() {
             ((TIMEOUT--))
             sleep 1
         done
-        echo "Datagrid slave stopped"
+        echo "Datagrid worker stopped"
     }
 
-    do_stop_ie_worker
-    step_title "--- Datagrid slave instances stopped"
+    do_stop_worker
+    step_title "--- Datagrid worker instances stopped"
 }
 
 main_run() {
+    display_usage_run() {
+        echo ""
+        echo "Usage: "
+        display_usage_run_inner
+        echo ""
+    }
+
     local option=$1
     shift
     case "$option" in
     "")
-        display_run_usage #TODO
+        display_usage_run
         ;;
     "--master")
         helper_run_master $@
