@@ -62,10 +62,10 @@ object Launcher {
     validateHash(lastCommitHash)
 
     //remove directory
-//    remove(output)
-//    run("Unpacking datagrid " + grid + " to   "  + output) {
-//      unzip(grid, s"$output", cutRootFolder = true)
-//    }
+    remove(output)
+    run("Unpacking datagrid " + grid + " to   "  + output) {
+      unzip(grid, s"$output", cutRootFolder = true)
+    }
 
 
 
@@ -80,42 +80,42 @@ object Launcher {
         copy(s"$resources/sbin/common/", s"$insightEdgeHome/sbin/")
         copy(s"$resources/sbin/$edition/", s"$insightEdgeHome/sbin/")
       }
-	  
-//
-//      run("Adding InsightEdge license and VERSION file") {
-//        copy(s"$project/LICENSE.md", s"$insightEdgeHome/INSIGHTEDGE-LICENSE.md")
-//        val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
-//        val versionInfo = s"Version: $version\n" +
-//          s"Edition: $edition\n" +
-//          s"Milestone: $milestone\n" +
-//          s"BuildNumber: $buildNumber\n" +
-//          s"Timestamp: $timestamp\n" +
-//          s"Hash: ${lastCommitHash.getOrElse("")}\n" +
-//          s"ArtifactVersion: $artifactVersion\n" +
-//          s"XAPVersion: $xapVersion"
-//        writeToFile(s"$insightEdgeHome/VERSION", versionInfo)
-//      }
 
-//      run("Adding integration libs") {
-//        copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
-//      }
-//
-//      run("Adding poms of integration libs") {
-//        copy(s"$project/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-package/pom.xml")
-//        copy(s"$project/insightedge-core/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-core/pom.xml")
-//      }
-//
-//      run("Adding examples") {
-//        unzip(s"$examples", s"$insightEdgeHome/quickstart", cutRootFolder = false)
-//      }
+
+      run("Adding InsightEdge license and VERSION file") {
+        copy(s"$project/LICENSE.md", s"$insightEdgeHome/INSIGHTEDGE-LICENSE.md")
+        val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
+        val versionInfo = s"Version: $version\n" +
+          s"Edition: $edition\n" +
+          s"Milestone: $milestone\n" +
+          s"BuildNumber: $buildNumber\n" +
+          s"Timestamp: $timestamp\n" +
+          s"Hash: ${lastCommitHash.getOrElse("")}\n" +
+          s"ArtifactVersion: $artifactVersion\n" +
+          s"XAPVersion: $xapVersion"
+        writeToFile(s"$insightEdgeHome/VERSION", versionInfo)
+      }
+
+      run("Adding integration libs") {
+        copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
+      }
+
+      run("Adding poms of integration libs") {
+        copy(s"$project/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-package/pom.xml")
+        copy(s"$project/insightedge-core/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-core/pom.xml")
+      }
+
+      run("Adding examples") {
+        unzip(s"$examples", s"$insightEdgeHome/quickstart", cutRootFolder = false)
+      }
       run("Adding InsightEdge resources") {
         copy(s"$resources/conf/", s"$insightEdgeHome/conf")
         copy(s"$resources/data/", s"$insightEdgeHome/data")
       }
 
-//      run("Unpacking Zeppelin") {
-//        untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
-//      }
+      run("Unpacking Zeppelin") {
+        untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
+      }
       run("Configuring Zeppelin") {
         copy(s"$resources/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
         copy(s"$resources/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
@@ -123,19 +123,19 @@ object Launcher {
         remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep")///delete in the future when delete zepplin spark interperter
       }
 
-//      run("Adding Zeppelin notes") {
-//        copy(s"$resources/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
-//      }
-//
-
-//      run("Adding Hadoop winutils") {
-//        unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/winutils", cutRootFolder = true)
-//      }
+      run("Adding Zeppelin notes") {
+        copy(s"$resources/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
+      }
 
 
-//      run("Unpacking spark") {
-//        untgz(spark, s"$insightEdgeHome/spark", cutRootFolder = true)
-//      }
+      run("Adding Hadoop winutils") {
+        unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/winutils", cutRootFolder = true)
+      }
+
+
+      run("Unpacking spark") {
+        untgz(spark, s"$insightEdgeHome/spark", cutRootFolder = true)
+      }
 
       run("Injecting InsightEdge spark overrides") {
         copy(s"$resources/spark/", s"$insightEdgeHome/spark")
@@ -148,11 +148,11 @@ object Launcher {
         permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
       }
 
-//
-//      run("Packing installation") {
-//        new File(outputFile).getParentFile.mkdirs()
-//        zip(output, outputFile, outputPrefix)
-//      }
+
+      run("Packing installation") {
+        new File(outputFile).getParentFile.mkdirs()
+        zip(output, outputFile, outputPrefix)
+      }
 
     }
 
