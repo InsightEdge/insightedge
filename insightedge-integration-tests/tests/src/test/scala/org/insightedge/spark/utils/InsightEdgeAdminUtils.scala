@@ -125,16 +125,16 @@ object InsightEdgeAdminUtils extends Assertions{
     zeppelinMappedPort = binding.hostPort()
 
 
-    Try {
-      retry(30000 millis, 1000 millis) {
-        println("ping zeppelin")
-        val resp = wsClient.url(zeppelinUrl).get()
-        Await.result(resp, 1.second)
-      }
-    }match {
-      case Success(_)  => println("Zeppling started")
-      case Failure(_) => fail("image [ " + ImageName + " ] start failed with timeout")
-    }
+//    Try {
+//      retry(30000 millis, 1000 millis) {
+//        println("ping zeppelin")
+//        val resp = wsClient.url(zeppelinUrl).get()
+//        Await.result(resp, 1.second)
+//      }
+//    }match {
+//      case Success(_)  => println("Zeppling started")
+//      case Failure(_) => fail("image [ " + ImageName + " ] start failed with timeout")
+//    }
 
     containerId
   }
