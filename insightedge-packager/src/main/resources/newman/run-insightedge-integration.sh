@@ -15,6 +15,7 @@ chmod -R 755 ${JOB_DIR}/build/insightedge/sbin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/bin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/sbin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/conf/*
+chmod -R 755 ${JOB_DIR}/build/insightedge/zeppelin/bin/*
 
 cp ${JOB_DIR}/build/insightedge/spark/conf/spark-defaults.conf.template ${JOB_DIR}/build/insightedge/spark/conf/spark-defaults.conf
 echo "spark.eventLog.enabled=true" > ${JOB_DIR}/build/insightedge/spark/conf/spark-defaults.conf
