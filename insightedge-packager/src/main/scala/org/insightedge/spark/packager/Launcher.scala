@@ -84,7 +84,7 @@ object Launcher {
         copy(s"$resources/sbin/$edition/", s"$insightEdgeHome/sbin/")
         copy(s"$resources/tools", s"$insightEdgeHome/tools")
       }
-	  
+
 
       run("Adding InsightEdge license and VERSION file") {
         copy(s"$project/LICENSE.md", s"$insightEdgeHome/INSIGHTEDGE-LICENSE.md")
