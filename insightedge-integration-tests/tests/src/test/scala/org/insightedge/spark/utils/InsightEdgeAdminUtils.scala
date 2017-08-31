@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
-import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
+import com.spotify.docker.client.messages.{Container, ContainerConfig, HostConfig, PortBinding}
 import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
 import org.json.simple.parser.JSONParser
 import org.json.simple.{JSONArray, JSONObject}
@@ -15,6 +15,7 @@ import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
@@ -26,6 +27,35 @@ import scala.util.{Failure, Success, Try}
   */
 
 object InsightEdgeAdminUtils extends Assertions{
+
+  def main(args: Array[String]): Unit = {
+//    val cs = docker.listContainers().asScala.filter(c => c.names().contains("/yohanac"))
+//    if (cs.size == 1)
+//      docker.removeContainer(cs.head.id())
+
+    val hostConfig = HostConfig
+      .builder()
+      .build()
+
+    val containerConfig = ContainerConfig.builder()
+      .hostConfig(hostConfig)
+      .image(ImageName)
+      .cmd("bash", "-c", "sleep 1h")
+      .build()
+
+    val creation = docker.createContainer(containerConfig, "yohanac")
+    val containerId = creation.id()
+
+    docker.startContainer(containerId)
+
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "sleep 10s ; echo hello there"), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
+    val execId = execCreation.id()
+    val output = docker.execStart(execId)
+    val outputString = output.readFully()
+    println(s"output of command on container $containerId is: $outputString")
+
+
+  }
 
   private val DockerImageStartTimeout = 3.minutes
   private val ZeppelinPort = "9090"
@@ -168,9 +198,10 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def restartSparkHistoryServer(): Unit = {
     println("called restartSparkHistoryServer")
-    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
-    println("killing history server with pid " + historyServerPid)
-    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
+    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), s"/opt/insightedge/insightedge/spark/sbin/stop-history-server.sh >> $ieLogsPath/stop-history-server.log 2>&1")
+//    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
+//    println("killing history server with pid " + historyServerPid)
+//    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
     println("starting spark history server")
     InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
   }
@@ -374,7 +405,7 @@ object InsightEdgeAdminUtils extends Assertions{
         containersId -= containerName
         println(s"Container $containerName destroyed")
       } else {
-        fail(s"job of app [$appId] is not on status RUNNING")
+        fail(s"job of app [$appId] is not on status RUNNING. Status is: $status")
       }
     }
   }
@@ -383,7 +414,7 @@ object InsightEdgeAdminUtils extends Assertions{
     retry(30000 millis, 100 millis) {
       val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
       if (!"SUCCEEDED".equals(status)) {
-        fail(s"job of app [$appId] is not on status SUCCEEDED")
+        fail(s"job of app [$appId] is not on status SUCCEEDED. Status is: $status")
       }
     }
   }
