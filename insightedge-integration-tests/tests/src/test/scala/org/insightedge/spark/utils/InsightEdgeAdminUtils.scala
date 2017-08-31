@@ -125,11 +125,11 @@ object InsightEdgeAdminUtils extends Assertions{
     val envVars = s"export XAP_MANAGER_SERVERS=$managerServers " +
       s"&& export XAP_NIC_ADDRESS=${getContainerIp(s"master$id")}"
     println(s"envVars: ${envVars}")
-    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/sbin/insightedge.sh run --master > /tmp/master.log"))
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/sbin/insightedge.sh run --master > /master-$id.log"))
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/sbin/insightedge.sh run --zeppelin > /tmp/zeppelin.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/sbin/insightedge.sh run --zeppelin > /tmp/zeppelin-$id.log"))
     val execId = execCreation.id()
     docker.execStart(execId)
 
@@ -161,7 +161,7 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def startSparkHistoryServer(masterContainerId: String): Unit = {
     println("called startSparkHistoryServer")
-    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/insightedge/spark/sbin/start-history-server.sh"))
+    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", s"/opt/insightedge/insightedge/spark/sbin/start-history-server.sh >> $ieLogsPath/history-server-$masterContainerId.log 2>&1"))
     val execIdHistoryServer = execCreationHistoryServer.id()
     val streamHistoryServer = docker.execStart(execIdHistoryServer)
   }
