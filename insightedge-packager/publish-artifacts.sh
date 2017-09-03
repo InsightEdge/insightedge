@@ -99,8 +99,18 @@ if [ -f $sumbitter_jar ]; then
     echo "NEWMAN_BUILD_TESTS_METADATA=${NEWMAN_BUILD_TESTS_METADATA}"
     echo "NEWMAN_BUILD_SHAS_FILE=${NEWMAN_BUILD_SHAS_FILE}"
     echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
-    java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter
-    echo "finished newman submitter process successfully"
+
+    buildId=`java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter | grep -o "com.gigaspaces.newman.NewmanBuildSubmitter - Build Build .*" | grep -o "id: '.*', name" | grep -o "'.*'" | sed 's/^.\(.*\).$/\1/'`
+    echo "finished newman submitter process successfully, build id: ${buildId}"
+    export NEWMAN_BUILD_ID="${buildId}"
+    export AUTHOR="${BUILD_USER_ID}"
+    echo "Using author ${AUTHOR} to submit future jobs"
+    for suiteId in $(echo $newmanSuites | sed "s/,/ /g")
+    do
+        echo "Submitting future job with suite: ${suiteId}"
+        export NEWMAN_SUITE_ID="${suiteId}"
+        java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanFutureJobSubmitter
+    done
 
 else
     echo "skipping newman submitter process because the file ${sumbitter_jar} does not exists"
