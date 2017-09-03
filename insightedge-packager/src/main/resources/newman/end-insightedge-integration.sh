@@ -8,7 +8,7 @@ echo "TEST_FOLDER: ${TEST_FOLDER}"
 echo "Copying logs to logs directory"
 cp -R ${JOB_DIR}/build/insightedge/spark/logs/* ${TEST_FOLDER}/output/
 cp -R ${JOB_DIR}/build/insightedge/zeppelin/logs/* ${TEST_FOLDER}/output/
-cp -R /opt/bootstrap.log ${TEST_FOLDER}/output/
+cp -R ${JOB_DIR}/build/insightedge/logs/* ${TEST_FOLDER}/output/
 
 echo "tearing down insightedge-integration test"
 #stop and remove all dockers
