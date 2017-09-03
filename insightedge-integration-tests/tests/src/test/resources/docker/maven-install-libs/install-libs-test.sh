@@ -3,7 +3,7 @@ set -x
 
 function add_insightedge_libs_to_repo() {
     println "------ Installing libraries"
-    EXPECTED_PROJECTS_COUNT=4
+    EXPECTED_PROJECTS_COUNT=3
     /opt/gigaspaces-insightedge/insightedge/sbin/insightedge-maven.sh | tee $HOME/insightedge-maven.out
     local failed_builds=`grep -c "\[INFO\] BUILD FAILURE" $HOME/insightedge-maven.out`
     if [[ $failed_builds == 0 ]]; then
