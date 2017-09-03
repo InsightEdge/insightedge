@@ -363,6 +363,7 @@
                 <newman.username>root</newman.username>
                 <newman.password>root</newman.password>
                 <newman.tags />
+                <newman.suites />
             </properties>
             <build>
                 <plugins>
@@ -412,6 +413,7 @@
                                         <newmanUsername>${newman.username}</newmanUsername>
                                         <newmanPassword>${newman.password}</newmanPassword>
                                         <newmanTags>${newman.tags}</newmanTags>
+                                        <newmanSuites>${newman.suites}</newmanSuites>
                                     </environmentVariables>
                                     <executable>${project.basedir}/publish-artifacts.sh</executable>
                                 </configuration>
