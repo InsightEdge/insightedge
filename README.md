@@ -48,7 +48,7 @@ To build InsightEdge zip distribution you need the following binary dependencies
 Package InsightEdge distribution:
 
 ```bash
-mvn clean package -P package-community -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=file:///<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples=<path to examples.zip>
+mvn clean package -P package-community -DskipTests=true -Ddist.spark=<path to spark.tgz> -Ddist.xap=file:///<path to xap.zip> -Ddist.zeppelin=<path to zeppelin.tar.gz> -Ddist.examples.target=<path to examples target>
 ```
 
 The archive is generated under `insightedge-packager/target/community` directory. The archive content is under `insightedge-packager/target/contents-community`.

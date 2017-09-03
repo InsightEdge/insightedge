@@ -86,7 +86,7 @@ dir("examples/$examplesBranchName") {
 stage 'Package insightedge'
 distributions = "-Ddist.spark=$env.SPARK_DIST"
 distributions = "$distributions -Ddist.zeppelin=zeppelin/$zeppelinBranchName/zeppelin-distribution/target/zeppelin-0.6.1-SNAPSHOT.tar.gz"
-distributions = "$distributions -Ddist.examples=examples/$examplesBranchName/target/insightedge-examples-all.zip"
+distributions = "$distributions -Ddist.examples.target=examples/$examplesBranchName/target"
 premiumDist = "$distributions -Ddist.xap=" + xapPremiumUrl
 communityDist = "$distributions -Ddist.xap=" + xapOpenUrl
 sh "mvn package -pl insightedge-packager -P package-premium   -DskipTests=true $premiumDist   -Dlast.commit.hash=$commitHash"

@@ -53,11 +53,14 @@ object Launcher {
     val spark = parameter("Spark distribution" -> "dist.spark")
     val grid = getXapLocation(edition, project)
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
-    val examples = parameter("Examples zip" -> "dist.examples")
+    val examples = parameter("Examples target folder" -> "dist.examples.target")
     val resources = s"$project/insightedge-packager/src/main/resources"
     val templates = s"datagrid/deploy/templates"
 
     val insightEdgeHome = s"$output/insightedge"
+
+    val examplesJar = "insightedge-examples-all.zip"
+    val examplesSources = "insightedge-examples-sources.jar"
 
     validateHash(lastCommitHash)
 
@@ -106,7 +109,8 @@ object Launcher {
       }
 
       run("Adding examples") {
-        unzip(s"$examples", s"$insightEdgeHome/quickstart", cutRootFolder = false)
+        unzip(s"$examples/$examplesJar", s"$insightEdgeHome/examples/jars/", cutRootFolder = false)
+        unzip(s"$examples/$examplesSources", s"$insightEdgeHome/examples/src/", cutRootFolder = false)
       }
       run("Adding InsightEdge resources") {
         copy(s"$resources/conf/", s"$insightEdgeHome/conf")
