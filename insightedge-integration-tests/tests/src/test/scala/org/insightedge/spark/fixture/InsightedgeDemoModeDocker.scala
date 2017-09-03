@@ -38,7 +38,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   self: Suite =>
 
   private val DockerImageStartTimeout = 3.minutes
-  private val ZeppelinPort = "8090"
+  private val ZeppelinPort = "9090"
   private val ImageName = s"insightedge-tests-demo-mode"
 
   protected var containerId: String = _
