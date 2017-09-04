@@ -61,7 +61,6 @@ object Launcher {
 
     val examplesJar = "insightedge-examples-all.zip"
     val examplesSources = "insightedge-examples-sources.jar"
-    val classes = "classes"
 
     validateHash(lastCommitHash)
 
@@ -112,7 +111,7 @@ object Launcher {
       run("Adding examples") {
         unzip(s"$examples/$examplesJar", s"$insightEdgeHome/examples/jars/", cutRootFolder = false)
         unzip(s"$examples/$examplesSources", s"$insightEdgeHome/examples/src/", cutRootFolder = false)
-        copy(s"$examples/$classes", s"$insightEdgeHome/examples/src1/")
+        remove(s"$insightEdgeHome/examples/src/META-INF")
       }
       run("Adding InsightEdge resources") {
         copy(s"$resources/conf/", s"$insightEdgeHome/conf")
