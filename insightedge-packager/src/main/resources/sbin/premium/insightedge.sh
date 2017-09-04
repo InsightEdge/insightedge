@@ -141,7 +141,7 @@ main_demo() {
     local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-local.out"
     echo "Starting ie local"
 
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker > $log 2>&1 &
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker --gsc=2 > $log 2>&1 &
     echo "Datagrid master started (log: $log)"
 
     step_title "--- Gigaspaces datagrid management node started"
