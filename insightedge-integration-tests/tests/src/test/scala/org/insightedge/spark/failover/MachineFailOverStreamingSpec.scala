@@ -42,7 +42,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
   self: Suite =>
 
-  private val JOBS = s"/opt/insightedge/insightedge/quickstart/scala/jobs.jar"
+  private val JOBS = s"/opt/insightedge/insightedge/examples/jars/scala/jobs.jar"
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
