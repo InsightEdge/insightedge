@@ -59,7 +59,7 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
           |/opt/gigaspaces-insightedge/insightedge/quickstart/scala/insightedge-examples.jar
           |spark://127.0.0.1:7077
           |$spaceName
-          |insightedge
+          |xap-12.2.0
           |127.0.0.1:4174""".stripMargin
 
     val exitCode = dockerExec(containerId, command)
