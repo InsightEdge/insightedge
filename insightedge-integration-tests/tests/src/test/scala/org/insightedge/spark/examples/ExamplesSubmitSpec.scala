@@ -40,9 +40,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
     exampleClassNames.foreach { className =>
       val fullClassName = s"org.insightedge.examples.$className"
       val command =
-        s"""export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
+        s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
           |--class $fullClassName
-          |--master spark://$$MY_IP:7077
+          |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/quickstart/scala/insightedge-examples.jar""".stripMargin
 
       val exitCode = dockerExec(containerId, command)
@@ -53,14 +53,14 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
   "insightedge-submit.sh " should "fail with wrong space name" in {
     val spaceName = "non-existing-space"
     val command =
-      s"""export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
+      s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
           |--class org.insightedge.examples.basic.SaveRdd
-          |--master spark://$$MY_IP:7077
+          |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/quickstart/scala/insightedge-examples.jar
-          |spark://$$MY_IP:7077
+          |spark://127.0.0.1:7077
           |$spaceName
           |xap-12.2.0
-          |$$MY_IP:4174""".stripMargin
+          |127.0.0.1:4174""".stripMargin
 
     val exitCode = dockerExec(containerId, command)
     assert(exitCode != 0)
@@ -68,8 +68,8 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   "insightedge-submit.sh " should "submit sf_salaries.py python example" in {
     val command =
-      s"""export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
-          |--master spark://$$MY_IP:7077
+      s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
+          |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/quickstart/python/sf_salaries.py""".stripMargin
 
     val exitCode = dockerExec(containerId, command)
