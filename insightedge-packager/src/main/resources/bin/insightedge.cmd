@@ -56,7 +56,7 @@ echo Aborting - Failed to find GSM
 exit /B
 :demo_gsm_found
 echo Deploying space 'insightedge' with 2 partitions...
-call "%XAP_HOME%\bin\gs" deploy-space -cluster schema=partitioned total_members=2 -initialization-timeout 60000 insightedge
+call "%XAP_HOME%\bin\gs" deploy-space -cluster schema=partitioned total_members=2 insightedge
 echo Starting Zeppelin...
 start "InsightEdge Zeppelin" "%XAP_HOME%\insightedge\zeppelin\bin\zeppelin.cmd"
 exit /B
