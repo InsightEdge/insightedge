@@ -18,29 +18,79 @@ display_logo() {
     echo "  |_____|_| |_|___/_|\\__, |_| |_|\\__|______\\__,_|\\__, |\\___|"
     echo "                      __/ |                       __/ |     "
     echo "                     |___/                       |___/   version: $IE_VERSION"
-    echo "                                                         edition: $EDITION"
+    echo "                                                            "
 }
 
 main_display_usage() {
-    sleep 1
     echo ""
-    display_logo
-    local script="./sbin/$THIS_SCRIPT_NAME"
-    echo ""
-    echo "Usage: ${script} <command> <args>"
-    echo "  ${script} demo"
+    echo "Usage: ${script} [command] [args]"
+    echo "Available commands:"
+    display_usage_demo_inner
     display_usage_run_inner
-    echo "  ${script} deploy-space [space name]"
-    echo "  ${script} undeploy [space name]"
-    echo "  ${script} shutdown"
+    display_usage_deploy_space_inner
+    display_usage_undeploy_inner
+    display_usage_shutdown_inner
     exit 1
 }
 
+display_usage_demo_inner() {
+    echo "  demo"
+    echo "      Starts a demo environment on the local host"
+}
+
+display_usage_demo() {
+    echo "Usage: $script demo"
+    echo "      Starts a demo environment on the local host"
+    echo ""
+}
 
 display_usage_run_inner() {
-    echo "  ${script} run --master                  |  Starts Gigaspaces master node"
-    echo "  ${script} run --worker [--containers=N] |  Starts Gigaspaces worker node with N GSCs, default to 0"
-    echo "  ${script} run --zeppelin                |  Starts Zeppelin"
+    echo "  run --master"
+    echo "      Runs Spark Master and XAP Manager"
+    echo "  run --worker [--containers=n]"
+    echo "      Runs Spark Worker and n XAP Containers (default n=zero)"
+    echo "  run --zeppelin"
+    echo "      Runs Apache Zeppelin"
+}
+
+display_usage_run() {
+    echo "Usage: $script run [options]"
+    echo "Available options:"
+    display_usage_run_inner
+    echo ""
+}
+
+display_usage_deploy_space_inner() {
+    echo "  deploy-space [--partitions=x [--backups]] <space-name>"
+    echo "      Deploys a space with the specified name and partitions/backups (Optional)"
+}
+
+display_usage_deploy() {
+    echo "Usage: $script deploy-space [--partitions=x [--backups]] <space-name>"
+    echo "      Deploys a space with the specified name and partitions/backups (Optional)"
+    echo ""
+}
+
+display_usage_undeploy_inner() {
+    echo "  undeploy <space-name>"
+    echo "      Undeploys space with the specified name"
+}
+
+display_usage_undeploy() {
+    echo "Usage: $script undeploy <space-name>"
+    echo "      Undeploys space with the specified name"
+    echo ""
+}
+
+display_usage_shutdown_inner() {
+    echo "  shutdown"
+    echo "      Shuts down InsightEdge environment on the local host"
+}
+
+display_usage_shutdown() {
+    echo "Usage: $script shutdown"
+    echo "      Shuts down InsightEdge environment on the local host"
+    echo ""
 }
 
 
@@ -71,7 +121,7 @@ main() {
         main_shutdown $@
         ;;
       *)
-        error_line "Unknown option [$option]"
+        error_line "Unknown option: $option"
         ;;
     esac
 }
@@ -102,7 +152,7 @@ step_title() {
 }
 
 error_line() {
-    printf "\e[31mError: $1\e[0m\n"
+    printf "\e[31m$1\e[0m\n"
 }
 
 handle_error() {
@@ -129,7 +179,9 @@ main_demo() {
 
 
     if [ $# -ne 0 ]; then
-        handle_error "demo does not accept parameters"
+        error_line "demo command does not accept parameters"
+        display_usage_demo
+        exit 1
     fi
 
     main_shutdown
@@ -156,21 +208,20 @@ main_demo() {
 
 
 main_deploy_space() {
-    echo ""
-    step_title "--- Deploying space"
 
     parse_deploy_options() {
         while [ "$1" != "" ]; do
           local option="$1"
           case ${option} in
             --topology=*)
+            #TODO
               SPACE_TOPOLOGY=$(get_option_value ${option})
               if [ -z "${SPACE_TOPOLOGY}" ]; then handle_error "topology can't be empty"; fi
               ;;
             *)
               error_line "Unknown option: ${option}"
               display_usage_deploy
-              exit
+              exit 1
               ;;
           esac
           shift
@@ -191,23 +242,11 @@ main_deploy_space() {
         done
     }
 
-    display_usage_deploy() {
-        sleep 3
-        local script="./sbin/$THIS_SCRIPT_NAME"
-        echo ""
-        echo "Usage: ${script} deploy-space [--topology=p,b] name"
-        echo ""
-        echo "Examples:"
-        echo "    Deploy space |  deploys 8 primary and 8 backup partitions of 'my-space' on cluster"
-        echo ""
-        echo " $script deploy-space --topology=8,1 my-space"
-        echo ""
-#        exit 1
-        return
-    }
 
     if [ $# -eq 0 ]; then
-        handle_error "space name is missing"
+        error_line "Space name must be specified"
+        display_usage_deploy
+        exit 1
     fi
 
     local args=( "$@" )
@@ -222,6 +261,8 @@ main_deploy_space() {
 
     parse_deploy_options ${args[@]}
 
+    echo ""
+    step_title "--- Deploying space"
     echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY]"
     await_master_start #TODO: revisit in IE-87
     ${XAP_HOME}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=${SPACE_TOPOLOGY} ${SPACE_NAME}
@@ -230,38 +271,19 @@ main_deploy_space() {
 }
 
 main_undeploy() {
-    echo ""
-    step_title "--- Undeploying space"
-
-    display_usage_undeploy() {
-        local script="./sbin/$THIS_SCRIPT_NAME"
-        sleep 3
-        echo ""
-        echo "Usage: $script undeploy [name]"
-        echo ""
-        echo "Examples:"
-        echo "  Undeploy space |  undeploys 'my-space' from cluster"
-        echo ""
-        echo " $script undeploy my-space"
-        echo ""
-#        exit 1
-        return
-    }
-
     local spaceName="$1"
 
     if [ "$spaceName" == "" ]; then
-        #TODO better message
-        error_line "space name is missing"
+        error_line "Space name must be specified"
         display_usage_undeploy
-        exit
+        exit 1
     elif [ $# -ne 1 ]; then
-        #TODO better message
-        error_line "too many arguments"
+        error_line "Too many arguments"
         display_usage_undeploy
-        exit
+        exit 1
     fi
-
+    echo ""
+    step_title "--- Undeploying space"
     echo "Undeploying space: ${spaceName}"
     ${XAP_HOME}/bin/gs.sh undeploy ${spaceName}
 
@@ -270,9 +292,9 @@ main_undeploy() {
 
 main_shutdown() {
     if [ $# -ne 0 ]; then
-        #TODO better error message, maybe add/display usage for shutdown?
-        error_line "shutdown does not accept parameters"
-        return
+        error_line "Too many arguments"
+        display_usage_shutdown
+        exit 1
     fi
 
     helper_stop_zeppelin
@@ -291,12 +313,14 @@ helper_run_master() {
     }
 
     if [ $# -ne 0 ]; then
-        error_line "run --master does not accept parameters"
+        error_line "Too many arguments"
+        display_usage_run
         exit 1
     fi
 
     if [ -z "${XAP_MANAGER_SERVERS}" ]; then
-        handle_error "XAP_MANAGER_SERVERS is not set, please refer to the documentation"
+        error_line "XAP_MANAGER_SERVERS is not set, please refer to the documentation"
+        exit 1
     fi
 
     echo ""
@@ -430,18 +454,14 @@ helper_stop_worker() {
 }
 
 main_run() {
-    display_usage_run() {
-        echo ""
-        echo "Usage: "
-        display_usage_run_inner
-        echo ""
-    }
 
     local option=$1
     shift
     case "$option" in
     "")
+        echo "Nothing to run"
         display_usage_run
+        exit 1
         ;;
     "--master")
         helper_run_master $@
@@ -453,7 +473,8 @@ main_run() {
         helper_run_zeppelin $@
         ;;
     *)
-        echo "Unknown command $1"
+        error_line "Unknown option: $option"
+        display_usage_run
         exit 1
         ;;
     esac
