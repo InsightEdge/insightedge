@@ -64,7 +64,7 @@ object InsightEdgeAdminUtils extends Assertions{
   private val docker = DefaultDockerClient.fromEnv().build()
   private var zeppelinMappedPort: String = _
 
-  private var IE_HOME = BuildUtils.IEHome
+  private val IE_HOME = BuildUtils.IEHome
 
   private val wsClient = NingWSClient()
   var containersId: Map[String, String] = Map[String, String]()
