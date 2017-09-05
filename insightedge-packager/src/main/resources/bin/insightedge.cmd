@@ -31,13 +31,20 @@ goto help
 :help
 echo Usage: %~n0 [command] [args]
 echo Available commands:
-echo   run --master                                   ^| Runs Spark Master and XAP Manager
-echo   run --worker [--containers=n]                  ^| Runs Spark Worker and n XAP Containers (default n=zero)
-echo   run --zeppelin                                 ^| Runs Apache Zeppelin
-echo   deploy-space [--topology=n,m] space-name       ^| Deploys a space with the specified name
-echo   undeploy space-name                            ^| Undeploys space with the specified name
-echo   demo                                           ^| Starts a demo environment on the local host
-echo   shutdown                                       ^| Shuts down InsightEdge environment on the local host
+echo   demo
+echo       Starts a demo environment on the local host
+echo   run --master
+echo       Runs Spark Master and XAP Manager
+echo   run --worker [--containers=n]
+echo       Runs Spark Worker and n XAP Containers (default n=zero)
+echo   run --zeppelin
+echo       Runs Apache Zeppelin
+echo   deploy-space [--partitions=x [--backups]] space-name
+echo       Deploys a space with the specified name and partitions/backups (Optional)
+echo   undeploy space-name
+echo       Undeploys space with the specified name
+echo   shutdown
+echo       Shuts down InsightEdge environment on the local host
 exit /B
 
 :demo
@@ -59,6 +66,12 @@ echo Deploying space 'insightedge' with 2 partitions...
 call "%XAP_HOME%\bin\gs" deploy-space -cluster schema=partitioned total_members=2 insightedge
 echo Starting Zeppelin...
 start "InsightEdge Zeppelin" "%XAP_HOME%\insightedge\zeppelin\bin\zeppelin.cmd"
+echo **************************************************
+echo Demo environment started:
+echo - Spark Master: http://localhost:8080
+echo - XAP Manager: http://localhost:8090
+echo - Zeppelin: http://localhost:%ZEPPELIN_PORT%
+echo **************************************************
 exit /B
 
 :run
@@ -92,31 +105,29 @@ echo   %~n0 run --zeppelin                - Runs Apache Zeppelin
 exit /B
 
 :deploy_space
-set INSIGHTEDGE_CMD=deploy-space
-:deploy_space_args
-if [%2]==[] (echo Space name must be specified & goto deploy_space_usage)
-if %2==--topology goto deploy_space_topology
-echo Deploying space %2...
-call "%XAP_HOME%\bin\gs" %INSIGHTEDGE_CMD% %2
+if [%2]==[] (
+  echo Space name must be specified
+  echo Usage: %~n0 deploy-space [--partitions=x [--backups]] space-name
+  exit /B
+)
+if %2==--partitions goto deploy_space_partitions
+if %2==--backups goto deploy_space_backups
+if defined INSIGHTEDGE_PARTITIONS (
+  set INSIGHTEDGE_TOPOLOGY=-cluster schema=partitioned total_members=%INSIGHTEDGE_PARTITIONS%
+  if defined INSIGHTEDGE_BACKUPS set INSIGHTEDGE_TOPOLOGY=!INSIGHTEDGE_TOPOLOGY!,%INSIGHTEDGE_BACKUPS%
+)
+echo Deploying space %2 with [%INSIGHTEDGE_TOPOLOGY%]...
+call "%XAP_HOME%\bin\gs" deploy-space %INSIGHTEDGE_TOPOLOGY% %2
 exit /B
-:deploy_space_topology
+:deploy_space_partitions
 shift
-rem Check if number of partitions (mandatory) is numric (see https://stackoverflow.com/a/17584764)
-if [%2]==[] (echo Number of partitions must be specified when using --topology & goto deploy_space_usage)
-SET "var="&for /f "delims=0123456789" %%i in ("%2") do set var=%%i
-if defined var (echo Number of partitions is not an integer: %2 & goto deploy_space_usage)
-set INSIGHTEDGE_CMD=%INSIGHTEDGE_CMD% -cluster schema=partitioned total_members=%2
+set INSIGHTEDGE_PARTITIONS=%2
 shift
-rem Check if number of backups (optional) is numric (see https://stackoverflow.com/a/17584764)
-if [%2]==[] goto deploy_space_args
-SET "var="&for /f "delims=0123456789" %%i in ("%2") do set var=%%i
-if defined var goto deploy_space_args
-set INSIGHTEDGE_CMD=%INSIGHTEDGE_CMD%,%2
+goto deploy_space
+:deploy_space_backups
+set INSIGHTEDGE_BACKUPS=1
 shift
-goto deploy_space_args
-:deploy_space_usage
-echo Usage: %~n0 deploy-space [--topology=p,b] space-name
-exit /B
+goto deploy_space
 
 :undeploy
 if [%2]==[] (
