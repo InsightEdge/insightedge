@@ -61,7 +61,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     val portBindings = Map(ZeppelinPort -> randomPort).asJava
     val hostConfig = HostConfig.builder()
       .portBindings(portBindings)
-      .appendBinds(IE_HOME + ":/opt/insightedge")
+      .appendBinds(IE_HOME + ":/opt/gigaspaces-insightedge")
       .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
       .build()
 

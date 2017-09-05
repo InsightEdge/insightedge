@@ -25,7 +25,7 @@ RUN gunzip $ZIPPED_JDK && tar -xvf $TAR_JDK -C /usr/
 RUN ln -s $JAVA_HOME /usr/java && rm -rf $JAVA_HOME/man
 
 # add InsightEdge distr
-RUN mkdir -p /opt/insightedge
+RUN mkdir -p /opt/gigaspaces-insightedge
 
 ADD bootstrap.sh /etc/bootstrap.sh
 RUN chown root:root /etc/bootstrap.sh
