@@ -45,6 +45,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   private val docker = DefaultDockerClient.fromEnv().build()
   private var zeppelinMappedPort: String = _
 
+  private val IE_HOME = BuildUtils.IEHome
   private val testFolder = BuildUtils.TestFolder
   private val sharedOutputFolder = testFolder + "/output"
 
@@ -60,6 +61,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     val portBindings = Map(ZeppelinPort -> randomPort).asJava
     val hostConfig = HostConfig.builder()
       .portBindings(portBindings)
+      .appendBinds(IE_HOME + ":/opt/insightedge")
       .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
       .build()
 
