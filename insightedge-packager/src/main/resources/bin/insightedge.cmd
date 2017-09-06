@@ -82,8 +82,8 @@ if %2==--master (
 if %2==--worker (
   set INSIGHTEDGE_CMD=--spark_worker
   if [%3]==[--containers] (
-    set INSIGHTEDGE_CMD=%INSIGHTEDGE_CMD% --gsc
-    if not [%4]==[] set INSIGHTEDGE_CMD=%INSIGHTEDGE_CMD%=%4
+    set INSIGHTEDGE_CMD=!INSIGHTEDGE_CMD! --gsc
+    if not [%4]==[] set INSIGHTEDGE_CMD=!INSIGHTEDGE_CMD!=%4
   )
   goto run_agent
 )
