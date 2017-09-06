@@ -55,8 +55,6 @@ FOR /L %%G IN (1,1,6) DO (
   echo !time!
   echo Waiting for master [%%G of 6]...
   "%XAP_HOME%\bin\gs" list gsm | findstr /C:"Found 0 GSMs"
-  echo !ERRORLEVEL!
-  echo !ERRORLEVEL!
   if !ERRORLEVEL!==1 goto demo_gsm_found
 )
 echo Aborting - Failed to find GSM
