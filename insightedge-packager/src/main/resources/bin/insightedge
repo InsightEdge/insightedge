@@ -131,6 +131,19 @@ main() {
     esac
 }
 
+helper_await_master_start() {
+    local retries=6
+    for retryId in $(seq 1 $retries); do
+          echo "Waiting for master [$retryId of $retries]..."
+
+        local gsms=$(${XAP_HOME}/bin/gs.sh list 2>/dev/null | grep GSM)
+        if [ -n "$gsms" ]; then
+            return
+        fi
+    done
+    error_line "Aborting - Failed to find GSM"
+    exit 1
+}
 
 helper_stop_zeppelin() {
     step_title "--- Stopping Zeppelin"
@@ -211,6 +224,7 @@ main_demo() {
 
     export SPARK_LOCAL_IP="localhost"
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=demo" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker --gsc=2 > /dev/null 2>&1 &
+    helper_await_master_start
 
     main_deploy_space --partitions=2 "insightedge-space"
 
@@ -245,19 +259,6 @@ main_deploy_space() {
               ;;
           esac
           shift
-        done
-    }
-
-    await_master_start() {
-        TIMEOUT=60
-        echo "  Waiting for master ..."
-        while [ -z "$(${XAP_HOME}/bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
-            if [ $TIMEOUT -le 0 ]; then
-              error_line "Aborting - Failed to find GSM"
-              exit 1
-            fi
-            TIMEOUT=$((TIMEOUT - 10))
-            echo "  .. ($TIMEOUT sec)"
         done
     }
 
@@ -300,7 +301,6 @@ main_deploy_space() {
 
     echo ""
     step_title "-- $SPACE_DEPLOY_TEXT"
-    await_master_start #TODO: revisit in IE-87
     ${XAP_HOME}/bin/gs.sh deploy-space ${SPACE_NAME}
 }
 
@@ -412,23 +412,8 @@ helper_stop_agent() {
         echo "gs-agent is not running"
         return
     fi
-    echo "PIDs found: $pid..."
 
     kill -9 ${pid}
-
-    TIMEOUT=60
-    while ps -p $pid > /dev/null; do
-        if [ $TIMEOUT -le 0 ]; then
-            echo "Timed out"
-            return
-        fi
-        if ! ((TIMEOUT % 10)); then
-            echo "  waiting termination ($TIMEOUT sec)"
-        fi
-        ((TIMEOUT--))
-        sleep 1
-    done
-
 
     echo "gs-agent stopped"
 }
