@@ -15,7 +15,7 @@ else
     mv resources/gigaspaces-insightedge*premium*.zip build/
     chmod 775 build/insightedge/tools/maven/insightedge-maven.sh
     XAP_HOME=`pwd`/build/
-    pushd build/insightedge/sbin/
+    pushd build/insightedge/tools/maven/
     . insightedge-maven.sh
     popd
 fi
