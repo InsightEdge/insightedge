@@ -427,23 +427,27 @@ object InsightEdgeAdminUtils extends Assertions{
   def datagridNodes(): Map[ProcessingUnitInstance, List[String]] ={
     var spacesOnMachines: Map[ProcessingUnitInstance, List[String]] = Map[ProcessingUnitInstance, List[String]]()
 
-    admin
+    var result = admin
       .getMachines.waitFor(4, 30, TimeUnit.SECONDS)
+    println(s"Found four machines: $result")
 
-    admin
+    result= admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
-      .waitFor(6, 30, TimeUnit.SECONDS)
+      .waitFor(6, 60, TimeUnit.SECONDS)
+    println(s"Found 6 space instances: $result")
 
-    admin
+    result = admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
-      .waitFor(3, SpaceMode.PRIMARY, 30, TimeUnit.SECONDS)
+      .waitFor(3, SpaceMode.PRIMARY, 60, TimeUnit.SECONDS)
+    println(s"Found 3 primaries: $result")
 
-    admin
+    result= admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
-      .waitFor(3, SpaceMode.BACKUP, 30, TimeUnit.SECONDS)
+      .waitFor(3, SpaceMode.BACKUP, 60, TimeUnit.SECONDS)
+    println(s"Found 3 backups: $result")
 
     admin.getMachines.getMachines.foreach(
       m => m.getProcessingUnitInstances.foreach(
