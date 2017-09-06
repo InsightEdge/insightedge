@@ -85,7 +85,7 @@ object InsightEdgeAdminUtils extends Assertions{
   private val sharedOutputFolder = s"$testFolder/output"
   private val ieLogsPath = "/opt/insightedge/logs"
 
-  def loadInsightEdgeSlaveContainer(managerServers : String): String = {
+  def loadInsightEdgeSlaveContainer(id: Int, managerServers : String): String = {
     println(s"slave - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
     val hostConfig = HostConfig
       .builder()
@@ -98,7 +98,7 @@ object InsightEdgeAdminUtils extends Assertions{
       .image(ImageName)
       .env("XAP_NIC_ADDRESS=#local:ip#")
       .env(s"XAP_MANAGER_SERVERS=$managerServers")
-      .cmd("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge run --worker --containers=2 > /tmp/worker.log")
+      .cmd("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge run --worker --containers=2 > $ieLogsPath/worker-$id.log")
       .build()
 
     ieSlaveCounter += 1
@@ -155,11 +155,11 @@ object InsightEdgeAdminUtils extends Assertions{
     val envVars = s"export XAP_MANAGER_SERVERS=$managerServers " +
       s"&& export XAP_NIC_ADDRESS=${getContainerIp(s"master$id")}"
     println(s"envVars: ${envVars}")
-    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge run --master > /master-$id.log"))
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge run --master > $ieLogsPath/master-$id.log"))
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge run --zeppelin > /tmp/zeppelin-$id.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge run --zeppelin > $ieLogsPath/zeppelin-$id.log"))
     val execId = execCreation.id()
     docker.execStart(execId)
 
@@ -378,8 +378,8 @@ object InsightEdgeAdminUtils extends Assertions{
     for (i <- 1 to numOfIEMasters) {
       loadInsightEdgeMasterContainer(i, managerServers)
     }
-    for (i <- 0 until numOfIESlaves) {
-      loadInsightEdgeSlaveContainer(managerServers)
+    for (i <- 1 to numOfIESlaves) {
+      loadInsightEdgeSlaveContainer(i, managerServers)
     }
     deployDataGrid(containersId("master1"), numOfDataGridMasters, numOfDataGridSlaves > 0)
 
