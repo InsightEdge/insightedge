@@ -13,7 +13,7 @@ else
     jar xf resources/gigaspaces-insightedge*premium*.zip
     mv gigaspaces-insightedge* build
     mv resources/gigaspaces-insightedge*premium*.zip build/
-    chmod 775 build/insightedge/sbin/insightedge-maven.sh
+    chmod 775 build/insightedge/tools/maven/insightedge-maven.sh
     XAP_HOME=`pwd`/build/
     pushd build/insightedge/sbin/
     . insightedge-maven.sh
