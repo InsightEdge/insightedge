@@ -135,7 +135,7 @@ object Launcher {
 
 
       run("Adding Hadoop winutils") {
-        unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/winutils", cutRootFolder = true)
+        unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/tools/winutils", cutRootFolder = true)
       }
 
 

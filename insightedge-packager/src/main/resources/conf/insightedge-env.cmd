@@ -12,7 +12,7 @@ call %~dp0..\..\bin\setenv.bat
 rem Set InsightEdge defaults:
 set INSIGHTEDGE_CORE_CP="%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*"
 
-if not defined HADOOP_HOME set HADOOP_HOME="%XAP_HOME%\insightedge\winutils"
+if not defined HADOOP_HOME set HADOOP_HOME="%XAP_HOME%\insightedge\tools\winutils"
 if not defined SPARK_HOME set SPARK_HOME="%XAP_HOME%\insightedge\spark"
 if not defined SPARK_SUBMIT_OPTS set SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=%INSIGHTEDGE_CORE_CP% -Dspark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP%"
 if not defined SPARK_LOCAL_IP (
