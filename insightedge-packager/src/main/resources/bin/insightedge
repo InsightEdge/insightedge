@@ -29,7 +29,6 @@ main_display_usage() {
     display_usage_deploy_space_inner
     display_usage_undeploy_inner
     display_usage_shutdown_inner
-    exit 1
 }
 
 display_usage_demo_inner() {
@@ -106,8 +105,9 @@ main() {
     case "$option" in
       "")
         main_display_usage
+        exit 1
         ;;
-      "-h")
+      "help")
         main_display_usage
         ;;
       "demo")
@@ -127,6 +127,8 @@ main() {
         ;;
       *)
         error_line "Unknown option: $option"
+        main_display_usage
+        exit 1
         ;;
     esac
 }
@@ -170,7 +172,6 @@ helper_run_zeppelin() {
     step_title "--- Starting Zeppelin"
     ${XAP_HOME}/insightedge/zeppelin/bin/zeppelin.sh
 }
-
 
 step_title() {
     printf "\e[32m$1\e[0m\n"
@@ -317,7 +318,7 @@ main_undeploy() {
         exit 1
     fi
     echo ""
-    step_title "Undeploying space ${spaceName}"
+    step_title "-- Undeploying space ${spaceName}"
     ${XAP_HOME}/bin/gs.sh undeploy ${spaceName}
     step_title "--- Done undeploying space"
 }
@@ -351,9 +352,8 @@ helper_run_master() {
 
 #    check_already_started_run_master
 
-    step_title "Starting gs-agent with --manager --spark_master..."
+    step_title "-- Starting gs-agent with --manager --spark_master..."
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master
-    echo "gs-agent started"
 }
 
 helper_run_worker() {
@@ -398,7 +398,7 @@ helper_run_worker() {
 #    check_already_started_run_worker
 
     echo ""
-    step_title "Starting gs-agent with --spark_worker..."
+    step_title "-- Starting gs-agent with --spark_worker..."
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=worker" ${XAP_HOME}/bin/gs-agent.sh --gsc=${GSC_COUNT} --spark_worker
 }
 
