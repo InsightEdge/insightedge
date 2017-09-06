@@ -1,10 +1,9 @@
 @echo off
+REM This scripts installs InsightEdge artifacts (jars) to local maven repository
 
-call %~dp0..\..\bin\setenv.bat
+call %~dp0..\..\conf\insightedge-env.cmd
 
-
-
-echo Installing InsightEdge %INSIGHTEDGE_VER% artifacts
+echo Installing InsightEdge artifacts
 
 call mvn install:install-file ^
     -Dpackaging=pom ^

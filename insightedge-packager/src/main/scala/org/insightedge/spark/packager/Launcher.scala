@@ -82,6 +82,7 @@ object Launcher {
         copy(s"$resources/bin", s"$insightEdgeHome/bin")		
         copy(s"$resources/sbin/common/", s"$insightEdgeHome/sbin/")
         copy(s"$resources/sbin/$edition/", s"$insightEdgeHome/sbin/")
+        copy(s"$resources/tools", s"$insightEdgeHome/tools")
       }
 	  
 
