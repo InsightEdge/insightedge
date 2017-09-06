@@ -7,7 +7,6 @@ EMPTY="[]"
 THIS_SCRIPT_NAME=`basename "$0"`
 script="./$THIS_SCRIPT_NAME"
 IE_VERSION=`grep -w "Version" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
-EDITION=`grep -w "Edition" ${XAP_HOME}/insightedge/VERSION | awk -F  ":" '{print $2}' | sed 's/ //'`
 
 display_logo() {
     echo "   _____           _       _     _   ______    _            "
@@ -51,6 +50,12 @@ display_usage_run_inner() {
     echo "      Runs Spark Worker and n XAP Containers (default n=zero)"
     echo "  run --zeppelin"
     echo "      Runs Apache Zeppelin"
+}
+
+display_usage_run_worker() {
+    echo "Usage: $script run --worker [--containers=n]"
+    echo "      Runs Spark Worker and n XAP Containers (default n=zero)"
+    echo ""
 }
 
 display_usage_run() {
@@ -171,15 +176,16 @@ get_option_value() {
 main_demo() {
     display_demo_help() {
         printf '\e[0;34m\n'
-        echo "Demo steps:"
-        echo "1. make sure steps above were successfully executed"
-        echo "2. Open Web Notebook at http://${XAP_NIC_ADDRESS}:9090 and run any of the available examples"
+        echo "Demo environment started:"
+        echo "- Spark Master: http://${XAP_NIC_ADDRESS}:8080"
+        echo "- XAP Manager: http://${XAP_NIC_ADDRESS}:8090"
+        echo "- Zeppelin: http://${XAP_NIC_ADDRESS}:9090"
         printf "\e[0m\n"
     }
 
 
     if [ $# -ne 0 ]; then
-        error_line "demo command does not accept parameters"
+        error_line "Too many arguments"
         display_usage_demo
         exit 1
     fi
@@ -187,18 +193,14 @@ main_demo() {
     main_shutdown
 
     echo ""
-    step_title "--- Starting Gigaspaces datagrid local node"
-
+    step_title "-- Starting gs-agent with local manager, spark master, spark worker and 2 containers..."
+    #TODO print log file path
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-local.out"
-    echo "Starting ie local"
 
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker --gsc=2 > $log 2>&1 &
-    echo "Datagrid master started (log: $log)"
 
-    step_title "--- Gigaspaces datagrid management node started"
-
-    main_deploy_space --topology=1,0 "insightedge-space"
+    main_deploy_space --topology=2,0 "insightedge-space"
 
     helper_start_zeppelin
 
@@ -262,12 +264,9 @@ main_deploy_space() {
     parse_deploy_options ${args[@]}
 
     echo ""
-    step_title "--- Deploying space"
-    echo "Deploying space: $SPACE_NAME [$SPACE_TOPOLOGY]"
+    step_title "-- Deploying space '$SPACE_NAME' with $SPACE_TOPOLOGY partitions..."
     await_master_start #TODO: revisit in IE-87
     ${XAP_HOME}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=${SPACE_TOPOLOGY} ${SPACE_NAME}
-
-    step_title "--- Done deploying space"
 }
 
 main_undeploy() {
@@ -283,10 +282,8 @@ main_undeploy() {
         exit 1
     fi
     echo ""
-    step_title "--- Undeploying space"
-    echo "Undeploying space: ${spaceName}"
+    step_title "Undeploying space ${spaceName}"
     ${XAP_HOME}/bin/gs.sh undeploy ${spaceName}
-
     step_title "--- Done undeploying space"
 }
 
@@ -298,8 +295,7 @@ main_shutdown() {
     fi
 
     helper_stop_zeppelin
-    helper_stop_master
-    helper_stop_worker
+    helper_stop_agent
 }
 
 helper_run_master() {
@@ -318,22 +314,15 @@ helper_run_master() {
         exit 1
     fi
 
-    if [ -z "${XAP_MANAGER_SERVERS}" ]; then
-        error_line "XAP_MANAGER_SERVERS is not set, please refer to the documentation"
-        exit 1
-    fi
-
-    echo ""
-
     check_already_started_run_master
 
-    step_title "--- Starting Gigaspaces datagrid management node"
+    step_title "Starting gs-agent with --manager --spark_master..."
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master
 }
 
 helper_stop_master() {
     echo ""
-    step_title "--- Stopping datagrid master"
+    step_title "--- Stopping datagrid master" #TODO
 
     do_stop_ie_master() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
@@ -364,19 +353,6 @@ helper_stop_master() {
 }
 
 helper_run_worker() {
-    display_usage_run_worker() {
-        sleep 2s
-        echo ""
-        echo "Usage: ${script} run --worker [--containers=N]"
-        echo "    --containers=N | number of grid containers to start, default is 0"
-        echo ""
-        echo "Examples:"
-        echo "  Start Gigaspaces worker with 8 containers"
-        echo "      $script run --worker --containers 8"
-        echo ""
-        return
-    }
-
     define_defaults_run_worker() {
         GSC_COUNT="0"
     }
@@ -385,9 +361,18 @@ helper_run_worker() {
         while [ "$1" != "" ]; do
           local option="$1"
           case ${option} in
+            --containers)
+              error_line "Missing value for --containers"
+              display_usage_run_worker
+              exit 1
+              ;;
             --containers=*)
               GSC_COUNT=$(get_option_value ${option})
-              if [ -z "${GSC_COUNT}" ]; then handle_error "--containers value can't be empty"; fi
+              if [ -z "${GSC_COUNT}" ]; then
+                  error_line "Missing value for --containers"
+                  display_usage_run_worker
+                  exit 1
+              fi
               ;;
             *)
               error_line "Unknown option: ${option}"
@@ -404,26 +389,24 @@ helper_run_worker() {
     check_already_started_run_worker() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=worker | awk '{print $2}'`
         if [ ! -z "$pid" ]; then
-            echo "Datagrid worker is already running. pid: $pid"
+            echo "Worker is already running. pid: $pid"
 #            return
             exit 1
         fi
     }
-
-    echo ""
-    step_title "--- Starting Gigaspaces worker node"
-
     define_defaults_run_worker
     parse_options_run_worker $@
     check_already_started_run_worker
 
+    echo ""
+    step_title "Starting gs-agent with --spark_worker..."
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=worker" ${XAP_HOME}/bin/gs-agent.sh --gsc=${GSC_COUNT} --spark_worker
 }
 
 helper_stop_worker() {
 
     echo ""
-    step_title "--- Stopping datagrid worker instances"
+    step_title "--- Killing gs-agent" #TODO
 
     do_stop_worker() {
         pid=`ps aux | grep -v grep | grep insightedge.marker=worker | awk '{print $2}'`
@@ -451,6 +434,38 @@ helper_stop_worker() {
 
     do_stop_worker
     step_title "--- Datagrid worker instances stopped"
+}
+
+helper_stop_agent() {
+
+    echo ""
+    step_title "--- Stopping gs-agent" #TODO
+
+    pid=`ps aux | grep -v grep | grep insightedge.marker | awk '{print $2}' | tr '\n' ' '`
+    if [ -z "$pid" ]; then
+        echo "gs-agent is not running"
+        return
+    fi
+    echo "PIDs found: $pid..."
+
+    #TODO change to -9 ?
+    kill -SIGTERM $pid #TODO handle multiple pids
+
+    TIMEOUT=60
+    while ps -p $pid > /dev/null; do
+        if [ $TIMEOUT -le 0 ]; then
+            echo "Timed out"
+            return
+        fi
+        if ! ((TIMEOUT % 10)); then
+            echo "  waiting termination ($TIMEOUT sec)"
+        fi
+        ((TIMEOUT--))
+        sleep 1
+    done
+
+
+    echo "gs-agent stopped"
 }
 
 main_run() {
