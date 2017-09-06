@@ -413,8 +413,20 @@ helper_stop_agent() {
         return
     fi
 
-    kill -9 ${pid}
+    kill -SIGTERM ${pid}
 
+    TIMEOUT=60
+    while ps -p $pid > /dev/null; do
+        if [ $TIMEOUT -le 0 ]; then
+            echo "Timed out"
+            return
+        fi
+        if ! ((TIMEOUT % 10)); then
+            echo "  waiting termination ($TIMEOUT sec)"
+        fi
+        ((TIMEOUT--))
+        sleep 1
+    done
     echo "gs-agent killed"
 }
 
