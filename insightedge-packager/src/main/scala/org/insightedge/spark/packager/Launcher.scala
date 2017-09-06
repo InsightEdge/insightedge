@@ -53,14 +53,13 @@ object Launcher {
     val spark = parameter("Spark distribution" -> "dist.spark")
     val grid = getXapLocation(edition, project)
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
-    val examples = parameter("Examples target folder" -> "dist.examples.target")
+    val examplesTarget = parameter("Examples target folder" -> "dist.examples.target")
     val resources = s"$project/insightedge-packager/src/main/resources"
     val templates = s"datagrid/deploy/templates"
 
     val insightEdgeHome = s"$output/insightedge"
 
-    val examplesJar = "insightedge-examples-all.zip"
-    val examplesSources = "insightedge-examples-sources.jar"
+    val examplesJar = "insightedge-examples.jar"
 
     validateHash(lastCommitHash)
 
@@ -110,10 +109,27 @@ object Launcher {
       }
 
       run("Adding examples") {
-        unzip(s"$examples/$examplesJar", s"$insightEdgeHome/examples/jars/", cutRootFolder = false)
-        unzip(s"$examples/$examplesSources", s"$insightEdgeHome/examples/src/", cutRootFolder = false)
-        remove(s"$insightEdgeHome/examples/src/META-INF")
+        val examplesProject = s"$examplesTarget/.."
+
+        copy(s"$examplesProject/target/$examplesJar", s"$insightEdgeHome/examples/jars/$examplesJar")
+
+        copy(s"$examplesProject", s"$insightEdgeHome/examples/")
+
+        remove(s"$insightEdgeHome/examples/build.sbt")
+        remove(s"$insightEdgeHome/examples/dependency-reduced-pom.xml")
+        remove(s"$insightEdgeHome/examples/doc")
+        remove(s"$insightEdgeHome/examples/.git")
+        remove(s"$insightEdgeHome/examples/.gitignore")
+        remove(s"$insightEdgeHome/examples/Jenkinsfile")
+        remove(s"$insightEdgeHome/examples/LICENSE.md")
+        remove(s"$insightEdgeHome/examples/project")
+        remove(s"$insightEdgeHome/examples/spark-warehouse")
+        remove(s"$insightEdgeHome/examples/tools")
+        remove(s"$insightEdgeHome/examples/target")
+        remove(s"$insightEdgeHome/examples/.idea")
+        remove(s"$insightEdgeHome/examples/insightedge-examples.iml")
       }
+
       run("Adding InsightEdge resources") {
         copy(s"$resources/conf/", s"$insightEdgeHome/conf")
         copy(s"$resources/data/", s"$insightEdgeHome/data")
