@@ -370,6 +370,8 @@ object InsightEdgeAdminUtils extends Assertions{
   def create(): this.type = {
     managerServers = startContainers(numOfIEMasters)
 
+    execAndWaitFor(containersId("master1"), s"""echo "export XAP_MANAGER_SERVERS=$managerServers" >> /root/.bashrc""")
+
     for (i <- 1 to numOfIEMasters) {
       loadInsightEdgeMasterContainer(i, managerServers)
     }
