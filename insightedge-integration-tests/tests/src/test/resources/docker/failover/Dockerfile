@@ -29,7 +29,6 @@ RUN ln -s $JAVA_HOME /usr/java && rm -rf $JAVA_HOME/man
 RUN mkdir -p /opt/insightedge
 
 RUN mkdir -p /tmp/spark-events
-
 ENV XAP_OPTIONS "-Dcom.gs.transport_protocol.lrmi.bind-port=10000-10100 -Dcom.gigaspaces.start.httpPort=9104 -Dcom.gigaspaces.system.registryPort=7102 -Dcom.gs.deploy=/deploy -Dcom.gs.work=/work"
 
 # ssh

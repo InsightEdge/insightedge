@@ -302,7 +302,7 @@ main_deploy_space() {
 
     echo ""
     step_title "-- $SPACE_DEPLOY_TEXT"
-    ${XAP_HOME}/bin/gs.sh deploy-space ${SPACE_NAME}
+    ${XAP_HOME}/bin/gs.sh deploy-space ${SPACE_DEPLOY_TOPOLOGY} ${SPACE_NAME}
 }
 
 main_undeploy() {
