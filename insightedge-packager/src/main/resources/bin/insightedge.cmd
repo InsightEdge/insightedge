@@ -29,7 +29,7 @@ echo Unknown command %1
 goto help
 
 :help
-echo Usage: %~n0 [command] [args]
+echo Usage: %~n0 <command> [args]
 echo Available commands:
 echo   demo
 echo       Starts a demo environment on the local host
@@ -39,9 +39,9 @@ echo   run --worker [--containers=n]
 echo       Runs Spark Worker and n XAP Containers (default n=zero)
 echo   run --zeppelin
 echo       Runs Apache Zeppelin
-echo   deploy-space [--partitions=x [--backups]] space-name
+echo   deploy-space [--partitions=x [--backups]] <space-name>
 echo       Deploys a space with the specified name and partitions/backups (Optional)
-echo   undeploy space-name
+echo   undeploy <space-name>
 echo       Undeploys space with the specified name
 echo   shutdown
 echo       Shuts down InsightEdge environment on the local host
@@ -100,15 +100,18 @@ echo Starting gs-agent with %INSIGHTEDGE_CMD%...
 call "%XAP_HOME%\bin\gs-agent" %INSIGHTEDGE_CMD%
 exit /B
 :run_usage
-echo   %~n0 run --master                  - Runs Spark Master and XAP Manager
-echo   %~n0 run --worker [--containers=N] - Runs Spark Worker and N XAP Containers (default N=zero)
-echo   %~n0 run --zeppelin                - Runs Apache Zeppelin
+echo   %~n0 run --master
+echo       Runs Spark Master and XAP Manager
+echo   %~n0 run --worker [--containers=n]
+echo       Runs Spark Worker and n XAP Containers (default n=zero)
+echo   %~n0 run --zeppelin
+echo       Runs Apache Zeppelin
 exit /B
 
 :deploy_space
 if [%2]==[] (
   echo Space name must be specified
-  echo Usage: %~n0 deploy-space [--partitions=x [--backups]] space-name
+  echo Usage: %~n0 deploy-space [--partitions=x [--backups]] <space-name>
   exit /B
 )
 if %2==--partitions goto deploy_space_partitions
@@ -133,7 +136,7 @@ goto deploy_space
 :undeploy
 if [%2]==[] (
   echo Space name must be specified
-  echo Usage: %~n0 undeploy space-name
+  echo Usage: %~n0 undeploy <space-name>
 ) else (
   echo Undeploying %2...
   call "%XAP_HOME%\bin\gs" undeploy %2
