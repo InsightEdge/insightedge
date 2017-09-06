@@ -98,7 +98,7 @@ object InsightEdgeAdminUtils extends Assertions{
       .image(ImageName)
       .env("XAP_NIC_ADDRESS=#local:ip#")
       .env(s"XAP_MANAGER_SERVERS=$managerServers")
-      .cmd("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge.sh run --worker --containers=2 > /tmp/worker.log")
+      .cmd("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge run --worker --containers=2 > /tmp/worker.log")
       .build()
 
     ieSlaveCounter += 1
@@ -133,7 +133,7 @@ object InsightEdgeAdminUtils extends Assertions{
         .exposedPorts(ZeppelinPort, "4174")
         //      .env("XAP_NIC_ADDRESS=#local:ip#")
         .cmd("bash", "-c", "sleep 1d")
-        //      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/bin/insightedge.sh --mode master --master $MY_IP && sleep 2h")
+        //      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/bin/insightedge --mode master --master $MY_IP && sleep 2h")
         .build()
 
       ieMasterCounter += 1
@@ -155,11 +155,11 @@ object InsightEdgeAdminUtils extends Assertions{
     val envVars = s"export XAP_MANAGER_SERVERS=$managerServers " +
       s"&& export XAP_NIC_ADDRESS=${getContainerIp(s"master$id")}"
     println(s"envVars: ${envVars}")
-    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge.sh run --master > /master-$id.log"))
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge run --master > /master-$id.log"))
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge.sh run --zeppelin > /tmp/zeppelin-$id.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"$envVars && /opt/insightedge/insightedge/bin/insightedge run --zeppelin > /tmp/zeppelin-$id.log"))
     val execId = execCreation.id()
     docker.execStart(execId)
 
@@ -274,14 +274,14 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def deployDataGrid(containerId: String, topology: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge.sh deploy-space --topology=" + topology + " insightedge-space"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge deploy-space --topology=" + topology + " insightedge-space"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge.sh undeploy insightedge-space"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge undeploy insightedge-space"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
