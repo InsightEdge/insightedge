@@ -22,15 +22,6 @@ if [ -z "$SPARK_SUBMIT_OPTS" ]; then
     export SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=${INSIGHTEDGE_CORE_CP} -Dspark.executor.extraClassPath=${INSIGHTEDGE_CORE_CP}"
 fi
 
-if [ -z "${SPARK_LOCAL_IP}" ]; then
-    # local manager
-    if [ "${XAP_MANAGER_SERVERS}" = "localhost" ]; then
-        export SPARK_LOCAL_IP="localhost"
-    else
-      export SPARK_LOCAL_IP="`hostname`"
-    fi
-fi
-
 # Zeppelin
 export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
 
