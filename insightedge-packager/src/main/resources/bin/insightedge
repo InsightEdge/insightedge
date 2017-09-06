@@ -148,14 +148,14 @@ helper_await_master_start() {
 }
 
 helper_stop_zeppelin() {
-    step_title "--- Stopping Zeppelin"
+    step_title "--- Killing Zeppelin"
 
     pid=`ps aux | grep -v grep | grep ZeppelinServer | awk '{print $2}' | tr '\n' ' '`
     if [ -z "$pid" ]; then
         echo "Zeppelin is not running"
     else
         kill -9 ${pid}
-        echo "Zeppelin stopped"
+        echo "Zeppelin killed"
     fi
 }
 
@@ -405,7 +405,7 @@ helper_run_worker() {
 helper_stop_agent() {
 
     echo ""
-    step_title "--- Stopping gs-agent"
+    step_title "--- Killing gs-agent"
 
     pid=`ps aux | grep -v grep | grep insightedge.marker | awk '{print $2}' | tr '\n' ' '`
     if [ -z "$pid" ]; then
@@ -415,7 +415,7 @@ helper_stop_agent() {
 
     kill -9 ${pid}
 
-    echo "gs-agent stopped"
+    echo "gs-agent killed"
 }
 
 main_run() {
