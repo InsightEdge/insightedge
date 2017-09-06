@@ -37,3 +37,7 @@ export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
 if [ -z "$INSIGHTEDGE_LOG_DIR" ]; then
   export INSIGHTEDGE_LOG_DIR="${XAP_HOME}/insightedge/logs"
 fi
+
+if [ -z "${SPARK_LOCAL_IP}" ]; then
+   export SPARK_LOCAL_IP="${XAP_NIC_ADDRESS}"
+fi

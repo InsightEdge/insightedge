@@ -144,8 +144,8 @@ helper_start_zeppelin() {
 
 helper_run_zeppelin() {
     if [ $# -ne 0 ]; then
-        error_line "run zeppelin does not accept parameters"
-        return
+        error_line "Too many parameters"
+        exit 1
     fi
     step_title "--- Starting Zeppelin"
     ${XAP_HOME}/insightedge/zeppelin/bin/zeppelin.sh
@@ -177,10 +177,18 @@ main_demo() {
     display_demo_help() {
         printf '\e[0;34m\n'
         echo "Demo environment started:"
-        echo "- Spark Master: http://${XAP_NIC_ADDRESS}:8080"
-        echo "- XAP Manager: http://${XAP_NIC_ADDRESS}:8090"
-        echo "- Zeppelin: http://${XAP_NIC_ADDRESS}:9090"
+        echo "- Spark Master: http://localhost:8080"
+        echo "- XAP Manager: http://localhost:8090"
+        echo "- Zeppelin: http://localhost:9090"
         printf "\e[0m\n"
+    }
+
+    check_demo_running() {
+       pid=`ps aux | grep -v grep | grep insightedge.marker=demo | awk '{print $2}'`
+       if [ "$pid" != "" ]; then
+           error_line "Demo is already running"
+           exit 1
+       fi
     }
 
 
@@ -190,7 +198,7 @@ main_demo() {
         exit 1
     fi
 
-    main_shutdown
+    check_demo_running
 
     echo ""
     step_title "-- Starting gs-agent with local manager, spark master, spark worker and 2 containers..."
@@ -198,7 +206,8 @@ main_demo() {
     mkdir -p "$INSIGHTEDGE_LOG_DIR"
     local log="$INSIGHTEDGE_LOG_DIR/insightedge-datagrid-local.out"
 
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker --gsc=2 > $log 2>&1 &
+    export SPARK_LOCAL_IP="localhost"
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=demo" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker --gsc=2 > $log 2>&1 &
 
     main_deploy_space --topology=2,0 "insightedge-space"
 
@@ -236,7 +245,6 @@ main_deploy_space() {
         while [ -z "$(${XAP_HOME}/bin/gs.sh list 2>/dev/null | grep GSM)" ] ; do
             if [ $TIMEOUT -le 0 ]; then
               echo "Datagrid master is not available within timeout"
-#              return
               exit 1
             fi
             TIMEOUT=$((TIMEOUT - 10))
@@ -318,38 +326,7 @@ helper_run_master() {
 
     step_title "Starting gs-agent with --manager --spark_master..."
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master
-}
-
-helper_stop_master() {
-    echo ""
-    step_title "--- Stopping datagrid master" #TODO
-
-    do_stop_ie_master() {
-        pid=`ps aux | grep -v grep | grep insightedge.marker=master | awk '{print $2}'`
-        if [ -z "$pid" ]; then
-            echo "Datagrid master is not running"
-            return
-#            exit
-        fi
-        echo "Stopping datagrid master (pid: $pid)..."
-
-        kill -SIGTERM $pid
-
-        TIMEOUT=60
-        while ps -p $pid > /dev/null; do
-            if [ $TIMEOUT -le 0 ]; then
-                echo "Timed out"
-                return
-            fi
-            echo "  waiting termination ($TIMEOUT sec)"
-            ((TIMEOUT--))
-            sleep 1
-        done
-        echo "Datagrid master stopped"
-    }
-
-    do_stop_ie_master
-    step_title "--- Datagrid master stopped"
+    echo "gs-agent started"
 }
 
 helper_run_worker() {
@@ -401,39 +378,6 @@ helper_run_worker() {
     echo ""
     step_title "Starting gs-agent with --spark_worker..."
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=worker" ${XAP_HOME}/bin/gs-agent.sh --gsc=${GSC_COUNT} --spark_worker
-}
-
-helper_stop_worker() {
-
-    echo ""
-    step_title "--- Killing gs-agent" #TODO
-
-    do_stop_worker() {
-        pid=`ps aux | grep -v grep | grep insightedge.marker=worker | awk '{print $2}'`
-        if [ -z "$pid" ]; then
-            echo "Datagrid worker is not running"
-#            exit
-            return
-        fi
-        echo "Stopping datagrid worker (pid: $pid)..."
-
-        kill -SIGTERM $pid
-
-        TIMEOUT=60
-        while ps -p $pid > /dev/null; do
-            if [ $TIMEOUT -le 0 ]; then
-                echo "Timed out"
-                return
-            fi
-            echo "  waiting termination ($TIMEOUT sec)"
-            ((TIMEOUT--))
-            sleep 1
-        done
-        echo "Datagrid worker stopped"
-    }
-
-    do_stop_worker
-    step_title "--- Datagrid worker instances stopped"
 }
 
 helper_stop_agent() {
