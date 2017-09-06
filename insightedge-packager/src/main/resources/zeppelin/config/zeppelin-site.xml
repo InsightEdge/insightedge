@@ -27,7 +27,7 @@
 
 <property>
   <name>zeppelin.server.port</name>
-  <value>8090</value>
+  <value>9090</value>
   <description>Server port.</description>
 </property>
 

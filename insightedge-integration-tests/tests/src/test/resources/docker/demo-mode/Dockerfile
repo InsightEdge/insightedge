@@ -25,11 +25,8 @@ RUN gunzip $ZIPPED_JDK && tar -xvf $TAR_JDK -C /usr/
 RUN ln -s $JAVA_HOME /usr/java && rm -rf $JAVA_HOME/man
 
 # add InsightEdge distr
-RUN mkdir -p /opt
-ADD gigaspaces-insightedge-*.zip /opt/gigaspaces-insightedge.zip
-RUN cd /opt \
-    && unzip gigaspaces-insightedge.zip \
-    && mv gigaspaces-insightedge-* gigaspaces-insightedge
+RUN mkdir -p /opt/gigaspaces-insightedge
+RUN mkdir -p /tmp/spark-events
 
 ADD bootstrap.sh /etc/bootstrap.sh
 RUN chown root:root /etc/bootstrap.sh

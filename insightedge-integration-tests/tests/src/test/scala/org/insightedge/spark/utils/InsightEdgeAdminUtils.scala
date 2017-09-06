@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
-import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
+import com.spotify.docker.client.messages.{Container, ContainerConfig, HostConfig, PortBinding}
 import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
 import org.json.simple.parser.JSONParser
 import org.json.simple.{JSONArray, JSONObject}
@@ -15,6 +15,7 @@ import play.api.libs.ws.WSResponse
 import play.api.libs.ws.ning.NingWSClient
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
@@ -27,14 +28,43 @@ import scala.util.{Failure, Success, Try}
 
 object InsightEdgeAdminUtils extends Assertions{
 
+  def main(args: Array[String]): Unit = {
+//    val cs = docker.listContainers().asScala.filter(c => c.names().contains("/yohanac"))
+//    if (cs.size == 1)
+//      docker.removeContainer(cs.head.id())
+
+    val hostConfig = HostConfig
+      .builder()
+      .build()
+
+    val containerConfig = ContainerConfig.builder()
+      .hostConfig(hostConfig)
+      .image(ImageName)
+      .cmd("bash", "-c", "sleep 1h")
+      .build()
+
+    val creation = docker.createContainer(containerConfig, "yohanac")
+    val containerId = creation.id()
+
+    docker.startContainer(containerId)
+
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "sleep 10s ; echo hello there"), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
+    val execId = execCreation.id()
+    val output = docker.execStart(execId)
+    val outputString = output.readFully()
+    println(s"output of command on container $containerId is: $outputString")
+
+
+  }
+
   private val DockerImageStartTimeout = 3.minutes
-  private val ZeppelinPort = "8090"
+  private val ZeppelinPort = "9090"
   private val ImageName = s"insightedge-test"
 
   private val docker = DefaultDockerClient.fromEnv().build()
   private var zeppelinMappedPort: String = _
 
-  private var IE_HOME = BuildUtils.IEHome
+  private val IE_HOME = BuildUtils.IEHome
 
   private val wsClient = NingWSClient()
   var containersId: Map[String, String] = Map[String, String]()
@@ -55,7 +85,9 @@ object InsightEdgeAdminUtils extends Assertions{
   private val sharedOutputFolder = s"$testFolder/output"
   private val ieLogsPath = "/opt/insightedge/logs"
 
-  def loadInsightEdgeSlaveContainer(masterIp: String): String = {
+  private var managerServers = ""
+
+  def loadInsightEdgeSlaveContainer(id: Int, managerServers : String): String = {
     println(s"slave - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
     val hostConfig = HostConfig
       .builder()
@@ -66,9 +98,8 @@ object InsightEdgeAdminUtils extends Assertions{
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
       .image(ImageName)
-      .cmd("bash", "-c", "/opt/insightedge/insightedge/sbin/insightedge.sh --mode slave --master " + masterIp + " && sleep 2h")
-      .env("XAP_LOOKUP_LOCATORS=" + masterIp)
-      .env("XAP_NIC_ADDRESS=#local:ip#")
+      .env(s"XAP_MANAGER_SERVERS=$managerServers")
+      .cmd("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge run --worker --containers=2 > $ieLogsPath/worker-$id.log")
       .build()
 
     ieSlaveCounter += 1
@@ -84,38 +115,50 @@ object InsightEdgeAdminUtils extends Assertions{
     containerId
   }
 
-  def loadInsightEdgeMasterContainer(): String = {
-    println(s"master - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
+  def startContainers(n: Int): String = {
+    for (_ <- 1 to n) {
+      println(s"master - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
 
-    val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
-    val portBindings = Map(ZeppelinPort -> randomPort).asJava
-    val hostConfig = HostConfig
-      .builder()
-      .portBindings(portBindings)
-      .appendBinds(IE_HOME + ":/opt/insightedge")
-      .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
-      .build()
+      val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
+      val portBindings = Map(ZeppelinPort -> randomPort).asJava
+      val hostConfig = HostConfig
+        .builder()
+        .portBindings(portBindings)
+        .appendBinds(IE_HOME + ":/opt/insightedge")
+        .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
+        .build()
 
-    val containerConfig = ContainerConfig.builder()
-      .hostConfig(hostConfig)
-      .image(ImageName)
-      .exposedPorts(ZeppelinPort, "4174")
-      .env("XAP_NIC_ADDRESS=#local:ip#")
-      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/sbin/insightedge.sh --mode master --master $MY_IP && sleep 2h")
-      .build()
+      val containerConfig = ContainerConfig.builder()
+        .hostConfig(hostConfig)
+        .image(ImageName)
+        .exposedPorts(ZeppelinPort, "4174")
+        //      .env("XAP_NIC_ADDRESS=#local:ip#")
+        .cmd("bash", "-c", "sleep 1d")
+        //      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/bin/insightedge --mode master --master $MY_IP && sleep 2h")
+        .build()
 
-    ieMasterCounter += 1
+      ieMasterCounter += 1
 
-    val creation = docker.createContainer(containerConfig, "master" + ieMasterCounter)
-    val containerId = creation.id()
-    containersId += ("master" + ieMasterCounter -> containerId)
+      val creation = docker.createContainer(containerConfig, "master" + ieMasterCounter)
+      val containerId = creation.id()
+      containersId += ("master" + ieMasterCounter -> containerId)
 
-    // Start container
-    docker.startContainer(containerId)
+      // Start container
+      docker.startContainer(containerId)
+    }
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/sbin/insightedge.sh --mode zeppelin --master $MY_IP"))
+    containersId.filterKeys( _.startsWith("master") ).map( entry => getContainerIp(entry._2) ).mkString(",")
+  }
+
+  def loadInsightEdgeMasterContainer(id:Int, managerServers:String): String = {
+    val containerId = containersId(s"master$id")
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge run --master > $ieLogsPath/master-$id.log"))
+    val masterExecId = masterExecCreation.id()
+    docker.execStart(masterExecId)
+
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge run --zeppelin > $ieLogsPath/zeppelin-$id.log"))
     val execId = execCreation.id()
-    val stream = docker.execStart(execId)
+    docker.execStart(execId)
 
     startSparkHistoryServer(containerId)
 
@@ -145,16 +188,17 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def startSparkHistoryServer(masterContainerId: String): Unit = {
     println("called startSparkHistoryServer")
-    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", "/opt/insightedge/insightedge/spark/sbin/start-history-server.sh"))
+    val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", s"/opt/insightedge/insightedge/spark/sbin/start-history-server.sh >> $ieLogsPath/history-server-$masterContainerId.log 2>&1"))
     val execIdHistoryServer = execCreationHistoryServer.id()
     val streamHistoryServer = docker.execStart(execIdHistoryServer)
   }
 
   def restartSparkHistoryServer(): Unit = {
     println("called restartSparkHistoryServer")
-    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
-    println("killing history server with pid " + historyServerPid)
-    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
+    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), s"/opt/insightedge/insightedge/spark/sbin/stop-history-server.sh >> $ieLogsPath/stop-history-server.log 2>&1")
+//    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
+//    println("killing history server with pid " + historyServerPid)
+//    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
     println("starting spark history server")
     InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
   }
@@ -226,15 +270,22 @@ object InsightEdgeAdminUtils extends Assertions{
     info.networkSettings().ipAddress()
   }
 
-  def deployDataGrid(containerId: String, masterIp: String, topology: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/sbin/insightedge.sh --mode deploy --topology " + topology + " --master " + masterIp))
+  def deployDataGrid(containerId: String, partitions: Int, backups: Boolean): Unit = {
+    var deployOptions = ""
+    if (partitions > 0) {
+      deployOptions = s"--partitions=$partitions"
+      if (backups) {
+        deployOptions += " --backups"
+      }
+    }
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge deploy-space $deployOptions insightedge-space >> $ieLogsPath/deploy-space.log"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/sbin/insightedge.sh --mode undeploy --master " + masterIp))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge undeploy insightedge-space >> $ieLogsPath/undeploy-space.log "))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
@@ -283,7 +334,7 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   private def createDataGridAdmin(locator: String): Admin = {
-    new AdminFactory().addLocator(locator).create()
+    new AdminFactory().addLocators(locator).create()
   }
 
   def getDataGridAdmin: Admin = {
@@ -317,15 +368,20 @@ object InsightEdgeAdminUtils extends Assertions{
 
 
   def create(): this.type = {
-    for (i <- 0 until numOfIEMasters) {
-      loadInsightEdgeMasterContainer()
-    }
-    for (i <- 0 until numOfIESlaves) {
-      loadInsightEdgeSlaveContainer(getContainerIp(containersId.get("master1").get))
-    }
-    deployDataGrid(containersId.get("master1").get, getContainerIp(containersId.get("master1").get), numOfDataGridMasters.toString + "," + numOfDataGridSlaves)
+    managerServers = startContainers(numOfIEMasters)
 
-    admin = createDataGridAdmin(getMasterIp())
+    execAndWaitFor(containersId("master1"), s"""echo "export XAP_MANAGER_SERVERS=$managerServers" >> /opt/insightedge/bin/setenv-overrides.sh""")
+    execAndWaitFor(containersId("master1"), """echo "export XAP_NIC_ADDRESS=\$(hostname -I | cut -d \" \" -f 1)" >> /opt/insightedge/bin/setenv-overrides.sh""")
+
+    for (i <- 1 to numOfIEMasters) {
+      loadInsightEdgeMasterContainer(i, managerServers)
+    }
+    for (i <- 1 to numOfIESlaves) {
+      loadInsightEdgeSlaveContainer(i, managerServers)
+    }
+    deployDataGrid(containersId("master1"), numOfDataGridMasters, numOfDataGridSlaves > 0)
+
+    admin = createDataGridAdmin(managerServers)
 
     admin.getProcessingUnits.waitFor("insightedge-space", 60, TimeUnit.SECONDS).waitForSpace(60, TimeUnit.SECONDS)
 
@@ -354,7 +410,7 @@ object InsightEdgeAdminUtils extends Assertions{
         containersId -= containerName
         println(s"Container $containerName destroyed")
       } else {
-        fail(s"job of app [$appId] is not on status RUNNING")
+        fail(s"job of app [$appId] is not on status RUNNING. Status is: $status")
       }
     }
   }
@@ -363,7 +419,7 @@ object InsightEdgeAdminUtils extends Assertions{
     retry(30000 millis, 100 millis) {
       val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
       if (!"SUCCEEDED".equals(status)) {
-        fail(s"job of app [$appId] is not on status SUCCEEDED")
+        fail(s"job of app [$appId] is not on status SUCCEEDED. Status is: $status")
       }
     }
   }
@@ -371,23 +427,27 @@ object InsightEdgeAdminUtils extends Assertions{
   def datagridNodes(): Map[ProcessingUnitInstance, List[String]] ={
     var spacesOnMachines: Map[ProcessingUnitInstance, List[String]] = Map[ProcessingUnitInstance, List[String]]()
 
-    admin
+    var result = admin
       .getMachines.waitFor(4, 30, TimeUnit.SECONDS)
+    println(s"Found four machines: $result")
 
-    admin
+    result= admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
-      .waitFor(6, 30, TimeUnit.SECONDS)
+      .waitFor(6, 60, TimeUnit.SECONDS)
+    println(s"Found 6 space instances: $result")
 
-    admin
+    result = admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
-      .waitFor(3, SpaceMode.PRIMARY, 30, TimeUnit.SECONDS)
+      .waitFor(3, SpaceMode.PRIMARY, 60, TimeUnit.SECONDS)
+    println(s"Found 3 primaries: $result")
 
-    admin
+    result= admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
-      .waitFor(3, SpaceMode.BACKUP, 30, TimeUnit.SECONDS)
+      .waitFor(3, SpaceMode.BACKUP, 60, TimeUnit.SECONDS)
+    println(s"Found 3 backups: $result")
 
     admin.getMachines.getMachines.foreach(
       m => m.getProcessingUnitInstances.foreach(

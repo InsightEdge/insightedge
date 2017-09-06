@@ -38,13 +38,14 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   self: Suite =>
 
   private val DockerImageStartTimeout = 3.minutes
-  private val ZeppelinPort = "8090"
+  private val ZeppelinPort = "9090"
   private val ImageName = s"insightedge-tests-demo-mode"
 
   protected var containerId: String = _
   private val docker = DefaultDockerClient.fromEnv().build()
   private var zeppelinMappedPort: String = _
 
+  private val IE_HOME = BuildUtils.IEHome
   private val testFolder = BuildUtils.TestFolder
   private val sharedOutputFolder = testFolder + "/output"
 
@@ -60,6 +61,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     val portBindings = Map(ZeppelinPort -> randomPort).asJava
     val hostConfig = HostConfig.builder()
       .portBindings(portBindings)
+      .appendBinds(IE_HOME + ":/opt/gigaspaces-insightedge")
       .appendBinds(s"$sharedOutputFolder:$ieLogsPath")
       .build()
 
