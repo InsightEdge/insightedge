@@ -273,15 +273,22 @@ object InsightEdgeAdminUtils extends Assertions{
     info.networkSettings().ipAddress()
   }
 
-  def deployDataGrid(containerId: String, topology: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge deploy-space --topology=" + topology + " insightedge-space"))
+  def deployDataGrid(containerId: String, partitions: Int, backups: Boolean): Unit = {
+    var deployOptions = ""
+    if (partitions > 0) {
+      deployOptions = s"--partitions=$partitions"
+      if (backups) {
+        deployOptions += " --backups"
+      }
+    }
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge deploy-space $deployOptions insightedge-space >> $ieLogsPath/deploy-space.log"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", "/opt/insightedge/insightedge/bin/insightedge undeploy insightedge-space"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge undeploy insightedge-space >> $ieLogsPath/undeploy-space.log "))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
@@ -374,7 +381,7 @@ object InsightEdgeAdminUtils extends Assertions{
     for (i <- 0 until numOfIESlaves) {
       loadInsightEdgeSlaveContainer(managerServers)
     }
-    deployDataGrid(containersId("master1"), numOfDataGridMasters.toString + "," + numOfDataGridSlaves)
+    deployDataGrid(containersId("master1"), numOfDataGridMasters, numOfDataGridSlaves > 0)
 
     admin = createDataGridAdmin(managerServers)
 
