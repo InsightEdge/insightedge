@@ -169,6 +169,10 @@ handle_error() {
 # argument must be in format key=value, the function returns the value
 get_option_value() {
     local arr=(${1//=/ })
+    local arrLength=${#arr[@]}
+    if [ "${arrLength}" != "2" ]; then
+        echo ""
+    fi
     echo ${arr[1]}
 }
 
@@ -209,7 +213,7 @@ main_demo() {
     export SPARK_LOCAL_IP="localhost"
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=demo" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker --gsc=2 > $log 2>&1 &
 
-    main_deploy_space --topology=2,0 "insightedge-space"
+    main_deploy_space --partitions=2 "insightedge-space"
 
     helper_start_zeppelin
 
@@ -224,10 +228,16 @@ main_deploy_space() {
         while [ "$1" != "" ]; do
           local option="$1"
           case ${option} in
-            --topology=*)
-            #TODO
-              SPACE_TOPOLOGY=$(get_option_value ${option})
-              if [ -z "${SPACE_TOPOLOGY}" ]; then handle_error "topology can't be empty"; fi
+            --partitions=* | --partitions)
+              SPACE_PARTITIONS=$(get_option_value ${option})
+              if [ -z "${SPACE_PARTITIONS}" ]; then
+                  error_line "Missing value for --partitions option"
+                  display_usage_deploy
+                  exit 1
+              fi
+              ;;
+            --backups)
+              SPACE_BACKUPS="1"
               ;;
             *)
               error_line "Unknown option: ${option}"
@@ -263,7 +273,6 @@ main_deploy_space() {
 
     #last argument is spaceName
     local SPACE_NAME="${args[${#args[@]}-1]}"
-    local SPACE_TOPOLOGY="1,0"
 
 #    echo "LAST: ${args[${#args[@]}-1]}"
     unset "args[${#args[@]}-1]"
@@ -271,10 +280,29 @@ main_deploy_space() {
 
     parse_deploy_options ${args[@]}
 
+    local SPACE_DEPLOY_TEXT="Deploying single space '${SPACE_NAME}'..."
+
+    if [ -n "${SPACE_BACKUPS}" ]; then
+        if [ -z "${SPACE_PARTITIONS}" ]; then
+            error_line "--backups cannot be used without --partitions option"
+            display_usage_deploy
+            exit 1
+        fi
+    fi
+
+    if [ -n "${SPACE_PARTITIONS}" ]; then
+        if [ -z "${SPACE_BACKUPS}" ]; then
+            SPACE_BACKUPS=0
+        fi
+
+        SPACE_DEPLOY_TOPOLOGY="-cluster schema=partitioned-sync2backup total_members=${SPACE_PARTITIONS},${SPACE_BACKUPS}"
+        SPACE_DEPLOY_TEXT="Deploying space '${SPACE_NAME}' with ${SPACE_PARTITIONS},${SPACE_BACKUPS} partitions..."
+    fi
+
     echo ""
-    step_title "-- Deploying space '$SPACE_NAME' with $SPACE_TOPOLOGY partitions..."
+    step_title "-- $SPACE_DEPLOY_TEXT"
     await_master_start #TODO: revisit in IE-87
-    ${XAP_HOME}/bin/gs.sh deploy-space -cluster schema=partitioned-sync2backup total_members=${SPACE_TOPOLOGY} ${SPACE_NAME}
+    ${XAP_HOME}/bin/gs.sh deploy-space ${SPACE_NAME}
 }
 
 main_undeploy() {
@@ -338,12 +366,7 @@ helper_run_worker() {
         while [ "$1" != "" ]; do
           local option="$1"
           case ${option} in
-            --containers)
-              error_line "Missing value for --containers"
-              display_usage_run_worker
-              exit 1
-              ;;
-            --containers=*)
+            --containers=* | --containers)
               GSC_COUNT=$(get_option_value ${option})
               if [ -z "${GSC_COUNT}" ]; then
                   error_line "Missing value for --containers"
