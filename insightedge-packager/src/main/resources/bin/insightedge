@@ -296,7 +296,7 @@ main_deploy_space() {
             SPACE_BACKUPS=0
         fi
 
-        SPACE_DEPLOY_TOPOLOGY="-cluster schema=partitioned-sync2backup total_members=${SPACE_PARTITIONS},${SPACE_BACKUPS}"
+        SPACE_DEPLOY_TOPOLOGY="-cluster schema=partitioned total_members=${SPACE_PARTITIONS},${SPACE_BACKUPS}"
         SPACE_DEPLOY_TEXT="Deploying space '${SPACE_NAME}' with ${SPACE_PARTITIONS},${SPACE_BACKUPS} partitions..."
     fi
 
