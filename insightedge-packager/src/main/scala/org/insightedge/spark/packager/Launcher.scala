@@ -112,9 +112,12 @@ object Launcher {
         val examplesProject = s"$examplesTarget/.."
 
         copy(s"$examplesProject/target/$examplesJar", s"$insightEdgeHome/examples/jars/$examplesJar")
+        copy(s"$examplesProject/python/sf_salaries.py", s"$insightEdgeHome/examples/python/sf_salaries.py")
 
+        // copy all i9e-examples folder
         copy(s"$examplesProject", s"$insightEdgeHome/examples/")
 
+        // remove unnecessary folder/files from examples folder
         remove(s"$insightEdgeHome/examples/build.sbt")
         remove(s"$insightEdgeHome/examples/dependency-reduced-pom.xml")
         remove(s"$insightEdgeHome/examples/doc")
@@ -128,6 +131,7 @@ object Launcher {
         remove(s"$insightEdgeHome/examples/target")
         remove(s"$insightEdgeHome/examples/.idea")
         remove(s"$insightEdgeHome/examples/insightedge-examples.iml")
+        remove(s"$insightEdgeHome/examples/src/test")
       }
 
       run("Adding InsightEdge resources") {
