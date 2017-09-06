@@ -11,7 +11,6 @@ echo "ENV:"
 echo `env`
 chmod -R 755 ${JOB_DIR}/build/bin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/bin/*
-chmod -R 755 ${JOB_DIR}/build/insightedge/sbin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/bin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/sbin/*
 chmod -R 755 ${JOB_DIR}/build/insightedge/spark/conf/*
