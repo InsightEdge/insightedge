@@ -62,8 +62,9 @@ FOR /L %%G IN (1,1,6) DO (
 echo Aborting - Failed to find GSM
 exit /B
 :demo_gsm_found
-echo Deploying space 'insightedge' with 2 partitions...
-call "%XAP_HOME%\bin\gs" deploy-space -cluster schema=partitioned total_members=2 insightedge
+if not defined INSIGHTEDGE_DEMO_SPACE_NAME set INSIGHTEDGE_DEMO_SPACE_NAME=insightedge-space
+echo Deploying space %INSIGHTEDGE_DEMO_SPACE_NAME% with 2 partitions...
+call "%XAP_HOME%\bin\gs" deploy-space -cluster schema=partitioned total_members=2 %INSIGHTEDGE_DEMO_SPACE_NAME%
 echo Starting Zeppelin...
 start "InsightEdge Zeppelin" "%XAP_HOME%\insightedge\zeppelin\bin\zeppelin.cmd"
 echo **************************************************
