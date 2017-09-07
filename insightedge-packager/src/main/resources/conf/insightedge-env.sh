@@ -28,3 +28,7 @@ export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
 if [ -z "${SPARK_LOCAL_IP}" ]; then
    export SPARK_LOCAL_IP="${XAP_NIC_ADDRESS}"
 fi
+
+if [ -z "${ZEPPELIN_PORT}" ]; then
+    export ZEPPELIN_PORT=9090
+fi
