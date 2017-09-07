@@ -15,14 +15,7 @@ set INSIGHTEDGE_CORE_CP="%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;
 if not defined HADOOP_HOME set HADOOP_HOME="%XAP_HOME%\insightedge\tools\winutils"
 if not defined SPARK_HOME set SPARK_HOME="%XAP_HOME%\insightedge\spark"
 if not defined SPARK_SUBMIT_OPTS set SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=%INSIGHTEDGE_CORE_CP% -Dspark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP%"
-if not defined SPARK_LOCAL_IP (
-    rem local manager
-    if "%XAP_MANAGER_SERVERS%"=="localhost" (
-    	set SPARK_LOCAL_IP=localhost
-    ) ELSE (
-        set SPARK_LOCAL_IP=%COMPUTERNAME%
-    )
-)
+if not defined SPARK_LOCAL_IP set SPARK_LOCAL_IP=%XAP_NIC_ADDRESS%
 
 rem Zeppelin
 if not defined ZEPPELIN_PORT set ZEPPELIN_PORT=9090
