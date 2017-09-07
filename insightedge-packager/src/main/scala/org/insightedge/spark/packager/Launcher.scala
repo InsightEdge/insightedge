@@ -121,6 +121,7 @@ object Launcher {
         untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
       }
       run("Configuring Zeppelin") {
+        copy(s"$resources/zeppelin/bin/interpreter.cmd", s"$insightEdgeHome/zeppelin/bin/interpreter.cmd")
         copy(s"$resources/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
         copy(s"$resources/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
         copy(s"$resources/zeppelin/config/zeppelin-env.cmd", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.cmd")
