@@ -23,7 +23,7 @@ function setIEFinalBuildVersion {
     validate "IE_VERSION"
     validate "MILESTONE"
     validate "IE_FINAL_BUILD_NUMBER"
-    FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-$IE_FINAL_BUILD_NUMBER"
+    FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-b$IE_FINAL_BUILD_NUMBER"
 }
 function setIEMavenVersion {
     validate "MODE"

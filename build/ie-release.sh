@@ -252,7 +252,7 @@ function upload_ie_zip {
 
     if [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-premium.zip"
+       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
