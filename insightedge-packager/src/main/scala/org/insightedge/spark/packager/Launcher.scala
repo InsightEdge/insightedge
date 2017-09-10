@@ -61,6 +61,13 @@ object Launcher {
 
     val examplesJar = "insightedge-examples.jar"
 
+    val insightedgePackagerTarget=s"$grid/.."
+    val i9eExtensionFolder = "insightedge-extension"
+
+    println(s"grid is [$grid]")
+    println(s"insightedgePackagerTarget is [$insightedgePackagerTarget]")
+
+
     validateHash(lastCommitHash)
 
     //remove directory
@@ -171,6 +178,10 @@ object Launcher {
         permissions(s"$insightEdgeHome/bin/", read = Some(true), write = Some(true), execute = Some(true))
         permissions(s"$insightEdgeHome/spark/bin/", read = Some(true), write = Some(true), execute = Some(true))
         permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
+      }
+
+      run(s"Adding extension to $insightEdgeHome/$i9eExtensionFolder"){
+        copy(s"$insightedgePackagerTarget/$i9eExtensionFolder", s"$insightEdgeHome/$i9eExtensionFolder")
       }
 
 
