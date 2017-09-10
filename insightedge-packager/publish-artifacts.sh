@@ -101,6 +101,10 @@ if [ -f $sumbitter_jar ]; then
     echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
 
     buildId=`java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter | grep -o "com.gigaspaces.newman.NewmanBuildSubmitter - Build Build .*" | grep -o "id: '.*', name" | grep -o "'.*'" | sed 's/^.\(.*\).$/\1/'`
+    if [ "$buildId" == "" ]; then
+        echo "Failed to submit build to newman"
+        exit 1
+    fi
     echo "finished newman submitter process successfully, build id: ${buildId}"
     export NEWMAN_BUILD_ID="${buildId}"
     export AUTHOR="${BUILD_USER_ID}"
