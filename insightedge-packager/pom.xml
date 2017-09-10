@@ -116,6 +116,23 @@
                             <outputDirectory>${project.basedir}/target/</outputDirectory>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>download-insightedge-extension-xap-jdbc</id>
+                        <phase>${xap.download.phase}</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${xap.extension.jdbc}</url>
+                            <unpack>false</unpack>
+                            <skipCache>true</skipCache>
+                            <overwrite>true</overwrite>
+                            <outputFileName>xap-jdbc-insightedge-extension.zip</outputFileName>
+                            <outputDirectory>${project.basedir}/target/</outputDirectory>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
             <plugin>

@@ -61,6 +61,13 @@ object Launcher {
 
     val examplesJar = "insightedge-examples.jar"
 
+    val insightedgePackagerTargetPath = s"$project/insightedge-packager/target/"
+    val xapJdbcExtZip = "xap-jdbc-insightedge-extension.zip"
+
+    println(s"grid is [$grid]")
+    println(s"insightedgePackagerTargetPath is [$insightedgePackagerTargetPath]")
+
+
     validateHash(lastCommitHash)
 
     //remove directory
@@ -171,6 +178,10 @@ object Launcher {
         permissions(s"$insightEdgeHome/bin/", read = Some(true), write = Some(true), execute = Some(true))
         permissions(s"$insightEdgeHome/spark/bin/", read = Some(true), write = Some(true), execute = Some(true))
         permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
+      }
+
+      run(s"Adding $xapJdbcExtZip extension"){
+        unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
       }
 
 
