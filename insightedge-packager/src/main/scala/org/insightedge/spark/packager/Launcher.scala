@@ -17,6 +17,7 @@
 package org.insightedge.spark.packager
 
 import java.io.File
+import java.nio.file.{Files, Paths}
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -181,7 +182,10 @@ object Launcher {
       }
 
       run(s"Adding $xapJdbcExtZip extension"){
-        unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
+        val pathToJdbcZip = s"$insightedgePackagerTargetPath/$xapJdbcExtZip"
+        if (Files.exists(Paths.get(pathToJdbcZip))) { // for backwards - in case of build, not has the xap-jdbc url
+          unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
+        }
       }
 
 

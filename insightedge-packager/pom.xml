@@ -130,6 +130,8 @@
                             <skipCache>true</skipCache>
                             <overwrite>true</overwrite>
                             <outputFileName>xap-jdbc-insightedge-extension.zip</outputFileName>
+                            <!--for backwards - in case of old build not has url to zip  -->
+                            <failOnError>false</failOnError>
                             <outputDirectory>${project.basedir}/target/</outputDirectory>
                         </configuration>
                     </execution>
