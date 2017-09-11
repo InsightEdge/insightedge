@@ -126,10 +126,10 @@
                         <configuration>
                             <!-- xap.dist property must be specified when packaging InsightEdge, can be remote (http://bla) or local URL (file:///xap.zip) -->
                             <url>${xap.extension.jdbc}</url>
-                            <unpack>true</unpack>
+                            <unpack>false</unpack>
                             <skipCache>true</skipCache>
                             <overwrite>true</overwrite>
-                            <outputFileName>insightedge-extension</outputFileName>
+                            <outputFileName>xap-jdbc-insightedge-extension.zip</outputFileName>
                             <outputDirectory>${project.basedir}/target/</outputDirectory>
                         </configuration>
                     </execution>
