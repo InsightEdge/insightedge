@@ -24,4 +24,4 @@ rem Load the InsighEdge version of shell.py script:
 set OLD_PYTHONSTARTUP=%PYTHONSTARTUP%
 set PYTHONSTARTUP=%XAP_HOME%\insightedge\bin\shell-init.py
 
-call "%SPARK_HOME%\bin\spark-submit" pyspark-shell-main --name "PySparkShell" --driver-class-path=%INSIGHTEDGE_CORE_CP% --conf spark.executor.extraClassPath=%INSIGHTEDGE_CORE_CP% %*
+call "%SPARK_HOME%\bin\spark-submit" pyspark-shell-main --name "PySparkShell" --driver-class-path=%INSIGHTEDGE_CLASSPATH% --conf spark.executor.extraClassPath=%INSIGHTEDGE_CLASSPATH% %*

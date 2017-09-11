@@ -11,7 +11,7 @@ DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source "${DIRNAME}/../../bin/setenv.sh"
 
 # Set InsightEdge defaults:
-export INSIGHTEDGE_CORE_CP="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
+export INSIGHTEDGE_CLASSPATH="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
 # Set SPARK_HOME if not set
 if [ -z "${SPARK_HOME}" ]; then
     export SPARK_HOME="${XAP_HOME}/insightedge/spark"
@@ -19,11 +19,11 @@ fi
 
 # Spark Submit
 if [ -z "$SPARK_SUBMIT_OPTS" ]; then
-    export SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=${INSIGHTEDGE_CORE_CP} -Dspark.executor.extraClassPath=${INSIGHTEDGE_CORE_CP}"
+    export SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=${INSIGHTEDGE_CLASSPATH} -Dspark.executor.extraClassPath=${INSIGHTEDGE_CLASSPATH}"
 fi
 
 # Zeppelin
-export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CORE_CP}"
+export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CLASSPATH}"
 
 if [ -z "${SPARK_LOCAL_IP}" ]; then
    export SPARK_LOCAL_IP="${XAP_NIC_ADDRESS}"
