@@ -12,6 +12,11 @@ source "${DIRNAME}/../../bin/setenv.sh"
 
 # Set InsightEdge defaults:
 export INSIGHTEDGE_CLASSPATH="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
+
+if [ -n "${INSIGHTEDGE_CLASSPATH_EXT}" ]; then
+    export INSIGHTEDGE_CLASSPATH="${INSIGHTEDGE_CLASSPATH_EXT}:${INSIGHTEDGE_CLASSPATH}"
+fi
+
 # Set SPARK_HOME if not set
 if [ -z "${SPARK_HOME}" ]; then
     export SPARK_HOME="${XAP_HOME}/insightedge/spark"
