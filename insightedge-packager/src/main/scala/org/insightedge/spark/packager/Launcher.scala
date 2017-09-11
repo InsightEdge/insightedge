@@ -181,7 +181,7 @@ object Launcher {
       }
 
       run(s"Adding $xapJdbcExtZip extension"){
-        unzip(s"$insightEdgeHome/insightEdge-extension/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
+        unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
       }
 
 
