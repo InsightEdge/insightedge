@@ -61,11 +61,11 @@ object Launcher {
 
     val examplesJar = "insightedge-examples.jar"
 
-    val insightedgePackagerTarget=s"$grid/.."
+    val insightedgePackagerTargetPath = s"$project/insightedge-packager/target/"
     val xapJdbcExtZip = "xap-jdbc-insightedge-extension.zip"
 
     println(s"grid is [$grid]")
-    println(s"insightedgePackagerTarget is [$insightedgePackagerTarget]")
+    println(s"insightedgePackagerTargetPath is [$insightedgePackagerTargetPath]")
 
 
     validateHash(lastCommitHash)
@@ -180,9 +180,9 @@ object Launcher {
         permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
       }
 
-      run(s"Adding extension to $insightEdgeHome/$xapJdbcExtZip"){
-        copy(s"$insightedgePackagerTarget/$xapJdbcExtZip", s"$insightEdgeHome/insightEdge-extension/$xapJdbcExtZip")
-        unzip(s"$insightEdgeHome/$xapJdbcExtZip", s"$insightEdgeHome/insightEdge-extension/myExt/", cutRootFolder = true)
+      run(s"Adding extension - $xapJdbcExtZip"){
+        copy(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/insightEdge-extension/$xapJdbcExtZip")
+        unzip(s"$insightEdgeHome/insightEdge-extension/$xapJdbcExtZip", s"$insightEdgeHome/insightEdge-extension/myExt/", cutRootFolder = true)
       }
 
 
