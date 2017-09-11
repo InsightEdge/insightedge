@@ -23,4 +23,4 @@
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/../conf/insightedge-env.sh
 
-"${SPARK_HOME}/bin/spark-shell" --driver-class-path=${INSIGHTEDGE_CORE_CP} -i ${XAP_HOME}/insightedge/bin/shell-init.scala "$@"
+"${SPARK_HOME}/bin/spark-shell" --driver-class-path=${INSIGHTEDGE_CLASSPATH} -i ${XAP_HOME}/insightedge/bin/shell-init.scala "$@"

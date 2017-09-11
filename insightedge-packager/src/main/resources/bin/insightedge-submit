@@ -4,4 +4,4 @@ set -e
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/../conf/insightedge-env.sh
 
-"${SPARK_HOME}"/bin/spark-submit --driver-class-path=${INSIGHTEDGE_CORE_CP} $@
+"${SPARK_HOME}"/bin/spark-submit --driver-class-path=${INSIGHTEDGE_CLASSPATH} $@
