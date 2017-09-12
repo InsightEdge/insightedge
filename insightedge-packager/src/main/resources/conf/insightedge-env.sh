@@ -37,3 +37,7 @@ fi
 if [ -z "${ZEPPELIN_PORT}" ]; then
     export ZEPPELIN_PORT=9090
 fi
+
+if [ -z "${INSIGHTEDGE_SPACE_NAME}" ]; then
+    export INSIGHTEDGE_SPACE_NAME="insightedge-space"
+fi

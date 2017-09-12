@@ -227,7 +227,7 @@ main_demo() {
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=demo" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark-master --spark-worker --gsc=2 > /dev/null 2>&1 &
     helper_await_master_start
 
-    main_deploy_space --partitions=2 "insightedge-space"
+    main_deploy_space --partitions=2 ${INSIGHTEDGE_SPACE_NAME}
 
     helper_start_zeppelin
 

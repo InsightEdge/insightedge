@@ -35,15 +35,11 @@ from pyspark.storagelevel import StorageLevel
 
     # InsightEdge config
 if len(sys.argv) < 4:
-    spaceName = "insightedge-space"
-    lookupGroup = "xap-12.2.0"
-    lookupLocator = "127.0.0.1:4174"
+    spaceName = os.environ['INSIGHTEDGE_SPACE_NAME']
 else:
     spaceName = sys.argv[1]
-    lookupGroup = sys.argv[2]
-    lookupLocator = sys.argv[3]
 
-print("InsightEdge config: %s %s %s" % (spaceName, lookupGroup, lookupLocator))
+print("InsightEdge config: %s" % spaceName)
 
 if os.environ.get("SPARK_EXECUTOR_URI"):
     SparkContext.setSystemProperty("spark.executor.uri", os.environ["SPARK_EXECUTOR_URI"])
@@ -56,13 +52,11 @@ try:
     spark = SparkSession.builder\
         .enableHiveSupport()\
         .config("spark.insightedge.space.name", spaceName) \
-        .config("spark.insightedge.space.lookup.group", lookupGroup) \
-        .config("spark.insightedge.space.lookup.locator", lookupLocator) \
         .getOrCreate()
 except py4j.protocol.Py4JError:
-    spark = SparkSession.builder.config("spark.insightedge.space.name", spaceName).config("spark.insightedge.space.lookup.group", lookupGroup).config("spark.insightedge.space.lookup.locator", lookupLocator).getOrCreate()
+    spark = SparkSession.builder.config("spark.insightedge.space.name", spaceName).getOrCreate()
 except TypeError:
-    spark = SparkSession.builder.config("spark.insightedge.space.name", spaceName).config("spark.insightedge.space.lookup.group", lookupGroup).config("spark.insightedge.space.lookup.locator", lookupLocator).getOrCreate()
+    spark = SparkSession.builder.config("spark.insightedge.space.name", spaceName).getOrCreate()
 
 sc = spark.sparkContext
 sql = spark.sql

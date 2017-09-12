@@ -28,7 +28,7 @@ import scala.util.Random
 object SaveRdd {
 
   def main(args: Array[String]): Unit = {
-    val settings = if (args.length > 0) args else Array("spark://127.0.0.1:7077", "insightedge-space")
+    val settings = if (args.length > 0) args else Array("spark://127.0.0.1:7077", sys.env("INSIGHTEDGE_SPACE_NAME"))
     if (settings.length != 2) {
       System.err.println("Usage: SaveRdd <spark master url> <space name>")
       System.exit(1)
