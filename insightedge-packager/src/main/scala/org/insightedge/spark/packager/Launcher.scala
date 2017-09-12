@@ -137,6 +137,8 @@ object Launcher {
         remove(s"$insightEdgeHome/examples/.idea")
         remove(s"$insightEdgeHome/examples/insightedge-examples.iml")
         remove(s"$insightEdgeHome/examples/src/test")
+        remove(s"$insightEdgeHome/examples/xap")
+        remove(s"$insightEdgeHome/examples/transaction.log")
       }
 
       run("Adding InsightEdge resources") {
