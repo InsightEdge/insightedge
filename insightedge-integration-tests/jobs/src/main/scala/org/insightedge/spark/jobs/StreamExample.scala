@@ -19,14 +19,14 @@ import scala.util.Random
 object StreamExample {
 
   def main(args: Array[String]): Unit = {
-    val settings = if (args.length > 0) args else Array("spark://127.0.0.1:7077", "insightedge-space", "xap-12.2.0", "127.0.0.1:4174")
-    if (settings.length < 4) {
-      System.err.println("Usage: SaveRdd <spark master url> <space name> <space groups> <space locator>")
+    val settings = if (args.length > 0) args else Array("spark://127.0.0.1:7077", "insightedge-space")
+    if (settings.length != 2) {
+      System.err.println("Usage: SaveRdd <spark master url> <space name>")
       System.exit(1)
     }
 
-    val Array(master, space, groups, locators) = settings
-    val ieConfig = InsightEdgeConfig(space, Some(groups), Some(locators))
+    val Array(master, space) = settings
+    val ieConfig = InsightEdgeConfig(space)
     val sparkConf = new SparkConf().setAppName("StreamExample").setMaster(master).setInsightEdgeConfig(ieConfig)
 
     val ssc = new StreamingContext(sparkConf, Seconds(1))
