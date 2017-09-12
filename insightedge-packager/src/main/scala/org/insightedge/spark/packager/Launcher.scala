@@ -90,8 +90,7 @@ object Launcher {
       }
 
 
-      run("Adding InsightEdge license and VERSION file") {
-        copy(s"$project/LICENSE.md", s"$insightEdgeHome/INSIGHTEDGE-LICENSE.md")
+      run("Adding InsightEdge VERSION file") {
         val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
         val versionInfo = s"Version: $version\n" +
           s"Edition: $edition\n" +
