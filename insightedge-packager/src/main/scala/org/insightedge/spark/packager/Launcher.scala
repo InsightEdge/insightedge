@@ -63,8 +63,7 @@ object Launcher {
       untgz(spark, output, cutRootFolder = true)
     }
 
-    run("Adding InsightEdge license and VERSION file") {
-      copy(s"$project/LICENSE.md", s"$output/INSIGHTEDGE-LICENSE.md")
+    run("Adding InsightEdge VERSION file") {
       val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
       val versionInfo = s"Version: $version\n" +
         s"Edition: $edition\n" +
