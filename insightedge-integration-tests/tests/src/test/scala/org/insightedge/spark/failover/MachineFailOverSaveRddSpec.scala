@@ -60,8 +60,10 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     val fullClassName = s"org.insightedge.spark.jobs.SaveRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
+    val spaceName = "insightedge-space"
     val command = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
-      " --master spark://" + masterIp + ":7077 " + JOBS
+      " --master spark://" + masterIp + ":7077 " + JOBS +
+      " spark://" + masterIp + ":7077 " + spaceName
 
 
     println("---BEFORE COMMAND - all apps info")
