@@ -224,7 +224,7 @@ main_demo() {
     step_title "-- Starting gs-agent with local manager, spark master, spark worker and 2 containers..."
 
     export SPARK_LOCAL_IP="localhost"
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=demo" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark_master --spark_worker --gsc=2 > /dev/null 2>&1 &
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=demo" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark-master --spark-worker --gsc=2 > /dev/null 2>&1 &
     helper_await_master_start
 
     main_deploy_space --partitions=2 "insightedge-space"
@@ -352,8 +352,8 @@ helper_run_master() {
 
 #    check_already_started_run_master
 
-    step_title "-- Starting gs-agent with --manager --spark_master..."
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark_master
+    step_title "-- Starting gs-agent with --manager --spark-master..."
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=master" ${XAP_HOME}/bin/gs-agent.sh --manager --spark-master
 }
 
 helper_run_worker() {
@@ -398,8 +398,8 @@ helper_run_worker() {
 #    check_already_started_run_worker
 
     echo ""
-    step_title "-- Starting gs-agent with --spark_worker..."
-    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=worker" ${XAP_HOME}/bin/gs-agent.sh --gsc=${GSC_COUNT} --spark_worker
+    step_title "-- Starting gs-agent with --spark-worker..."
+    XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=worker" ${XAP_HOME}/bin/gs-agent.sh --gsc=${GSC_COUNT} --spark-worker
 }
 
 helper_stop_agent() {

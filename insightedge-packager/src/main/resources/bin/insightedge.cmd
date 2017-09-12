@@ -50,7 +50,7 @@ exit /B
 :demo
 echo Starting gs-agent with local manager, spark master, spark worker and 2 containers...
 set SPARK_LOCAL_IP=localhost
-start "InsightEdge Agent" "%XAP_HOME%\bin\gs-agent" --manager-local --spark_master --spark_worker --gsc=2
+start "InsightEdge Agent" "%XAP_HOME%\bin\gs-agent" --manager-local --spark-master --spark-worker --gsc=2
 rem Wait for GSM up to 60 seconds (6 attempts with default timeout of 10 seconds):
 FOR /L %%G IN (1,1,6) DO (
   echo !time!
@@ -77,11 +77,11 @@ exit /B
 :run
 if [%2]==[] (echo Nothing to run & goto run_usage)
 if %2==--master (
-  set INSIGHTEDGE_CMD=--manager --spark_master
+  set INSIGHTEDGE_CMD=--manager --spark-master
   goto run_agent
 )
 if %2==--worker (
-  set INSIGHTEDGE_CMD=--spark_worker
+  set INSIGHTEDGE_CMD=--spark-worker
   if [%3]==[--containers] (
     set INSIGHTEDGE_CMD=!INSIGHTEDGE_CMD! --gsc
     if not [%4]==[] set INSIGHTEDGE_CMD=!INSIGHTEDGE_CMD!=%4
