@@ -223,7 +223,6 @@ main_demo() {
     echo ""
     step_title "-- Starting gs-agent with local manager, spark master, spark worker and 2 containers..."
 
-    export SPARK_LOCAL_IP="localhost"
     XAP_GSA_OPTIONS="$XAP_GSA_OPTIONS -Dinsightedge.marker=demo" nohup ${XAP_HOME}/bin/gs-agent.sh --manager-local --spark-master --spark-worker --gsc=2 > /dev/null 2>&1 &
     helper_await_master_start
 

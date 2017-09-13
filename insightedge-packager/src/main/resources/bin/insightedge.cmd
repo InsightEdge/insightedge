@@ -49,7 +49,6 @@ exit /B
 
 :demo
 echo Starting gs-agent with local manager, spark master, spark worker and 2 containers...
-set SPARK_LOCAL_IP=localhost
 start "InsightEdge Agent" "%XAP_HOME%\bin\gs-agent" --manager-local --spark-master --spark-worker --gsc=2
 rem Wait for GSM up to 60 seconds (6 attempts with default timeout of 10 seconds):
 FOR /L %%G IN (1,1,6) DO (
