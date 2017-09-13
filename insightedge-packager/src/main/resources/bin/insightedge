@@ -407,26 +407,14 @@ helper_stop_agent() {
     echo ""
     step_title "--- Killing gs-agent"
 
-    pid=`ps aux | grep -v grep | grep insightedge.marker | awk '{print $2}' | tr '\n' ' '`
-    if [ -z "$pid" ]; then
+    processgroupids=`ps -ejf | grep -v grep | grep insightedge.marker | awk '{print -$4}' | tr '\n' ' '`
+    if [ -z "$processgroupids" ]; then
         echo "gs-agent is not running"
         return
     fi
 
-    kill -SIGTERM ${pid}
+     kill -9 ${processgroupids}
 
-    TIMEOUT=60
-    while ps -p $pid > /dev/null; do
-        if [ $TIMEOUT -le 0 ]; then
-            echo "Timed out"
-            return
-        fi
-        if ! ((TIMEOUT % 10)); then
-            echo "  waiting termination ($TIMEOUT sec)"
-        fi
-        ((TIMEOUT--))
-        sleep 1
-    done
     echo "gs-agent killed"
 }
 
