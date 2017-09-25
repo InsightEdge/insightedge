@@ -57,21 +57,31 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
   }
 
   "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine"  in {
-
+    val saveRddFullClassName = s"org.insightedge.spark.jobs.SaveRdd"
     val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
-    val command = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
+    val loadRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
+    val saveRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + saveRddFullClassName +
+      " --master spark://" + masterIp + ":7077 " + JOBS +
+      " spark://" + masterIp + ":7077 " + spaceName
+    InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
 
-    InsightEdgeAdminUtils.exec(masterContainerId, command)
 
+    val saveRddAppId: String = InsightEdgeAdminUtils.getAppId
+    println(s"Save Rdd Application Id = $saveRddAppId")
 
-    var appId: String = InsightEdgeAdminUtils.getAppId
+    InsightEdgeAdminUtils.waitForAppSuccess(saveRddAppId, 30)
 
-    InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(appId, "slave1")
+    InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
+
+    val loadRddAppId: String = InsightEdgeAdminUtils.getAppId
+    println(s"Load Rdd Application Id = $loadRddAppId")
+
+    InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(loadRddAppId, "slave1")
 
     //wait for job to finish
     Thread.sleep(60000)
@@ -81,7 +91,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     //wait for history server to be available
     Thread.sleep(30000)
 
-    InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
+    InsightEdgeAdminUtils.waitForAppSuccess(loadRddAppId, 30)
   }
 
 
