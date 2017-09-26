@@ -406,7 +406,7 @@ helper_stop_agent() {
     echo ""
     step_title "--- Killing gs-agent"
 
-    processgroupids=`ps -ejf | grep -v grep | grep insightedge.marker | awk '{print -$4}' | tr '\n' ' '`
+    processgroupids=`ps -xao pid,pgid,command | grep -v grep | grep insightedge.marker | awk '{print -$2}' | tr '\n' ' '`
     if [ -z "$processgroupids" ]; then
         echo "gs-agent is not running"
         return
