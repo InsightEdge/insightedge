@@ -20,6 +20,8 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.implicits.basic._
 
+import scala.util.Random
+
 /**
   * Loads Product RDD from Data Grid and prints objects count.
   */
@@ -34,7 +36,8 @@ object LoadRdd {
     val Array(master, space) = settings
     val config = InsightEdgeConfig(space)
     val sc = new SparkContext(new SparkConf().setAppName("example-load-rdd").setMaster(master).setInsightEdgeConfig(config))
-
+    val products = (1 to 100000).map { i => Product(i, "Description of product " + i, Random.nextInt(10), Random.nextBoolean()) }
+    sc.saveMultipleToGrid[Product](products)
     val rdd = sc.gridRdd[Product]()
     println(s"Products RDD count: ${rdd.count()}")
     sc.stopInsightEdgeContext()
