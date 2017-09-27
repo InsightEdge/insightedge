@@ -77,7 +77,7 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     InsightEdgeAdminUtils.exec(masterContainerId, command)
 
 
-    var appId: String = InsightEdgeAdminUtils.getAppId(0)
+    var appId: String = InsightEdgeAdminUtils.getAppId
 
     InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(appId, "slave1")
 
