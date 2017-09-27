@@ -72,7 +72,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     val spacesOnMachines = InsightEdgeAdminUtils.datagridNodes()
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
-    var appId: String = InsightEdgeAdminUtils.getAppId
+    var appId: String = InsightEdgeAdminUtils.getAppId(0)
 
     restartPrimaryOnSlaveMachine(spacesOnMachines)
 

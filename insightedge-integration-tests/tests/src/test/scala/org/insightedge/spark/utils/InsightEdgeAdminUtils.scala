@@ -388,11 +388,11 @@ object InsightEdgeAdminUtils extends Assertions{
     this
   }
 
-  def getAppId: String = {
+  def getAppId(index: Int): String = {
     var appId = ""
     retry(30000 millis, 100 millis) {
       if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0)
-        appId = getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
+        appId = getSparkAppsFromHistoryServer(getMasterIp()).get(index).asInstanceOf[JSONObject].get("id").toString
       if(appId == null ||  appId.equals(""))
         fail("Failed to get app id from Spark History Server")
       else {
