@@ -72,7 +72,7 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
     //wait for history server to be available
     Thread.sleep(30000)
 
-    val appId: String = InsightEdgeAdminUtils.getAppId
+    val appId: String = InsightEdgeAdminUtils.getAppId(0)
 
 
     InsightEdgeAdminUtils.destroyContainerByName("slave1")

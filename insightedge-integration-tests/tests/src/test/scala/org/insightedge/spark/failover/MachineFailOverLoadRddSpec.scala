@@ -58,27 +58,30 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine"  in {
     val saveRddFullClassName = s"org.insightedge.spark.jobs.SaveRdd"
-    val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
+    val loadRddFullClassName = s"org.insightedge.spark.jobs.LoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
-    val loadRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
-      " --master spark://" + masterIp + ":7077 " + JOBS +
-      " spark://" + masterIp + ":7077 " + spaceName
+
     val saveRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + saveRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
-    InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
+
+    InsightEdgeAdminUtils.exec(masterContainerId, saveRddCommand)
+
+    val loadRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + loadRddFullClassName +
+      " --master spark://" + masterIp + ":7077 " + JOBS +
+      " spark://" + masterIp + ":7077 " + spaceName
 
 
-    val saveRddAppId: String = InsightEdgeAdminUtils.getAppId
+    val saveRddAppId: String = InsightEdgeAdminUtils.getAppId(0)
     println(s"Save Rdd Application Id = $saveRddAppId")
 
     InsightEdgeAdminUtils.waitForAppSuccess(saveRddAppId, 30)
 
     InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
 
-    val loadRddAppId: String = InsightEdgeAdminUtils.getAppId
+    val loadRddAppId: String = InsightEdgeAdminUtils.getAppId(1)
     println(s"Load Rdd Application Id = $loadRddAppId")
 
     InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(loadRddAppId, "slave1")
