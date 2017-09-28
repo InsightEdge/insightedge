@@ -390,10 +390,14 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def getAppId: String = {
     var appId = ""
+    var i:Int = 0
     retry(30000 millis, 100 millis) {
-      if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0)
-        appId = getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
+      val sparkApps: JSONArray = getSparkAppsFromHistoryServer(getMasterIp())
+      if (sparkApps.size() > 0)
+        appId = sparkApps.get(0).asInstanceOf[JSONObject].get("id").toString
       if(appId == null ||  appId.equals(""))
+        println(s"retried for the $i time")
+        i = i + 1
         fail("Failed to get app id from Spark History Server")
       else {
         println(s"App Id [ $appId ]")
