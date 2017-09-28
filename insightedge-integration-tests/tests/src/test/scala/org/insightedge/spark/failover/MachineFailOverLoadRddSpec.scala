@@ -18,6 +18,7 @@ package org.insightedge.spark.failover
 
 
 import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.json.simple.JSONArray
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -67,7 +68,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     " spark://" + masterIp + ":7077 " + spaceName
 
     println("---BEFORE COMMAND - all apps info")
-    val appsBeforeCommand =  InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(masterIp)
+    val appsBeforeCommand: JSONArray =  InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(masterIp)
     val str = appsBeforeCommand.toJSONString
     println(str)
     println("END APPS INFO")
