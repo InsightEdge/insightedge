@@ -36,7 +36,7 @@ object LoadRdd {
     val Array(master, space) = settings
     val config = InsightEdgeConfig(space)
     val sc = new SparkContext(new SparkConf().setAppName("example-load-rdd").setMaster(master).setInsightEdgeConfig(config))
-
+    //Thread.sleep(60000)
     val rdd = sc.gridRdd[Product]()
     println(s"Products RDD count: ${rdd.count()}")
     sc.stopInsightEdgeContext()
