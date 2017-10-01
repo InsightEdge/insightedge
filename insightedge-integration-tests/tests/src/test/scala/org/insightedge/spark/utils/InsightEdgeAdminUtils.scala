@@ -349,7 +349,8 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def isAppCompletedHistoryServer(masterIp: String, appId: String): JSONArray = {
     val url = s"http://$masterIp:4040/api/v1/applications/$appId/jobs"
-    println(s"Jobs array from port 4040 ${getBody(wsClient.url(url).get())}")
+    val body: Option[String] = Option(getBody(wsClient.url(url).get()).toString)
+    println(s"Jobs array from port 4040 ${body.getOrElse("")}")
     getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
   }
 
