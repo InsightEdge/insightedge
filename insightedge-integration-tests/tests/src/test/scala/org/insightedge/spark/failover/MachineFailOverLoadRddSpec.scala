@@ -73,7 +73,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     println(str)
     println("END APPS INFO")
 
-    InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
+    InsightEdgeAdminUtils.execAndReturnProcessStdout(masterContainerId, loadRddCommand)
 
     val loadRddAppId: String = InsightEdgeAdminUtils.getAppId
     println(s"Load Rdd Application Id = $loadRddAppId")

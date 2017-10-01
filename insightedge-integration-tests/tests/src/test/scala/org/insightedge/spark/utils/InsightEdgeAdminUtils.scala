@@ -391,7 +391,7 @@ object InsightEdgeAdminUtils extends Assertions{
   def getAppId: String = {
     var appId = ""
     var i:Int = 0
-    retry(30000 millis, 100 millis) {
+    retry(30000 millis, 1000 millis) {
       val sparkApps: JSONArray = getSparkAppsFromHistoryServer(getMasterIp())
       if (sparkApps.size() > 0)
         appId = sparkApps.get(0).asInstanceOf[JSONObject].get("id").toString
@@ -409,7 +409,10 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def destroyMachineWhenAppIsRunning(appId: String, containerName: String): Unit = {
     retry(30000 millis, 100 millis) {
-      val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
+      val arr: JSONArray = isAppCompletedHistoryServer(getMasterIp(), appId)
+      println("Trying to destroy machine")
+      println(s"App $appId jobs array ====== $arr")
+      val status = arr.get(0).asInstanceOf[JSONObject].get("status").toString
       if ("RUNNING".equals(status)) {
         destroyContainerByName(containerName)
         containersId -= containerName
