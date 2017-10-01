@@ -2,7 +2,7 @@
 # Runs InsightEdge in a demo mode
 #
 
-FROM centos:7.2.1511
+FROM centos:7.4.1708
 MAINTAINER Kobi Kisos kobi@gigaspaces.com
 
 # upgrade system

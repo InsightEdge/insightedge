@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import com.gigaspaces.cluster.activeelection.SpaceMode
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
 import com.spotify.docker.client.messages.{Container, ContainerConfig, HostConfig, PortBinding}
-import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
+import com.spotify.docker.client.{DefaultDockerClient, DockerClient, LogStream}
 import org.json.simple.parser.JSONParser
 import org.json.simple.{JSONArray, JSONObject}
 import org.openspaces.admin.pu.ProcessingUnitInstance
@@ -262,7 +262,7 @@ object InsightEdgeAdminUtils extends Assertions{
     println(s"executing [$command] on container $containerId")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command))
     val execId = execCreation.id()
-    val output = docker.execStart(execId)
+    val output: LogStream = docker.execStart(execId)
   }
 
   protected def getContainerIp(containerId: String): String = {
@@ -342,17 +342,17 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def assertAllJobsSucceeded(masterIp: String, appId: String): Unit = {
-    val jobs: JSONArray = getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
+    val jobs: JSONArray = getBody(wsClient.url(s"http://$masterIp:4040/api/v1/applications/$appId/jobs").get())
     val jobsArr = jobs.toArray(new Array[JSONObject](0))
     jobsArr.map((o: JSONObject) => assert(!o.get("status").equals("FAILED")))
   }
 
   def isAppCompletedHistoryServer(masterIp: String, appId: String): JSONArray = {
-    getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
+    getBody(wsClient.url(s"http://$masterIp:4040/api/v1/applications/$appId/jobs").get())
   }
 
   def getSparkAppsFromHistoryServer(masterIp: String): JSONArray = {
-    getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/").get())
+    getBody(wsClient.url(s"http://$masterIp:4040/api/v1/applications/").get())
   }
 
   private def getBody(future: Future[WSResponse]): JSONArray = {
