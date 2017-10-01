@@ -342,17 +342,17 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def assertAllJobsSucceeded(masterIp: String, appId: String): Unit = {
-    val jobs: JSONArray = getBody(wsClient.url(s"http://$masterIp:4040/api/v1/applications/$appId/jobs").get())
+    val jobs: JSONArray = getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
     val jobsArr = jobs.toArray(new Array[JSONObject](0))
     jobsArr.map((o: JSONObject) => assert(!o.get("status").equals("FAILED")))
   }
 
   def isAppCompletedHistoryServer(masterIp: String, appId: String): JSONArray = {
-    getBody(wsClient.url(s"http://$masterIp:4040/api/v1/applications/$appId/jobs").get())
+    getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
   }
 
   def getSparkAppsFromHistoryServer(masterIp: String): JSONArray = {
-    getBody(wsClient.url(s"http://$masterIp:4040/api/v1/applications/").get())
+    getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/").get())
   }
 
   private def getBody(future: Future[WSResponse]): JSONArray = {
