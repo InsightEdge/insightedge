@@ -348,6 +348,8 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def isAppCompletedHistoryServer(masterIp: String, appId: String): JSONArray = {
+    val url = s"http://$masterIp:4040/api/v1/applications/$appId/jobs"
+    println(s"Jobs array from port 4040 ${getBody(wsClient.url(url).get())}")
     getBody(wsClient.url(s"http://$masterIp:18080/api/v1/applications/$appId/jobs").get())
   }
 
@@ -411,7 +413,7 @@ object InsightEdgeAdminUtils extends Assertions{
     retry(30000 millis, 100 millis) {
       val arr: JSONArray = isAppCompletedHistoryServer(getMasterIp(), appId)
       println("Trying to destroy machine")
-      println(s"App $appId jobs array ====== $arr")
+      println(s"App $appId jobs array from port 18080 ====== $arr")
       val status = arr.get(0).asInstanceOf[JSONObject].get("status").toString
       if ("RUNNING".equals(status)) {
         destroyContainerByName(containerName)
