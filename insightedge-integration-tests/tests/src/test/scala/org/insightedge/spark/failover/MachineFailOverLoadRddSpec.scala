@@ -73,7 +73,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       " spark://" + masterIp + ":7077 " + spaceName
 
 
-    InsightEdgeAdminUtils.execAndReturnProcessStdout(masterContainerId, saveRddCommand)
+    InsightEdgeAdminUtils.exec(masterContainerId, saveRddCommand)
 
 
     val saveRddAppId: String = InsightEdgeAdminUtils.getAppId(0)
@@ -81,7 +81,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.waitForAppSuccess(saveRddAppId, 30)
 
-    InsightEdgeAdminUtils.execAndReturnProcessStdout(masterContainerId, loadRddCommand)
+    InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
 
     val loadRddAppId: String = InsightEdgeAdminUtils.getAppId(1)
     println(s"Load Rdd Application Id = $loadRddAppId")
