@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import com.gigaspaces.cluster.activeelection.SpaceMode
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
 import com.spotify.docker.client.messages.{Container, ContainerConfig, HostConfig, PortBinding}
-import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
+import com.spotify.docker.client.{DefaultDockerClient, DockerClient, LogStream}
 import org.json.simple.parser.JSONParser
 import org.json.simple.{JSONArray, JSONObject}
 import org.openspaces.admin.pu.ProcessingUnitInstance
@@ -262,7 +262,7 @@ object InsightEdgeAdminUtils extends Assertions{
     println(s"executing [$command] on container $containerId")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command))
     val execId = execCreation.id()
-    val output = docker.execStart(execId)
+    val output: LogStream = docker.execStart(execId)
   }
 
   protected def getContainerIp(containerId: String): String = {
@@ -388,13 +388,15 @@ object InsightEdgeAdminUtils extends Assertions{
     this
   }
 
-  def getAppId: String = {
+  def getAppId(index: Int): String = {
     var appId = ""
-    retry(30000 millis, 100 millis) {
-      if (getSparkAppsFromHistoryServer(getMasterIp()).size() > 0)
-        appId = getSparkAppsFromHistoryServer(getMasterIp()).get(0).asInstanceOf[JSONObject].get("id").toString
-      if(appId == null ||  appId.equals(""))
+    retry(30000 millis, 1000 millis) {
+      val sparkApps: JSONArray = getSparkAppsFromHistoryServer(getMasterIp())
+      if (sparkApps.size() > index)
+        appId = sparkApps.get(index).asInstanceOf[JSONObject].get("id").toString
+      if(appId == null ||  appId.equals("")) {
         fail("Failed to get app id from Spark History Server")
+      }
       else {
         println(s"App Id [ $appId ]")
         appId
@@ -404,7 +406,8 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def destroyMachineWhenAppIsRunning(appId: String, containerName: String): Unit = {
     retry(30000 millis, 100 millis) {
-      val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
+      val arr: JSONArray = isAppCompletedHistoryServer(getMasterIp(), appId)
+      val status = arr.get(0).asInstanceOf[JSONObject].get("status").toString
       if ("RUNNING".equals(status)) {
         destroyContainerByName(containerName)
         containersId -= containerName

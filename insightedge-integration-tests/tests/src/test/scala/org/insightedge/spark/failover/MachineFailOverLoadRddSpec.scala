@@ -18,6 +18,7 @@ package org.insightedge.spark.failover
 
 
 import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.json.simple.JSONArray
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -57,21 +58,35 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
   }
 
   "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine"  in {
-
-    val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
+    val saveRddFullClassName = s"org.insightedge.spark.jobs.SaveRdd"
+    val loadRddFullClassName = s"org.insightedge.spark.jobs.ContinuosLoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
     val spaceName = "insightedge-space"
-    val command = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
+
+    val saveRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + saveRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
-    InsightEdgeAdminUtils.exec(masterContainerId, command)
+    val loadRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + loadRddFullClassName +
+      " --master spark://" + masterIp + ":7077 " + JOBS +
+      " spark://" + masterIp + ":7077 " + spaceName
 
 
-    var appId: String = InsightEdgeAdminUtils.getAppId
+    InsightEdgeAdminUtils.exec(masterContainerId, saveRddCommand)
 
-    InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(appId, "slave1")
+
+    val saveRddAppId: String = InsightEdgeAdminUtils.getAppId(0)
+    println(s"Save Rdd Application Id = $saveRddAppId")
+
+    InsightEdgeAdminUtils.waitForAppSuccess(saveRddAppId, 30)
+
+    InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
+
+    val loadRddAppId: String = InsightEdgeAdminUtils.getAppId(1)
+    println(s"Load Rdd Application Id = $loadRddAppId")
+
+    InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(loadRddAppId, "slave1")
 
     //wait for job to finish
     Thread.sleep(60000)
@@ -81,7 +96,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     //wait for history server to be available
     Thread.sleep(30000)
 
-    InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
+    InsightEdgeAdminUtils.waitForAppSuccess(loadRddAppId, 30)
   }
 
 
