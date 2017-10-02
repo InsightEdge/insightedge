@@ -395,13 +395,13 @@ object InsightEdgeAdminUtils extends Assertions{
     this
   }
 
-  def getAppId: String = {
+  def getAppId(index: Int): String = {
     var appId = ""
     var i:Int = 0
     retry(30000 millis, 1000 millis) {
       val sparkApps: JSONArray = getSparkAppsFromHistoryServer(getMasterIp())
-      if (sparkApps.size() > 0)
-        appId = sparkApps.get(0).asInstanceOf[JSONObject].get("id").toString
+      if (sparkApps.size() > index)
+        appId = sparkApps.get(index).asInstanceOf[JSONObject].get("id").toString
       if(appId == null ||  appId.equals("")) {
         println(s"retried for the $i time")
         i = i + 1
