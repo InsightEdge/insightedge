@@ -158,48 +158,6 @@
     <profiles>
 
         <profile>
-            <id>package-community</id>
-            <properties>
-                <dist.xap>https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/xap-open/12.1.1/12.1.1/gigaspaces-xap-open-12.1.1-ga-b17100.zip</dist.xap>
-                <xap.download.phase>process-resources</xap.download.phase>
-                <xap.dist.filename>xap-community.zip</xap.dist.filename>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.scala-tools</groupId>
-                        <artifactId>maven-scala-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>run-packager-community</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <jvmArgs>
-                                        <!-- Where all distribution contents will go before zipping -->
-                                        <jvmArg>-Doutput.exploded.directory=${project.build.directory}/contents-community</jvmArg>
-                                        <!-- Final compressed file location and name -->
-                                        <jvmArg>
-                                            -Doutput.compressed.file=${project.build.directory}/community/${insightedge.community.filename}
-                                        </jvmArg>
-                                        <!-- Compressed contents prefix -->
-                                        <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.full.build.version}-community
-                                        </jvmArg>
-                                        <!-- Distribution edition -->
-                                        <jvmArg>-Ddist.edition=community</jvmArg>
-                                    </jvmArgs>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
             <id>package-premium</id>
             <properties>
                 <xap.download.phase>process-resources</xap.download.phase>
