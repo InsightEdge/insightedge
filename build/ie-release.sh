@@ -261,7 +261,7 @@ function upload_ie_zip {
 
     sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
 
-    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath} -Dput.container=gigaspaces-repository-eu"
+    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath} -Dput.container=gigaspaces-releases-eu"
 
     echo "****************************************************************************************************"
     echo "uploading $2 zip"
