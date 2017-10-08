@@ -261,7 +261,7 @@ function upload_ie_zip {
 
     sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
 
-    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath} -Dput.container=gigaspaces-repository-eu"
+    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath}"
 
     echo "****************************************************************************************************"
     echo "uploading $2 zip"
@@ -272,6 +272,7 @@ function upload_ie_zip {
     if [ "$r" -eq 1 ]
     then
         echo "[ERROR] failed to upload $2 zip, exit code:$r"
+        exit 1
     fi
     popd
 }
