@@ -332,22 +332,6 @@
                         <version>2.6</version>
                         <executions>
                             <execution>
-                                <id>package-newman artifacts</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>src/main/assembly/tests/ie-newman-artifacts.xml</descriptor>
-                                    </descriptors>
-                                    <finalName>newman-artifacts</finalName>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <attach>false</attach>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>package-tests</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -369,79 +353,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>publish-artifacts</id>
-            <properties>
-                <storage.host>hercules</storage.host>
-                <storage.port>80</storage.port>
-                <storage.user>tgrid</storage.user>
-                <newman.host>xap-newman</newman.host>
-                <newman.port>8443</newman.port>
-                <newman.username>root</newman.username>
-                <newman.password>root</newman.password>
-                <newman.tags />
-                <newman.suites />
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.googlecode.maven-download-plugin</groupId>
-                        <artifactId>download-maven-plugin</artifactId>
-                        <version>1.3.0</version>
-                        <executions>
-                            <execution>
-                                <id>download newman jar</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>wget</goal>
-                                </goals>
-                                <configuration>
-                                    <skipCache>true</skipCache>
-                                    <url>http://xap-test.s3.amazonaws.com/qa/newman/newman-submitter-1.0.jar</url>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.5.0</version>
-                        <executions>
-                            <execution>
-                                <id>copy and publish artifacts</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <environmentVariables>
-                                        <storageHost>${storage.host}</storageHost>
-                                        <storagePort>${storage.port}</storagePort>
-                                        <storageUser>${storage.user}</storageUser>
-                                        <buildNumber>${insightedge.build.number}</buildNumber>
-                                        <buildVersion>${insightedge.version}</buildVersion>
-                                        <branch>${insightedge.branch}</branch>
-                                        <baseOutputFolder>${project.build.directory}</baseOutputFolder>
-                                        <communityZipFileName>${insightedge.community.filename}</communityZipFileName>
-                                        <premiumZipFileName>${insightedge.premium.filename}</premiumZipFileName>
-                                        <newmanHost>${newman.host}</newmanHost>
-                                        <newmanPort>${newman.port}</newmanPort>
-                                        <newmanUsername>${newman.username}</newmanUsername>
-                                        <newmanPassword>${newman.password}</newmanPassword>
-                                        <newmanTags>${newman.tags}</newmanTags>
-                                        <newmanSuites>${newman.suites}</newmanSuites>
-                                    </environmentVariables>
-                                    <executable>${project.basedir}/publish-artifacts.sh</executable>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                </plugins>
-            </build>
-        </profile>
-
 
     </profiles>
 </project>
