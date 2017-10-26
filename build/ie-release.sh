@@ -142,7 +142,7 @@ function mvn_install {
         cmd="mvn -B -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_Example" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository test package -DskipTests"
+        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean test package -DskipTests"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_ZEPPELIN" ]; then
         cmd="./dev/change_scala_version.sh 2.11"
