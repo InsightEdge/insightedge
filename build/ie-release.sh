@@ -1,7 +1,10 @@
 #!/bin/bash
 set -x
 
-if [ $# -eq 1 ]; then
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 setenv.sh"
+    exit 1
+else
     if [ ! -e "$1" ]; then
         echo "File [$1] does not exist."
         exit 1
@@ -332,6 +335,12 @@ function publish_ie {
 }
 
 
+function getSHA {
+    local curr=`pwd`
+    cd "$1"
+    echo $(git rev-parse HEAD)
+    cd $curr
+}
 
 function release_ie {
     env
@@ -451,4 +460,72 @@ function release_ie {
 }
 
 
-release_ie
+function continuous {
+    env
+    local ie_url="git@github.com:InsightEdge/insightedge.git"
+    local ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
+    local ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
+
+    local ie_folder="$(get_folder $ie_url)"
+    local ie_exm_folder="$(get_folder $ie_exm_url)"
+    local ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
+
+
+
+#    announce_step "clean m2"
+#    clean_m2
+
+
+#    announce_step "rename version in poms [ie]"
+#    rename_poms "$ie_folder"
+#    announce_step "rename xap version in poms [ie]"
+#    rename_xap_version "$ie_folder"
+
+#    announce_step "rename version in poms [ie example]"
+#    rename_poms "$ie_exm_folder"
+#    rename_sbt "$ie_exm_folder"
+
+#    announce_step "rename ie version in poms [ie zeppelin]"
+#    rename_ie_version "$ie_zeppelin_folder"
+#    announce_step "rename version in poms [ie zeppelin]"
+#    rename_poms "$ie_zeppelin_folder"
+
+
+    if [ ! -f "$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz" ]
+    then
+        announce_step "Downloading spark distribution"
+        wget https://d3kbcqa49mib13.cloudfront.net/spark-2.2.0-bin-hadoop2.7.tgz -P ${WORKSPACE}
+        echo "Finished downloading spark"
+    else
+        echo "Found Spark distribution, download is skipped"
+    fi
+
+    export IE_SHA=$(getSHA $ie_folder)
+
+    announce_step "executing maven install on ie"
+    mvn_install "$ie_folder" "IE"
+    echo "Done installing ie"
+
+    announce_step "executing maven install on ie example"
+    mvn_install "$ie_exm_folder" "IE_Example"
+    echo "Done installing ie example"
+
+
+    announce_step "executing maven install on ie zeppelin"
+    mvn_install "$ie_zeppelin_folder" "IE_ZEPPELIN"
+    echo "Done installing ie zeppelin"
+
+    announce_step "package ie premium package"
+    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+    echo "Done package ie premium"
+
+    announce_step "publish ie to hercules and newman"
+    publish_ie "$ie_folder"
+
+    announce_step "DONE !"
+
+}
+
+shift
+
+$@
