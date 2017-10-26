@@ -39,7 +39,7 @@ ssh ${user}@${host} chown -R "${user}:domain\ users" ${base_path}/${version}
 ssh ${user}@${host} chmod -R 755 ${base_path}/${version}
 
 echo "coping resources to: [$host] to folder in server:[${path_on_server}]"
-scp ${premiumZipFilePath} ${baseOutputFolder}/*.json ${baseOutputFolder}/integration-tests-sources.zip ${baseOutputFolder}/metadata.txt ${baseOutputFolder}/newman-artifacts.zip ${user}@${host}:${path_on_server}
+scp ${premiumZipFilePath} ${baseOutputFolder}/*.json ${baseOutputFolder}/integration-tests-sources.zip ${baseOutputFolder}/metadata.txt ${user}@${host}:${path_on_server}
 ssh ${user}@${host} chmod -R 755 ${path_on_server}
 
 
@@ -94,7 +94,8 @@ if [ -f $sumbitter_jar ]; then
     export NEWMAN_BUILD_TAGS=${newmanTags}
     export NEWMAN_BUILD_TESTS_METADATA=${WEB_PATH_TO_BUILD}/ie-integration-tests.json
     export NEWMAN_BUILD_SHAS_FILE=${WEB_PATH_TO_BUILD}/metadata.txt
-    export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/integration-tests-sources.zip,${WEB_PATH_TO_BUILD}/${premiumZipFileName},${WEB_PATH_TO_BUILD}/newman-artifacts.zip
+    export NEWMAN_BUILD_RESOURCES=${WEB_PATH_TO_BUILD}/integration-tests-sources.zip,${WEB_PATH_TO_BUILD}/${premiumZipFileName}
+    export NEWMAN_APPEND_TO_BUILD="true"
 
     echo "NEWMAN_BUILD_BRANCH=${NEWMAN_BUILD_BRANCH}"
     echo "NEWMAN_BUILD_NUMBER=${NEWMAN_BUILD_NUMBER}"
@@ -103,6 +104,7 @@ if [ -f $sumbitter_jar ]; then
     echo "NEWMAN_BUILD_TESTS_METADATA=${NEWMAN_BUILD_TESTS_METADATA}"
     echo "NEWMAN_BUILD_SHAS_FILE=${NEWMAN_BUILD_SHAS_FILE}"
     echo "NEWMAN_BUILD_RESOURCES=${NEWMAN_BUILD_RESOURCES}"
+    echo "NEWMAN_APPEND_TO_BUILD=${NEWMAN_APPEND_TO_BUILD}"
 
     buildId=`java -cp ${sumbitter_jar} com.gigaspaces.newman.NewmanBuildSubmitter | grep -o "com.gigaspaces.newman.NewmanBuildSubmitter - Build Build .*" | grep -o "id: '.*', name" | grep -o "'.*'" | sed 's/^.\(.*\).$/\1/'`
     if [ "$buildId" == "" ]; then

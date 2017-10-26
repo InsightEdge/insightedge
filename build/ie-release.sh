@@ -1,7 +1,10 @@
 #!/bin/bash
 set -x
 
-if [ $# -eq 1 ]; then
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 setenv.sh"
+    exit 1
+else
     if [ ! -e "$1" ]; then
         echo "File [$1] does not exist."
         exit 1
@@ -11,62 +14,62 @@ if [ $# -eq 1 ]; then
 fi
 
 
-function uniquify_timer_triggered_nightly_git_tag_name {
-    if [[ "$TAG_NAME" == *NIGHTLY ]]
-    then
-        TAG_NAME="${TAG_NAME}-$(date +'%A')"
-	    LONG_TAG_NAME="${TAG_NAME}-$(date '+%Y-%m-%d-%H-%M-%S')"
-    fi
-}
 
-uniquify_timer_triggered_nightly_git_tag_name
-
-
-# Get the folder from git url 
+# Get the folder from git url
 # $1 is a git url of the form git@github.com:Gigaspaces/xap-open.git
 # The function will return a folder in the $WORKSPACE that match this git url (for example $WORKSPACE/xap-open)
 function get_folder {
     echo -n "$WORKSPACE/$(echo -e $1 | sed 's/.*\/\(.*\)\.git/\1/')"
 }
 
+ie_url="git@github.com:InsightEdge/insightedge.git"
+ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
+ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
+ie_folder="$(get_folder $ie_url)"
+ie_exm_folder="$(get_folder $ie_exm_url)"
+ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
 
-# Rename all version of each pom.xml in $1 folder to $IE_MAVEN_VERSION
+export FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-b$FINAL_BUILD_NUMBER"
+
+
+
+# Rename all version of each pom.xml in $1 folder to $FINAL_MAVEN_VERSION
 function rename_poms {
     # Find current version from the pom.xml file in $1 folder.
     local version="$(grep -m1 '<version>' $1/pom.xml | sed 's/<version>\(.*\)<\/version>/\1/')"
     # Since grep return the whole line there are spaces that needed to trim.
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
-    # Find each pom.xml under $1 and replace every $trimmed_version with $IE_MAVEN_VERSION
+    # Find each pom.xml under $1 and replace every $trimmed_version with $FINAL_MAVEN_VERSION
 
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$IE_MAVEN_VERSION/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$FINAL_MAVEN_VERSION/" \{\} \;
 }
 
-# Rename all version of each build.sbt in $1 folder to $IE_MAVEN_VERSION
+# Rename all version of each build.sbt in $1 folder to $FINAL_MAVEN_VERSION
 function rename_sbt {
     # Find current version from the build.sbt file in $1 folder.
     local version="$(grep -m1 'insightEdgeVersion' $1/build.sbt | sed 's/.*"\(.*\)".*/\1/')"
     # Since grep return the whole line there are spaces that needed to trim.
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
-    # Find each build.sbt under $1 and replace every $trimmed_version with $IE_MAVEN_VERSION
+    # Find each build.sbt under $1 and replace every $trimmed_version with $FINAL_MAVEN_VERSION
 
     if [ "$trimmed_version" == "" ]; then
         echo "Unable to find insightEdgeVersion variable in build.sbt"
         exit 1
     fi
 
-    find "$1" -name "build.sbt" -exec sed -i "s/$trimmed_version/$IE_MAVEN_VERSION/" \{\} \;
+    find "$1" -name "build.sbt" -exec sed -i "s/$trimmed_version/$FINAL_MAVEN_VERSION/" \{\} \;
 }
 
 # replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${FINAL_IE_BUILD_VERSION}</insightedge.version>
 function rename_ie_version  {
     local trimmed_version="<insightedge\.version>.*<\/insightedge\.version>"
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$IE_MAVEN_VERSION<\/insightedge.version>/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$FINAL_MAVEN_VERSION<\/insightedge.version>/" \{\} \;
 }
 
-# replace all occurrences of <xap.version>x.y.z-SNAPSHOT</xap.version> with <xap.version>${XAP_RELEASE_VERSION}</xap.version>
+# replace all occurrences of <xap.version>x.y.z-SNAPSHOT</xap.version> with <xap.version>${FINAL_MAVEN_VERSION}</xap.version>
 function rename_xap_version  {
     local trimmed_version="<xap\.version>.*<\/xap\.version>"
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<xap.version>$XAP_RELEASE_VERSION<\/xap.version>/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<xap.version>$FINAL_MAVEN_VERSION<\/xap.version>/" \{\} \;
 }
 
 # Clean all nightly tags older then 7 days.
@@ -133,18 +136,34 @@ function execute_command {
 }
 # Call maven install from directory $1
 # In case of none zero exit code exit code stop the release
-function mvn_install {
+function mvn_install_cont {
     local rep="$2"
     if [ "$rep" == "IE" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -Pbuild-resources"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_Example" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository test package -DskipTests"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_ZEPPELIN" ]; then
         cmd="./dev/change_scala_version.sh 2.11"
         execute_command "Changing scala version - $rep" "$1" "$cmd"
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
+        execute_command "Installing $rep" "$1" "$cmd"
+    fi
+}
+
+function mvn_install_release {
+    local rep="$2"
+    if [ "$rep" == "IE" ]; then
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
+        execute_command "Installing $rep" "$1" "$cmd"
+    elif [ "$rep" == "IE_Example" ]; then
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests"
+        execute_command "Installing $rep" "$1" "$cmd"
+    elif [ "$rep" == "IE_ZEPPELIN" ]; then
+        cmd="./dev/change_scala_version.sh 2.11"
+        execute_command "Changing scala version - $rep" "$1" "$cmd"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
         execute_command "Installing $rep" "$1" "$cmd"
     fi
 }
@@ -158,7 +177,7 @@ function package_ie {
 	    ie_sha="${LONG_TAG_NAME}"
     fi
 
-    local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
+    local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
 
     if [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
@@ -174,9 +193,7 @@ function package_ie {
 # It uses the target deploy:deploy to bypass the build.
 # In case of none zero exit code exit code stop the release
 function mvn_deploy {
-
-    # TODO remove XAP_RELEASE_VERSION
-    cmd="mvn -B -Dmaven.repo.local=$M2/repository -DskipTests deploy -Dxap.version=${XAP_RELEASE_VERSION}"
+    cmd="mvn -B -Dmaven.repo.local=$M2/repository -DskipTests deploy"
     execute_command "Maven deploy" "$1" "$cmd"
 }
 
@@ -253,7 +270,7 @@ function upload_ie_zip {
     if [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
     fi
@@ -261,7 +278,7 @@ function upload_ie_zip {
 
     sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
 
-    cmd="mvn -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath}"
+    cmd="mvn -B -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath}"
 
     echo "****************************************************************************************************"
     echo "uploading $2 zip"
@@ -326,23 +343,18 @@ function announce_step {
 # Call maven deploy.
 # upload zip to s3.
 
-function publish_ie {
-    local cmd="mvn package -pl insightedge-packager -P publish-artifacts  -DskipTests=true -Dinsightedge.version=${IE_VERSION} -Dinsightedge.branch=$BRANCH -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -Dnewman.tags=$NEWMAN_TAGS -Dmaven.repo.local=$M2/repository"
-    execute_command "Publish IE to Newman" "$1" "$cmd"
+
+
+function getSHA {
+    local curr=`pwd`
+    cd "$1"
+    echo $(git rev-parse HEAD)
+    cd $curr
 }
-
-
 
 function release_ie {
     env
-    local ie_url="git@github.com:InsightEdge/insightedge.git"
-    local ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
-    local ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
-
     local temp_branch_name="$BRANCH-$FINAL_IE_BUILD_VERSION"
-    local ie_folder="$(get_folder $ie_url)"
-    local ie_exm_folder="$(get_folder $ie_exm_url)"
-    local ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
 
 
     clean_old_tags "$ie_folder"
@@ -361,8 +373,8 @@ function release_ie {
 	    exit_if_tag_exists "$ie_zeppelin_folder"
     fi
 
-    announce_step "clean m2"
-    clean_m2
+#    announce_step "clean m2"
+#    clean_m2
 
 
     announce_step "create temporary local branch $temp_branch_name in ie"
@@ -402,16 +414,16 @@ function release_ie {
     export LONG_TAG_NAME="$LONG_TAG_NAME"
 
     announce_step "executing maven install on ie"
-    mvn_install "$ie_folder" "IE"
+    mvn_install_release "$ie_folder" "IE"
     echo "Done installing ie"
 
     announce_step "executing maven install on ie example"
-    mvn_install "$ie_exm_folder" "IE_Example"
+    mvn_install_release "$ie_exm_folder" "IE_Example"
     echo "Done installing ie example"
 
 
     announce_step "executing maven install on ie zeppelin"
-    mvn_install "$ie_zeppelin_folder" "IE_ZEPPELIN"
+    mvn_install_release "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
     announce_step "package ie premium package"
@@ -436,19 +448,72 @@ function release_ie {
     announce_step "delete temp branch $temp_branch_name in ie zeppelin"
     delete_temp_branch "$ie_zeppelin_folder" "$temp_branch_name"
 
-    announce_step "publish ie to hercules and newman"
-    publish_ie "$ie_folder"
 
+    announce_step "DONE !"
+
+}
+
+function deploy_artifacts {
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"
 
 
 	announce_step "deploying IE maven artifacts"
 	mvn_deploy "$ie_folder"
+}
+function continuous {
+    env
+
+#    announce_step "clean m2"
+#    clean_m2
+
+
+#    announce_step "rename version in poms [ie]"
+#    rename_poms "$ie_folder"
+#    announce_step "rename xap version in poms [ie]"
+#    rename_xap_version "$ie_folder"
+
+#    announce_step "rename version in poms [ie example]"
+#    rename_poms "$ie_exm_folder"
+#    rename_sbt "$ie_exm_folder"
+
+#    announce_step "rename ie version in poms [ie zeppelin]"
+#    rename_ie_version "$ie_zeppelin_folder"
+#    announce_step "rename version in poms [ie zeppelin]"
+#    rename_poms "$ie_zeppelin_folder"
+
+
+    if [ ! -f "$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz" ]
+    then
+        announce_step "Downloading spark distribution"
+        wget https://d3kbcqa49mib13.cloudfront.net/spark-2.2.0-bin-hadoop2.7.tgz -P ${WORKSPACE}
+        echo "Finished downloading spark"
+    else
+        echo "Found Spark distribution, download is skipped"
+    fi
+
+    export IE_SHA=$(getSHA $ie_folder)
+
+    announce_step "executing maven install on ie"
+    mvn_install_cont "$ie_folder" "IE"
+    echo "Done installing ie"
+
+    announce_step "executing maven install on ie example"
+    mvn_install_cont "$ie_exm_folder" "IE_Example"
+    echo "Done installing ie example"
+
+
+    announce_step "executing maven install on ie zeppelin"
+    mvn_install_cont "$ie_zeppelin_folder" "IE_ZEPPELIN"
+    echo "Done installing ie zeppelin"
+
+    announce_step "package ie premium package"
+    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+    echo "Done package ie premium"
 
     announce_step "DONE !"
-
 }
 
+shift
 
-release_ie
+$@
