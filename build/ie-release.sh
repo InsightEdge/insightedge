@@ -445,8 +445,8 @@ function release_ie {
     announce_step "delete temp branch $temp_branch_name in ie zeppelin"
     delete_temp_branch "$ie_zeppelin_folder" "$temp_branch_name"
 
-    announce_step "publish ie to hercules and newman"
-    publish_ie "$ie_folder"
+#    announce_step "publish ie to hercules and newman"
+#    publish_ie "$ie_folder"
 
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"
@@ -519,8 +519,8 @@ function continuous {
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
 
-    announce_step "publish ie to hercules and newman"
-    publish_ie "$ie_folder"
+#    announce_step "publish ie to hercules and newman"
+#    publish_ie "$ie_folder"
 
     announce_step "DONE !"
 
