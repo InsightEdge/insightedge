@@ -14,6 +14,23 @@ else
 fi
 
 
+
+# Get the folder from git url
+# $1 is a git url of the form git@github.com:Gigaspaces/xap-open.git
+# The function will return a folder in the $WORKSPACE that match this git url (for example $WORKSPACE/xap-open)
+function get_folder {
+    echo -n "$WORKSPACE/$(echo -e $1 | sed 's/.*\/\(.*\)\.git/\1/')"
+}
+
+ie_url="git@github.com:InsightEdge/insightedge.git"
+ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
+ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
+ie_folder="$(get_folder $ie_url)"
+ie_exm_folder="$(get_folder $ie_exm_url)"
+ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
+
+
+
 function uniquify_timer_triggered_nightly_git_tag_name {
     if [[ "$TAG_NAME" == *NIGHTLY ]]
     then
@@ -24,13 +41,6 @@ function uniquify_timer_triggered_nightly_git_tag_name {
 
 uniquify_timer_triggered_nightly_git_tag_name
 
-
-# Get the folder from git url 
-# $1 is a git url of the form git@github.com:Gigaspaces/xap-open.git
-# The function will return a folder in the $WORKSPACE that match this git url (for example $WORKSPACE/xap-open)
-function get_folder {
-    echo -n "$WORKSPACE/$(echo -e $1 | sed 's/.*\/\(.*\)\.git/\1/')"
-}
 
 
 # Rename all version of each pom.xml in $1 folder to $IE_MAVEN_VERSION
@@ -344,14 +354,7 @@ function getSHA {
 
 function release_ie {
     env
-    local ie_url="git@github.com:InsightEdge/insightedge.git"
-    local ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
-    local ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
-
     local temp_branch_name="$BRANCH-$FINAL_IE_BUILD_VERSION"
-    local ie_folder="$(get_folder $ie_url)"
-    local ie_exm_folder="$(get_folder $ie_exm_url)"
-    local ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
 
 
     clean_old_tags "$ie_folder"
@@ -448,29 +451,20 @@ function release_ie {
 #    announce_step "publish ie to hercules and newman"
 #    publish_ie "$ie_folder"
 
+    announce_step "DONE !"
+
+}
+
+function deploy_artifacts {
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"
 
 
 	announce_step "deploying IE maven artifacts"
 	mvn_deploy "$ie_folder"
-
-    announce_step "DONE !"
-
 }
-
-
 function continuous {
     env
-    local ie_url="git@github.com:InsightEdge/insightedge.git"
-    local ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
-    local ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
-
-    local ie_folder="$(get_folder $ie_url)"
-    local ie_exm_folder="$(get_folder $ie_exm_url)"
-    local ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
-
-
 
 #    announce_step "clean m2"
 #    clean_m2
