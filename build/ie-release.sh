@@ -373,8 +373,8 @@ function release_ie {
 	    exit_if_tag_exists "$ie_zeppelin_folder"
     fi
 
-    announce_step "clean m2"
-    clean_m2
+#    announce_step "clean m2"
+#    clean_m2
 
 
     announce_step "create temporary local branch $temp_branch_name in ie"
