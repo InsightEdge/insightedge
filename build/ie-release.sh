@@ -173,7 +173,7 @@ function package_ie {
 	    ie_sha="${LONG_TAG_NAME}"
     fi
 
-    local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
+    local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
 
     if [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
@@ -340,7 +340,7 @@ function announce_step {
 # upload zip to s3.
 
 function publish_ie {
-    local cmd="mvn package -pl insightedge-packager -P publish-artifacts  -DskipTests=true -Dinsightedge.version=${IE_VERSION} -Dinsightedge.branch=$BRANCH -Dinsightedge.build.number=${IE_FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -Dnewman.tags=$NEWMAN_TAGS -Dmaven.repo.local=$M2/repository"
+    local cmd="mvn package -pl insightedge-packager -P publish-artifacts  -DskipTests=true -Dinsightedge.version=${IE_VERSION} -Dinsightedge.branch=$BRANCH -Dinsightedge.build.number=${FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -Dnewman.tags=$NEWMAN_TAGS -Dmaven.repo.local=$M2/repository"
     execute_command "Publish IE to Newman" "$1" "$cmd"
 }
 
