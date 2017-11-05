@@ -29,6 +29,8 @@ ie_folder="$(get_folder $ie_url)"
 ie_exm_folder="$(get_folder $ie_exm_url)"
 ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
 
+export FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-b$FINAL_BUILD_NUMBER"
+
 
 
 function uniquify_timer_triggered_nightly_git_tag_name {
@@ -43,43 +45,43 @@ uniquify_timer_triggered_nightly_git_tag_name
 
 
 
-# Rename all version of each pom.xml in $1 folder to $IE_MAVEN_VERSION
+# Rename all version of each pom.xml in $1 folder to $FINAL_MAVEN_VERSION
 function rename_poms {
     # Find current version from the pom.xml file in $1 folder.
     local version="$(grep -m1 '<version>' $1/pom.xml | sed 's/<version>\(.*\)<\/version>/\1/')"
     # Since grep return the whole line there are spaces that needed to trim.
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
-    # Find each pom.xml under $1 and replace every $trimmed_version with $IE_MAVEN_VERSION
+    # Find each pom.xml under $1 and replace every $trimmed_version with $FINAL_MAVEN_VERSION
 
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$IE_MAVEN_VERSION/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/$FINAL_MAVEN_VERSION/" \{\} \;
 }
 
-# Rename all version of each build.sbt in $1 folder to $IE_MAVEN_VERSION
+# Rename all version of each build.sbt in $1 folder to $FINAL_MAVEN_VERSION
 function rename_sbt {
     # Find current version from the build.sbt file in $1 folder.
     local version="$(grep -m1 'insightEdgeVersion' $1/build.sbt | sed 's/.*"\(.*\)".*/\1/')"
     # Since grep return the whole line there are spaces that needed to trim.
     local trimmed_version="$(echo -e "${version}" | tr -d '[[:space:]]')"
-    # Find each build.sbt under $1 and replace every $trimmed_version with $IE_MAVEN_VERSION
+    # Find each build.sbt under $1 and replace every $trimmed_version with $FINAL_MAVEN_VERSION
 
     if [ "$trimmed_version" == "" ]; then
         echo "Unable to find insightEdgeVersion variable in build.sbt"
         exit 1
     fi
 
-    find "$1" -name "build.sbt" -exec sed -i "s/$trimmed_version/$IE_MAVEN_VERSION/" \{\} \;
+    find "$1" -name "build.sbt" -exec sed -i "s/$trimmed_version/$FINAL_MAVEN_VERSION/" \{\} \;
 }
 
 # replace all occurrences of <insightedge.version>x.y.z-SNAPSHOT</insightedge.version> with <insightedge.version>${FINAL_IE_BUILD_VERSION}</insightedge.version>
 function rename_ie_version  {
     local trimmed_version="<insightedge\.version>.*<\/insightedge\.version>"
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$IE_MAVEN_VERSION<\/insightedge.version>/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<insightedge.version>$FINAL_MAVEN_VERSION<\/insightedge.version>/" \{\} \;
 }
 
-# replace all occurrences of <xap.version>x.y.z-SNAPSHOT</xap.version> with <xap.version>${XAP_RELEASE_VERSION}</xap.version>
+# replace all occurrences of <xap.version>x.y.z-SNAPSHOT</xap.version> with <xap.version>${FINAL_MAVEN_VERSION}</xap.version>
 function rename_xap_version  {
     local trimmed_version="<xap\.version>.*<\/xap\.version>"
-    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<xap.version>$XAP_RELEASE_VERSION<\/xap.version>/" \{\} \;
+    find "$1" -name "pom.xml" -exec sed -i "s/$trimmed_version/<xap.version>$FINAL_MAVEN_VERSION<\/xap.version>/" \{\} \;
 }
 
 # Clean all nightly tags older then 7 days.
@@ -187,9 +189,7 @@ function package_ie {
 # It uses the target deploy:deploy to bypass the build.
 # In case of none zero exit code exit code stop the release
 function mvn_deploy {
-
-    # TODO remove XAP_RELEASE_VERSION
-    cmd="mvn -B -Dmaven.repo.local=$M2/repository -DskipTests deploy -Dxap.version=${XAP_RELEASE_VERSION}"
+    cmd="mvn -B -Dmaven.repo.local=$M2/repository -DskipTests deploy"
     execute_command "Maven deploy" "$1" "$cmd"
 }
 
@@ -266,7 +266,7 @@ function upload_ie_zip {
     if [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
     fi
