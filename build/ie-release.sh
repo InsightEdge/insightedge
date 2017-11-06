@@ -33,18 +33,6 @@ export FINAL_IE_BUILD_VERSION="$IE_VERSION-$MILESTONE-b$FINAL_BUILD_NUMBER"
 
 
 
-function uniquify_timer_triggered_nightly_git_tag_name {
-    if [[ "$TAG_NAME" == *NIGHTLY ]]
-    then
-        TAG_NAME="${TAG_NAME}-$(date +'%A')"
-	    LONG_TAG_NAME="${TAG_NAME}-$(date '+%Y-%m-%d-%H-%M-%S')"
-    fi
-}
-
-uniquify_timer_triggered_nightly_git_tag_name
-
-
-
 # Rename all version of each pom.xml in $1 folder to $FINAL_MAVEN_VERSION
 function rename_poms {
     # Find current version from the pom.xml file in $1 folder.
