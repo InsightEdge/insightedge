@@ -151,15 +151,15 @@ function execute_command {
 function mvn_install {
     local rep="$2"
     if [ "$rep" == "IE" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_Example" ]; then
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean test package -DskipTests"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean test package -DskipTests"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_ZEPPELIN" ]; then
         cmd="./dev/change_scala_version.sh 2.11"
         execute_command "Changing scala version - $rep" "$1" "$cmd"
-        cmd="mvn -B -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
         execute_command "Installing $rep" "$1" "$cmd"
     fi
 }
