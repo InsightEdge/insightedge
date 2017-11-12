@@ -42,6 +42,10 @@ echo "coping resources to: [$host] to folder in server:[${path_on_server}]"
 scp ${premiumZipFilePath} ${baseOutputFolder}/*.json ${baseOutputFolder}/integration-tests-sources.zip ${baseOutputFolder}/metadata.txt ${baseOutputFolder}/newman-artifacts.zip ${user}@${host}:${path_on_server}
 ssh ${user}@${host} chmod -R 755 ${path_on_server}
 
+
+ssh xap@imc-srv02 mkdir -p ${path_on_server}
+scp ${premiumZipFilePath} ${baseOutputFolder}/*.json ${baseOutputFolder}/integration-tests-sources.zip ${baseOutputFolder}/metadata.txt ${baseOutputFolder}/newman-artifacts.zip xap@imc-srv02:${path_on_server}
+
 echo "starting newman submitter process..."
 java -version
 sumbitter_jar=${baseOutputFolder}/newman-submitter-1.0.jar
