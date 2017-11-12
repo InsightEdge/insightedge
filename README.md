@@ -60,7 +60,7 @@ To run integration tests refer to the [wiki page](https://github.com/InsightEdge
 Build the project and start InsightEdge demo mode with 
 ```bash
 cd insightedge-packager/target/contents-community
-./bin/insightedge --mode demo
+./bin/insightedge -demo
 ```
 
 It starts Zeppelin at http://127.0.0.1:8090 with InsightEdge tutorial and example notebooks you can play with. The full documentation is available at [website](http://insightedge.io/docs/010/index.html).
