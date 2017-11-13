@@ -136,18 +136,34 @@ function execute_command {
 }
 # Call maven install from directory $1
 # In case of none zero exit code exit code stop the release
-function mvn_install {
+function mvn_install_cont {
+    local rep="$2"
+    if [ "$rep" == "IE" ]; then
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -Pbuild-resources"
+        execute_command "Installing $rep" "$1" "$cmd"
+    elif [ "$rep" == "IE_Example" ]; then
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install"
+        execute_command "Installing $rep" "$1" "$cmd"
+    elif [ "$rep" == "IE_ZEPPELIN" ]; then
+        cmd="./dev/change_scala_version.sh 2.11"
+        execute_command "Changing scala version - $rep" "$1" "$cmd"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
+        execute_command "Installing $rep" "$1" "$cmd"
+    fi
+}
+
+function mvn_install_release {
     local rep="$2"
     if [ "$rep" == "IE" ]; then
         cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests -Pbuild-resources"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_Example" ]; then
-        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean test package -DskipTests"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests"
         execute_command "Installing $rep" "$1" "$cmd"
     elif [ "$rep" == "IE_ZEPPELIN" ]; then
         cmd="./dev/change_scala_version.sh 2.11"
         execute_command "Changing scala version - $rep" "$1" "$cmd"
-        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean package -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
+        cmd="mvn -B -T 1C -Dmaven.repo.local=$M2/repository clean install -DskipTests -Drat.skip=true -Pspark-2.2 -Dspark.version=2.2.0 -Pscala-2.11 -Pbuild-distr"
         execute_command "Installing $rep" "$1" "$cmd"
     fi
 }
@@ -402,16 +418,16 @@ function release_ie {
     export LONG_TAG_NAME="$LONG_TAG_NAME"
 
     announce_step "executing maven install on ie"
-    mvn_install "$ie_folder" "IE"
+    mvn_install_release "$ie_folder" "IE"
     echo "Done installing ie"
 
     announce_step "executing maven install on ie example"
-    mvn_install "$ie_exm_folder" "IE_Example"
+    mvn_install_release "$ie_exm_folder" "IE_Example"
     echo "Done installing ie example"
 
 
     announce_step "executing maven install on ie zeppelin"
-    mvn_install "$ie_zeppelin_folder" "IE_ZEPPELIN"
+    mvn_install_release "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
     announce_step "package ie premium package"
@@ -485,16 +501,16 @@ function continuous {
     export IE_SHA=$(getSHA $ie_folder)
 
     announce_step "executing maven install on ie"
-    mvn_install "$ie_folder" "IE"
+    mvn_install_cont "$ie_folder" "IE"
     echo "Done installing ie"
 
     announce_step "executing maven install on ie example"
-    mvn_install "$ie_exm_folder" "IE_Example"
+    mvn_install_cont "$ie_exm_folder" "IE_Example"
     echo "Done installing ie example"
 
 
     announce_step "executing maven install on ie zeppelin"
-    mvn_install "$ie_zeppelin_folder" "IE_ZEPPELIN"
+    mvn_install_cont "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
     announce_step "package ie premium package"
