@@ -16,7 +16,7 @@
         <dist.dir>${project.basedir}/../../insightedge-packager/target/${dist.edition}</dist.dir>
         <git.branch></git.branch>
         <test.folder></test.folder>
-        <generatorPhase>compile</generatorPhase>
+        <generatorPhase>package</generatorPhase>
     </properties>
 
 
