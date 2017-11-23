@@ -16,6 +16,7 @@
         <dist.dir>${project.basedir}/../../insightedge-packager/target/${dist.edition}</dist.dir>
         <git.branch></git.branch>
         <test.folder></test.folder>
+        <generatorPhase>compile</generatorPhase>
     </properties>
 
 
@@ -64,12 +65,6 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.gigaspaces</groupId>
-            <artifactId>xap-build-plugin</artifactId>
-            <version>${xap.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -285,6 +280,9 @@
         <!-- when running integration tests against external already built dist -->
         <profile>
             <id>run-external</id>
+            <properties>
+                <generatorPhase>none</generatorPhase>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.gigaspaces.insightedge</groupId>
@@ -328,6 +326,9 @@
 
         <profile>
             <id>setup-external</id>
+            <properties>
+                <generatorPhase>none</generatorPhase>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.gigaspaces.insightedge</groupId>
@@ -447,7 +448,7 @@
                         <version>${xap.version}</version>
                         <executions>
                             <execution>
-                                <phase>package</phase>
+                                <phase>${generatorPhase}</phase>
                                 <goals>
                                     <goal>generateByScanner</goal>
                                 </goals>
