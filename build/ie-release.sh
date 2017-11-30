@@ -279,6 +279,7 @@ function upload_ie_zip {
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
+        exit 1
     fi
 
     if [ "${zipWithoutLicense}" == "true" ]; then
@@ -476,7 +477,7 @@ function deploy_artifacts {
 
     if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ]; then
         announce_step "uploading ie premium zip without license"
-        upload_ie_zip "$ie_folder" "IE_PACKAGE_PREMIUM" "true"
+        upload_ie_zip "$ie_folder" "ie-premium" "true"
         echo "Done uploading ie premium without license"
     fi
 
