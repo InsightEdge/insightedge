@@ -266,6 +266,8 @@ function upload_ie_zip {
 # $3 = "with-license" or "without-license"
     echo "uploading zip $1 $2"
     local folder="$1"
+    local zipWithoutLicense="$3"
+
     pushd "$folder"
     local sourceZipFileName
     local targetPath
@@ -273,14 +275,19 @@ function upload_ie_zip {
 
     if [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
+       #Without extension. Extension is appended in the next lines
+       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
     fi
 
+    if [ "${zipWithoutLicense}" == "true" ]; then
+        sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}-without-license.zip"
+    else
+        sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}.zip"
+    fi
 
-    sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
+    targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}/${zipFileName}.zip"
 
     cmd="mvn -B -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath}"
 
@@ -466,6 +473,12 @@ function release_ie {
 function deploy_artifacts {
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"
+
+    if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ]; then
+        announce_step "uploading ie premium zip without license"
+        upload_ie_zip "$ie_folder" "IE_PACKAGE_PREMIUM" "true"
+        echo "Done uploading ie premium without license"
+    fi
 
 
 	announce_step "deploying IE maven artifacts"
