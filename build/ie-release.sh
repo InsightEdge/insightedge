@@ -170,6 +170,7 @@ function mvn_install_release {
 
 function package_ie {
     local rep="$2"
+    local zipWithoutLicense="$3"
 
     local ie_sha=${IE_SHA}
     if [ ! -z "${LONG_TAG_NAME}" ]
@@ -178,6 +179,9 @@ function package_ie {
     fi
 
     local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
+    if [ "${zipWithoutLicense}" == "true" ]; then
+        package_args+=" -DzipWithoutLicense=true"
+    fi
 
     if [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
@@ -429,6 +433,12 @@ function release_ie {
     announce_step "package ie premium package"
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
+
+    if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ]; then
+        announce_step "package ie premium package without license"
+        package_ie "$ie_folder" "IE_PACKAGE_PREMIUM" "true"
+        echo "Done package ie premium without license"
+    fi
 
     announce_step "committing changes in ie"
     commit_changes "$ie_folder"

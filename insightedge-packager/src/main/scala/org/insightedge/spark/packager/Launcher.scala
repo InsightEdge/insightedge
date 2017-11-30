@@ -20,6 +20,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.filefilter.TrueFileFilter
 import org.insightedge.spark.packager.Utils._
 
@@ -51,6 +52,7 @@ object Launcher {
     val outputFile = parameter("Output file" -> "output.compressed.file")
     val outputPrefix = parameter("Output contents prefix" -> "output.contents.prefix")
     val spark = parameter("Spark distribution" -> "dist.spark")
+    val zipWithoutLicense = optionalParameter("Zip without license" -> "zipWithoutLicense")
     val grid = getXapLocation(edition, project)
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
     val examplesTarget = parameter("Examples target folder" -> "dist.examples.target")
@@ -190,6 +192,22 @@ object Launcher {
       run("Packing installation") {
         new File(outputFile).getParentFile.mkdirs()
         zip(output, outputFile, outputPrefix)
+      }
+
+      zipWithoutLicense match {
+        case Some("true") => {
+          run("Packing installation without license") {
+            copy(s"$project/build/empty-license.txt", s"$output/xap-license.txt")
+            val path = FilenameUtils.getFullPath(outputFile)
+            val fileName = FilenameUtils.getBaseName(outputFile) + "-without-license"
+            val extension = FilenameUtils.getExtension(outputFile)
+
+            val zipFileWithoutLicense = new File(path + fileName + "." + extension)
+
+            zipFileWithoutLicense.getParentFile.mkdirs()
+            zip(output, zipFileWithoutLicense.getAbsolutePath, outputPrefix)
+          }
+        }
       }
 
     }

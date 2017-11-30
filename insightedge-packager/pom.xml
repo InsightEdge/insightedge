@@ -92,6 +92,7 @@
                         <jvmArg>-Dinsightedge.milestone=${insightedge.milestone}</jvmArg>
                         <jvmArg>-Dinsightedge.build.number=${insightedge.build.number}</jvmArg>
                         <jvmArg>-Dxap.version=${xap.version}</jvmArg>
+                        <jvmArg>-DzipWithoutLicense=${zipWithoutLicense}</jvmArg>
                     </jvmArgs>
                 </configuration>
             </plugin>

@@ -1,0 +1,3 @@
+# License can also be set via the XAP_LICENSE environment variable or com.gs.licensekey system property
+# For more information please visit https://www.gigaspaces.com
+Enter Your License Here....
