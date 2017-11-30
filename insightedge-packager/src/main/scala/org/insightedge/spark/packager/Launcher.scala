@@ -194,8 +194,7 @@ object Launcher {
         zip(output, outputFile, outputPrefix)
       }
 
-      zipWithoutLicense match {
-        case Some("true") => {
+      if (zipWithoutLicense.isDefined && zipWithoutLicense.get.equals("true")) {
           run("Packing installation without license") {
             copy(s"$project/build/empty-license.txt", s"$output/xap-license.txt")
             val path = FilenameUtils.getFullPath(outputFile)
@@ -208,7 +207,6 @@ object Launcher {
             zip(output, zipFileWithoutLicense.getAbsolutePath, outputPrefix)
           }
         }
-      }
 
     }
 

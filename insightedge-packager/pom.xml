@@ -22,6 +22,7 @@
         <insightedge.full.build.version>${insightedge.version}-${insightedge.milestone}-b${insightedge.build.number}</insightedge.full.build.version>
         <insightedge.premium.filename>gigaspaces-insightedge-${insightedge.full.build.version}.zip</insightedge.premium.filename>
         <insightedge.community.filename>gigaspaces-insightedge-${insightedge.version}-${insightedge.milestone}-${insightedge.build.number}-community.zip</insightedge.community.filename>
+        <zipWithoutLicense>false</zipWithoutLicense>
     </properties>
 
     <dependencies>
