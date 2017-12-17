@@ -419,7 +419,7 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def waitForAppSuccess(appId: String, sec: Int): Unit = {
-    retry(30000 millis, 100 millis) {
+    retry(sec * 1000 millis, 100 millis) {
       val status = InsightEdgeAdminUtils.isAppCompletedHistoryServer(getMasterIp(), appId).get(0).asInstanceOf[JSONObject].get("status").toString
       if (!"SUCCEEDED".equals(status)) {
         fail(s"job of app [$appId] is not on status SUCCEEDED. Status is: $status")

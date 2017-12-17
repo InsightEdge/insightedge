@@ -79,7 +79,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     val saveRddAppId: String = InsightEdgeAdminUtils.getAppId(0)
     println(s"Save Rdd Application Id = $saveRddAppId")
 
-    InsightEdgeAdminUtils.waitForAppSuccess(saveRddAppId, 30)
+    InsightEdgeAdminUtils.waitForAppSuccess(saveRddAppId, 60)
 
     InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
 
@@ -96,7 +96,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     //wait for history server to be available
     Thread.sleep(30000)
 
-    InsightEdgeAdminUtils.waitForAppSuccess(loadRddAppId, 30)
+    InsightEdgeAdminUtils.waitForAppSuccess(loadRddAppId, 60)
   }
 
 
