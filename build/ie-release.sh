@@ -275,20 +275,19 @@ function upload_ie_zip {
 
     if [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
-       #Without extension. Extension is appended in the next lines
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}"
+       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
     else
         echo "Unknown type $2 in upload_ie_zip"
         exit 1
     fi
 
     if [ "${zipWithoutLicense}" == "true" ]; then
-        sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}-without-license.zip"
-    else
-        sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}.zip"
+        sourceZipFileLocation="${sourceZipFileLocation}/without-license"
     fi
 
-    targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}/${zipFileName}.zip"
+    sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
+
+    targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}/"
 
     cmd="mvn -B -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath}"
 
