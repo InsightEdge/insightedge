@@ -471,13 +471,16 @@ function release_ie {
 }
 
 function deploy_artifacts {
-    announce_step "uploading ie-premium zip"
-    upload_ie_zip "$ie_folder" "ie-premium"
 
     if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ]; then
         announce_step "uploading ie premium zip without license"
         upload_ie_zip "$ie_folder" "ie-premium" "true"
         echo "Done uploading ie premium without license"
+    else
+        announce_step "uploading ie-premium zip"
+        upload_ie_zip "$ie_folder" "ie-premium"
+        echo "Done uploading ie premium with license"
+
     fi
 
 
