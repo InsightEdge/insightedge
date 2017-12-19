@@ -198,7 +198,7 @@ object Launcher {
           run("Packing installation without license") {
             copy(s"$project/build/empty-license.txt", s"$output/xap-license.txt")
             var path = FilenameUtils.getFullPath(outputFile)
-            path = path +"/without-license"
+            path = path +"/without-license/"
             val fileName = FilenameUtils.getBaseName(outputFile)
             val extension = FilenameUtils.getExtension(outputFile)
 
