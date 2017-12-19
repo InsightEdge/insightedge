@@ -287,7 +287,7 @@ function upload_ie_zip {
 
     sourceZipFileLocation="${sourceZipFileLocation}/${zipFileName}"
 
-    targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}/"
+    targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
 
     cmd="mvn -B -Dmaven.repo.local=$M2/repository com.gigaspaces:xap-build-plugin:deploy-native -Dput.source=${sourceZipFileLocation} -Dput.target=${targetPath}"
 
