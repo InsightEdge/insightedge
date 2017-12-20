@@ -7,7 +7,7 @@ echo "IE_SHA = ${IE_SHA}"
 
 if [ ! -z "${LONG_TAG_NAME}" ]
 then
-    echo InsightEdge:https://github.com/InsightEdge/insightedge/tree/${LONG_TAG_NAME} > metadata.txt
+    echo InsightEdge:https://github.com/InsightEdge/insightedge/tree/${LONG_TAG_NAME} > target/metadata.txt
     exit 0
 fi
 
