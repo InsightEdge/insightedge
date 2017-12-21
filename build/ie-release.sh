@@ -441,7 +441,7 @@ function release_ie {
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
 
-    if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ] || [ "${MODE}" = "GA" ]; then
+    if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ] || [ "${MODE}" = "GA" ] || [ "${MODE}" = "PATCH" ]; then
         announce_step "package ie premium package without license"
         package_ie "$ie_folder" "IE_PACKAGE_PREMIUM" "true"
         echo "Done package ie premium without license"
@@ -472,7 +472,7 @@ function release_ie {
 
 function deploy_artifacts {
 
-    if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ] || [ "${MODE}" = "GA" ]; then
+    if [ "${PACKAGE_WITHOUT_LICENSE}" == "true" ] || [ "${MODE}" = "GA" ] || [ "${MODE}" = "PATCH" ]; then
         announce_step "uploading ie premium zip without license"
         upload_ie_zip "$ie_folder" "ie-premium" "true"
         echo "Done uploading ie premium without license"
