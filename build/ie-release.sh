@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
 
+
 if [ $# -lt 1 ]; then
     echo "Usage: $0 setenv.sh"
     exit 1
@@ -22,10 +23,13 @@ function get_folder {
     echo -n "$WORKSPACE/$(echo -e $1 | sed 's/.*\/\(.*\)\.git/\1/')"
 }
 
+
+
 ie_url="git@github.com:InsightEdge/insightedge.git"
 ie_exm_url="git@github.com:InsightEdge/insightedge-examples.git"
 ie_zeppelin_url="git@github.com:InsightEdge/insightedge-zeppelin.git"
 ie_folder="$(get_folder $ie_url)"
+
 ie_exm_folder="$(get_folder $ie_exm_url)"
 ie_zeppelin_folder="$(get_folder $ie_zeppelin_url)"
 
@@ -105,11 +109,11 @@ function clean_m2 {
     then
 	rm -rf $M2/repository
     else
-	rm -rf $M2/repository/org/xap      
-	rm -rf $M2/repository/org/gigaspaces 
-	rm -rf $M2/repository/com/gigaspaces 
-	rm -rf $M2/repository/org/openspaces 
-	rm -rf $M2/repository/com/gs         
+	rm -rf $M2/repository/org/xap
+	rm -rf $M2/repository/org/gigaspaces
+	rm -rf $M2/repository/com/gigaspaces
+	rm -rf $M2/repository/org/openspaces
+	rm -rf $M2/repository/com/gs
     fi
 }
 
@@ -179,7 +183,11 @@ function package_ie {
 
     local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
 
-    if [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
+    if [ "$rep" == "IE_PACKAGE_OPEN" ]; then
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-open -Ddist.xap=$XAP_OPEN_URL ${package_args}"
+        execute_command "Packaging $rep" "$1" "$cmd"
+
+    elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
     else
@@ -267,9 +275,15 @@ function upload_ie_zip {
     local targetPath
     local sourceZipFileLocation="insightedge-packager/target/"
 
-    if [ "$2" = "ie-premium" ]; then
+    if [ "$2" = "ie-open" ]; then
+       sourceZipFileLocation="${sourceZipFileLocation}/open/"
+       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-open.zip"
+       echo "open file name = " $zipFileName
+        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
+    elif [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
+       echo "premium file name = " $zipFileName
        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
@@ -354,16 +368,18 @@ function getSHA {
 
 function release_ie {
     env
+
     local temp_branch_name="$BRANCH-$FINAL_IE_BUILD_VERSION"
 
 
     clean_old_tags "$ie_folder"
+
     clean_old_tags "$ie_exm_folder"
     clean_old_tags "$ie_zeppelin_folder"
 
 
 
-    if [ "$OVERRIDE_EXISTING_TAG" != "true" ] 
+    if [ "$OVERRIDE_EXISTING_TAG" != "true" ]
     then
         announce_step "delete tag $TAG in ie"
 	    exit_if_tag_exists "$ie_folder"
@@ -426,9 +442,19 @@ function release_ie {
     mvn_install_release "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
+
+
+
+    announce_step "package ie open package"
+    package_ie "${ie_folder}" "IE_PACKAGE_OPEN"
+    echo "Done package ie open"
+
     announce_step "package ie premium package"
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
+
+
+
 
     announce_step "committing changes in ie"
     commit_changes "$ie_folder"
@@ -453,9 +479,14 @@ function release_ie {
 
 }
 
+
+
 function deploy_artifacts {
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"
+
+    announce_step "uploading ie-open zip"
+    upload_ie_zip "$ie_folder" "ie-open"
 
 
 	announce_step "deploying IE maven artifacts"
@@ -507,13 +538,16 @@ function continuous {
     mvn_install_cont "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
-    announce_step "package ie premium package"
+   announce_step "package ie premium package"
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
 
+
+    announce_step "package ie open package"
+    package_ie "$ie_folder" "IE_PACKAGE_OPEN"
+    echo "Done package ie open"
+
     announce_step "DONE !"
 }
-
 shift
-
 $@
