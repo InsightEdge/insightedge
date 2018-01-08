@@ -33,8 +33,8 @@ object Launcher {
     val prefix = s"$projectBasedir/insightedge-packager/target/"
     edition match {
       case "premium" => prefix + "xap-premium.zip"
-      case "community" => prefix + "xap-community.zip"
-      case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or community")
+      case "open" => prefix + "xap-open.zip"
+      case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or open")
     }
   }
 
@@ -192,9 +192,10 @@ object Launcher {
       }
 
 
-      if ( edition equals("community")){
+      if ( edition equals("open")){
         run("remove insightedge script from open packing"){
           remove(s"$insightEdgeHome/bin/insightedge")
+          remove(s"$insightEdgeHome/bin/insightedge.cmd")
         }
       }
 

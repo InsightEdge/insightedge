@@ -21,7 +21,7 @@
         <insightedge.branch>master</insightedge.branch>
         <insightedge.full.build.version>${insightedge.version}-${insightedge.milestone}-b${insightedge.build.number}</insightedge.full.build.version>
         <insightedge.premium.filename>gigaspaces-insightedge-${insightedge.full.build.version}.zip</insightedge.premium.filename>
-        <insightedge.community.filename>gigaspaces-insightedge-${insightedge.version}-${insightedge.milestone}-${insightedge.build.number}-community.zip</insightedge.community.filename>
+        <insightedge.open.filename>gigaspaces-insightedge-${insightedge.version}-${insightedge.milestone}-${insightedge.build.number}-open.zip</insightedge.open.filename>
     </properties>
 
     <dependencies>
@@ -159,11 +159,11 @@
     <profiles>
 
         <profile>
-            <id>package-community</id>
+            <id>package-open</id>
             <properties>
                 <dist.xap>https://gigaspaces-repository-eu.s3.amazonaws.com/com/gigaspaces/xap-open/12.1.1/12.1.1/gigaspaces-xap-open-12.1.1-ga-b17100.zip</dist.xap>
                 <xap.download.phase>process-resources</xap.download.phase>
-                <xap.dist.filename>xap-community.zip</xap.dist.filename>
+                <xap.dist.filename>xap-open.zip</xap.dist.filename>
             </properties>
             <build>
                 <plugins>
@@ -172,7 +172,7 @@
                         <artifactId>maven-scala-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>run-packager-community</id>
+                                <id>run-packager-open</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
@@ -180,17 +180,17 @@
                                 <configuration>
                                     <jvmArgs>
                                         <!-- Where all distribution contents will go before zipping -->
-                                        <jvmArg>-Doutput.exploded.directory=${project.build.directory}/contents-community</jvmArg>
+                                        <jvmArg>-Doutput.exploded.directory=${project.build.directory}/contents-open</jvmArg>
                                         <!-- Final compressed file location and name -->
                                         <jvmArg>
-                                            -Doutput.compressed.file=${project.build.directory}/community/${insightedge.community.filename}
+                                            -Doutput.compressed.file=${project.build.directory}/open/${insightedge.open.filename}
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.full.build.version}-community
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.full.build.version}-open
                                         </jvmArg>
                                         <!-- Distribution edition -->
-                                        <jvmArg>-Ddist.edition=community</jvmArg>
+                                        <jvmArg>-Ddist.edition=open</jvmArg>
                                     </jvmArgs>
                                 </configuration>
                             </execution>

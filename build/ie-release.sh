@@ -183,10 +183,10 @@ function package_ie {
 
     local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
 
-    if [ "$rep" == "IE_PACKAGE_COMMUNITY" ]; then
-        echo In Community @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        echo In Community @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-community -Ddist.xap=$XAP_OPEN_URL ${package_args}"
+    if [ "$rep" == "IE_PACKAGE_OPEN" ]; then
+        echo In open @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        echo In open @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-open -Ddist.xap=$XAP_OPEN_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
 
     elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
@@ -277,9 +277,9 @@ function upload_ie_zip {
     local targetPath
     local sourceZipFileLocation="insightedge-packager/target/"
 
-    if [ "$2" = "ie-community" ]; then
-       sourceZipFileLocation="${sourceZipFileLocation}/community/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-community.zip"
+    if [ "$2" = "ie-open" ]; then
+       sourceZipFileLocation="${sourceZipFileLocation}/open/"
+       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-open.zip"
        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
 
     elif [ "$2" = "ie-premium" ]; then
@@ -449,9 +449,9 @@ function release_ie {
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
 
-    announce_step "package ie community package"
-    package_ie "${ie_folder}_community" "IE_PACKAGE_COMMUNITY"
-    echo "Done package ie community"
+    announce_step "package ie open package"
+    package_ie "${ie_folder}_open" "IE_PACKAGE_OPEN"
+    echo "Done package ie open"
 
 
     announce_step "committing changes in ie"
@@ -536,9 +536,9 @@ function continuous {
     echo "Done package ie premium"
 
 
-    announce_step "package ie community package"
-    package_ie "$ie_folder" "IE_PACKAGE_COMMUNITY"
-    echo "Done package ie community"
+    announce_step "package ie open package"
+    package_ie "$ie_folder" "IE_PACKAGE_OPEN"
+    echo "Done package ie open"
 
     announce_step "DONE !"
 }
