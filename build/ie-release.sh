@@ -279,7 +279,7 @@ function upload_ie_zip {
 
     if [ "$2" = "ie-open" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/open/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-open.zip"
+       zipFileName="gigaspaces-insightedge-open-${FINAL_IE_BUILD_VERSION}.zip"
        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
 
     elif [ "$2" = "ie-premium" ]; then
