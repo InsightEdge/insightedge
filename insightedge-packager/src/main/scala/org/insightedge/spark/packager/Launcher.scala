@@ -192,6 +192,14 @@ object Launcher {
       }
 
 
+      if ( edition equals("community")){
+        run("remove insightedge script from open packing"){
+          remove(s"$insightEdgeHome/bin/insightedge")
+        }
+      }
+
+
+
       println(s"XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
       /*run(s"Adding $xapJdbcExtZip extension"){
         unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
