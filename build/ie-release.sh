@@ -280,7 +280,7 @@ function upload_ie_zip {
     if [ "$2" = "ie-open" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/open/"
        zipFileName="gigaspaces-insightedge-open-${FINAL_IE_BUILD_VERSION}.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${IE_MAVEN_VERSION}"
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
 
     elif [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
@@ -479,6 +479,8 @@ function release_ie {
     announce_step "DONE !"
 
 }
+
+
 
 function deploy_artifacts {
     announce_step "uploading ie-premium zip"
