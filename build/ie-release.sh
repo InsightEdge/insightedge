@@ -368,12 +368,13 @@ function getSHA {
 }
 
 function release_ie {
-    echo  "AAAA"
     env
+
     local temp_branch_name="$BRANCH-$FINAL_IE_BUILD_VERSION"
 
 
     clean_old_tags "$ie_folder"
+    clean_old_tags "$ie_open_folder"
     clean_old_tags "$ie_exm_folder"
     clean_old_tags "$ie_zeppelin_folder"
 
@@ -445,13 +446,15 @@ function release_ie {
 
 
 
+    announce_step "package ie open package"
+    package_ie "${ie_folder}" "IE_PACKAGE_OPEN"
+    echo "Done package ie open"
+
     announce_step "package ie premium package"
     package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
     echo "Done package ie premium"
 
-    announce_step "package ie open package"
-    package_ie "${ie_folder}_open" "IE_PACKAGE_OPEN"
-    echo "Done package ie open"
+
 
 
     announce_step "committing changes in ie"
@@ -480,6 +483,9 @@ function release_ie {
 function deploy_artifacts {
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"
+
+    announce_step "uploading ie-premium zip"
+    upload_ie_zip "$ie_folder" "ie-open"
 
 
 	announce_step "deploying IE maven artifacts"
@@ -537,7 +543,7 @@ function continuous {
 
 
     announce_step "package ie open package"
-    package_ie "$ie_folder" "IE_PACKAGE_OPEN"
+    package_ie "$ie_open" "IE_PACKAGE_OPEN"
     echo "Done package ie open"
 
     announce_step "DONE !"
