@@ -446,7 +446,7 @@ function release_ie {
 
 
     announce_step "package ie open package"
-    package_ie "${ie_folder}" "IE_PACKAGE_OPEN"
+    package_ie "$ie_folder" "IE_PACKAGE_OPEN"
     echo "Done package ie open"
 
     announce_step "package ie premium package"
