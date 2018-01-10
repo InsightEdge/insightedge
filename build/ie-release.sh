@@ -184,8 +184,6 @@ function package_ie {
     local package_args="-Dlast.commit.hash=${ie_sha} -Dinsightedge.version=${IE_VERSION} -Dinsightedge.build.number=${FINAL_BUILD_NUMBER} -Dinsightedge.milestone=${MILESTONE} -DskipTests=true -Ddist.spark=$WORKSPACE/spark-2.2.0-bin-hadoop2.7.tgz -Ddist.zeppelin=$WORKSPACE/insightedge-zeppelin/zeppelin-distribution/target/zeppelin.tar.gz -Ddist.examples.target=$WORKSPACE/insightedge-examples/target"
 
     if [ "$rep" == "IE_PACKAGE_OPEN" ]; then
-        echo In open @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        echo In open @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-open -Ddist.xap=$XAP_OPEN_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
 
@@ -279,11 +277,13 @@ function upload_ie_zip {
 
     if [ "$2" = "ie-open" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/open/"
-       zipFileName="gigaspaces-insightedge-open-${FINAL_IE_BUILD_VERSION}.zip"
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
+       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}-open.zip"
+       echo "open file name = " $zipFileName
+        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     elif [ "$2" = "ie-premium" ]; then
        sourceZipFileLocation="${sourceZipFileLocation}/premium/"
        zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
+       echo "premium file name = " $zipFileName
        targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"

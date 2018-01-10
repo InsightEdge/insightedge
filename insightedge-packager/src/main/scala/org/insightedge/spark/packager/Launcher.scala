@@ -182,8 +182,6 @@ object Launcher {
         permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
       }
 
-      println(s"XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-
 
       if ( edition equals("premium")){
         run(s"Adding $xapJdbcExtZip extension"){
@@ -201,7 +199,7 @@ object Launcher {
 
 
 
-      println(s"XXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
       /*run(s"Adding $xapJdbcExtZip extension"){
         unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
       }*/

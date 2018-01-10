@@ -21,7 +21,7 @@
         <insightedge.branch>master</insightedge.branch>
         <insightedge.full.build.version>${insightedge.version}-${insightedge.milestone}-b${insightedge.build.number}</insightedge.full.build.version>
         <insightedge.premium.filename>gigaspaces-insightedge-${insightedge.full.build.version}.zip</insightedge.premium.filename>
-        <insightedge.open.filename>gigaspaces-insightedge-open-${insightedge.full.build.version}.zip</insightedge.open.filename>
+        <insightedge.open.filename>gigaspaces-insightedge-${insightedge.full.build.version}-open.zip</insightedge.open.filename>
     </properties>
 
     <dependencies>
