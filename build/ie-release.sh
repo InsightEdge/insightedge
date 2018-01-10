@@ -373,7 +373,7 @@ function release_ie {
 
 
     clean_old_tags "$ie_folder"
-    clean_old_tags "$ie_open_folder"
+
     clean_old_tags "$ie_exm_folder"
     clean_old_tags "$ie_zeppelin_folder"
 
@@ -544,7 +544,7 @@ function continuous {
 
 
     announce_step "package ie open package"
-    package_ie "$ie_open" "IE_PACKAGE_OPEN"
+    package_ie "$ie_folder" "IE_PACKAGE_OPEN"
     echo "Done package ie open"
 
     announce_step "DONE !"
