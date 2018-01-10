@@ -485,7 +485,7 @@ function deploy_artifacts {
     announce_step "uploading ie-premium zip"
     upload_ie_zip "$ie_folder" "ie-premium"
 
-    announce_step "uploading ie-premium zip"
+    announce_step "uploading ie-open zip"
     upload_ie_zip "$ie_folder" "ie-open"
 
 
