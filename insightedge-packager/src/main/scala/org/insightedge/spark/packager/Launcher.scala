@@ -33,8 +33,8 @@ object Launcher {
     val prefix = s"$projectBasedir/insightedge-packager/target/"
     edition match {
       case "premium" => prefix + "xap-premium.zip"
-      case "community" => prefix + "xap-community.zip"
-      case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or community")
+      case "open" => prefix + "xap-open.zip"
+      case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or open")
     }
   }
 
@@ -182,9 +182,27 @@ object Launcher {
         permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
       }
 
-      run(s"Adding $xapJdbcExtZip extension"){
-        unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
+
+      if ( edition equals("premium")){
+        run(s"Adding $xapJdbcExtZip extension"){
+          unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
+        }
       }
+
+
+      if ( edition equals("open")){
+        run("remove insightedge script from open packing"){
+          remove(s"$insightEdgeHome/bin/insightedge")
+          remove(s"$insightEdgeHome/bin/insightedge.cmd")
+        }
+      }
+
+
+
+
+      /*run(s"Adding $xapJdbcExtZip extension"){
+        unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
+      }*/
 
 
       run("Packing installation") {
