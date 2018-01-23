@@ -117,6 +117,13 @@ function clean_m2 {
     fi
 }
 
+function git_clean {
+    local folder=$1
+    pushd ${folder}
+    git clean -fdx
+    popd
+}
+
 function execute_command {
     # $1 = title
     # $2 = directory
@@ -369,6 +376,16 @@ function getSHA {
 function release_ie {
     env
 
+
+    announce_step "Running git clean on ie"
+    git_clean "$ie_folder"
+    announce_step "Running git clean on ie-examples"
+    git_clean "$ie_exm_folder"
+    announce_step "Running git clean on ie-zeppelin"
+    git_clean "$ie_zeppelin_folder"
+
+
+
     local temp_branch_name="$BRANCH-$FINAL_IE_BUILD_VERSION"
 
 
@@ -494,6 +511,14 @@ function deploy_artifacts {
 }
 function continuous {
     env
+
+    announce_step "Running git clean on ie"
+    git_clean "$ie_folder"
+    announce_step "Running git clean on ie-examples"
+    git_clean "$ie_exm_folder"
+    announce_step "Running git clean on ie-zeppelin"
+    git_clean "$ie_zeppelin_folder"
+
 
 #    announce_step "clean m2"
 #    clean_m2
