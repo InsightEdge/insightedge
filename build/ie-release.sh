@@ -194,9 +194,9 @@ function package_ie {
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-open -Ddist.xap=$XAP_OPEN_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
 
-    elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
-        execute_command "Packaging $rep" "$1" "$cmd"
+#    elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
+#        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
+#        execute_command "Packaging $rep" "$1" "$cmd"
     else
         echo "Unknown type $rep in package_ie"
     fi
@@ -287,11 +287,11 @@ function upload_ie_zip {
        zipFileName="gigaspaces-insightedge-open-${FINAL_IE_BUILD_VERSION}.zip"
        echo "open file name = " $zipFileName
         targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
-    elif [ "$2" = "ie-premium" ]; then
-       sourceZipFileLocation="${sourceZipFileLocation}/premium/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
-       echo "premium file name = " $zipFileName
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
+#    elif [ "$2" = "ie-premium" ]; then
+#       sourceZipFileLocation="${sourceZipFileLocation}/premium/"
+#       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
+#       echo "premium file name = " $zipFileName
+#       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
     fi
@@ -466,9 +466,9 @@ function release_ie {
     package_ie "${ie_folder}" "IE_PACKAGE_OPEN"
     echo "Done package ie open"
 
-    announce_step "package ie premium package"
-    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
-    echo "Done package ie premium"
+#    announce_step "package ie premium package"
+#    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+#    echo "Done package ie premium"
 
 
 
@@ -499,8 +499,8 @@ function release_ie {
 
 
 function deploy_artifacts {
-    announce_step "uploading ie-premium zip"
-    upload_ie_zip "$ie_folder" "ie-premium"
+#    announce_step "uploading ie-premium zip"
+#    upload_ie_zip "$ie_folder" "ie-premium"
 
     announce_step "uploading ie-open zip"
     upload_ie_zip "$ie_folder" "ie-open"
@@ -563,9 +563,9 @@ function continuous {
     mvn_install_cont "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
-   announce_step "package ie premium package"
-    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
-    echo "Done package ie premium"
+#   announce_step "package ie premium package"
+#    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+#    echo "Done package ie premium"
 
 
     announce_step "package ie open package"

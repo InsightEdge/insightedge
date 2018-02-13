@@ -32,7 +32,7 @@ object Launcher {
     println("edition: " + edition)
     val prefix = s"$projectBasedir/insightedge-packager/target/"
     edition match {
-      case "premium" => prefix + "xap-premium.zip"
+      //case "premium" => prefix + "xap-premium.zip"
       case "open" => prefix + "xap-open.zip"
       case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or open")
     }
@@ -183,11 +183,11 @@ object Launcher {
       }
 
 
-      if ( edition equals("premium")){
-        run(s"Adding $xapJdbcExtZip extension"){
-          unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
-        }
-      }
+//      if ( edition equals("premium")){
+//        run(s"Adding $xapJdbcExtZip extension"){
+//          unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
+//        }
+//      }
 
 
       if ( edition equals("open")){
