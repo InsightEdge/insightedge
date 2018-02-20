@@ -105,10 +105,13 @@ function create_temp_branch {
 
 #
 function clean_m2 {
+    announce_step "clean m2"
     if [ "$PERFORM_FULL_M2_CLEAN" = "true" ]
     then
+    announce_step "clean m2 full"
 	rm -rf $M2/repository
     else
+    announce_step "clean m2 partial"
 	rm -rf $M2/repository/org/xap
 	rm -rf $M2/repository/org/gigaspaces
 	rm -rf $M2/repository/com/gigaspaces
