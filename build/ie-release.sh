@@ -290,11 +290,13 @@ function upload_ie_zip {
        zipFileName="gigaspaces-insightedge-open-${FINAL_IE_BUILD_VERSION}.zip"
        echo "open file name = " $zipFileName
         targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
-#    elif [ "$2" = "ie-premium" ]; then
-#       sourceZipFileLocation="${sourceZipFileLocation}/premium/"
-#       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
-#       echo "premium file name = " $zipFileName
-#       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
+    elif [ "$2" = "ie-premium" ]; then
+       sourceZipFileLocation="${sourceZipFileLocation}/premium/"
+       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
+
+
+       echo "premium file name = " $zipFileName
+       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
     fi
@@ -469,9 +471,9 @@ function release_ie {
     package_ie "${ie_folder}" "IE_PACKAGE_OPEN"
     echo "Done package ie open"
 
-#    announce_step "package ie premium package"
-#    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
-#    echo "Done package ie premium"
+    announce_step "package ie premium package"
+    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+    echo "Done package ie premium"
 
 
 
@@ -566,9 +568,9 @@ function continuous {
     mvn_install_cont "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
-#   announce_step "package ie premium package"
-#    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
-#    echo "Done package ie premium"
+   announce_step "package ie premium package"
+   package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+   echo "Done package ie premium"
 
 
     announce_step "package ie open package"
