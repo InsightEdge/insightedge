@@ -504,8 +504,8 @@ function release_ie {
 
 
 function deploy_artifacts {
-#    announce_step "uploading ie-premium zip"
-#    upload_ie_zip "$ie_folder" "ie-premium"
+    announce_step "uploading ie-premium zip"
+    upload_ie_zip "$ie_folder" "ie-premium"
 
     announce_step "uploading ie-open zip"
     upload_ie_zip "$ie_folder" "ie-open"
@@ -568,9 +568,9 @@ function continuous {
     mvn_install_cont "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
-   announce_step "package ie premium package"
-   package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
-   echo "Done package ie premium"
+#   announce_step "package ie premium package"
+#   package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+#   echo "Done package ie premium"
 
 
     announce_step "package ie open package"
