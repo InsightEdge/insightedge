@@ -105,10 +105,13 @@ function create_temp_branch {
 
 #
 function clean_m2 {
+    announce_step "clean m2"
     if [ "$PERFORM_FULL_M2_CLEAN" = "true" ]
     then
+    announce_step "clean m2 full"
 	rm -rf $M2/repository
     else
+    announce_step "clean m2 partial"
 	rm -rf $M2/repository/org/xap
 	rm -rf $M2/repository/org/gigaspaces
 	rm -rf $M2/repository/com/gigaspaces
@@ -194,9 +197,9 @@ function package_ie {
         cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-open -Ddist.xap=$XAP_OPEN_URL ${package_args}"
         execute_command "Packaging $rep" "$1" "$cmd"
 
-    elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
-        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
-        execute_command "Packaging $rep" "$1" "$cmd"
+#    elif [ "$rep" == "IE_PACKAGE_PREMIUM" ]; then
+#        cmd="mvn -e -B -Dmaven.repo.local=$M2/repository package -pl insightedge-packager -Ppackage-premium -Dxap.extension.jdbc=${XAP_JDBC_EXTENSION_URL} -Ddist.xap=$XAP_PREMIUM_URL ${package_args}"
+#        execute_command "Packaging $rep" "$1" "$cmd"
     else
         echo "Unknown type $rep in package_ie"
     fi
@@ -287,11 +290,6 @@ function upload_ie_zip {
        zipFileName="gigaspaces-insightedge-open-${FINAL_IE_BUILD_VERSION}.zip"
        echo "open file name = " $zipFileName
         targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
-    elif [ "$2" = "ie-premium" ]; then
-       sourceZipFileLocation="${sourceZipFileLocation}/premium/"
-       zipFileName="gigaspaces-insightedge-${FINAL_IE_BUILD_VERSION}.zip"
-       echo "premium file name = " $zipFileName
-       targetPath="com/gigaspaces/insightedge/${IE_VERSION}/${FINAL_MAVEN_VERSION}"
     else
         echo "Unknown type $2 in upload_ie_zip"
     fi
@@ -563,9 +561,9 @@ function continuous {
     mvn_install_cont "$ie_zeppelin_folder" "IE_ZEPPELIN"
     echo "Done installing ie zeppelin"
 
-   announce_step "package ie premium package"
-    package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
-    echo "Done package ie premium"
+#   announce_step "package ie premium package"
+#   package_ie "$ie_folder" "IE_PACKAGE_PREMIUM"
+#   echo "Done package ie premium"
 
 
     announce_step "package ie open package"
