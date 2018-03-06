@@ -45,6 +45,7 @@
         <module>insightedge-core</module>
         <module>insightedge-packager</module>
         <module>insightedge-integration-tests</module>
+        <module>insightedge-cli</module>
     </modules>
 
     <dependencyManagement>
