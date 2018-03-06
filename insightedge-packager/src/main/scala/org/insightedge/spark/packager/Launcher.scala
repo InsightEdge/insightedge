@@ -105,6 +105,7 @@ object Launcher {
 
       run("Adding integration libs") {
         copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
+        copy(s"$project/insightedge-cli/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-cli") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
       }
 
       run("Adding poms of integration libs") {
