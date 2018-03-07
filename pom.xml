@@ -63,11 +63,7 @@
                 <scope>test</scope>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.gigaspaces.insightedge</groupId>
-                <artifactId>insightedge-cli</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <!-- GigaSpaces -->
             <dependency>
                 <groupId>org.gigaspaces</groupId>

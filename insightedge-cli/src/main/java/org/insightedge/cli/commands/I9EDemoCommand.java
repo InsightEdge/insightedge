@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Command(name = "demo", headerHeading = I9EMainCommand.HEADER, header = "Runs demo")
+@Command(name = "demo", headerHeading = I9EMainCommand.HEADER, header = "Runs manager, webui, spark master, spark worker and zeppelin. It also deploys a 2,1 partitioned space")
 public class I9EDemoCommand extends CliCommand {
 
     @Override
