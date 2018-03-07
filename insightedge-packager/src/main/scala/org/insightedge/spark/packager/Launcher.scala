@@ -85,8 +85,9 @@ object Launcher {
 
 
       run("Adding integration scripts") {
-        copy(s"$resources/bin", s"$insightEdgeHome/bin")		
-        copy(s"$resources/tools", s"$insightEdgeHome/tools")
+        copy(s"$resources/bin", s"$output/bin")
+        copy(s"$resources/insightedge/bin", s"$insightEdgeHome/bin")
+        copy(s"$resources/insightedge/tools", s"$insightEdgeHome/tools")
       }
 
 
@@ -105,7 +106,7 @@ object Launcher {
 
       run("Adding integration libs") {
         copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
-        copy(s"$project/insightedge-cli/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-cli") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
+        copy(s"$project/insightedge-cli/target", s"$output/tools/cli", nameFilter(n => n.startsWith("insightedge-cli") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
       }
 
       run("Adding poms of integration libs") {
@@ -143,28 +144,28 @@ object Launcher {
       }
 
       run("Adding InsightEdge resources") {
-        copy(s"$resources/conf/", s"$insightEdgeHome/conf")
-        copy(s"$resources/data/", s"$insightEdgeHome/data")
+        copy(s"$resources/insightedge/conf/", s"$insightEdgeHome/conf")
+        copy(s"$resources/insightedge/data/", s"$insightEdgeHome/data")
       }
 
       run("Unpacking Zeppelin") {
         untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
       }
       run("Configuring Zeppelin") {
-        copy(s"$resources/zeppelin/bin/interpreter.cmd", s"$insightEdgeHome/zeppelin/bin/interpreter.cmd")
-        copy(s"$resources/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
-        copy(s"$resources/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
-        copy(s"$resources/zeppelin/config/zeppelin-env.cmd", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.cmd")
+        copy(s"$resources/insightedge/zeppelin/bin/interpreter.cmd", s"$insightEdgeHome/zeppelin/bin/interpreter.cmd")
+        copy(s"$resources/insightedge/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
+        copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
+        copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.cmd", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.cmd")
         remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep")///delete in the future when delete zepplin spark interperter
       }
 
       run("Adding Zeppelin notes") {
-        copy(s"$resources/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
+        copy(s"$resources/insightedge/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
       }
 
 
       run("Adding Hadoop winutils") {
-        unzip(s"$resources/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/tools/winutils", cutRootFolder = true)
+        unzip(s"$resources/insightedge/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/tools/winutils", cutRootFolder = true)
       }
 
 
@@ -173,7 +174,7 @@ object Launcher {
       }
 
       run("Injecting InsightEdge spark overrides") {
-        copy(s"$resources/spark/", s"$insightEdgeHome/spark")
+        copy(s"$resources/insightedge/spark/", s"$insightEdgeHome/spark")
       }
 
 
