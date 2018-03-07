@@ -370,6 +370,7 @@ object InsightEdgeAdminUtils extends Assertions{
   def create(): this.type = {
     managerServers = startContainers(numOfIEMasters)
 
+    execAndWaitFor(containersId("master1"), s"""echo "" >> /opt/insightedge/bin/setenv-overrides.sh""")
     execAndWaitFor(containersId("master1"), s"""echo "export XAP_MANAGER_SERVERS=$managerServers" >> /opt/insightedge/bin/setenv-overrides.sh""")
     execAndWaitFor(containersId("master1"), """echo "export XAP_NIC_ADDRESS=\$(hostname -I | cut -d \" \" -f 1)" >> /opt/insightedge/bin/setenv-overrides.sh""")
 
