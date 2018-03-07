@@ -2,5 +2,5 @@
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/../insightedge/conf/insightedge-env.sh
 
-INSIGHTEDGE_CLI_CP=${XAP_HOME}/tools/cli/*:${INSIGHTEDGE_CLASSPATH}
-java ${XAP_OPTIONS} -cp ${INSIGHTEDGE_CLI_CP} org.insightedge.cli.commands.I9EMainCommand $*
+INSIGHTEDGE_CLI_CP=${XAP_HOME}/tools/cli/*:${INSIGHTEDGE_CLASSPATH}:${SIGAR_JARS}
+"${JAVACMD}" ${JAVA_OPTIONS} ${XAP_OPTIONS} ${XAP_CLI_OPTIONS} -cp ${INSIGHTEDGE_CLI_CP} org.insightedge.cli.commands.I9EMainCommand $*
