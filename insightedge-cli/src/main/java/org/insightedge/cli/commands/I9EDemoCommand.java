@@ -17,13 +17,22 @@ public class I9EDemoCommand extends CliCommand {
 
     @Override
     protected void execute() throws Exception {
-        String host="localhost"; // TODO or hostname ?
-        String sparkMasterUrl = "spark://127.0.0.1:7077";
+        String host=System.getenv("SPARK_LOCAL_IP");
+        if(host == null){
+            host = SystemInfo.singleton().network().getHostId();
+        }
+
+        String port = System.getenv("SPARK_MASTER_PORT");
+        if (port == null) {
+            port="7077";
+        }
+
+        String sparkMasterUrl = "spark://"+host+":"+port;
         List<ProcessBuilder> processBuilders = new ArrayList<ProcessBuilder>();
         processBuilders.addAll(spaceProcessBuilder());
         processBuilders.add(sparkMasterBuilder(host));
         processBuilders.add(sparkWorkerBuilder(sparkMasterUrl, host));
-        processBuilders.add(zeppelinBuilder(sparkMasterUrl));
+        processBuilders.add(zeppelinBuilder());
         XapCliUtils.executeProcesses(processBuilders);
     }
 
@@ -80,7 +89,7 @@ public class I9EDemoCommand extends CliCommand {
         return processBuilder;
     }
 
-    private ProcessBuilder zeppelinBuilder(String sparkMasterUrl) {
+    private ProcessBuilder zeppelinBuilder() {
         String s = File.separator;
         String scriptHome = SystemInfo.singleton().locations().bin();
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
@@ -89,8 +98,6 @@ public class I9EDemoCommand extends CliCommand {
 
 
         ProcessBuilder processBuilder = new ProcessBuilder(Collections.singletonList(script));
-// TODO
-// processBuilder.environment().put("MASTER", sparkMasterUrl);
 
         processBuilder.inheritIO();
 
