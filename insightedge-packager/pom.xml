@@ -241,48 +241,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
-                    <plugin>
-                        <groupId>com.googlecode.maven-download-plugin</groupId>
-                        <artifactId>download-maven-plugin</artifactId>
-                        <version>1.3.0</version>
-                        <executions>
-                            <!--<execution>
-                                <id>download XAP distribution</id>
-                                <phase>${xap.download.phase}</phase>
-                                <goals>
-                                    <goal>wget</goal>
-                                </goals>
-                                <configuration>
-                                    &lt;!&ndash;&lt;!&ndash; xap.dist property must be specified when packaging InsightEdge, can be remote (http://bla) or local URL (file:///xap.zip) &ndash;&gt;&ndash;&gt;
-                                    <url>${dist.xap}</url>
-                                    <unpack>false</unpack>
-                                    <skipCache>true</skipCache>
-                                    <overwrite>true</overwrite>
-                                    <outputFileName>${xap.dist.filename}</outputFileName>
-                                    <outputDirectory>${project.basedir}/target/</outputDirectory>
-                                </configuration>
-                            </execution>-->
-
-                            <execution>
-                                <id>download-insightedge-extension-xap-jdbc</id>
-                                <phase>${xap.download.phase}</phase>
-                                <goals>
-                                    <goal>wget</goal>
-                                </goals>
-                                <configuration>
-                                    <url>${xap.extension.jdbc}</url>
-                                    <unpack>false</unpack>
-                                    <skipCache>true</skipCache>
-                                    <overwrite>true</overwrite>
-                                    <outputFileName>xap-jdbc-insightedge-extension.zip</outputFileName>
-                                    <outputDirectory>${project.basedir}/target/</outputDirectory>
-                                </configuration>
-                            </execution>
-
-                        </executions>
-                    </plugin>
-
                 </plugins>
             </build>
         </profile>
