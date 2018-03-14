@@ -17,17 +17,17 @@ public class I9EDemoCommand extends CliCommand {
 
     @Override
     protected void execute() throws Exception {
-        String host=System.getenv("SPARK_LOCAL_IP");
-        if(host == null){
+        String host = System.getenv("SPARK_LOCAL_IP");
+        if (host == null) {
             host = SystemInfo.singleton().network().getHostId();
         }
 
         String port = System.getenv("SPARK_MASTER_PORT");
         if (port == null) {
-            port="7077";
+            port = "7077";
         }
 
-        String sparkMasterUrl = "spark://"+host+":"+port;
+        String sparkMasterUrl = "spark://" + host + ":" + port;
         List<ProcessBuilder> processBuilders = new ArrayList<ProcessBuilder>();
         processBuilders.addAll(spaceProcessBuilder());
         processBuilders.add(sparkMasterBuilder(host));
@@ -38,12 +38,10 @@ public class I9EDemoCommand extends CliCommand {
 
 
     private ProcessBuilder sparkMasterBuilder(String sparkMasterHost) {
-        String s = File.separator;
-        String scriptHome = SystemInfo.singleton().locations().bin();
-        String xapHomeFWSlash = scriptHome + s + "..";
+        String sparkHome = SystemInfo.singleton().locations().getSparkHome();
+        String xapHomeFWSlash = SystemInfo.singleton().getXapHomeFwdSlash();
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
-        String script = scriptHome + s + ".." + s + "insightedge" + s + "spark" + s + "bin" + s
-                + (isWindows ? "spark-class2.cmd" : "spark-class");
+        String script = buildPath(sparkHome, "bin", (isWindows ? "spark-class2.cmd" : "spark-class"));
         String[] args = new String[]{
                 script,
                 "org.apache.spark.deploy.master.Master",
@@ -56,19 +54,17 @@ public class I9EDemoCommand extends CliCommand {
         processBuilder.environment().put("SPARK_MASTER_OPTS",
                 "-Dxap.home=" + xapHomeFWSlash +
                         " -Dspark.role=spark-master" +
-                        " -Dlog4j.configuration=file:"+xapHomeFWSlash+"/insightedge/conf/spark_log4j.properties");
+                        " -Dlog4j.configuration=file:" + xapHomeFWSlash + "/insightedge/conf/spark_log4j.properties");
 
         processBuilder.inheritIO();
         return processBuilder;
     }
 
     private ProcessBuilder sparkWorkerBuilder(String sparkMasterUrl, String sparkWorkerHost) {
-        String s = File.separator;
-        String scriptHome = SystemInfo.singleton().locations().bin();
-        String xapHomeFWSlash = scriptHome + s + "..";
+        String sparkHome = SystemInfo.singleton().locations().getSparkHome();
+        String xapHomeFWSlash = SystemInfo.singleton().getXapHomeFwdSlash();
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
-        String script = scriptHome + s + ".." + s + "insightedge" + s + "spark" + s + "bin" + s
-                + (isWindows ? "spark-class2.cmd" : "spark-class");
+        String script = buildPath(sparkHome, "bin", (isWindows ? "spark-class2.cmd" : "spark-class"));
         String[] args = new String[]{
                 script,
                 "org.apache.spark.deploy.worker.Worker",
@@ -80,9 +76,9 @@ public class I9EDemoCommand extends CliCommand {
 
         ProcessBuilder processBuilder = new ProcessBuilder(args);
         processBuilder.environment().put("SPARK_WORKER_OPTS",
-                "-Dxap.home="+xapHomeFWSlash+
+                "-Dxap.home=" + xapHomeFWSlash +
                         " -Dspark.role=spark-worker " +
-                        " -Dlog4j.configuration=file:"+xapHomeFWSlash+"/insightedge/conf/spark_log4j.properties");
+                        " -Dlog4j.configuration=file:" + xapHomeFWSlash + "/insightedge/conf/spark_log4j.properties");
 
         processBuilder.inheritIO();
 
@@ -90,11 +86,9 @@ public class I9EDemoCommand extends CliCommand {
     }
 
     private ProcessBuilder zeppelinBuilder() {
-        String s = File.separator;
-        String scriptHome = SystemInfo.singleton().locations().bin();
+        String xapHome = SystemInfo.singleton().getXapHome();
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
-        String script = scriptHome + s + ".." + s + "insightedge" + s + "zeppelin" + s + "bin" + s
-                + (isWindows ? "zeppelin.cmd" : "zeppelin.sh");
+        String script = buildPath(xapHome, "insightedge", "zeppelin", "bin", (isWindows ? "zeppelin.cmd" : "zeppelin.sh"));
 
 
         ProcessBuilder processBuilder = new ProcessBuilder(Collections.singletonList(script));
@@ -119,5 +113,8 @@ public class I9EDemoCommand extends CliCommand {
         return processBuilders;
     }
 
+    private String buildPath(String... paths) {
+        return String.join(File.separator, paths);
+    }
 
 }
