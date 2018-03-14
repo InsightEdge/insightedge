@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Command(name = "demo", header = "Runs manager, webui, spark master, spark worker and zeppelin. It also deploys a 2,1 partitioned space")
+@Command(name = "demo", header = "Run Spark in standalone mode (Master, Worker and Zeppelin) and run a Space in high availability mode (2 primaries with backup each).")
 public class I9EDemoCommand extends CliCommand {
 
     @Override
