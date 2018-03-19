@@ -156,7 +156,7 @@ object InsightEdgeAdminUtils extends Assertions{
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge  host run  run-agent --zeppelin > $ieLogsPath/zeppelin-$id.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge  host run-agent --zeppelin > $ieLogsPath/zeppelin-$id.log"))
     val execId = execCreation.id()
     docker.execStart(execId)
 
