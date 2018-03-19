@@ -99,7 +99,7 @@ object InsightEdgeAdminUtils extends Assertions{
       .hostConfig(hostConfig)
       .image(ImageName)
       .env(s"XAP_MANAGER_SERVERS=$managerServers")
-      .cmd("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge host run-agent --spark-worker --containers=2 > $ieLogsPath/worker-$id.log")
+      .cmd("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --spark-worker --containers=2 > $ieLogsPath/worker-$id.log")
       .build()
 
     ieSlaveCounter += 1
