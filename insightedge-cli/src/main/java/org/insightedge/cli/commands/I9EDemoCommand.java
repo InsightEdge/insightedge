@@ -4,6 +4,7 @@ import com.gigaspaces.start.SystemInfo;
 import org.gigaspaces.cli.CliCommand;
 import org.gigaspaces.cli.commands.AbstractRunCommand;
 import org.gigaspaces.cli.commands.SpaceRunCommand;
+import org.gigaspaces.cli.commands.utils.ProcessBuilderWrapper;
 import org.gigaspaces.cli.commands.utils.XapCliUtils;
 import picocli.CommandLine.Command;
 
@@ -28,16 +29,26 @@ public class I9EDemoCommand extends CliCommand {
         }
 
         String sparkMasterUrl = "spark://" + host + ":" + port;
-        List<ProcessBuilder> processBuilders = new ArrayList<ProcessBuilder>();
-        processBuilders.addAll(spaceProcessBuilder());
+        List<ProcessBuilderWrapper> processBuilders = new ArrayList<ProcessBuilderWrapper>();
+        //wrap space Builder
+        processBuilders.addAll(wrapList(spaceProcessBuilder()));
         processBuilders.add(sparkMasterBuilder(host));
         processBuilders.add(sparkWorkerBuilder(sparkMasterUrl, host));
         processBuilders.add(zeppelinBuilder());
-        XapCliUtils.executeProcesses(processBuilders);
+        XapCliUtils.executeProcessesWrapper(processBuilders);
+
+    }
+
+    private List<ProcessBuilderWrapper> wrapList(List<ProcessBuilder> lst) {
+        List<ProcessBuilderWrapper> wrappedList = new ArrayList<ProcessBuilderWrapper>();
+        for (ProcessBuilder cur : lst) {
+            wrappedList.add(new ProcessBuilderWrapper(cur));
+        }
+        return wrappedList;
     }
 
 
-    private ProcessBuilder sparkMasterBuilder(String sparkMasterHost) {
+    private ProcessBuilderWrapper sparkMasterBuilder(String sparkMasterHost) {
         String sparkHome = SystemInfo.singleton().locations().getSparkHome();
         String xapHomeFWSlash = SystemInfo.singleton().getXapHomeFwdSlash();
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
@@ -57,10 +68,11 @@ public class I9EDemoCommand extends CliCommand {
                         " -Dlog4j.configuration=file:" + xapHomeFWSlash + "/insightedge/conf/spark_log4j.properties");
 
         processBuilder.inheritIO();
-        return processBuilder;
+
+        return new ProcessBuilderWrapper(processBuilder);
     }
 
-    private ProcessBuilder sparkWorkerBuilder(String sparkMasterUrl, String sparkWorkerHost) {
+    private ProcessBuilderWrapper sparkWorkerBuilder(String sparkMasterUrl, String sparkWorkerHost) {
         String sparkHome = SystemInfo.singleton().locations().getSparkHome();
         String xapHomeFWSlash = SystemInfo.singleton().getXapHomeFwdSlash();
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
@@ -81,11 +93,27 @@ public class I9EDemoCommand extends CliCommand {
                         " -Dlog4j.configuration=file:" + xapHomeFWSlash + "/insightedge/conf/spark_log4j.properties");
 
         processBuilder.inheritIO();
-
-        return processBuilder;
+        return new SparkWorkerProcessBuilderWrapper(processBuilder);
     }
 
-    private ProcessBuilder zeppelinBuilder() {
+    private class SparkWorkerProcessBuilderWrapper extends ProcessBuilderWrapper {
+        public SparkWorkerProcessBuilderWrapper(ProcessBuilder processBuilder) {
+            super(processBuilder);
+        }
+
+        @Override
+        public boolean allowToStart() {
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                return false;
+            }
+            return true;
+
+        }
+    }
+
+    private ProcessBuilderWrapper zeppelinBuilder() {
         String xapHome = SystemInfo.singleton().getXapHome();
         boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
         String script = buildPath(xapHome, "insightedge", "zeppelin", "bin", (isWindows ? "zeppelin.cmd" : "zeppelin.sh"));
@@ -95,7 +123,7 @@ public class I9EDemoCommand extends CliCommand {
 
         processBuilder.inheritIO();
 
-        return processBuilder;
+        return new ProcessBuilderWrapper(processBuilder);
     }
 
 
