@@ -29,9 +29,9 @@ import scala.util.{Failure, Success, Try}
 object InsightEdgeAdminUtils extends Assertions{
 
   def main(args: Array[String]): Unit = {
-//    val cs = docker.listContainers().asScala.filter(c => c.names().contains("/yohanac"))
-//    if (cs.size == 1)
-//      docker.removeContainer(cs.head.id())
+    //    val cs = docker.listContainers().asScala.filter(c => c.names().contains("/yohanac"))
+    //    if (cs.size == 1)
+    //      docker.removeContainer(cs.head.id())
 
     val hostConfig = HostConfig
       .builder()
@@ -99,7 +99,7 @@ object InsightEdgeAdminUtils extends Assertions{
       .hostConfig(hostConfig)
       .image(ImageName)
       .env(s"XAP_MANAGER_SERVERS=$managerServers")
-      .cmd("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge run --worker --containers=2 > $ieLogsPath/worker-$id.log")
+      .cmd("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --spark-worker --containers=2 > $ieLogsPath/worker-$id.log")
       .build()
 
     ieSlaveCounter += 1
@@ -152,11 +152,11 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def loadInsightEdgeMasterContainer(id:Int, managerServers:String): String = {
     val containerId = containersId(s"master$id")
-    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge run --master > $ieLogsPath/master-$id.log"))
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --manager --spark-master > $ieLogsPath/master-$id.log"))
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge run --zeppelin > $ieLogsPath/zeppelin-$id.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge  host run-agent --zeppelin > $ieLogsPath/zeppelin-$id.log"))
     val execId = execCreation.id()
     docker.execStart(execId)
 
@@ -196,9 +196,9 @@ object InsightEdgeAdminUtils extends Assertions{
   def restartSparkHistoryServer(): Unit = {
     println("called restartSparkHistoryServer")
     InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), s"/opt/insightedge/insightedge/spark/sbin/stop-history-server.sh >> $ieLogsPath/stop-history-server.log 2>&1")
-//    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
-//    println("killing history server with pid " + historyServerPid)
-//    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
+    //    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
+    //    println("killing history server with pid " + historyServerPid)
+    //    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
     println("starting spark history server")
     InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
   }
@@ -275,17 +275,17 @@ object InsightEdgeAdminUtils extends Assertions{
     if (partitions > 0) {
       deployOptions = s"--partitions=$partitions"
       if (backups) {
-        deployOptions += " --backups"
+        deployOptions += " --ha"
       }
     }
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge deploy-space $deployOptions insightedge-space >> $ieLogsPath/deploy-space.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge space deploy $deployOptions insightedge-space >> $ieLogsPath/deploy-space.log"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/insightedge/bin/insightedge undeploy insightedge-space >> $ieLogsPath/undeploy-space.log "))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge pu undeploy insightedge-space >> $ieLogsPath/undeploy-space.log "))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
