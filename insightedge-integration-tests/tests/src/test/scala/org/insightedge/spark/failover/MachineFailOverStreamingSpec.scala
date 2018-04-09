@@ -46,7 +46,7 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("Starting docker container")
+    println("MachineFailOverStreamingSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -60,15 +60,21 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
     val fullClassName = s"org.insightedge.spark.jobs.StreamExample"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
+
+    println( "masterContainerId:" + masterContainerId )
+
     val spaceName = "insightedge-space"
     val command = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
+    println( "command:" + command )
+
     InsightEdgeAdminUtils.exec(masterContainerId, command)
 
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
+    println("Before call to sleep")
     //wait for history server to be available
     Thread.sleep(30000)
 
@@ -77,11 +83,14 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.destroyContainerByName("slave1")
 
+    println("Before call to sleep 2")
     //wait for job to finish
     Thread.sleep(120000)
 
+    println("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
+    println("Before call to sleep 3")
     //wait for history server to be available
     Thread.sleep(30000)
 

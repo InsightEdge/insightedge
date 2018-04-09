@@ -39,7 +39,10 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   "Zeppelin" should "have InsightEdge notebooks" in {
     val resp = wsClient.url(s"$zeppelinUrl/api/notebook").get()
+    println( "resp:" + resp )
     val notebookIds = jsonBody(resp) \\ "id"
+
+    println( "notebookIds:" + notebookIds )
 
     assert(notebookIds.contains(JsString(TutorialNotebookId)))
     assert(notebookIds.contains(JsString(PythonNotebookId)))
@@ -68,6 +71,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
       val interpreterIds = (jsonBody(wsClient.url(settingsUrl).get()) \\ "id").map(value => value.toString().replace("\"", ""))
       interpreterIds.foreach { interpreterId =>
         val restartUrl = s"$zeppelinUrl/api/interpreter/setting/restart/$interpreterId"
+        println("restartUrl:" + restartUrl)
         jsonBody(wsClient.url(restartUrl).withMethod("PUT").execute(), timeout = 1.minute)
       }
     }

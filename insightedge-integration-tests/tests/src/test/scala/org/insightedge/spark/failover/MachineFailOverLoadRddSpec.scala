@@ -48,7 +48,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("Starting docker container")
+    println("MachineFailOverLoadRddSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -62,16 +62,22 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     val loadRddFullClassName = s"org.insightedge.spark.jobs.ContinuosLoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
+
+    println( "masterContainerId:" + masterContainerId )
+
     val spaceName = "insightedge-space"
 
     val saveRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + saveRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
+    println( "saveRddCommand:" + saveRddCommand )
+
     val loadRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + loadRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
+    println( "loadRddCommand:" + loadRddCommand )
 
     InsightEdgeAdminUtils.exec(masterContainerId, saveRddCommand)
 
@@ -88,14 +94,18 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(loadRddAppId, "slave1")
 
+    println("Before call to sleep")
     //wait for job to finish
     Thread.sleep(60000)
 
+    println("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
+    println("Before call to sleep 2")
     //wait for history server to be available
     Thread.sleep(30000)
 
+    println("Before call to waitForAppSuccess")
     InsightEdgeAdminUtils.waitForAppSuccess(loadRddAppId, 60)
   }
 

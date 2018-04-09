@@ -45,7 +45,10 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
           |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/examples/jars/insightedge-examples.jar""".stripMargin
 
+
+      println( "command:" + command )
       val exitCode = dockerExec(containerId, command)
+      println( "exitCode:" + exitCode )
       assert(exitCode == 0)
     }
   }
@@ -60,7 +63,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
           |spark://127.0.0.1:7077
           |$spaceName""".stripMargin
 
+    println( "command:" + command )
     val exitCode = dockerExec(containerId, command)
+    println( "exitCode:" + exitCode )
     assert(exitCode != 0)
   }
 
@@ -70,9 +75,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
           |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/examples/python/sf_salaries.py""".stripMargin
 
+    println( "command:" + command )
     val exitCode = dockerExec(containerId, command)
+    println( "exitCode:" + exitCode )
     assert(exitCode == 0)
   }
-
-
 }

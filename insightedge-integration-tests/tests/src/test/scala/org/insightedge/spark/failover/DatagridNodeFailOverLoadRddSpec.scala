@@ -49,7 +49,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("Starting docker container")
+    println("DatagridNodeFailOverLoadRddSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -69,21 +69,33 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
+    println("masterContainerId:" + masterContainerId)
+    println("command:" + command)
+
     val spacesOnMachines = InsightEdgeAdminUtils.datagridNodes()
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
     var appId: String = InsightEdgeAdminUtils.getAppId(0)
 
+
+    println("Before call to restartPrimaryOnSlaveMachine")
     restartPrimaryOnSlaveMachine(spacesOnMachines)
 
+
+    println("Before call to sleep")
     //wait for job to finish
     Thread.sleep(60000)
 
+    println("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
+
+    println("Before call to sleep 2")
     //wait for history server to be available
     Thread.sleep(30000)
 
+
+    println("Before call to waitForAppSuccess")
     InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
   }
 
