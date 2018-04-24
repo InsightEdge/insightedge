@@ -16,7 +16,8 @@
 
 package org.insightedge.spark.failover
 
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -46,7 +47,7 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("MachineFailOverSaveRddSpec, Starting docker container")
+    printLnWithTimestamp("MachineFailOverSaveRddSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -61,22 +62,22 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
 
-    println( "masterContainerId:" + masterContainerId )
+    printLnWithTimestamp( "masterContainerId:" + masterContainerId )
 
     val spaceName = "insightedge-space"
     val command = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
-    println( "command:" + command )
+    printLnWithTimestamp( "command:" + command )
 
-    println("---BEFORE COMMAND - all apps info")
+    printLnWithTimestamp("---BEFORE COMMAND - all apps info")
     val appsBeforeCommand =  InsightEdgeAdminUtils.getSparkAppsFromHistoryServer(masterIp)
     val str = appsBeforeCommand.toJSONString
-    println(str)
-    println("END APPS INFO")
+    printLnWithTimestamp(str)
+    printLnWithTimestamp("END APPS INFO")
 
-    println(command)
+    printLnWithTimestamp(command)
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
 
@@ -85,18 +86,18 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(appId, "slave1")
 
-    println("Before call to sleep")
+    printLnWithTimestamp("Before call to sleep")
     //wait for job to finish
     Thread.sleep(60000)
 
-    println("Before restartSparkHistoryServer")
+    printLnWithTimestamp("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
-    println("Before call to sleep 2")
+    printLnWithTimestamp("Before call to sleep 2")
     //wait for history server to be available
     Thread.sleep(30000)
 
-    println("Before call to waitForAppSuccess")
+    printLnWithTimestamp("Before call to waitForAppSuccess")
     InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
   }
 

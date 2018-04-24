@@ -17,6 +17,7 @@
 package org.insightedge.spark.utils
 
 import java.io.File
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 
 /**
   * @author Danylo_Hurin.
@@ -29,7 +30,7 @@ object FsUtils {
     * Looks for `packager` directory no matter where this test executed from ... command line, IDE, etc
     */
   def findPackagerDir(findFrom: File): Option[File] = {
-    def log(s: File) = println(s"Looking for $PackagerDirName ... checking $s")
+    def log(s: File) = printLnWithTimestamp(s"Looking for $PackagerDirName ... checking $s")
     log(findFrom)
 
     findFrom.getName match {

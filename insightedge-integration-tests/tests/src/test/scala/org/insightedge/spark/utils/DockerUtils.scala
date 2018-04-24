@@ -18,6 +18,7 @@ package org.insightedge.spark.utils
 
 import scala.language.postfixOps
 import sys.process._
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 
 /**
   * @author Oleksiy_Dyagilev
@@ -29,7 +30,7 @@ object DockerUtils {
     */
   def dockerExec(containerId: String, command: String): Int = {
     val processCommand = s"docker exec $containerId $command"
-    println(s"running command: $processCommand")
+    printLnWithTimestamp(s"running command: $processCommand")
     processCommand !
   }
 

@@ -16,7 +16,8 @@
 
 package org.insightedge.spark.failover
 
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
 
@@ -46,7 +47,7 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("MachineFailOverStreamingSpec, Starting docker container")
+    printLnWithTimestamp("MachineFailOverStreamingSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -61,20 +62,20 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
 
-    println( "masterContainerId:" + masterContainerId )
+    printLnWithTimestamp( "masterContainerId:" + masterContainerId )
 
     val spaceName = "insightedge-space"
     val command = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
-    println( "command:" + command )
+    printLnWithTimestamp( "command:" + command )
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
 
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
-    println("Before call to sleep")
+    printLnWithTimestamp("Before call to sleep")
     //wait for history server to be available
     Thread.sleep(30000)
 
@@ -83,14 +84,14 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
 
     InsightEdgeAdminUtils.destroyContainerByName("slave1")
 
-    println("Before call to sleep 2")
+    printLnWithTimestamp("Before call to sleep 2")
     //wait for job to finish
     Thread.sleep(120000)
 
-    println("Before restartSparkHistoryServer")
+    printLnWithTimestamp("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
-    println("Before call to sleep 3")
+    printLnWithTimestamp("Before call to sleep 3")
     //wait for history server to be available
     Thread.sleep(30000)
 

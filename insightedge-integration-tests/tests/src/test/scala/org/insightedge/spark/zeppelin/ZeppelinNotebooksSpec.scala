@@ -18,8 +18,8 @@ package org.insightedge.spark.zeppelin
 
 import org.insightedge.spark.fixture.InsightedgeDemoModeDocker
 import org.insightedge.spark.utils.RestUtils
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import RestUtils._
-import org.insightedge.spark.utils.RestUtils
 import org.scalatest.FlatSpec
 import org.scalatest.concurrent.Eventually._
 import play.api.libs.json.{JsArray, JsObject, JsString}
@@ -39,10 +39,10 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   "Zeppelin" should "have InsightEdge notebooks" in {
     val resp = wsClient.url(s"$zeppelinUrl/api/notebook").get()
-    println( "resp:" + resp )
+    printLnWithTimestamp( "resp:" + resp )
     val notebookIds = jsonBody(resp) \\ "id"
 
-    println( "notebookIds:" + notebookIds )
+    printLnWithTimestamp( "notebookIds:" + notebookIds )
 
     assert(notebookIds.contains(JsString(TutorialNotebookId)))
     assert(notebookIds.contains(JsString(PythonNotebookId)))
@@ -56,7 +56,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
   }
 
   def runNotebook(notebookId: String) = {
-    println(s"Running notebook $notebookId ...")
+    printLnWithTimestamp(s"Running notebook $notebookId ...")
 
     def bindInterpreters() = {
       val bindUrl = s"$zeppelinUrl/api/notebook/interpreter/bind/$notebookId"
@@ -71,7 +71,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
       val interpreterIds = (jsonBody(wsClient.url(settingsUrl).get()) \\ "id").map(value => value.toString().replace("\"", ""))
       interpreterIds.foreach { interpreterId =>
         val restartUrl = s"$zeppelinUrl/api/interpreter/setting/restart/$interpreterId"
-        println("restartUrl:" + restartUrl)
+        printLnWithTimestamp("restartUrl:" + restartUrl)
         jsonBody(wsClient.url(restartUrl).withMethod("PUT").execute(), timeout = 1.minute)
       }
     }
@@ -86,7 +86,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     )
 
     val paragraphsCount = (notebookBeforeRun \ "body" \\ "status").size
-    println(s"paragraphsCount $paragraphsCount")
+    printLnWithTimestamp(s"paragraphsCount $paragraphsCount")
 
     assert((notebookBeforeRun \\ "status") contains JsString("READY"))
 
@@ -102,7 +102,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
       )
       val finished = (jobStatus \ "body" \\ "status").collect { case s@JsString("FINISHED") => s }
       val finishedCount = finished.size
-      println(s"finished count $finishedCount/$paragraphsCount")
+      printLnWithTimestamp(s"finished count $finishedCount/$paragraphsCount")
       assert(finishedCount == paragraphsCount)
     }
   }

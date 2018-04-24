@@ -17,7 +17,8 @@
 package org.insightedge.spark.failover
 
 
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import org.json.simple.JSONArray
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
 
@@ -48,7 +49,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("MachineFailOverLoadRddSpec, Starting docker container")
+    printLnWithTimestamp("MachineFailOverLoadRddSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -63,7 +64,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
 
-    println( "masterContainerId:" + masterContainerId )
+    printLnWithTimestamp( "masterContainerId:" + masterContainerId )
 
     val spaceName = "insightedge-space"
 
@@ -71,41 +72,41 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
-    println( "saveRddCommand:" + saveRddCommand )
+    printLnWithTimestamp( "saveRddCommand:" + saveRddCommand )
 
     val loadRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + loadRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
-    println( "loadRddCommand:" + loadRddCommand )
+    printLnWithTimestamp( "loadRddCommand:" + loadRddCommand )
 
     InsightEdgeAdminUtils.exec(masterContainerId, saveRddCommand)
 
 
     val saveRddAppId: String = InsightEdgeAdminUtils.getAppId(0)
-    println(s"Save Rdd Application Id = $saveRddAppId")
+    printLnWithTimestamp(s"Save Rdd Application Id = $saveRddAppId")
 
     InsightEdgeAdminUtils.waitForAppSuccess(saveRddAppId, 60)
 
     InsightEdgeAdminUtils.exec(masterContainerId, loadRddCommand)
 
     val loadRddAppId: String = InsightEdgeAdminUtils.getAppId(1)
-    println(s"Load Rdd Application Id = $loadRddAppId")
+    printLnWithTimestamp(s"Load Rdd Application Id = $loadRddAppId")
 
     InsightEdgeAdminUtils.destroyMachineWhenAppIsRunning(loadRddAppId, "slave1")
 
-    println("Before call to sleep")
+    printLnWithTimestamp("Before call to sleep")
     //wait for job to finish
     Thread.sleep(60000)
 
-    println("Before restartSparkHistoryServer")
+    printLnWithTimestamp("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
-    println("Before call to sleep 2")
+    printLnWithTimestamp("Before call to sleep 2")
     //wait for history server to be available
     Thread.sleep(30000)
 
-    println("Before call to waitForAppSuccess")
+    printLnWithTimestamp("Before call to waitForAppSuccess")
     InsightEdgeAdminUtils.waitForAppSuccess(loadRddAppId, 60)
   }
 

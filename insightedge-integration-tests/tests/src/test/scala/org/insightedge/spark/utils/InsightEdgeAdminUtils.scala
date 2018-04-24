@@ -1,5 +1,7 @@
 package org.insightedge.spark.utils
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 import com.gigaspaces.cluster.activeelection.SpaceMode
@@ -19,6 +21,7 @@ import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 
 /**
   * Created by kobikis on 13/11/16.
@@ -52,7 +55,7 @@ object InsightEdgeAdminUtils extends Assertions{
     val execId = execCreation.id()
     val output = docker.execStart(execId)
     val outputString = output.readFully()
-    println(s"output of command on container $containerId is: $outputString")
+    printLnWithTimestamp(s"output of command on container $containerId is: $outputString")
 
 
   }
@@ -88,7 +91,7 @@ object InsightEdgeAdminUtils extends Assertions{
   private var managerServers = ""
 
   def loadInsightEdgeSlaveContainer(id: Int, managerServers : String): String = {
-    println(s"slave - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
+    printLnWithTimestamp(s"slave - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
     val hostConfig = HostConfig
       .builder()
       .appendBinds(IE_HOME + ":/opt/insightedge")
@@ -117,7 +120,7 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def startContainers(n: Int): String = {
     for (_ <- 1 to n) {
-      println(s"master - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
+      printLnWithTimestamp(s"master - sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
 
       val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
       val portBindings = Map(ZeppelinPort -> randomPort).asJava
@@ -169,13 +172,13 @@ object InsightEdgeAdminUtils extends Assertions{
 
 
     Try {
-      retry(30000 millis, 1000 millis) {
-        println("ping zeppelin")
+      retry(60000 millis, 2000 millis) {
+        printLnWithTimestamp("ping zeppelin")
         val resp = wsClient.url(zeppelinUrl).get()
         Await.result(resp, 1.second)
       }
     }match {
-      case Success(_)  => println("Zeppling started")
+      case Success(_)  => printLnWithTimestamp("Zeppling started")
       case Failure(_) => fail("image [ " + ImageName + " ] start failed with timeout")
     }
 
@@ -187,19 +190,19 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def startSparkHistoryServer(masterContainerId: String): Unit = {
-    println("called startSparkHistoryServer")
+    printLnWithTimestamp("called startSparkHistoryServer")
     val execCreationHistoryServer = docker.execCreate(masterContainerId, Array("bash", "-c", s"/opt/insightedge/insightedge/spark/sbin/start-history-server.sh >> $ieLogsPath/history-server-$masterContainerId.log 2>&1"))
     val execIdHistoryServer = execCreationHistoryServer.id()
     val streamHistoryServer = docker.execStart(execIdHistoryServer)
   }
 
   def restartSparkHistoryServer(): Unit = {
-    println("called restartSparkHistoryServer")
+    printLnWithTimestamp("called restartSparkHistoryServer")
     InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), s"/opt/insightedge/insightedge/spark/sbin/stop-history-server.sh >> $ieLogsPath/stop-history-server.log 2>&1")
     //    var historyServerPid = InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "pgrep -f HistoryServer").stripLineEnd
-    //    println("killing history server with pid " + historyServerPid)
+    //    printLnWithTimestamp("killing history server with pid " + historyServerPid)
     //    InsightEdgeAdminUtils.execAndReturnProcessStdout(InsightEdgeAdminUtils.getMasterId(), "kill -9 " + historyServerPid)
-    println("starting spark history server")
+    printLnWithTimestamp("starting spark history server")
     InsightEdgeAdminUtils.startSparkHistoryServer(InsightEdgeAdminUtils.getMasterId())
   }
 
@@ -229,7 +232,7 @@ object InsightEdgeAdminUtils extends Assertions{
         retryRec(timeout, sleepBetweenAttempts, startTime)(fn)
       case Failure(e) =>
         if(timeoutElapsed()) {
-          println(e)
+          printLnWithTimestamp(e)
           retryRec(timeout, sleepBetweenAttempts, startTime)(fn)
         }
         else
@@ -249,17 +252,17 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def execAndReturnProcessStdout(containerId: String, command: String): String = {
-    println(s"executing [$command] on container $containerId, will print its stdout")
+    printLnWithTimestamp(s"executing [$command] on container $containerId, will print its stdout")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
     val execId = execCreation.id()
     val output = docker.execStart(execId)
     val outputString = output.readFully()
-    println(s"output of command [$command] on container $containerId is: $outputString")
+    printLnWithTimestamp(s"output of command [$command] on container $containerId is: $outputString")
     outputString
   }
 
   def exec(containerId: String, command: String): Unit = {
-    println(s"executing [$command] on container $containerId")
+    printLnWithTimestamp(s"executing [$command] on container $containerId")
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command))
     val execId = execCreation.id()
     val output: LogStream = docker.execStart(execId)
@@ -399,7 +402,7 @@ object InsightEdgeAdminUtils extends Assertions{
         fail("Failed to get app id from Spark History Server")
       }
       else {
-        println(s"App Id [ $appId ]")
+        printLnWithTimestamp(s"App Id [ $appId ]")
         appId
       }
     }
@@ -412,7 +415,7 @@ object InsightEdgeAdminUtils extends Assertions{
       if ("RUNNING".equals(status)) {
         destroyContainerByName(containerName)
         containersId -= containerName
-        println(s"Container $containerName destroyed")
+        printLnWithTimestamp(s"Container $containerName destroyed")
       } else {
         fail(s"job of app [$appId] is not on status RUNNING. Status is: $status")
       }
@@ -433,25 +436,25 @@ object InsightEdgeAdminUtils extends Assertions{
 
     var result = admin
       .getMachines.waitFor(4, 30, TimeUnit.SECONDS)
-    println(s"Found four machines: $result")
+    printLnWithTimestamp(s"Found four machines: $result")
 
     result= admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
       .waitFor(6, 60, TimeUnit.SECONDS)
-    println(s"Found 6 space instances: $result")
+    printLnWithTimestamp(s"Found 6 space instances: $result")
 
     result = admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
       .waitFor(3, SpaceMode.PRIMARY, 60, TimeUnit.SECONDS)
-    println(s"Found 3 primaries: $result")
+    printLnWithTimestamp(s"Found 3 primaries: $result")
 
     result= admin
       .getSpaces
       .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
       .waitFor(3, SpaceMode.BACKUP, 60, TimeUnit.SECONDS)
-    println(s"Found 3 backups: $result")
+    printLnWithTimestamp(s"Found 3 backups: $result")
 
     admin.getMachines.getMachines.foreach(
       m => m.getProcessingUnitInstances.foreach(
@@ -461,7 +464,7 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def shutdown(): Unit = {
-    println("Stopping docker container")
+    printLnWithTimestamp("Stopping docker container")
     containersId foreach ((t2) => docker.removeContainer(t2._1, RemoveContainerParam.forceKill()))
     docker.close()
     wsClient.close()

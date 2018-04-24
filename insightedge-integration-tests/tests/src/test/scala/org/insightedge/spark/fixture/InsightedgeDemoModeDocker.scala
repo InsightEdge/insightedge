@@ -17,9 +17,9 @@
 package org.insightedge.spark.fixture
 
 import com.spotify.docker.client.DefaultDockerClient
-import com.spotify.docker.client.messages.HostConfig.Bind
 import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
 import org.insightedge.spark.utils.BuildUtils
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.libs.ws.ning.NingWSClient
 
@@ -55,8 +55,8 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("Starting docker container")
-    println(s"sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
+    printLnWithTimestamp("Starting docker container")
+    printLnWithTimestamp(s"sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
     val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
     val portBindings = Map(ZeppelinPort -> randomPort).asJava
     val hostConfig = HostConfig.builder()
@@ -83,7 +83,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     zeppelinMappedPort = binding.hostPort()
 
     if (!awaitImageStarted()) {
-      println("image start failed with timeout ... cleaning up")
+      printLnWithTimestamp("image start failed with timeout ... cleaning up")
       stopAll()
       fail("image start failed with timeout")
     }
@@ -95,7 +95,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   }
 
   def stopAll() ={
-    println("Stopping docker container")
+    printLnWithTimestamp("Stopping docker container")
     docker.killContainer(containerId)
     docker.removeContainer(containerId)
     docker.close()
@@ -108,15 +108,15 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   }
 
   private def awaitImageStarted(): Boolean = {
-    println("Waiting for Zeppelin to be started ...")
+    printLnWithTimestamp("Waiting for Zeppelin to be started ...")
     val startTime = System.currentTimeMillis
 
     val sleepBetweenAttempts = 1.second
 
-    println(s"Zeppelin $zeppelinUrl")
+    printLnWithTimestamp(s"Zeppelin $zeppelinUrl")
 
     def attempt() = Try {
-      println("ping zeppelin")
+      printLnWithTimestamp("ping zeppelin")
       val resp = wsClient.url(zeppelinUrl).get()
       Await.result(resp, 1.second)
     }

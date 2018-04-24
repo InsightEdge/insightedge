@@ -18,6 +18,7 @@ package org.insightedge.spark.examples
 
 import org.insightedge.spark.fixture.InsightedgeDemoModeDocker
 import org.insightedge.spark.utils.DockerUtils.dockerExec
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import org.scalatest.FlatSpec
 
 /**
@@ -46,9 +47,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
           |/opt/gigaspaces-insightedge/insightedge/examples/jars/insightedge-examples.jar""".stripMargin
 
 
-      println( "command:" + command )
+      printLnWithTimestamp( "command:" + command )
       val exitCode = dockerExec(containerId, command)
-      println( "exitCode:" + exitCode )
+      printLnWithTimestamp( "exitCode:" + exitCode )
       assert(exitCode == 0)
     }
   }
@@ -63,9 +64,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
           |spark://127.0.0.1:7077
           |$spaceName""".stripMargin
 
-    println( "command:" + command )
+    printLnWithTimestamp( "command:" + command )
     val exitCode = dockerExec(containerId, command)
-    println( "exitCode:" + exitCode )
+    printLnWithTimestamp( "exitCode:" + exitCode )
     assert(exitCode != 0)
   }
 
@@ -75,9 +76,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
           |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/examples/python/sf_salaries.py""".stripMargin
 
-    println( "command:" + command )
+    printLnWithTimestamp( "command:" + command )
     val exitCode = dockerExec(containerId, command)
-    println( "exitCode:" + exitCode )
+    printLnWithTimestamp( "exitCode:" + exitCode )
     assert(exitCode == 0)
   }
 }

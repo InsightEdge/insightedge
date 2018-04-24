@@ -20,7 +20,8 @@ import com.gigaspaces.cluster.activeelection.SpaceMode
 
 import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
+import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 
 
 /**
@@ -49,7 +50,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("DatagridNodeFailOverLoadRddSpec, Starting docker container")
+    printLnWithTimestamp("DatagridNodeFailOverLoadRddSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -69,8 +70,8 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
-    println("masterContainerId:" + masterContainerId)
-    println("command:" + command)
+    printLnWithTimestamp("masterContainerId:" + masterContainerId)
+    printLnWithTimestamp("command:" + command)
 
     val spacesOnMachines = InsightEdgeAdminUtils.datagridNodes()
 
@@ -78,24 +79,24 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     var appId: String = InsightEdgeAdminUtils.getAppId(0)
 
 
-    println("Before call to restartPrimaryOnSlaveMachine")
+    printLnWithTimestamp("Before call to restartPrimaryOnSlaveMachine")
     restartPrimaryOnSlaveMachine(spacesOnMachines)
 
 
-    println("Before call to sleep")
+    printLnWithTimestamp("Before call to sleep")
     //wait for job to finish
     Thread.sleep(60000)
 
-    println("Before restartSparkHistoryServer")
+    printLnWithTimestamp("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
 
-    println("Before call to sleep 2")
+    printLnWithTimestamp("Before call to sleep 2")
     //wait for history server to be available
     Thread.sleep(30000)
 
 
-    println("Before call to waitForAppSuccess")
+    printLnWithTimestamp("Before call to waitForAppSuccess")
     InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
   }
 
@@ -103,7 +104,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     spacesOnMachines foreach {
       case (key, value) =>
         if(value.tail.filter(_.equals(SpaceMode.PRIMARY.name())).size == 1) {
-          println("Restarting " + key.getSpaceInstance.getSpaceInstanceName + " on machine " + value.head)
+          printLnWithTimestamp("Restarting " + key.getSpaceInstance.getSpaceInstanceName + " on machine " + value.head)
           key.restart()
           return value.head
         }

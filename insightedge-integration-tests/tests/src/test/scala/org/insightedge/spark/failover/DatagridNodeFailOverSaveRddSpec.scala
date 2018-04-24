@@ -19,8 +19,8 @@ package org.insightedge.spark.failover
 import com.gigaspaces.cluster.activeelection.SpaceMode
 import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
-import org.insightedge.spark.utils.{BuildUtils, InsightEdgeAdminUtils}
-
+import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import scala.collection.immutable.Nil
 
 
@@ -50,7 +50,7 @@ class DatagridNodeFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    println("DatagridNodeFailOverSaveRddSpec, Starting docker container")
+    printLnWithTimestamp("DatagridNodeFailOverSaveRddSpec, Starting docker container")
     InsightEdgeAdminUtils
       .numberOfInsightEdgeMasters(1)
       .numberOfInsightEdgeSlaves(3)
@@ -65,38 +65,38 @@ class DatagridNodeFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
 
-    println("masterContainerId:" + masterContainerId)
+    printLnWithTimestamp("masterContainerId:" + masterContainerId)
 
     val spaceName = "insightedge-space"
     val command = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + fullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
-    println("command:" + command)
+    printLnWithTimestamp("command:" + command)
 
     val spacesOnMachines = InsightEdgeAdminUtils.datagridNodes()
 
-    println( "spacesOnMachines:" + spacesOnMachines )
+    printLnWithTimestamp( "spacesOnMachines:" + spacesOnMachines )
 
     InsightEdgeAdminUtils.exec(masterContainerId, command)
     var appId: String = InsightEdgeAdminUtils.getAppId(0)
 
-    println( "appId:" + appId )
+    printLnWithTimestamp( "appId:" + appId )
 
     restartPrimaryOnSlaveMachine(spacesOnMachines)
 
     //wait for job to finish
-    println("Before call to sleep")
+    printLnWithTimestamp("Before call to sleep")
     Thread.sleep(60000)
 
-    println("Before restartSparkHistoryServer")
+    printLnWithTimestamp("Before restartSparkHistoryServer")
     InsightEdgeAdminUtils.restartSparkHistoryServer()
 
-    println("Before call to sleep 2")
+    printLnWithTimestamp("Before call to sleep 2")
     //wait for history server to be available
     Thread.sleep(30000)
 
-    println("Before call to waitForAppSuccess")
+    printLnWithTimestamp("Before call to waitForAppSuccess")
     InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
   }
 
@@ -104,7 +104,7 @@ class DatagridNodeFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     spacesOnMachines foreach {
       case (key, value) =>
         if(value.tail.filter(_.equals(SpaceMode.PRIMARY.name())).size == 1) {
-          println("Restarting " + key.getSpaceInstance.getSpaceInstanceName + " on machine " + value.head)
+          printLnWithTimestamp("Restarting " + key.getSpaceInstance.getSpaceInstanceName + " on machine " + value.head)
           key.restart()
           return value.head
         }
