@@ -90,19 +90,20 @@ object Launcher {
         copy(s"$resources/insightedge/tools", s"$insightEdgeHome/tools")
       }
 
+//      remove version file
 
-      run("Adding InsightEdge VERSION file") {
-        val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
-        val versionInfo = s"Version: $version\n" +
-          s"Edition: $edition\n" +
-          s"Milestone: $milestone\n" +
-          s"BuildNumber: $buildNumber\n" +
-          s"Timestamp: $timestamp\n" +
-          s"Hash: ${lastCommitHash.getOrElse("")}\n" +
-          s"ArtifactVersion: $artifactVersion\n" +
-          s"XAPVersion: $xapVersion"
-        writeToFile(s"$insightEdgeHome/VERSION", versionInfo)
-      }
+//      run("Adding InsightEdge VERSION file") {
+//        val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
+//        val versionInfo = s"Version: $version\n" +
+//          s"Edition: $edition\n" +
+//          s"Milestone: $milestone\n" +
+//          s"BuildNumber: $buildNumber\n" +
+//          s"Timestamp: $timestamp\n" +
+//          s"Hash: ${lastCommitHash.getOrElse("")}\n" +
+//          s"ArtifactVersion: $artifactVersion\n" +
+//          s"XAPVersion: $xapVersion"
+//        writeToFile(s"$insightEdgeHome/VERSION", versionInfo)
+//      }
 
       run("Adding integration libs") {
         copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
