@@ -87,7 +87,6 @@ object Launcher {
       run("Adding integration scripts") {
         copy(s"$resources/bin", s"$output/bin")
         copy(s"$resources/insightedge/bin", s"$insightEdgeHome/bin")
-        copy(s"$resources/insightedge/tools", s"$insightEdgeHome/tools")
       }
 
 //      remove version file
