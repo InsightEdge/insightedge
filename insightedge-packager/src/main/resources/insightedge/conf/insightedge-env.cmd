@@ -15,7 +15,9 @@ if defined INSIGHTEDGE_CLASSPATH_EXT set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLAS
 
 if not defined HADOOP_HOME set HADOOP_HOME="%XAP_HOME%\insightedge\tools\winutils"
 if not defined SPARK_HOME set SPARK_HOME=%XAP_HOME%\insightedge\spark
-if not defined SPARK_SUBMIT_OPTS set SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=%INSIGHTEDGE_CLASSPATH% -Dspark.executor.extraClassPath=%INSIGHTEDGE_CLASSPATH%"
+
+rem InsightEdge dependencies
+if not defined SPARK_DIST_CLASSPATH set SPARK_DIST_CLASSPATH=%INSIGHTEDGE_CLASSPATH%
 
 rem Zeppelin
 if not defined ZEPPELIN_PORT set ZEPPELIN_PORT=9090
