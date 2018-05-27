@@ -28,7 +28,7 @@ import org.scalatest.FlatSpec
   */
 class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
-  "insightedge-submit.sh " should "submit examples from insightedge-examples.jar" in {
+  "spark-submit.sh " should "submit examples from insightedge-examples.jar" in {
     val exampleClassNames = Seq(
       "basic.SaveRdd",
       "basic.LoadRdd",
@@ -41,7 +41,7 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
     exampleClassNames.foreach { className =>
       val fullClassName = s"org.insightedge.examples.$className"
       val command =
-        s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
+        s"""/opt/gigaspaces-insightedge/insightedge/spark/bin/spark-submit
           |--class $fullClassName
           |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/examples/jars/insightedge-examples.jar""".stripMargin
@@ -54,10 +54,10 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
     }
   }
 
-  "insightedge-submit.sh " should "fail with wrong space name" in {
+  "spark-submit.sh " should "fail with wrong space name" in {
     val spaceName = "non-existing-space"
     val command =
-      s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
+      s"""/opt/gigaspaces-insightedge/insightedge/spark/bin/spark-submit
           |--class org.insightedge.examples.basic.SaveRdd
           |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/examples/jars/insightedge-examples.jar
@@ -70,9 +70,9 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
     assert(exitCode != 0)
   }
 
-  "insightedge-submit.sh " should "submit sf_salaries.py python example" in {
+  "spark-submit.sh " should "submit sf_salaries.py python example" in {
     val command =
-      s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
+      s"""/opt/gigaspaces-insightedge/insightedge/spark/bin/spark-submit
           |--master spark://127.0.0.1:7077
           |/opt/gigaspaces-insightedge/insightedge/examples/python/sf_salaries.py""".stripMargin
 

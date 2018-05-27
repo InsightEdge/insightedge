@@ -58,7 +58,7 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit LoadRdd example while destroying slave machine"  in {
+  "spark-submit.sh " should "submit LoadRdd example while destroying slave machine"  in {
     val saveRddFullClassName = s"org.insightedge.spark.jobs.SaveRdd"
     val loadRddFullClassName = s"org.insightedge.spark.jobs.ContinuosLoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
@@ -68,13 +68,13 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     val spaceName = "insightedge-space"
 
-    val saveRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + saveRddFullClassName +
+    val saveRddCommand = "/opt/insightedge/insightedge/spark/bin/spark-submit  --class " + saveRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
     printLnWithTimestamp( "saveRddCommand:" + saveRddCommand )
 
-    val loadRddCommand = "/opt/insightedge/insightedge/bin/insightedge-submit  --class " + loadRddFullClassName +
+    val loadRddCommand = "/opt/insightedge/insightedge/spark/bin/spark-submit  --class " + loadRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
