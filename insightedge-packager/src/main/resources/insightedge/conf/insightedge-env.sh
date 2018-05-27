@@ -22,9 +22,9 @@ if [ -z "${SPARK_HOME}" ]; then
     export SPARK_HOME="${XAP_HOME}/insightedge/spark"
 fi
 
-# Spark Submit
-if [ -z "$SPARK_SUBMIT_OPTS" ]; then
-    export SPARK_SUBMIT_OPTS="-Dspark.driver.extraClassPath=${INSIGHTEDGE_CLASSPATH} -Dspark.executor.extraClassPath=${INSIGHTEDGE_CLASSPATH}"
+#Add InsightEdge dependencies to Spark
+if [ -z "${SPARK_DIST_CLASSPATH}" ]; then
+    export SPARK_DIST_CLASSPATH="${INSIGHTEDGE_CLASSPATH}"
 fi
 
 # Zeppelin

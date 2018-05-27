@@ -59,7 +59,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
       .create()
   }
 
-  "insightedge-submit.sh " should "submit LoadRdd while restarting datagrid primary node"  in {
+  "insightedge-submit " should "submit LoadRdd while restarting datagrid primary node"  in {
 
     val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
