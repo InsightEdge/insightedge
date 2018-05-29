@@ -20,7 +20,6 @@ import java.beans.Introspector
 
 import com.google.common.reflect.TypeToken
 import org.apache.spark.sql.catalyst.ScalaReflection._
-import org.apache.spark.sql.catalyst.ScalaReflectionLock
 import org.apache.spark.sql.types.{StructType, _}
 import org.apache.spark.util.Utils
 
@@ -37,7 +36,7 @@ object SchemaInference {
   // we need to use def at here. So, every time we call mirror, it is using the
   // class loader of the current thread.
   // SPARK-13640: Synchronize this because universe.runtimeMirror is not thread-safe in Scala 2.10.
-  def mirror: universe.Mirror = ScalaReflectionLock.synchronized {
+  def mirror: universe.Mirror = {
     universe.runtimeMirror(Thread.currentThread().getContextClassLoader)
   }
 
@@ -59,7 +58,7 @@ object SchemaInference {
   /**
     * @return datatype for a given root or embedded type
     */
-  def schemaFor(tpe: Type): Schema = ScalaReflectionLock.synchronized {
+  def schemaFor(tpe: Type): Schema = {
     val className = getClassNameFromType(tpe)
 
     tpe match {
