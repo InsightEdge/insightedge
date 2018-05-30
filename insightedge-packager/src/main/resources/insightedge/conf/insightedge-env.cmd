@@ -10,10 +10,10 @@ rem Source XAP environment:
 call %~dp0..\..\bin\setenv.bat
 
 rem Set InsightEdge defaults:
-set INSIGHTEDGE_CLASSPATH="%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*"
+set INSIGHTEDGE_CLASSPATH=%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*
 if defined INSIGHTEDGE_CLASSPATH_EXT set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLASSPATH_EXT%;%INSIGHTEDGE_CLASSPATH%
 
-if not defined HADOOP_HOME set HADOOP_HOME="%XAP_HOME%\insightedge\tools\winutils"
+if not defined HADOOP_HOME set HADOOP_HOME=%XAP_HOME%\insightedge\tools\winutils
 if not defined SPARK_HOME set SPARK_HOME=%XAP_HOME%\insightedge\spark
 
 rem InsightEdge dependencies to Spark
