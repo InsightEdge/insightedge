@@ -43,7 +43,7 @@ To build InsightEdge zip distribution you need the following binary dependencies
 * [insightedge-datagrid 12.3.0](https://xap.github.io/): download a copy of the XAP 12.x Open Source Edition
 * [insightedge-examples](https://github.com/InsightEdge/insightedge-examples): use the same branch as in this repo, find build instructions in repository readme
 * [insightedge-zeppelin](https://github.com/InsightEdge/insightedge-zeppelin): use the same branch as in this repo, run `./dev/change_scala_version.sh 2.11`, then build with `mvn clean install -DskipTests -P spark-2.1 -P scala-2.11 -P build-distr -Dspark.version=2.1.1`
-* [Apache Spark 2.2.0](http://spark.apache.org/downloads.html): download zip
+* [Apache Spark 2.3.0](http://spark.apache.org/downloads.html): download zip
 
 Package InsightEdge distribution:
 
