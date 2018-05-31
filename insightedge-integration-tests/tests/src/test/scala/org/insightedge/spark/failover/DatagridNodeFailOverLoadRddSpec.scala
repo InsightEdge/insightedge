@@ -97,7 +97,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
 
     printLnWithTimestamp("Before call to waitForAppSuccess")
-    InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
+    InsightEdgeAdminUtils.waitForAppSuccess(appId, 90)
   }
 
   def restartPrimaryOnSlaveMachine(spacesOnMachines: Map[ProcessingUnitInstance, List[String]]): String = {
