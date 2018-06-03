@@ -20,7 +20,7 @@ do
     export SPARK_ENV_LOADED=1
 
     # 2. empty i9e local classpaths env variable
-    export SPARK_DIST_CLASSPATH=
+    unset SPARK_DIST_CLASSPATH
   fi
 done
 
