@@ -98,7 +98,7 @@ class MachineFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
     Thread.sleep(30000)
 
     printLnWithTimestamp("Before call to waitForAppSuccess")
-    InsightEdgeAdminUtils.waitForAppSuccess(appId, 90)
+    InsightEdgeAdminUtils.waitForAppSuccess(appId, 30)
   }
 
   override protected def afterAll(): Unit = {
