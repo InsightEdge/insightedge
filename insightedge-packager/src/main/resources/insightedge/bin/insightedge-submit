@@ -9,14 +9,14 @@ SUBMIT_ARGS=( "$@" )
 # get length of an array
 length=${#SUBMIT_ARGS[@]}
 
-# loop over arguments to find if in deploy-mode cluster
+# loop over arguments to find if in cluster deploy-mode
 for (( i=0; i<${length}; i++ ));
 do
   if [[ ${SUBMIT_ARGS[$i]} == "--deploy-mode" && ${SUBMIT_ARGS[$(($i + 1))]} == "cluster" ]]; then
-    # In cluster mode, local env variables override remote machine env variables
-    # To fix this behavior:
+    # In cluster mode, local env variables override remote machine env variables (spark JIRA SPARK-24456)
+    # To work around this behavior:
 
-    # 1. stop spark submit to source spark-env 
+    # 1. stop spark submit from sourcing spark-env
     export SPARK_ENV_LOADED=1
 
     # 2. empty i9e local classpaths env variable
