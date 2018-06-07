@@ -231,28 +231,6 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>build-maven-install-libs-image</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                        <configuration>
-                            <imageName>insightedge-tests-maven-install-libs</imageName>
-                            <dockerDirectory>
-                                ${main.basedir}/insightedge-integration-tests/tests/src/test/resources/docker/maven-install-libs
-                            </dockerDirectory>
-                            <resources>
-                                <resource>
-                                    <targetPath>/</targetPath>
-                                    <directory>
-                                        ${dist.dir}
-                                    </directory>
-                                    <include>*.zip</include>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -316,10 +294,6 @@
                                 <phase>none</phase>
                             </execution>
                             <execution>
-                                <id>build-maven-install-libs-image</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
                                 <id>build-demo-mode-image</id>
                                 <phase>none</phase>
                             </execution>
@@ -361,10 +335,6 @@
                                 <phase>pre-integration-test</phase>
                             </execution>
                             <execution>
-                                <id>build-maven-install-libs-image</id>
-                                <phase>pre-integration-test</phase>
-                            </execution>
-                            <execution>
                                 <id>build-demo-mode-image</id>
                                 <phase>pre-integration-test</phase>
                             </execution>
@@ -391,12 +361,6 @@
                         <groupId>com.spotify</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
                         <executions>
-                            <!--Images to build-->
-                            <execution>
-                                <id>build-maven-install-libs-image</id>
-                                <phase>pre-integration-test</phase>
-                            </execution>
-
                             <!--Images to exclude -->
                             <execution>
                                 <id>build-demo-mode-image</id>
