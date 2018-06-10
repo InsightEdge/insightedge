@@ -68,13 +68,13 @@ class MachineFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     val spaceName = "insightedge-space"
 
-    val saveRddCommand = s"/opt/insightedge/insightedge/bin/insightedge-submit --conf spark.driver.host=$masterIp  --class " + saveRddFullClassName +
+    val saveRddCommand = s"/opt/insightedge/insightedge/bin/insightedge-submit --class " + saveRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 
     printLnWithTimestamp( "saveRddCommand:" + saveRddCommand )
 
-    val loadRddCommand = s"/opt/insightedge/insightedge/bin/insightedge-submit --conf spark.driver.host=$masterIp  --class " + loadRddFullClassName +
+    val loadRddCommand = s"/opt/insightedge/insightedge/bin/insightedge-submit --class " + loadRddFullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName
 

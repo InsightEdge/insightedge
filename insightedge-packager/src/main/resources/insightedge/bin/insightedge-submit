@@ -5,6 +5,11 @@ set -e
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/../conf/insightedge-env.sh
 
+#Because of SPARK-21642, the driver url is composed from hostname instead of ip. This is a workaround - setting SPARK_LOCAL_HOSTNAME to the submitting machine IP
+if [[ -z "${SPARK_LOCAL_HOSTNAME}" ]]; then
+    export SPARK_LOCAL_HOSTNAME="${XAP_NIC_ADDRESS}"
+fi
+
 SUBMIT_ARGS=( "$@" )
 # get length of an array
 length=${#SUBMIT_ARGS[@]}
