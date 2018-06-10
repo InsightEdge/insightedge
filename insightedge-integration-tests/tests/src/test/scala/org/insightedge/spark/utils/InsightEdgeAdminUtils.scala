@@ -430,6 +430,42 @@ object InsightEdgeAdminUtils extends Assertions{
       }
     }
   }
+  /*
+  Executor logs are missing from test output. This function prints to runner output the html of a single executor.
+  is not used anywhere yet but will be useful in the future
+   */
+  def printLogFromExecutor(appId: String): Unit = {
+    var body: JSONArray = new JSONArray
+    var i: Int = 0
+
+    while (i < 5) {
+      retry(10000 millis, 100 millis) {
+        body = getBody(wsClient.url(s"http://$getMasterIp:18080/api/v1/applications/$appId/executors").get())
+        printLnWithTimestamp(s"~~~~~~body: $body")
+        printLnWithTimestamp(s"~~~~~~body size: ${body.size()}")
+      }
+      i = i + 1
+      //      Thread.sleep(1000)
+    }
+
+    val executorLogsObj = parser.parse(body.get(1).asInstanceOf[JSONObject].get("executorLogs").toString).asInstanceOf[JSONObject]
+    printLnWithTimestamp(s"~~~~~~ executorLogsObj: $executorLogsObj")
+    val stoutURL = executorLogsObj.get("stdout").toString
+    printLnWithTimestamp(s"~~~~~~ stoutURL: $stoutURL")
+    val sterrURL = executorLogsObj.get("stderr").toString
+    printLnWithTimestamp(s"~~~~~~ sterrURL: $sterrURL")
+    var logOutFromExecutor = ""
+    retry(10000 millis, 100 millis) {
+      logOutFromExecutor = Await.result(wsClient.url(stoutURL).get(), Duration.Inf).body
+    }
+    printLnWithTimestamp("logOutFromExecutor: " + logOutFromExecutor)
+    var logErrFromExecutor = ""
+    retry(10000 millis, 100 millis) {
+      logErrFromExecutor = Await.result(wsClient.url(sterrURL).get(), Duration.Inf).body
+    }
+    printLnWithTimestamp("logErrFromExecutor: " + logErrFromExecutor)
+
+  }
 
   def datagridNodes(): Map[ProcessingUnitInstance, List[String]] ={
     var spacesOnMachines: Map[ProcessingUnitInstance, List[String]] = Map[ProcessingUnitInstance, List[String]]()
