@@ -95,7 +95,9 @@ class MachineFailOverStreamingSpec extends FlatSpec with BeforeAndAfterAll {
     //wait for history server to be available
     Thread.sleep(30000)
 
-   InsightEdgeAdminUtils.assertAllJobsSucceeded(InsightEdgeAdminUtils.getMasterIp(), appId)
+
+    //TODO The test assertion is lacking - it checks that none of the jobs have failed. If all jobs are still RUNNING, the test should also fail
+    InsightEdgeAdminUtils.assertAllJobsSucceeded(InsightEdgeAdminUtils.getMasterIp(), appId)
 
   }
 
