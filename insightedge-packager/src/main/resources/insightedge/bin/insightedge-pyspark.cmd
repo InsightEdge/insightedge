@@ -13,11 +13,13 @@ set _SPARK_CMD_USAGE=Usage: bin\insightedge-pyspark.cmd [options]
 
 rem Figure out which Python to use.
 
+#### PYSPARK_PYTHON is also defined in insightedge-env
 if "x%PYSPARK_DRIVER_PYTHON%"=="x" (
   set PYSPARK_DRIVER_PYTHON=python
   if not [%PYSPARK_PYTHON%] == [] set PYSPARK_DRIVER_PYTHON=%PYSPARK_PYTHON%
 )
 
+#### PYTHONPATH is also defined in insightedge-env
 set PYTHONPATH=%SPARK_HOME%\python;%PYTHONPATH%
 set PYTHONPATH=%SPARK_HOME%\python\lib\py4j-0.10.6-src.zip;%PYTHONPATH%
 
