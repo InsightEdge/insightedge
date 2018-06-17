@@ -41,3 +41,20 @@ fi
 if [ -z "${INSIGHTEDGE_SPACE_NAME}" ]; then
     export INSIGHTEDGE_SPACE_NAME="insightedge-space"
 fi
+
+#### PYSPARK_PYTHON is also defined in insightedge-pyspark
+# Determine the Python executable to use for the executors:
+if [[ -z "$PYSPARK_PYTHON" ]]; then
+  if [[ $PYSPARK_DRIVER_PYTHON == *ipython* && ! $WORKS_WITH_IPYTHON ]]; then
+    echo "IPython requires Python 2.7+; please install python2.7 or set PYSPARK_PYTHON" 1>&2
+    exit 1
+  else
+    PYSPARK_PYTHON=python
+  fi
+fi
+export PYSPARK_PYTHON
+
+#### PYTHONPATH is also defined in insightedge-pyspark
+# Add the PySpark classes to the Python path:
+export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.6-src.zip:$PYTHONPATH"

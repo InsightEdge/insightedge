@@ -43,6 +43,7 @@ fi
 
 WORKS_WITH_IPYTHON=$(python -c 'import sys; print(sys.version_info >= (2, 7, 0))')
 
+#### PYSPARK_PYTHON is also defined in insightedge-env.sh
 # Determine the Python executable to use for the executors:
 if [[ -z "$PYSPARK_PYTHON" ]]; then
   if [[ $PYSPARK_DRIVER_PYTHON == *ipython* && ! $WORKS_WITH_IPYTHON ]]; then
@@ -54,6 +55,7 @@ if [[ -z "$PYSPARK_PYTHON" ]]; then
 fi
 export PYSPARK_PYTHON
 
+#### PYTHONPATH is also defined in insightedge-env.sh
 # Add the PySpark classes to the Python path:
 export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
 export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.6-src.zip:$PYTHONPATH"
