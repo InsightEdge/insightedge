@@ -26,7 +26,7 @@ if not defined ZEPPELIN_LOG_DIR set ZEPPELIN_LOG_DIR=%XAP_HOME%\logs
 
 if not defined INSIGHTEDGE_SPACE_NAME set INSIGHTEDGE_SPACE_NAME=insightedge-space
 
-#### PYSPARK_PYTHON is also defined in insightedge-pyspark
+rem PYSPARK_PYTHON is also defined in insightedge-pyspark
 if "x%PYSPARK_DRIVER_PYTHON%"=="x" (
   set PYSPARK_DRIVER_PYTHON=python
   if not [%PYSPARK_PYTHON%] == [] set PYSPARK_DRIVER_PYTHON=%PYSPARK_PYTHON%
