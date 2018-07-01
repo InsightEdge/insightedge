@@ -68,6 +68,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
       .image(ImageName).exposedPorts(ZeppelinPort)
+      .env("XAP_LICENSE=tryme")
       .cmd("/etc/bootstrap.sh", "-d")
       .build()
 
