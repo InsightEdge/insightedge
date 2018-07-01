@@ -42,6 +42,7 @@ object InsightEdgeAdminUtils extends Assertions{
 
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
+      .env("XAP_LICENSE=tryme")
       .image(ImageName)
       .cmd("bash", "-c", "sleep 1h")
       .build()
@@ -101,7 +102,7 @@ object InsightEdgeAdminUtils extends Assertions{
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
       .image(ImageName)
-      .env(s"XAP_MANAGER_SERVERS=$managerServers")
+      .env("XAP_LICENSE=tryme", s"XAP_MANAGER_SERVERS=$managerServers")
       .cmd("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --spark-worker --containers=2 > $ieLogsPath/worker-$id.log")
       .build()
 
@@ -135,6 +136,7 @@ object InsightEdgeAdminUtils extends Assertions{
         .hostConfig(hostConfig)
         .image(ImageName)
         .exposedPorts(ZeppelinPort, "4174")
+        .env("XAP_LICENSE=tryme")
         //      .env("XAP_NIC_ADDRESS=#local:ip#")
         .cmd("bash", "-c", "sleep 1d")
         //      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/bin/insightedge --mode master --master $MY_IP && sleep 2h")
