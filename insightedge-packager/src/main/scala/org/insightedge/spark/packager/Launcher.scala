@@ -28,23 +28,14 @@ import org.insightedge.spark.packager.Utils._
   */
 object Launcher {
 
-  def getXapLocation(edition: String, projectBasedir: String): String = {
-    println("edition: " + edition)
-    val prefix = s"$projectBasedir/insightedge-packager/target/"
-    edition match {
-      //case "premium" => prefix + "xap-premium.zip"
-      case "open" => prefix + "xap-open.zip"
-      case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or open")
-    }
-  }
-
   def main(args: Array[String]) {
     val project = parameter("Project folder" -> "project.directory")
+    /* variables that used only in Launcher.scala in xap-premium project
     val version = parameter("InsightEdge version" -> "insightedge.version")
     val milestone = parameter("Project milestone" -> "insightedge.milestone")
     val buildNumber = parameter("Project build number" -> "insightedge.build.number")
     val artifactVersion = parameter("Project maven artifact version" -> "project.version")
-    val xapVersion = parameter("XAP version" -> "xap.version")
+    val xapVersion = parameter("XAP version" -> "xap.version") */
     val edition = parameter("Distribution edition" -> "dist.edition")
     val lastCommitHash = optionalParameter("Last commit hash" -> "last.commit.hash")
     val output = parameter("Output folder" -> "output.exploded.directory")
@@ -56,64 +47,33 @@ object Launcher {
     val examplesTarget = parameter("Examples target folder" -> "dist.examples.target")
     val resources = s"$project/insightedge-packager/src/main/resources"
     val templates = s"datagrid/deploy/templates"
-
     val insightEdgeHome = s"$output/insightedge"
-
     val examplesJar = "insightedge-examples.jar"
-
     val insightedgePackagerTargetPath = s"$project/insightedge-packager/target/"
     val xapJdbcExtZip = "xap-jdbc-insightedge-extension.zip"
 
     println(s"grid is [$grid]")
     println(s"insightedgePackagerTargetPath is [$insightedgePackagerTargetPath]")
-
-
     validateHash(lastCommitHash)
-
-    //remove directory
     remove(output)
-    run("Unpacking datagrid " + grid + " to   "  + output) {
+    run("Unpacking datagrid " + grid + " to   " + output) {
       unzip(grid, s"$output", cutRootFolder = true)
     }
-
-
-
-
     buildInsightEdge()
 
-    def buildInsightEdge(){
-
-
+    def buildInsightEdge() {
       run("Adding integration scripts") {
         copy(s"$resources/bin", s"$output/bin")
         copy(s"$resources/insightedge/bin", s"$insightEdgeHome/bin")
       }
-
-//      remove version file
-
-//      run("Adding InsightEdge VERSION file") {
-//        val timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime)
-//        val versionInfo = s"Version: $version\n" +
-//          s"Edition: $edition\n" +
-//          s"Milestone: $milestone\n" +
-//          s"BuildNumber: $buildNumber\n" +
-//          s"Timestamp: $timestamp\n" +
-//          s"Hash: ${lastCommitHash.getOrElse("")}\n" +
-//          s"ArtifactVersion: $artifactVersion\n" +
-//          s"XAPVersion: $xapVersion"
-//        writeToFile(s"$insightEdgeHome/VERSION", versionInfo)
-//      }
-
       run("Adding integration libs") {
         copy(s"$project/insightedge-core/target", s"$insightEdgeHome/lib", nameFilter(n => n.startsWith("insightedge-core") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
         copy(s"$project/insightedge-cli/target", s"$output/tools/cli", nameFilter(n => n.startsWith("insightedge-cli") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
       }
-
       run("Adding poms of integration libs") {
         copy(s"$project/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-package/pom.xml")
         copy(s"$project/insightedge-core/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-core/pom.xml")
       }
-
       run("Adding examples") {
         val examplesProject = s"$examplesTarget/.."
 
@@ -142,12 +102,10 @@ object Launcher {
         remove(s"$insightEdgeHome/examples/transaction.log")
         remove(s"$insightEdgeHome/examples/README.md")
       }
-
       run("Adding InsightEdge resources") {
         copy(s"$resources/insightedge/conf/", s"$insightEdgeHome/conf")
         copy(s"$resources/insightedge/data/", s"$insightEdgeHome/data")
       }
-
       run("Unpacking Zeppelin") {
         untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
       }
@@ -156,31 +114,23 @@ object Launcher {
         copy(s"$resources/insightedge/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
         copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
         copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.cmd", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.cmd")
-        remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep")///delete in the future when delete zepplin spark interperter
+        remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep") ///delete in the future when delete zepplin spark interperter
       }
-
       run("Adding Zeppelin notes") {
         copy(s"$resources/insightedge/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
       }
-
-
       run("Adding Hadoop winutils") {
         unzip(s"$resources/insightedge/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/tools/winutils", cutRootFolder = true)
       }
-
-
       run("Unpacking spark") {
         untgz(spark, s"$insightEdgeHome/spark", cutRootFolder = true)
       }
-
       run("Injecting InsightEdge spark overrides") {
         copy(s"$resources/insightedge/spark/", s"$insightEdgeHome/spark")
       }
-
       run("copy cli auto complete script") {
-        copy(s"$project/insightedge-cli/target/insightedge-autocomplete",s"$insightEdgeHome/../tools/cli/insightedge-autocomplete")
+        copy(s"$project/insightedge-cli/target/insightedge-autocomplete", s"$insightEdgeHome/../tools/cli/insightedge-autocomplete")
       }
-
       run("Making scripts executable") {
         permissions(s"$output/bin/", read = Some(true), write = Some(true), execute = Some(true))
         permissions(s"$insightEdgeHome/bin/", read = Some(true), write = Some(true), execute = Some(true))
@@ -188,28 +138,12 @@ object Launcher {
         permissions(output, fileFilter = nameFilter(n => n.endsWith(".sh") || n.endsWith(".cmd") || n.endsWith(".bat")), dirFilter = TrueFileFilter.INSTANCE, read = Some(true), write = None, execute = Some(true))
       }
 
-
-//      if ( edition equals("premium")){
-//        run(s"Adding $xapJdbcExtZip extension"){
-//          unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
-//        }
-//      }
-
-
-      if ( edition equals("open")){
-        run("remove insightedge script from open packing"){
+      if (edition equals ("open")) {
+        run("remove insightedge script from open packing") {
           remove(s"$insightEdgeHome/bin/insightedge")
           remove(s"$insightEdgeHome/bin/insightedge.cmd")
         }
       }
-
-
-
-
-      /*run(s"Adding $xapJdbcExtZip extension"){
-        unzip(s"$insightedgePackagerTargetPath/$xapJdbcExtZip", s"$insightEdgeHome/lib/jdbc/", cutRootFolder = true)
-      }*/
-
 
       run("Packing installation") {
         new File(outputFile).getParentFile.mkdirs()
@@ -217,7 +151,16 @@ object Launcher {
       }
 
     }
+  }
 
+  def getXapLocation(edition: String, projectBasedir: String): String = {
+    println("edition: " + edition)
+    val prefix = s"$projectBasedir/insightedge-packager/target/"
+    edition match {
+      case "premium" => prefix + "xap-premium.zip"
+      case "open" => prefix + "xap-open.zip"
+      case _ => throw new IllegalArgumentException("Illegal edition: " + edition + ", XAP edition can be premium or open")
+    }
   }
 
   def parameter(tuple: (String, String)): String = {
