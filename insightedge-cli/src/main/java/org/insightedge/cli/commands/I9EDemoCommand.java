@@ -128,17 +128,12 @@ public class I9EDemoCommand extends CliCommand {
 
 
     private List<ProcessBuilder> spaceProcessBuilder() {
-        String spaceName = "insightedge-space";
-        boolean ha = true;
-        int partitionsCount = 2;
-
-        List<ProcessBuilder> processBuilders = new ArrayList<ProcessBuilder>();
-        processBuilders.add(AbstractRunCommand.buildStartLookupServiceCommand());
-        processBuilders.add(SpaceRunCommand.buildPartitionedSpaceCommand(1, spaceName, ha, partitionsCount));
-        processBuilders.add(SpaceRunCommand.buildPartitionedBackupSpaceCommand(1, spaceName, ha, partitionsCount));
-        processBuilders.add(SpaceRunCommand.buildPartitionedSpaceCommand(2, spaceName, ha, partitionsCount));
-        processBuilders.add(SpaceRunCommand.buildPartitionedBackupSpaceCommand(2, spaceName, ha, partitionsCount));
-        return processBuilders;
+		SpaceRunCommand command  = new SpaceRunCommand();
+		command.name = "insightedge-space";
+        command.partitions = 2;
+        command.ha = true;
+		command.lus = true;
+        return command.toProcessBuilders();
     }
 
     private String buildPath(String... paths) {
