@@ -21,8 +21,9 @@ object ContinuosLoadRdd {
     sc.stopInsightEdgeContext()
   }
 
+  object QuantityOrdering extends Ordering[Product]{
+    override def compare(x: Product, y: Product): Int = x.quantity compare y.quantity
+  }
+
 }
 
-object QuantityOrdering extends Ordering[Product]{
-  override def compare(x: Product, y: Product): Int = x.quantity compare y.quantity
-}

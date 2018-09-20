@@ -17,10 +17,10 @@
 package org.insightedge.spark.rdd
 
 import com.j_spaces.core.client.SQLQuery
-import org.insightedge.spark.context.InsightEdgeConfig
+import org.apache.spark.rdd.RDD
+import org.insightedge.spark.implicits.basic._
 import org.insightedge.spark.model.BucketedGridModel
 import org.insightedge.spark.utils.{BucketIdSeq, GridProxyFactory}
-import org.apache.spark.rdd.RDD
 
 import scala.reflect.{ClassTag, classTag}
 
@@ -34,8 +34,7 @@ class InsightEdgeRDDFunctions[T: ClassTag](rdd: RDD[T]) extends Serializable {
   val DefaultWriteBatchSize = 1000
 
   val ieConfig = {
-    val sparkConf = rdd.sparkContext.getConf
-    InsightEdgeConfig.fromSparkConf(sparkConf)
+    rdd.sparkContext.ieConfig
   }
 
   /**

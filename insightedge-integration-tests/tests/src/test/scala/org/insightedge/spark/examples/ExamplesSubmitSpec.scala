@@ -31,6 +31,8 @@ class ExamplesSubmitSpec extends FlatSpec with InsightedgeDemoModeDocker {
   "insightedge-submit " should "submit examples from insightedge-examples.jar" in {
     val exampleClassNames = Seq(
       "basic.SaveRdd",
+      "basic.SaveRddNewContextInitApi",
+      "basic.SaveRddNewSessionInitApi",
       "basic.LoadRdd",
       "basic.LoadRddWithSql",
       "basic.PersistDataFrame",

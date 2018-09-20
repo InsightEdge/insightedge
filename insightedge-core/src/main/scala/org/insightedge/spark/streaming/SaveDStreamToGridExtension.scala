@@ -19,7 +19,7 @@ package org.insightedge.spark.streaming
 import org.apache.spark.streaming.dstream.DStream
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.utils.GridProxyFactory
-
+import org.insightedge.spark.implicits.basic._
 import scala.annotation.meta.param
 import scala.reflect.ClassTag
 
@@ -37,8 +37,7 @@ class SaveDStreamToGridExtension[T: ClassTag](@transient dStream: DStream[T]) ex
     * @param writeBatchSize batch size for grid write operations
     */
   def saveToGrid(writeBatchSize: Int = 1000) = {
-    val sparkConfig = dStream.context.sparkContext.getConf
-    val ieConfig = InsightEdgeConfig.fromSparkConf(sparkConfig)
+    val ieConfig = dStream.context.sparkContext.ieConfig
 
     dStream.foreachRDD { rdd =>
       rdd.foreachPartition { partitionOfRecords =>

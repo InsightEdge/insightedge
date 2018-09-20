@@ -54,7 +54,7 @@ abstract class InsightEdgeAbstractRelation(
 
   protected def gs: GigaSpace = sc.grid
 
-  protected def ieConfig: InsightEdgeConfig = InsightEdgeConfig.fromSparkConf(sc.getConf)
+  protected def ieConfig: InsightEdgeConfig = sc.ieConfig
 
   override def schema: StructType = {
     if (options.schema.nonEmpty) {
