@@ -33,7 +33,7 @@ import scala.concurrent.duration._
   */
 class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
-  val ConfigurationNotebookId = "INSIGHTEDGE-BASIC"
+  val ConfigurationNotebookId = "INSIGHTEDGE-CONFIGURATION"
   val TutorialNotebookId = "INSIGHTEDGE-BASIC"
   val PythonNotebookId = "INSIGHTEDGE-PYTHON"
   val GeospatialNotebookId = "INSIGHTEDGE-GEOSPATIAL"
