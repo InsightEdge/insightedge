@@ -33,6 +33,7 @@ import scala.concurrent.duration._
   */
 class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
+  val ConfigurationNotebookId = "INSIGHTEDGE-BASIC"
   val TutorialNotebookId = "INSIGHTEDGE-BASIC"
   val PythonNotebookId = "INSIGHTEDGE-PYTHON"
   val GeospatialNotebookId = "INSIGHTEDGE-GEOSPATIAL"
@@ -44,6 +45,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
     printLnWithTimestamp( "notebookIds:" + notebookIds )
 
+    assert(notebookIds.contains(JsString(ConfigurationNotebookId)))
     assert(notebookIds.contains(JsString(TutorialNotebookId)))
     assert(notebookIds.contains(JsString(PythonNotebookId)))
     assert(notebookIds.contains(JsString(GeospatialNotebookId)))
