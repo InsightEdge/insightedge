@@ -31,7 +31,7 @@ fi
 export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CLASSPATH}"
 
 if [ -z "${ZEPPELIN_PORT}" ]; then
-    export ZEPPELIN_PORT=9090
+    export ZEPPELIN_PORT=9091
 fi
 
 if [ -z "${ZEPPELIN_LOG_DIR}" ]; then
@@ -57,4 +57,4 @@ export PYSPARK_PYTHON
 #### PYTHONPATH is also defined in insightedge-pyspark
 # Add the PySpark classes to the Python path:
 export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
-export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.6-src.zip:$PYTHONPATH"
+export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH"

@@ -52,7 +52,6 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
   }
 
   it should "be possible to run InsightEdge notebooks" in {
-    runNotebook(ConfigurationNotebookId)
     runNotebook(TutorialNotebookId)
     runNotebook(PythonNotebookId)
     runNotebook(GeospatialNotebookId)
@@ -95,7 +94,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
     // run notebook
     jsonBody(
-      wsClient.url(notebookJobUrl).post(JsObject(Seq())), timeout = 5.seconds
+      wsClient.url(notebookJobUrl).post(JsObject(Seq())), timeout = 120.seconds
     )
 
     // eventually all paragraphs should be in FINISHED status

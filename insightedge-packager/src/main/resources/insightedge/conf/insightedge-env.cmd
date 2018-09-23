@@ -20,7 +20,7 @@ rem InsightEdge dependencies to Spark
 if not defined SPARK_DIST_CLASSPATH set SPARK_DIST_CLASSPATH=%INSIGHTEDGE_CLASSPATH%
 
 rem Zeppelin
-if not defined ZEPPELIN_PORT set ZEPPELIN_PORT=9090
+if not defined ZEPPELIN_PORT set ZEPPELIN_PORT=9091
 if not defined ZEPPELIN_INTP_CLASSPATH_OVERRIDES set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CLASSPATH%
 if not defined ZEPPELIN_LOG_DIR set ZEPPELIN_LOG_DIR=%XAP_HOME%\logs
 
@@ -34,4 +34,4 @@ if "x%PYSPARK_DRIVER_PYTHON%"=="x" (
 
 rem PYTHONPATH is also defined in insightedge-pyspark
 set PYTHONPATH=%SPARK_HOME%\python;%PYTHONPATH%
-set PYTHONPATH=%SPARK_HOME%\python\lib\py4j-0.10.6-src.zip;%PYTHONPATH%
+set PYTHONPATH=%SPARK_HOME%\python\lib\py4j-0.10.7-src.zip;%PYTHONPATH%

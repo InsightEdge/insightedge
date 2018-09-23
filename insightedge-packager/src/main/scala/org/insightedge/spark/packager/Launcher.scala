@@ -22,6 +22,7 @@ import java.util.Calendar
 
 import org.apache.commons.io.filefilter.TrueFileFilter
 import org.insightedge.spark.packager.Utils._
+import sys.process._
 
 /**
   * @author Leonid_Poliakov
@@ -46,6 +47,7 @@ object Launcher {
     val zeppelin = parameter("Zeppelin distribution" -> "dist.zeppelin")
     val examplesTarget = parameter("Examples target folder" -> "dist.examples.target")
     val resources = s"$project/insightedge-packager/src/main/resources"
+    val zeppelinResources = s"$project/insightedge-zeppelin/src/main/resources"
     val templates = s"datagrid/deploy/templates"
     val insightEdgeHome = s"$output/insightedge"
     val examplesJar = "insightedge-examples.jar"
@@ -109,16 +111,29 @@ object Launcher {
       run("Unpacking Zeppelin") {
         untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
       }
+
       run("Configuring Zeppelin") {
-        copy(s"$resources/insightedge/zeppelin/bin/interpreter.cmd", s"$insightEdgeHome/zeppelin/bin/interpreter.cmd")
-        copy(s"$resources/insightedge/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
-        copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
-        copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.cmd", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.cmd")
+        copy(s"$zeppelinResources/zeppelin/bin/interpreter.cmd", s"$insightEdgeHome/zeppelin/bin/interpreter.cmd")
+        copy(s"$zeppelinResources/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
+        copy(s"$zeppelinResources/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
+        copy(s"$zeppelinResources/zeppelin/config/zeppelin-env.cmd", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.cmd")
         remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep") ///delete in the future when delete zepplin spark interperter
       }
       run("Adding Zeppelin notes") {
-        copy(s"$resources/insightedge/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
+        copy(s"$zeppelinResources/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
       }
+
+      run("Installing Zeppelin interperters" ){
+        val script = s"$insightEdgeHome/zeppelin/bin/install-interpreter.sh"
+        permissions(script,read = Some(true), write = None, execute = Some(true))
+        s"$script --name md,jdbc" !
+      }
+
+      run("Adding Zeppelin define interpreter"){
+        copy(s"$zeppelinResources/zeppelin/interpreter-setting.json",s"$insightEdgeHome/zeppelin/interpreter/spark/interpreter-setting.json")
+        copy(s"$project/insightedge-zeppelin/target/insightedge-zeppelin.jar", s"$insightEdgeHome/lib/insightedge-zeppelin.jar")
+      }
+
       run("Adding Hadoop winutils") {
         unzip(s"$resources/insightedge/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/tools/winutils", cutRootFolder = true)
       }

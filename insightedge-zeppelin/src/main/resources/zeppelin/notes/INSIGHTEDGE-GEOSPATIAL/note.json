@@ -1,0 +1,212 @@
+{
+  "paragraphs": [
+    {
+      "text": "%md\n\u003e If you see \u0027Interpreter binding\u0027 above, just hit `Save` without deselecting any interpreters.\n\n## Welcome to InsightEdge Geospatial API example.\n\n##### This example shows geospatial features of InsightEdge:\n* building model with geospatial location field and index\n* saving RDDs with geospatial shapes to Data Grid\n* loading dataframes with geospatial queries from Data Grid\n\n##### This is a live tutorial, you can run the code yourself. _(click `Run` button in each paragraph from top to bottom)_",
+      "user": "anonymous",
+      "dateUpdated": "Jun 20, 2017 10:07:59 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true
+        },
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true,
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "HTML",
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003cblockquote\u003e\n  \u003cp\u003eIf you see \u0026lsquo;Interpreter binding\u0026rsquo; above, just hit \u003ccode\u003eSave\u003c/code\u003e without deselecting any interpreters.\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003ch2\u003eWelcome to InsightEdge Geospatial API example.\u003c/h2\u003e\n\u003ch5\u003eThis example shows geospatial features of InsightEdge:\u003c/h5\u003e\n\u003cul\u003e\n  \u003cli\u003ebuilding model with geospatial location field and index\u003c/li\u003e\n  \u003cli\u003esaving RDDs with geospatial shapes to Data Grid\u003c/li\u003e\n  \u003cli\u003eloading dataframes with geospatial queries from Data Grid\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch5\u003eThis is a live tutorial, you can run the code yourself. \u003cem\u003e(click \u003ccode\u003eRun\u003c/code\u003e button in each paragraph from top to bottom)\u003c/em\u003e\u003c/h5\u003e\n\u003c/div\u003e"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1497942446665_489125233",
+      "id": "20170620-100726_987592414",
+      "dateCreated": "Jun 20, 2017 10:07:26 AM",
+      "dateStarted": "Jun 20, 2017 10:07:59 AM",
+      "dateFinished": "Jun 20, 2017 10:07:59 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "School Model",
+      "text": "%define\npackage model.v1\n\nimport org.insightedge.scala.annotation._\nimport org.openspaces.spatial.shapes._\n\nimport scala.beans.{BeanProperty, BooleanBeanProperty}\n\ncase class School(\n\n                    @BeanProperty\n                    @SpaceId(autoGenerate \u003d true)\n                    var id: String,\n\n                    @BeanProperty\n                    var name: String,\n\n                    @BeanProperty\n                    @SpaceIndex\n                    var category: String,\n                    \n                    @BeanProperty\n                    var city: String,\n\n                    @BeanProperty\n                    var address: String,\n                    \n                    @BeanProperty\n                    var phone: String,\n                    \n                    @BeanProperty\n                    @SpaceSpatialIndex\n                    var location: Point\n\n                  ) {\n\n  def this() \u003d this(null, null, null, null, null, null, null)\n\n}\n",
+      "user": "anonymous",
+      "dateUpdated": "Jun 20, 2017 10:08:18 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1497942478635_-1269364420",
+      "id": "20170620-100758_1475877622",
+      "dateCreated": "Jun 20, 2017 10:07:58 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Initializing InsightEdge Context",
+      "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.insightedge.spark.context.InsightEdgeConfig\n\n//Change space name here if not working with default\nval ieConfig \u003d new InsightEdgeConfig(\"insightedge-space\")\n\nsc.initializeInsightEdgeContext(ieConfig)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 26, 2018 5:55:19 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/text",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537973657430_1149870009",
+      "id": "20180926-175417_1854975951",
+      "dateCreated": "Sep 26, 2018 5:54:17 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Importing Data To Data Grid",
+      "text": "%spark\nimport org.openspaces.spatial.ShapeFactory._\n\nval home \u003d scala.sys.env(\"XAP_HOME\")\n\nval schoolsData \u003d spark.read.json(s\"$home/insightedge/data/montgomery_schools.json\")\nschoolsData.show()\n\nval schoolsRdd \u003d schoolsData.rdd.map(row \u003d\u003e new School(\n    id \u003d null,\n    row.getAs[String](\"name\"),\n    row.getAs[String](\"category\"),\n    row.getAs[String](\"city\"),\n    row.getAs[String](\"address\"),\n    row.getAs[String](\"phone\"),\n    point(row.getAs[Double](\"longitude\"), row.getAs[Double](\"latitude\"))\n))\n\nschoolsRdd.saveToGrid()",
+      "user": "anonymous",
+      "dateUpdated": "Sep 26, 2018 5:55:40 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/text",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1497942500490_1532423044",
+      "id": "20170620-100820_1467470122",
+      "dateCreated": "Jun 20, 2017 10:08:20 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Searching For Schools Near User",
+      "text": "%spark\nimport org.locationtech.spatial4j.distance.DistanceUtils\nimport org.openspaces.spatial.shapes._\n\nval searchRadius \u003d 3; // km\nval userLocation \u003d point(-77.024470, 39.032506)\nval searchArea \u003d circle(userLocation, DistanceUtils.KM_TO_DEG * searchRadius)\n\nval schools \u003d spark.read.grid[School]\nval nearestSchools \u003d schools.filter(schools(\"location\") geoWithin searchArea)\nval nearestSchoolsCount \u003d nearestSchools.count()\n",
+      "user": "anonymous",
+      "dateUpdated": "Jun 20, 2017 10:08:54 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1497942518298_465529668",
+      "id": "20170620-100838_1585784193",
+      "dateCreated": "Jun 20, 2017 10:08:38 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Appending Column With Distance",
+      "text": "import org.apache.spark.sql.functions._\n\nval toDistance \u003d udf { point:Point \u003d\u003e\n    val d2r \u003d DistanceUtils.DEGREES_TO_RADIANS\n    val r2km \u003d DistanceUtils.RADIANS_TO_DEGREES * DistanceUtils.DEG_TO_KM\n    DistanceUtils.distHaversineRAD(point.getY()*d2r, point.getX()*d2r, userLocation.getY()*d2r, userLocation.getX()*d2r) * r2km\n}\n\nnearestSchools.withColumn(\"distance\", toDistance(nearestSchools(\"location\"))).createOrReplaceTempView(\"nearestSchools\")\n",
+      "user": "anonymous",
+      "dateUpdated": "Jun 20, 2017 10:09:12 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1497942536113_1385311046",
+      "id": "20170620-100856_1686994707",
+      "dateCreated": "Jun 20, 2017 10:08:56 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Investigating Data",
+      "text": "%sql\nselect category, distance, name, city, address, phone, location\nfrom nearestSchools\nwhere category \u003d \"${category\u003dMIDDLE SCHOOLS,ELEMENTARY SCHOOLS|MIDDLE SCHOOLS|HIGH SCHOOLS}\"\norder by distance",
+      "user": "anonymous",
+      "dateUpdated": "Jun 20, 2017 10:09:26 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/sql",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1497942552608_601977610",
+      "id": "20170620-100912_713463084",
+      "dateCreated": "Jun 20, 2017 10:09:12 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "InsightEdge Geospatial API",
+  "id": "INSIGHTEDGE-GEOSPATIAL",
+  "angularObjects": {},
+  "config": {
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {}
+}

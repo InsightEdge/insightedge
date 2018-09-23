@@ -62,7 +62,7 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   private val DockerImageStartTimeout = 3.minutes
-  private val ZeppelinPort = "9090"
+  private val ZeppelinPort = "9091"
   private val ImageName = s"insightedge-test"
 
   private val docker = DefaultDockerClient.fromEnv().build()
