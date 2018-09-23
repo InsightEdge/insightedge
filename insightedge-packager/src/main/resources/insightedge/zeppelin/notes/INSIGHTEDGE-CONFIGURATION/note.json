@@ -55,7 +55,7 @@
     }
   ],
   "name": "InsightEdge Configuration",
-  "id": "INSIGHTEDGE-TUTORIAL",
+  "id": "INSIGHTEDGE-CONFIGURATION",
   "angularObjects": {
     "2DRSPMASB:shared_process": [],
     "2DSSTURHP:shared_process": [],
