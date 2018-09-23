@@ -100,30 +100,30 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Importing Model",
-      "text": "%spark\nimport model.v1._\n",
-      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
+      "title": "Initializing InsightEdge Context",
+      "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.insightedge.spark.context.InsightEdgeConfig\n\n//Change space name here if not working with default\nval ieConfig \u003d new InsightEdgeConfig(\"insightedge-space\")\n\nsc.initializeInsightEdgeContext(ieConfig)",
+      "user": "anonymous",
+      "dateUpdated": "Sep 26, 2018 5:50:42 PM",
       "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
         "editorSetting": {
-          "language": "scala",
+          "language": "text",
           "editOnDblClick": false
         },
-        "colWidth": 12.0,
-        "editorMode": "ace/mode/scala",
-        "title": true,
-        "results": {},
-        "enabled": true
+        "editorMode": "ace/mode/text",
+        "title": true
       },
       "settings": {
         "params": {},
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497940953965_118850127",
-      "id": "20170620-093235_1886252813",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "jobName": "paragraph_1537973263692_227058257",
+      "id": "20180926-174743_1288107071",
+      "dateCreated": "Sep 26, 2018 5:47:43 PM",
       "status": "READY",
-      "errorMessage": "",
       "progressUpdateIntervalMs": 500
     },
     {
@@ -464,15 +464,15 @@
     },
     {
       "title": "Saving DataFrame as collection",
-      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5)\n    .write.mode(SaveMode.Overwrite).grid(\"smallStock\")\n",
-      "dateUpdated": "Jun 27, 2017 10:14:03 AM",
+      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5).write.mode(SaveMode.Overwrite).grid(\"smallStock\")\n",
+      "dateUpdated": "Sep 26, 2018 5:48:52 PM",
       "config": {
         "editorSetting": {
-          "language": "scala",
+          "language": "text",
           "editOnDblClick": false
         },
         "colWidth": 4.0,
-        "editorMode": "ace/mode/scala",
+        "editorMode": "ace/mode/text",
         "title": true,
         "results": {},
         "enabled": true
@@ -546,16 +546,16 @@
     },
     {
       "title": "Saving Dataset as collection",
-      "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 )\n    .write.mode(SaveMode.Overwrite).grid(\"bigStock\")\n",
+      "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 ).write.mode(SaveMode.Overwrite).grid(\"bigStock\")\n",
       "user": "anonymous",
-      "dateUpdated": "Jun 27, 2017 10:45:12 AM",
+      "dateUpdated": "Sep 26, 2018 5:49:04 PM",
       "config": {
         "editorSetting": {
-          "language": "scala",
+          "language": "text",
           "editOnDblClick": false
         },
         "colWidth": 4.0,
-        "editorMode": "ace/mode/scala",
+        "editorMode": "ace/mode/text",
         "title": true,
         "results": {},
         "enabled": true,
@@ -639,10 +639,7 @@
   ],
   "name": "InsightEdge Basics",
   "id": "INSIGHTEDGE-BASIC",
-  "angularObjects": {
-    "2CN2AMUF4:shared_process": [],
-    "2CNBV9DVK:shared_process": []
-  },
+  "angularObjects": {},
   "config": {
     "looknfeel": "default",
     "personalizedMode": "false"
