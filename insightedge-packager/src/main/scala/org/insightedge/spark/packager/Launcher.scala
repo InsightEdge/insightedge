@@ -22,6 +22,7 @@ import java.util.Calendar
 
 import org.apache.commons.io.filefilter.TrueFileFilter
 import org.insightedge.spark.packager.Utils._
+import sys.process._
 
 /**
   * @author Leonid_Poliakov
@@ -109,16 +110,27 @@ object Launcher {
       run("Unpacking Zeppelin") {
         untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
       }
-      run("Configuring Zeppelin") {
-        copy(s"$resources/insightedge/zeppelin/bin/interpreter.cmd", s"$insightEdgeHome/zeppelin/bin/interpreter.cmd")
-        copy(s"$resources/insightedge/zeppelin/config/zeppelin-site.xml", s"$insightEdgeHome/zeppelin/conf/zeppelin-site.xml")
-        copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.sh", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.sh")
-        copy(s"$resources/insightedge/zeppelin/config/zeppelin-env.cmd", s"$insightEdgeHome/zeppelin/conf/zeppelin-env.cmd")
+      run("Installing Zeppelin interperters" ){
+        val script = s"$insightEdgeHome/zeppelin/bin/install-interpreter.sh"
+        permissions(script,read = Some(true), write = None, execute = Some(true))
+        val exitCode = s"$script --name md,jdbc" !
+
+        if(exitCode != 0) throw new RuntimeException("Zeppelin install-interpreter.sh failed to install new interpreters")
+      }
+
+      run("Configuring Zeppelin - copying custom Zeppelin resources") {
+        copy(s"$resources/insightedge/zeppelin", s"$insightEdgeHome/zeppelin")
         remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep") ///delete in the future when delete zepplin spark interperter
       }
-      run("Adding Zeppelin notes") {
-        copy(s"$resources/insightedge/zeppelin/notes", s"$insightEdgeHome/zeppelin/notebook")
+      run("Updating jdbc interpreter settings") {
+        val exitCode = s"zip -d $insightEdgeHome/zeppelin/interpreter/jdbc/zeppelin-jdbc-0.8.0.jar interpreter-setting.json" !;
+
+        if(exitCode != 0) throw new RuntimeException("Failed to update Zeppelin jdbc interpreter setting")
       }
+      run("Adding Zeppelin define interpreter"){
+        copy(s"$project/insightedge-zeppelin/target/insightedge-zeppelin.jar", s"$insightEdgeHome/lib/insightedge-zeppelin.jar")
+      }
+
       run("Adding Hadoop winutils") {
         unzip(s"$resources/insightedge/winutils/hadoop-winutils-2.6.0.zip", s"$insightEdgeHome/tools/winutils", cutRootFolder = true)
       }

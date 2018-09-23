@@ -1,9 +1,39 @@
 {
   "paragraphs": [
     {
+      "title": "Initializing InsightEdge Context",
+      "text": "%spark\nimport org.insightedge.spark.implicits.all._\nimport org.insightedge.spark.context.InsightEdgeConfig\n\n//Change space name here if not working with default\nval ieConfig \u003d new InsightEdgeConfig(\"insightedge-space\")\n\nspark.initializeInsightEdgeContext(ieConfig)",
       "user": "anonymous",
+      "dateUpdated": "Sep 26, 2018 5:58:07 PM",
       "config": {
-        "colWidth": 12,
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false
+        },
+        "editorMode": "ace/mode/text",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1537973807245_-1124395540",
+      "id": "20180926-175647_702916980",
+      "dateCreated": "Sep 26, 2018 5:56:47 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Load SF salaries dataset from file",
+      "text": "%pyspark\nimport os\njsonFilePath \u003d os.environ[\"XAP_HOME\"] + \"/insightedge/data/sf_salaries_sample.json\"\njsonDf \u003d spark.read.json(jsonFilePath)",
+      "user": "anonymous",
+      "dateUpdated": "Jun 20, 2017 10:38:24 AM",
+      "config": {
+        "colWidth": 12.0,
         "enabled": true,
         "results": {},
         "editorSetting": {
@@ -20,21 +50,17 @@
       "apps": [],
       "jobName": "paragraph_1497944176655_-433464356",
       "id": "20170620-103616_1899030120",
-      "dateCreated": "2017-06-20T10:36:16+0300",
+      "dateCreated": "Jun 20, 2017 10:36:16 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:1037",
-      "text": "%pyspark\nimport os\njsonFilePath = os.environ[\"XAP_HOME\"] + \"/insightedge/data/sf_salaries_sample.json\"\njsonDf = spark.read.json(jsonFilePath)",
-      "dateUpdated": "2017-06-20T10:38:24+0300",
-      "title": "Load SF salaries dataset from file"
+      "progressUpdateIntervalMs": 500
     },
     {
+      "title": "Save DataFrame to grid",
       "text": "%pyspark\njsonDf.write.format(\"org.apache.spark.sql.insightedge\").mode(\"overwrite\").save(\"salaries\")\n",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T10:37:28+0300",
+      "dateUpdated": "Jun 20, 2017 10:37:28 AM",
       "config": {
-        "colWidth": 12,
+        "colWidth": 12.0,
         "enabled": true,
         "results": {},
         "editorSetting": {
@@ -51,19 +77,17 @@
       "apps": [],
       "jobName": "paragraph_1497944200514_1892773467",
       "id": "20170620-103640_1881538047",
-      "dateCreated": "2017-06-20T10:36:40+0300",
+      "dateCreated": "Jun 20, 2017 10:36:40 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:1093",
-      "title": "Save DataFrame to grid"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%pyspark\ngridDf = spark.read.format(\"org.apache.spark.sql.insightedge\").option(\"collection\", \"salaries\").load()\ngridDf.show()\n",
+      "title": "Load DataFrame From Grid",
+      "text": "%pyspark\ngridDf \u003d spark.read.format(\"org.apache.spark.sql.insightedge\").option(\"collection\", \"salaries\").load()\ngridDf.show()\n",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T10:38:13+0300",
+      "dateUpdated": "Jun 20, 2017 10:38:13 AM",
       "config": {
-        "colWidth": 12,
+        "colWidth": 12.0,
         "enabled": true,
         "results": {},
         "editorSetting": {
@@ -80,19 +104,17 @@
       "apps": [],
       "jobName": "paragraph_1497944206417_-2140549253",
       "id": "20170620-103646_1357128352",
-      "dateCreated": "2017-06-20T10:36:46+0300",
+      "dateCreated": "Jun 20, 2017 10:36:46 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:1152",
-      "title": "Load DataFrame From Grid"
+      "progressUpdateIntervalMs": 500
     },
     {
+      "title": "Register table",
       "text": "%pyspark\ngridDf.createOrReplaceTempView(\"salaries\")",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T10:37:45+0300",
+      "dateUpdated": "Jun 20, 2017 10:37:45 AM",
       "config": {
-        "colWidth": 12,
+        "colWidth": 12.0,
         "enabled": true,
         "results": {},
         "editorSetting": {
@@ -109,25 +131,23 @@
       "apps": [],
       "jobName": "paragraph_1497944217945_1067887149",
       "id": "20170620-103657_2039834622",
-      "dateCreated": "2017-06-20T10:36:57+0300",
+      "dateCreated": "Jun 20, 2017 10:36:57 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:1208",
-      "title": "Register table"
+      "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%sql\nSELECT JobTitle, AVG(TotalPay) as AveragePay\nFROM salaries\nWHERE Year = 2012\nGROUP BY JobTitle\nORDER BY AVG(TotalPay) DESC\nLIMIT 5\n",
+      "title": "Query Table with SQL",
+      "text": "%sql\nSELECT JobTitle, AVG(TotalPay) as AveragePay\nFROM salaries\nWHERE Year \u003d 2012\nGROUP BY JobTitle\nORDER BY AVG(TotalPay) DESC\nLIMIT 5\n",
       "user": "anonymous",
-      "dateUpdated": "2017-06-20T10:37:53+0300",
+      "dateUpdated": "Jun 20, 2017 10:37:53 AM",
       "config": {
-        "colWidth": 12,
+        "colWidth": 12.0,
         "enabled": true,
         "results": {
           "0": {
             "graph": {
               "mode": "multiBarChart",
-              "height": 300,
+              "height": 300.0,
               "optionOpen": false
             },
             "helium": {}
@@ -147,20 +167,14 @@
       "apps": [],
       "jobName": "paragraph_1497944224609_1210644315",
       "id": "20170620-103704_1205982768",
-      "dateCreated": "2017-06-20T10:37:04+0300",
+      "dateCreated": "Jun 20, 2017 10:37:04 AM",
       "status": "READY",
-      "progressUpdateIntervalMs": 500,
-      "focus": true,
-      "$$hashKey": "object:1270",
-      "title": "Query Table with SQL"
+      "progressUpdateIntervalMs": 500
     }
   ],
   "name": "InsightEdge Python Example",
   "id": "INSIGHTEDGE-PYTHON",
-  "angularObjects": {
-    "2CJ5GQ4G2:shared_process": [],
-    "2CN4291HR:shared_process": []
-  },
+  "angularObjects": {},
   "config": {
     "looknfeel": "default",
     "personalizedMode": "false"
