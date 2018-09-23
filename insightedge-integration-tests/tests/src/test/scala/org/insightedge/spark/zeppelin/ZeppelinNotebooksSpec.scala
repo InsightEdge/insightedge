@@ -52,6 +52,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
   }
 
   it should "be possible to run InsightEdge notebooks" in {
+    runNotebook(ConfigurationNotebookId)
     runNotebook(TutorialNotebookId)
     runNotebook(PythonNotebookId)
     runNotebook(GeospatialNotebookId)
