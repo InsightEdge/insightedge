@@ -37,21 +37,6 @@
       "dateFinished": "Sep 13, 2018 2:36:37 PM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
-    },
-    {
-      "user": "anonymous",
-      "config": {},
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1536833061574_-972929757",
-      "id": "20180913-130421_443033473",
-      "dateCreated": "Sep 13, 2018 1:04:21 PM",
-      "status": "READY",
-      "errorMessage": "",
-      "progressUpdateIntervalMs": 500
     }
   ],
   "name": "InsightEdge Configuration",
