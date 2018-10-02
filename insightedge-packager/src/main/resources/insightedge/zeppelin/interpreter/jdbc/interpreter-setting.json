@@ -7,7 +7,7 @@
       "default.url": {
         "envName": null,
         "propertyName": "default.url",
-        "defaultValue": "jdbc:gigaspaces:url:jini://*/*/insightedge-space",
+        "defaultValue": "jdbc:xap:url=jini://*/*/insightedge-space;autoCommit=true",
         "description": "The URL for JDBC.",
         "type": "string"
       },
@@ -35,7 +35,7 @@
       "default.driver": {
         "envName": null,
         "propertyName": "default.driver",
-        "defaultValue": "com.j_spaces.jdbc.driver.GDriver",
+        "defaultValue": "com.gigaspaces.jdbc.Driver",
         "description": "JDBC Driver Name",
         "type": "string"
       },
