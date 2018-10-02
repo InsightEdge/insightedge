@@ -126,6 +126,8 @@ object Launcher {
         val exitCode = s"zip -d $insightEdgeHome/zeppelin/interpreter/jdbc/zeppelin-jdbc-0.8.0.jar interpreter-setting.json" !;
 
         if(exitCode != 0) throw new RuntimeException("Failed to update Zeppelin jdbc interpreter setting")
+
+        remove(s"$insightEdgeHome/zeppelin/logs")
       }
       run("Adding Zeppelin define interpreter"){
         copy(s"$project/insightedge-zeppelin/target/insightedge-zeppelin.jar", s"$insightEdgeHome/lib/insightedge-zeppelin.jar")
