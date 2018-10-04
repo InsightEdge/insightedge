@@ -11,7 +11,7 @@ DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source "${DIRNAME}/../../bin/setenv.sh"
 
 # Set InsightEdge defaults:
-export INSIGHTEDGE_CLASSPATH="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
+export INSIGHTEDGE_CLASSPATH="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/insightedge/lib/jdbc/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
 
 if [ -n "${INSIGHTEDGE_CLASSPATH_EXT}" ]; then
     export INSIGHTEDGE_CLASSPATH="${INSIGHTEDGE_CLASSPATH_EXT}:${INSIGHTEDGE_CLASSPATH}"
