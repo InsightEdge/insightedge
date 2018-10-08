@@ -28,7 +28,7 @@ if [ -z "${SPARK_DIST_CLASSPATH}" ]; then
 fi
 
 # Zeppelin
-export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CLASSPATH}"
+export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CLASSPATH}:${XAP_HOME}/insightedge/lib/jdbc/*"
 
 if [ -z "${ZEPPELIN_PORT}" ]; then
     export ZEPPELIN_PORT=9090
