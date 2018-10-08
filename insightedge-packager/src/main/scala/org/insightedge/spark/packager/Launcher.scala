@@ -123,9 +123,9 @@ object Launcher {
         remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep") ///delete in the future when delete zepplin spark interperter
       }
       run("Updating jdbc interpreter settings") {
-        val exitCode = s"zip -d $insightEdgeHome/zeppelin/interpreter/jdbc/zeppelin-jdbc-0.8.0.jar interpreter-setting.json" !;
+//        val exitCode = s"zip -d $insightEdgeHome/zeppelin/interpreter/jdbc/zeppelin-jdbc-0.8.0.jar interpreter-setting.json" !;
 
-        if(exitCode != 0) throw new RuntimeException("Failed to update Zeppelin jdbc interpreter setting")
+//        if(exitCode != 0) throw new RuntimeException("Failed to update Zeppelin jdbc interpreter setting")
 
         remove(s"$insightEdgeHome/zeppelin/logs")
       }

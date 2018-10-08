@@ -53,12 +53,11 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
 
   it should "be possible to run InsightEdge notebooks" in {
     runNotebook(TutorialNotebookId)
-    runNotebook(PythonNotebookId)
-    runNotebook(GeospatialNotebookId)
+//    runNotebook(PythonNotebookId)
+//    runNotebook(GeospatialNotebookId)
   }
 
   def runNotebook(notebookId: String) = {
-    printLnWithTimestamp(s"Running notebook $notebookId ...")
 
     def bindInterpreters() = {
       val bindUrl = s"$zeppelinUrl/api/notebook/interpreter/bind/$notebookId"
@@ -84,7 +83,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     val notebookJobUrl = s"$zeppelinUrl/api/notebook/job/$notebookId"
 
     val notebookBeforeRun = jsonBody(
-      wsClient.url(notebookJobUrl).get()
+        wsClient.url(notebookJobUrl).get()
     )
 
     val paragraphsCount = (notebookBeforeRun \ "body" \\ "status").size
@@ -93,6 +92,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     assert((notebookBeforeRun \\ "status") contains JsString("READY"))
 
     // run notebook
+    printLnWithTimestamp(s"Running notebook $notebookId ...")
     jsonBody(
       wsClient.url(notebookJobUrl).post(JsObject(Seq())), timeout = 120.seconds
     )
