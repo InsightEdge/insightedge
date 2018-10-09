@@ -58,9 +58,9 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
   }
 
   def runNotebook(notebookId: String) = {
-    printLnWithTimestamp(s"Running notebook $notebookId ...")
 
     def bindInterpreters() = {
+      printLnWithTimestamp(s"binding interpreters to notebook $notebookId")
       val bindUrl = s"$zeppelinUrl/api/notebook/interpreter/bind/$notebookId"
       val interpreters = wsClient.url(bindUrl).get()
       val interpreterIds = jsonBody(interpreters) \\ "id"
@@ -69,6 +69,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     }
 
     def restartInterpreters() = {
+      printLnWithTimestamp(s"restarting interpreters")
       val settingsUrl = s"$zeppelinUrl/api/interpreter/setting"
       val interpreterIds = (jsonBody(wsClient.url(settingsUrl).get()) \\ "id").map(value => value.toString().replace("\"", ""))
       interpreterIds.foreach { interpreterId =>
@@ -84,7 +85,7 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     val notebookJobUrl = s"$zeppelinUrl/api/notebook/job/$notebookId"
 
     val notebookBeforeRun = jsonBody(
-      wsClient.url(notebookJobUrl).get()
+        wsClient.url(notebookJobUrl).get()
     )
 
     val paragraphsCount = (notebookBeforeRun \ "body" \\ "status").size
@@ -93,6 +94,8 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
     assert((notebookBeforeRun \\ "status") contains JsString("READY"))
 
     // run notebook
+    printLnWithTimestamp(s"Running notebook $notebookId ...")
+
     jsonBody(
       wsClient.url(notebookJobUrl).post(JsObject(Seq())), timeout = 120.seconds
     )
