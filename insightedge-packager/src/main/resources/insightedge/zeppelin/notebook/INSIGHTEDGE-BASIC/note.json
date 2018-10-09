@@ -1,17 +1,20 @@
 {
   "paragraphs": [
     {
-      "text": "%md\n\u003e If you see \u0027Interpreter binding\u0027 above, just hit `Save` without deselecting any interpreters.\n\n## Welcome to InsightEdge tutorial.\n\n##### This tutorial shows some of basic features of InsightEdge:\n* saving RDDs\n* loading RDDs\n* loading RDDs via SQL queries\n* loading DataFrames\n* querying tables created with DataFrames\n* persisting DataFrames to Data Grid\n\n##### This is a live tutorial, you can run the code yourself. _(click `Run` button in each paragraph from top to bottom)_",
-      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
+      "text": "%md\n\u003e If you see \u0027Interpreter binding\u0027 above, just hit `Save` without deselecting any interpreters.\n\n## Welcome to InsightEdge tutorial.\n\n##### This tutorial shows some of basic features of InsightEdge:\n* saving RDDs\n* loading RDDs\n* loading RDDs via SQL queries\n* loading DataFrames\n* querying tables created with DataFrames\n* persisting DataFrames to Data Grid\n* qurying the Data Grid with Gigaspaces SQL-99 compatible JDBC\n\n##### This is a live tutorial, you can run the code yourself. _(click `Run` button in each paragraph from top to bottom)_",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.004",
       "config": {
         "tableHide": false,
         "editorSetting": {
           "language": "markdown",
-          "editOnDblClick": true
+          "editOnDblClick": true,
+          "completionSupport": false
         },
         "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
+        "fontSize": 9.0,
         "results": {},
         "enabled": true
       },
@@ -24,30 +27,33 @@
         "msg": [
           {
             "type": "HTML",
-            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003cblockquote\u003e\n  \u003cp\u003eIf you see \u0026lsquo;Interpreter binding\u0026rsquo; above, just hit \u003ccode\u003eSave\u003c/code\u003e without deselecting any interpreters.\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003ch2\u003eWelcome to InsightEdge tutorial.\u003c/h2\u003e\n\u003ch5\u003eThis tutorial shows some of basic features of InsightEdge:\u003c/h5\u003e\n\u003cul\u003e\n  \u003cli\u003esaving RDDs\u003c/li\u003e\n  \u003cli\u003eloading RDDs\u003c/li\u003e\n  \u003cli\u003eloading RDDs via SQL queries\u003c/li\u003e\n  \u003cli\u003eloading DataFrames\u003c/li\u003e\n  \u003cli\u003equerying tables created with DataFrames\u003c/li\u003e\n  \u003cli\u003epersisting DataFrames to Data Grid\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch5\u003eThis is a live tutorial, you can run the code yourself. \u003cem\u003e(click \u003ccode\u003eRun\u003c/code\u003e button in each paragraph from top to bottom)\u003c/em\u003e\u003c/h5\u003e\n\u003c/div\u003e"
+            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003cblockquote\u003e\n  \u003cp\u003eIf you see \u0026lsquo;Interpreter binding\u0026rsquo; above, just hit \u003ccode\u003eSave\u003c/code\u003e without deselecting any interpreters.\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003ch2\u003eWelcome to InsightEdge tutorial.\u003c/h2\u003e\n\u003ch5\u003eThis tutorial shows some of basic features of InsightEdge:\u003c/h5\u003e\n\u003cul\u003e\n  \u003cli\u003esaving RDDs\u003c/li\u003e\n  \u003cli\u003eloading RDDs\u003c/li\u003e\n  \u003cli\u003eloading RDDs via SQL queries\u003c/li\u003e\n  \u003cli\u003eloading DataFrames\u003c/li\u003e\n  \u003cli\u003equerying tables created with DataFrames\u003c/li\u003e\n  \u003cli\u003epersisting DataFrames to Data Grid\u003c/li\u003e\n  \u003cli\u003equrying the Data Grid with Gigaspaces SQL-99 compatible JDBC\u003c/li\u003e\n\u003c/ul\u003e\n\u003ch5\u003eThis is a live tutorial, you can run the code yourself. \u003cem\u003e(click \u003ccode\u003eRun\u003c/code\u003e button in each paragraph from top to bottom)\u003c/em\u003e\u003c/h5\u003e\n\u003c/div\u003e"
           }
         ]
       },
       "apps": [],
-      "jobName": "paragraph_1497940953964_119234876",
+      "jobName": "paragraph_1539091427004_1141426330",
       "id": "20170620-093024_406952967",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.004",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
     },
     {
       "text": "%md\n## Defining data model.\n\n##### `%define` allows you to append custom code to spark jobs. This is a nice place to write your model classes. To learn about syntax, please, refer to [Data Modeling](http://insightedge.io/docs/010/2_modeling.html).\n##### Two things to keep in mind when working with `%define`:\n1. you can only call `%define` before `%spark` interpreter, thus changing model requires reloading the interpreter\n    - code in `%define` is compiled and packed into temporary jars\n    - these jars are added as dependencies to spark jobs\n2. each model change must be supplied with new version because Data Grid won\u0027t allow overwriting model schema\n    - put `v#` as a subpackage for data model (e.g. `package model.v1`)\n    - increment `v#` each time you make a change and update `import model.v#._` statement",
-      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.005",
       "config": {
         "tableHide": false,
         "editorSetting": {
           "language": "markdown",
-          "editOnDblClick": true
+          "editOnDblClick": true,
+          "completionSupport": false
         },
         "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
+        "fontSize": 9.0,
         "results": {},
         "enabled": true
       },
@@ -65,9 +71,9 @@
         ]
       },
       "apps": [],
-      "jobName": "paragraph_1497940953964_119234876",
+      "jobName": "paragraph_1539091427005_-704273958",
       "id": "20170620-093134_1087314216",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.005",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -75,7 +81,8 @@
     {
       "title": "Product model",
       "text": "%define\npackage model.v1\n\nimport org.insightedge.scala.annotation._\nimport scala.beans.{BeanProperty, BooleanBeanProperty}\n\ncase class Product(\n\n                    @BeanProperty\n                    @SpaceId\n                    var id: Long,\n\n                    @BeanProperty\n                    var description: String,\n\n                    @BeanProperty\n                    var quantity: Int,\n\n                    @BooleanBeanProperty\n                    var featuredProduct: Boolean\n\n                  ) {\n\n  def this() \u003d this(-1, null, -1, false)\n\n}",
-      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.005",
       "config": {
         "editorSetting": {
           "language": "scala",
@@ -83,6 +90,7 @@
         },
         "colWidth": 12.0,
         "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
         "title": true,
         "results": {},
         "enabled": true
@@ -92,9 +100,9 @@
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497940953965_118850127",
+      "jobName": "paragraph_1539091427005_-1615676888",
       "id": "20170620-093154_1933571106",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.005",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -103,40 +111,17 @@
       "title": "Initializing InsightEdge Context",
       "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.insightedge.spark.context.InsightEdgeConfig\n\n//Change space name here if not working with default\nval ieConfig \u003d new InsightEdgeConfig(\"insightedge-space\")\n\nsc.initializeInsightEdgeContext(ieConfig)",
       "user": "anonymous",
-      "dateUpdated": "Sep 26, 2018 5:50:42 PM",
-      "config": {
-        "colWidth": 12.0,
-        "enabled": true,
-        "results": {},
-        "editorSetting": {
-          "language": "text",
-          "editOnDblClick": false
-        },
-        "editorMode": "ace/mode/text",
-        "title": true
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1537973263692_227058257",
-      "id": "20180926-174743_1288107071",
-      "dateCreated": "Sep 26, 2018 5:47:43 PM",
-      "status": "READY",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Saving RDD",
-      "text": "%spark\nimport scala.util.Random\n\ndef normal(top:Int): Int \u003d {\n    val iterations \u003d 10\n    val normal \u003d (0 to iterations).foldLeft(0.0){(sum, index) \u003d\u003e sum + Math.random()} / iterations\n    (normal * top).toInt\n}\n\nval rdd \u003d sc.parallelize(1 to 100000).map { i \u003d\u003e Product(i, \"Description of product \" + i, Math.abs(normal(100) - 30), Random.nextDouble() \u003c 0.2) }\nrdd.saveToGrid()\n",
-      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
+      "dateUpdated": "2018-10-09 16:23:47.005",
       "config": {
         "editorSetting": {
           "language": "scala",
-          "editOnDblClick": false
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
         },
         "colWidth": 12.0,
         "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
         "title": true,
         "results": {},
         "enabled": true
@@ -146,9 +131,40 @@
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497940953965_118850127",
+      "jobName": "paragraph_1539091427005_395653249",
+      "id": "20180926-174743_1288107071",
+      "dateCreated": "2018-10-09 16:23:47.005",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Saving RDD",
+      "text": "%spark\nimport scala.util.Random\n\ndef normal(top:Int): Int \u003d {\n    val iterations \u003d 10\n    val normal \u003d (0 to iterations).foldLeft(0.0){(sum, index) \u003d\u003e sum + Math.random()} / iterations\n    (normal * top).toInt\n}\n\nval rdd \u003d sc.parallelize(1 to 100000).map { i \u003d\u003e Product(i, \"Description of product \" + i, Math.abs(normal(100) - 30), Random.nextDouble() \u003c 0.2) }\nrdd.saveToGrid()\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.006",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427005_1591906967",
       "id": "20170620-093337_2060899833",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -156,14 +172,18 @@
     {
       "title": "Loading RDD",
       "text": "%spark\nval plainRdd \u003d sc.gridRdd[Product]()\nval count \u003d plainRdd.count()\n",
-      "dateUpdated": "Jun 27, 2017 9:26:14 AM",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.006",
       "config": {
         "editorSetting": {
           "language": "scala",
-          "editOnDblClick": false
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
         },
         "colWidth": 6.0,
         "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
         "title": true,
         "results": {},
         "enabled": true
@@ -173,9 +193,9 @@
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497940953965_118850127",
+      "jobName": "paragraph_1539091427006_986072145",
       "id": "20170620-093424_256644097",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -183,14 +203,18 @@
     {
       "title": "Loading RDD with SQL",
       "text": "%spark\nval sqlRdd \u003d sc.gridSql[Product](\"quantity \u003c ?\", Seq(5))\nval count \u003d sqlRdd.count()\n",
-      "dateUpdated": "Jun 27, 2017 9:26:20 AM",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.006",
       "config": {
         "editorSetting": {
           "language": "scala",
-          "editOnDblClick": false
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
         },
         "colWidth": 6.0,
         "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
         "title": true,
         "results": {},
         "enabled": true
@@ -200,9 +224,9 @@
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497940953966_120004374",
+      "jobName": "paragraph_1539091427006_719082143",
       "id": "20170620-093458_2093934595",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -210,14 +234,18 @@
     {
       "title": "Loading DataFrame",
       "text": "%spark\nval df \u003d spark.read.grid[Product]\ndf.printSchema()\ndf.createOrReplaceTempView(\"product\")\nval lowStock \u003d df.filter(df(\"quantity\") \u003c 5).count()\n",
-      "dateUpdated": "Jun 27, 2017 9:26:25 AM",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.006",
       "config": {
         "editorSetting": {
           "language": "scala",
-          "editOnDblClick": false
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
         },
         "colWidth": 6.0,
         "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
         "title": true,
         "results": {},
         "enabled": true
@@ -227,9 +255,9 @@
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497940953966_120004374",
+      "jobName": "paragraph_1539091427006_-58742690",
       "id": "20170620-093540_604441252",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -238,33 +266,38 @@
       "title": "Loading Dataset",
       "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\nds.printSchema()\nval lowStock \u003d ds.filter(o \u003d\u003e o.quantity \u003c 5).count()\n",
       "user": "anonymous",
-      "dateUpdated": "Jun 27, 2017 9:27:56 AM",
+      "dateUpdated": "2018-10-09 16:23:47.006",
       "config": {
         "editorSetting": {
           "language": "scala",
-          "editOnDblClick": false
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
         },
         "colWidth": 6.0,
         "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "fontSize": 9.0,
         "title": true,
         "results": {},
-        "enabled": true,
-        "editorHide": false
+        "enabled": true
       },
       "settings": {
         "params": {},
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1498544788753_165373580",
+      "jobName": "paragraph_1539091427006_-1205904678",
       "id": "20170627-092628_140244547",
-      "dateCreated": "Jun 27, 2017 9:26:28 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
+      "errorMessage": "",
       "progressUpdateIntervalMs": 500
     },
     {
       "text": "%md\n#### After executing `df.createOrReplaceTempView(\"product\")`, you can run SQL queries on the `product` table to perform interactive analysis",
-      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.006",
       "config": {
         "tableHide": false,
         "editorSetting": {
@@ -274,6 +307,7 @@
         "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
+        "fontSize": 9.0,
         "results": {},
         "enabled": true
       },
@@ -281,19 +315,10 @@
         "params": {},
         "forms": {}
       },
-      "results": {
-        "code": "SUCCESS",
-        "msg": [
-          {
-            "type": "HTML",
-            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch4\u003eAfter executing \u003ccode\u003edf.createOrReplaceTempView(\u0026quot;product\u0026quot;)\u003c/code\u003e, you can run SQL queries on the \u003ccode\u003eproduct\u003c/code\u003e table to perform interactive analysis\u003c/h4\u003e\n\u003c/div\u003e"
-          }
-        ]
-      },
       "apps": [],
-      "jobName": "paragraph_1497940953966_120004374",
+      "jobName": "paragraph_1539091427006_-104750970",
       "id": "20170620-093628_1219065086",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -302,307 +327,152 @@
       "title": "Number of featured/usual products",
       "text": "%sql\nselect\n    (case when featuredProduct \u003c\u003e 0 then \u0027featured\u0027 ELSE \u0027not-featured\u0027 END) as featured,\n    count(featuredProduct) as count \nfrom product\ngroup by featuredProduct \norder by featuredProduct \n",
       "user": "anonymous",
-      "dateUpdated": "Jun 20, 2017 9:51:14 AM",
+      "dateUpdated": "2018-10-09 16:23:47.006",
       "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
         "colWidth": 6.0,
-        "enabled": true,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9.0,
+        "title": true,
         "results": {
           "0": {
             "graph": {
               "mode": "multiBarChart",
               "height": 300.0,
-              "optionOpen": false
+              "optionOpen": false,
+              "setting": {
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "featured",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "values": [
+                {
+                  "name": "count",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              ]
             },
             "helium": {}
           }
         },
-        "editorSetting": {
-          "language": "sql",
-          "editOnDblClick": false
-        },
-        "editorMode": "ace/mode/sql",
-        "title": true
+        "enabled": true
       },
       "settings": {
         "params": {},
         "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497941414243_-1909715761",
+      "jobName": "paragraph_1539091427006_365495711",
       "id": "20170620-095014_288553858",
-      "dateCreated": "Jun 20, 2017 9:50:14 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
+      "errorMessage": "",
       "progressUpdateIntervalMs": 500
     },
     {
       "title": "Number of products by quantity",
       "text": "%sql\nselect quantity, count(quantity) as count \nfrom product \nwhere featuredProduct \u003d ${featured\u003dtrue,true|false}\ngroup by quantity \norder by quantity \n",
       "user": "anonymous",
-      "dateUpdated": "Jun 20, 2017 9:54:13 AM",
+      "dateUpdated": "2018-10-09 16:23:47.007",
       "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
         "colWidth": 6.0,
-        "enabled": true,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9.0,
+        "title": true,
+        "runOnSelectionChange": true,
         "results": {
           "0": {
             "graph": {
               "mode": "multiBarChart",
               "height": 300.0,
-              "optionOpen": false
+              "optionOpen": false,
+              "setting": {
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "quantity",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "values": [
+                {
+                  "name": "count",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              ]
             },
             "helium": {}
           }
         },
-        "editorSetting": {
-          "language": "sql",
-          "editOnDblClick": false
-        },
-        "editorMode": "ace/mode/sql",
-        "title": true
+        "enabled": true
       },
       "settings": {
-        "params": {},
-        "forms": {}
+        "params": {
+          "featured": "true"
+        },
+        "forms": {
+          "featured": {
+            "type": "Select",
+            "options": [
+              {
+                "value": "true"
+              },
+              {
+                "value": "false"
+              }
+            ],
+            "name": "featured",
+            "defaultValue": "true",
+            "hidden": false
+          }
+        }
       },
       "apps": [],
-      "jobName": "paragraph_1497941479267_451411618",
+      "jobName": "paragraph_1539091427006_-792235694",
       "id": "20170620-095119_566430160",
-      "dateCreated": "Jun 20, 2017 9:51:19 AM",
+      "dateCreated": "2018-10-09 16:23:47.006",
       "status": "READY",
+      "errorMessage": "",
       "progressUpdateIntervalMs": 500
     },
     {
       "text": "%md\n#### `DataFrames` can be persisted to Data Grid and then loaded back. This allows you to share processed data between applications\n",
       "user": "anonymous",
-      "dateUpdated": "Jun 20, 2017 9:54:29 AM",
-      "config": {
-        "colWidth": 12.0,
-        "enabled": true,
-        "results": {},
-        "editorSetting": {
-          "language": "markdown",
-          "editOnDblClick": true
-        },
-        "editorMode": "ace/mode/markdown",
-        "editorHide": true,
-        "tableHide": false
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "results": {
-        "code": "SUCCESS",
-        "msg": [
-          {
-            "type": "HTML",
-            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch4\u003e\u003ccode\u003eDataFrames\u003c/code\u003e can be persisted to Data Grid and then loaded back. This allows you to share processed data between applications\u003c/h4\u003e\n\u003c/div\u003e"
-          }
-        ]
-      },
-      "apps": [],
-      "jobName": "paragraph_1497941658976_2101877131",
-      "id": "20170620-095418_1849917370",
-      "dateCreated": "Jun 20, 2017 9:54:18 AM",
-      "dateStarted": "Jun 20, 2017 9:54:29 AM",
-      "dateFinished": "Jun 20, 2017 9:54:29 AM",
-      "status": "FINISHED",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Importing Spark SQL classes",
-      "text": "%spark\nimport org.apache.spark.sql._",
-      "user": "anonymous",
-      "dateUpdated": "Jun 20, 2017 9:54:58 AM",
-      "config": {
-        "colWidth": 12.0,
-        "enabled": true,
-        "results": {},
-        "editorSetting": {
-          "language": "scala",
-          "editOnDblClick": false
-        },
-        "editorMode": "ace/mode/scala",
-        "title": true
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1497941682959_500349705",
-      "id": "20170620-095442_1227966258",
-      "dateCreated": "Jun 20, 2017 9:54:42 AM",
-      "status": "READY",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Loading Class As DataFrame",
-      "text": "%spark\nval df \u003d spark.read.grid[Product]\n",
-      "dateUpdated": "Jun 20, 2017 9:55:54 AM",
-      "config": {
-        "editorSetting": {
-          "language": "scala",
-          "editOnDblClick": false
-        },
-        "colWidth": 4.0,
-        "editorMode": "ace/mode/scala",
-        "title": true,
-        "results": {},
-        "enabled": true
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1497940953966_120004374",
-      "id": "20170620-093634_46944201",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
-      "status": "READY",
-      "errorMessage": "",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Saving DataFrame as collection",
-      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5).write.mode(SaveMode.Overwrite).grid(\"smallStock\")\n",
-      "dateUpdated": "Sep 26, 2018 5:48:52 PM",
-      "config": {
-        "editorSetting": {
-          "language": "text",
-          "editOnDblClick": false
-        },
-        "colWidth": 4.0,
-        "editorMode": "ace/mode/text",
-        "title": true,
-        "results": {},
-        "enabled": true
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1497940953966_120004374",
-      "id": "20170620-093742_927375323",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
-      "status": "READY",
-      "errorMessage": "",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Loading Collection as DataFrame",
-      "text": "%spark\nval df \u003d spark.read.grid(\"smallStock\")\n\nval outOfStock \u003d df.filter(df(\"quantity\") equalTo 0).count()\n",
-      "dateUpdated": "Jun 27, 2017 10:14:03 AM",
-      "config": {
-        "editorSetting": {
-          "language": "scala",
-          "editOnDblClick": false
-        },
-        "colWidth": 4.0,
-        "editorMode": "ace/mode/scala",
-        "title": true,
-        "results": {},
-        "enabled": true
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1497940953966_120004374",
-      "id": "20170620-093814_941295066",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
-      "status": "READY",
-      "errorMessage": "",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Loading Class As Dataset",
-      "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\n",
-      "user": "anonymous",
-      "dateUpdated": "Jun 27, 2017 9:32:29 AM",
-      "config": {
-        "editorSetting": {
-          "language": "scala",
-          "editOnDblClick": false
-        },
-        "colWidth": 4.0,
-        "editorMode": "ace/mode/scala",
-        "title": true,
-        "results": {},
-        "enabled": true,
-        "editorHide": false
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1498545073087_-149521231",
-      "id": "20170627-093113_46231033",
-      "dateCreated": "Jun 27, 2017 9:31:13 AM",
-      "status": "READY",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Saving Dataset as collection",
-      "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 ).write.mode(SaveMode.Overwrite).grid(\"bigStock\")\n",
-      "user": "anonymous",
-      "dateUpdated": "Sep 26, 2018 5:49:04 PM",
-      "config": {
-        "editorSetting": {
-          "language": "text",
-          "editOnDblClick": false
-        },
-        "colWidth": 4.0,
-        "editorMode": "ace/mode/text",
-        "title": true,
-        "results": {},
-        "enabled": true,
-        "editorHide": false
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1498545159187_-743896462",
-      "id": "20170627-093239_990726752",
-      "dateCreated": "Jun 27, 2017 9:32:39 AM",
-      "status": "READY",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "title": "Loading Collection as Dataset",
-      "text": "%spark\nval ds \u003d spark.read.grid(\"bigStock\").as[Product]\n\nval outOfStock \u003d ds.filter( o \u003d\u003e o.quantity \u003d\u003d 5 ).count()\n",
-      "user": "anonymous",
-      "dateUpdated": "Jun 27, 2017 10:45:35 AM",
-      "config": {
-        "editorSetting": {
-          "language": "scala",
-          "editOnDblClick": false
-        },
-        "colWidth": 4.0,
-        "editorMode": "ace/mode/scala",
-        "title": true,
-        "results": {},
-        "enabled": true,
-        "editorHide": false
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "apps": [],
-      "jobName": "paragraph_1498545209603_-24507963",
-      "id": "20170627-093329_1824810522",
-      "dateCreated": "Jun 27, 2017 9:33:29 AM",
-      "status": "READY",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "text": "%md\n## Congratulations, it\u0027s done.\n##### You can create your own notebook in \u0027Notebook\u0027 menu. Good luck!\n",
-      "dateUpdated": "Jun 20, 2017 9:42:33 AM",
+      "dateUpdated": "2018-10-09 16:23:47.007",
       "config": {
         "tableHide": false,
         "editorSetting": {
@@ -612,6 +482,7 @@
         "colWidth": 12.0,
         "editorMode": "ace/mode/markdown",
         "editorHide": true,
+        "fontSize": 9.0,
         "results": {},
         "enabled": true
       },
@@ -619,19 +490,331 @@
         "params": {},
         "forms": {}
       },
-      "results": {
-        "code": "SUCCESS",
-        "msg": [
-          {
-            "type": "HTML",
-            "data": "\u003cdiv class\u003d\"markdown-body\"\u003e\n\u003ch2\u003eCongratulations, it\u0026rsquo;s done.\u003c/h2\u003e\n\u003ch5\u003eYou can create your own notebook in \u0026lsquo;Notebook\u0026rsquo; menu. Good luck!\u003c/h5\u003e\n\u003c/div\u003e"
-          }
-        ]
+      "apps": [],
+      "jobName": "paragraph_1539091427007_247401673",
+      "id": "20170620-095418_1849917370",
+      "dateCreated": "2018-10-09 16:23:47.007",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Importing Spark SQL classes",
+      "text": "%spark\nimport org.apache.spark.sql._",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.007",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
       },
       "apps": [],
-      "jobName": "paragraph_1497940953967_119619625",
-      "id": "20170620-093845_67106827",
-      "dateCreated": "Jun 20, 2017 9:42:33 AM",
+      "jobName": "paragraph_1539091427007_203195831",
+      "id": "20170620-095442_1227966258",
+      "dateCreated": "2018-10-09 16:23:47.007",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading Class As DataFrame",
+      "text": "%spark\nval df \u003d spark.read.grid[Product]\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.007",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427007_-1046300234",
+      "id": "20170620-093634_46944201",
+      "dateCreated": "2018-10-09 16:23:47.007",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Saving DataFrame as collection",
+      "text": "%spark\ndf.select(\"id\", \"quantity\").filter(df(\"quantity\") \u003c 5).write.mode(SaveMode.Overwrite).grid(\"smallStock\")\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.007",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427007_286500411",
+      "id": "20170620-093742_927375323",
+      "dateCreated": "2018-10-09 16:23:47.007",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading Collection as DataFrame",
+      "text": "%spark\nval df \u003d spark.read.grid(\"smallStock\")\n\nval outOfStock \u003d df.filter(df(\"quantity\") equalTo 0).count()\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.007",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427007_1570534941",
+      "id": "20170620-093814_941295066",
+      "dateCreated": "2018-10-09 16:23:47.007",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading Class As Dataset",
+      "text": "%spark\nval ds \u003d spark.read.grid[Product].as[Product]\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.008",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427007_652562848",
+      "id": "20170627-093113_46231033",
+      "dateCreated": "2018-10-09 16:23:47.007",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Saving Dataset as collection",
+      "text": "%spark\nds.filter( o \u003d\u003e o.quantity \u003e 2 ).write.mode(SaveMode.Overwrite).grid(\"bigStock\")\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.008",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427008_1117290115",
+      "id": "20170627-093239_990726752",
+      "dateCreated": "2018-10-09 16:23:47.008",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Loading Collection as Dataset",
+      "text": "%spark\nval ds \u003d spark.read.grid(\"bigStock\").as[Product]\n\nval outOfStock \u003d ds.filter( o \u003d\u003e o.quantity \u003d\u003d 5 ).count()\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.008",
+      "config": {
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 4.0,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false,
+        "fontSize": 9.0,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427008_-616869843",
+      "id": "20170627-093329_1824810522",
+      "dateCreated": "2018-10-09 16:23:47.008",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Querying The Space With Gigaspaces Jdbc",
+      "text": "%jdbc\n\nSELECT * FROM Product WHERE quantity \u003c 5\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.008",
+      "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12.0,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9.0,
+        "title": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "description": "string",
+                      "featuredProduct": "string",
+                      "id": "string",
+                      "quantity": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                },
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "description",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "values": [
+                {
+                  "name": "featuredProduct",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              ]
+            },
+            "helium": {}
+          }
+        },
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427008_2091524606",
+      "id": "20181009-095227_1058146395",
+      "dateCreated": "2018-10-09 16:23:47.008",
+      "status": "READY",
+      "errorMessage": "",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-10-09 16:23:47.008",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1539091427008_-118877886",
+      "id": "20181009-162035_1209772593",
+      "dateCreated": "2018-10-09 16:23:47.008",
       "status": "READY",
       "errorMessage": "",
       "progressUpdateIntervalMs": 500
@@ -639,10 +822,15 @@
   ],
   "name": "InsightEdge Basics",
   "id": "INSIGHTEDGE-BASIC",
-  "angularObjects": {},
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {
+    "md:shared_process": [],
+    "jdbc:shared_process": [],
+    "spark:shared_process": []
+  },
   "config": {
-    "looknfeel": "default",
-    "personalizedMode": "false"
+    "isZeppelinNotebookCronEnable": false
   },
   "info": {}
 }
