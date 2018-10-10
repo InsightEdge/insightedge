@@ -601,8 +601,8 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "title": "Querying The Space With Gigaspaces Jdbc",
-      "text": "%jdbc\n\nSELECT * FROM Product WHERE quantity \u003c 5\n",
+      "title": "Querying The Space With GigaSpaces Jdbc",
+      "text": "%gigaspaces\u005fjdbc\n\nSELECT * FROM Product WHERE quantity \u003c 5\n",
       "user": "anonymous",
       "dateUpdated": "2018-10-09 16:23:47.008",
       "config": {
