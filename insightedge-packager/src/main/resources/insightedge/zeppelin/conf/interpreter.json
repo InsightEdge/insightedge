@@ -224,6 +224,10 @@
           "value": "true",
           "type": "textarea"
         },
+        "com.j_spaces.jdbc.unsupported-sql-operation-throws-exception": {
+          "value": "false",
+          "type": "textarea"
+        },
         "default.user": {
           "name": "default.user",
           "value": "",
