@@ -212,7 +212,7 @@
       "properties": {
         "default.url": {
           "name": "default.url",
-          "value": "jdbc:xap:url\u003djini://*/*/insightedge-space",
+          "value": "jdbc:xap:spaceName\u003dinsightedge-space",
           "type": "string"
         },
         "default.driver": {
