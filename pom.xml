@@ -47,6 +47,7 @@
         <module>insightedge-integration-tests</module>
         <module>insightedge-cli</module>
         <module>insightedge-zeppelin</module>
+        <module>insightedge-examples</module>
     </modules>
 
     <dependencyManagement>
