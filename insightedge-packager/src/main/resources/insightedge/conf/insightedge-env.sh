@@ -39,7 +39,7 @@ if [ -z "${ZEPPELIN_LOG_DIR}" ]; then
 fi
 
 if [ -z "${INSIGHTEDGE_SPACE_NAME}" ]; then
-    export INSIGHTEDGE_SPACE_NAME="insightedge-space"
+    export INSIGHTEDGE_SPACE_NAME="demo"
 fi
 
 #### PYSPARK_PYTHON is also defined in insightedge-pyspark

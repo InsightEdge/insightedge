@@ -101,7 +101,7 @@
     },
     {
       "title": "Initializing InsightEdge Context",
-      "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.insightedge.spark.context.InsightEdgeConfig\n\n//Change space name here if not working with default\nval ieConfig \u003d new InsightEdgeConfig(\"insightedge-space\")\n\nsc.initializeInsightEdgeContext(ieConfig)",
+      "text": "%spark\nimport model.v1._\nimport org.insightedge.spark.implicits.all._\nimport org.insightedge.spark.context.InsightEdgeConfig\n\n//Change space name here if not working with default\nval ieConfig \u003d new InsightEdgeConfig(\"demo\")\n\nsc.initializeInsightEdgeContext(ieConfig)",
       "user": "anonymous",
       "dateUpdated": "Sep 26, 2018 5:50:42 PM",
       "config": {

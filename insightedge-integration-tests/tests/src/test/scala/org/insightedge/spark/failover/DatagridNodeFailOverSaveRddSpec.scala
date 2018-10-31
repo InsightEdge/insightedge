@@ -67,7 +67,7 @@ class DatagridNodeFailOverSaveRddSpec extends FlatSpec with BeforeAndAfterAll {
 
     printLnWithTimestamp("masterContainerId:" + masterContainerId)
 
-    val spaceName = "insightedge-space"
+    val spaceName = "demo"
     val command = s"/opt/insightedge/insightedge/bin/insightedge-submit --class " + fullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
       " spark://" + masterIp + ":7077 " + spaceName

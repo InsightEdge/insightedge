@@ -129,7 +129,7 @@ public class I9EDemoCommand extends CliCommand {
 
     private List<ProcessBuilder> spaceProcessBuilder() {
 		SpaceRunCommand command  = new SpaceRunCommand();
-		command.name = "insightedge-space";
+		command.name = "demo";
         command.partitions = 2;
         command.ha = true;
 		command.lus = true;
