@@ -76,32 +76,14 @@ object Launcher {
         copy(s"$project/insightedge-core/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-core/pom.xml")
       }
       run("Adding examples") {
-        val examplesProject = s"$examplesTarget/.."
+        val examplesModule = s"$examplesTarget/.."
 
-        copy(s"$examplesProject/target/$examplesJar", s"$insightEdgeHome/examples/jars/$examplesJar")
-        copy(s"$examplesProject/python/sf_salaries.py", s"$insightEdgeHome/examples/python/sf_salaries.py")
+        copy(s"$examplesModule/target/$examplesJar", s"$insightEdgeHome/examples/jars/$examplesJar")
+        copy(s"$examplesModule/python/sf_salaries.py", s"$insightEdgeHome/examples/python/sf_salaries.py")
 
-        // copy all i9e-examples folder
-        copy(s"$examplesProject", s"$insightEdgeHome/examples/")
+        // copy i9e-examples src folder
+        copy(s"$examplesModule/src/main", s"$insightEdgeHome/examples/src/main")
 
-        // remove unnecessary folder/files from examples folder
-        remove(s"$insightEdgeHome/examples/build.sbt")
-        remove(s"$insightEdgeHome/examples/dependency-reduced-pom.xml")
-        remove(s"$insightEdgeHome/examples/doc")
-        remove(s"$insightEdgeHome/examples/.git")
-        remove(s"$insightEdgeHome/examples/.gitignore")
-        remove(s"$insightEdgeHome/examples/Jenkinsfile")
-        remove(s"$insightEdgeHome/examples/LICENSE.md")
-        remove(s"$insightEdgeHome/examples/project")
-        remove(s"$insightEdgeHome/examples/spark-warehouse")
-        remove(s"$insightEdgeHome/examples/tools")
-        remove(s"$insightEdgeHome/examples/target")
-        remove(s"$insightEdgeHome/examples/.idea")
-        remove(s"$insightEdgeHome/examples/insightedge-examples.iml")
-        remove(s"$insightEdgeHome/examples/src/test")
-        remove(s"$insightEdgeHome/examples/xap")
-        remove(s"$insightEdgeHome/examples/transaction.log")
-        remove(s"$insightEdgeHome/examples/README.md")
       }
       run("Adding InsightEdge resources") {
         copy(s"$resources/insightedge/conf/", s"$insightEdgeHome/conf")
