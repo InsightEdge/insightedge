@@ -85,7 +85,7 @@ object Launcher {
         copy(s"$examplesModule/src/main", s"$insightEdgeHome/examples/src/main")
 
         // copy i9e-examples pom.xml
-        copy(s"$examplesModule/pom.xml", s"$insightEdgeHome/examples/")
+        copy(s"$examplesModule/pom.xml", s"$insightEdgeHome/examples/pom.xml")
 
       }
       run("Adding InsightEdge resources") {
