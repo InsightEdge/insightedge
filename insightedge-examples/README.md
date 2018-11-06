@@ -70,7 +70,7 @@ Such command will start next components:
 * Spark master at `spark://127.0.0.1:7077` and Spark slave
 * Spark monitoring UI at `127.0.0.1:8080`
 * Data Grid manager and two containers with `1G` heap each
-    - space is deployed with name `insightedge-space`
+    - space is deployed with name `demo`
 
 #### Web Notebook 
   		  

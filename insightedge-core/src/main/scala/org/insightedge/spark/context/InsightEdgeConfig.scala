@@ -50,7 +50,7 @@ case class InsightEdgeConfig(
 object InsightEdgeConfig {
 
   val INSIGHTEDGE_SPACE_NAME = "INSIGHTEDGE_SPACE_NAME"
-  val INSIGHTEDGE_SPACE_NAME_DEFAULT = "insightedge-space"
+  val INSIGHTEDGE_SPACE_NAME_DEFAULT = "demo"
   val SPARK_MASTER_LOCAL_URL_DEFAULT = "spark://127.0.0.1:7077"
 
   /** keys used in SparkConf, the 'spark' prefix is mandatory, otherwise they are not propagated to executors **/

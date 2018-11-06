@@ -283,14 +283,14 @@ object InsightEdgeAdminUtils extends Assertions{
         deployOptions += " --ha"
       }
     }
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge space deploy $deployOptions insightedge-space >> $ieLogsPath/deploy-space.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge space deploy $deployOptions demo >> $ieLogsPath/deploy-space.log"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge pu undeploy insightedge-space >> $ieLogsPath/undeploy-space.log "))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge pu undeploy demo >> $ieLogsPath/undeploy-space.log "))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
@@ -389,7 +389,7 @@ object InsightEdgeAdminUtils extends Assertions{
 
     admin = createDataGridAdmin(managerServers)
 
-    admin.getProcessingUnits.waitFor("insightedge-space", 60, TimeUnit.SECONDS).waitForSpace(60, TimeUnit.SECONDS)
+    admin.getProcessingUnits.waitFor("demo", 60, TimeUnit.SECONDS).waitForSpace(60, TimeUnit.SECONDS)
 
     this
   }
@@ -478,19 +478,19 @@ object InsightEdgeAdminUtils extends Assertions{
 
     result= admin
       .getSpaces
-      .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
+      .waitFor("demo", 30, TimeUnit.SECONDS)
       .waitFor(6, 60, TimeUnit.SECONDS)
     printLnWithTimestamp(s"Found 6 space instances: $result")
 
     result = admin
       .getSpaces
-      .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
+      .waitFor("demo", 30, TimeUnit.SECONDS)
       .waitFor(3, SpaceMode.PRIMARY, 60, TimeUnit.SECONDS)
     printLnWithTimestamp(s"Found 3 primaries: $result")
 
     result= admin
       .getSpaces
-      .waitFor("insightedge-space", 30, TimeUnit.SECONDS)
+      .waitFor("demo", 30, TimeUnit.SECONDS)
       .waitFor(3, SpaceMode.BACKUP, 60, TimeUnit.SECONDS)
     printLnWithTimestamp(s"Found 3 backups: $result")
 

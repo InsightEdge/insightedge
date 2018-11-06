@@ -64,7 +64,7 @@ class DatagridNodeFailOverLoadRddSpec extends FlatSpec with BeforeAndAfterAll {
     val fullClassName = s"org.insightedge.spark.jobs.LoadRdd"
     val masterIp = InsightEdgeAdminUtils.getMasterIp()
     val masterContainerId = InsightEdgeAdminUtils.getMasterId()
-    val spaceName = "insightedge-space"
+    val spaceName = "demo"
 
     val command = s"/opt/insightedge/insightedge/bin/insightedge-submit --class " + fullClassName +
       " --master spark://" + masterIp + ":7077 " + JOBS +
