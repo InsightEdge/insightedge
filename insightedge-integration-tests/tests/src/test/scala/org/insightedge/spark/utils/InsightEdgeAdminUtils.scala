@@ -157,11 +157,11 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def loadInsightEdgeMasterContainer(id:Int, managerServers:String): String = {
     val containerId = containersId(s"master$id")
-    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --manager --spark-master > $ieLogsPath/master-$id.log"))
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --manager --spark-master > $ieLogsPath/master-$id.log 2>&1"))
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge  host run-agent --zeppelin > $ieLogsPath/zeppelin-$id.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge  host run-agent --zeppelin > $ieLogsPath/zeppelin-$id.log 2>&1"))
     val execId = execCreation.id()
     docker.execStart(execId)
 
@@ -283,14 +283,14 @@ object InsightEdgeAdminUtils extends Assertions{
         deployOptions += " --ha"
       }
     }
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge space deploy $deployOptions demo >> $ieLogsPath/deploy-space.log"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge space deploy $deployOptions demo >> $ieLogsPath/deploy-space.log 2>&1"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge pu undeploy demo >> $ieLogsPath/undeploy-space.log "))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge pu undeploy demo >> $ieLogsPath/undeploy-space.log 2>&1"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
@@ -375,6 +375,8 @@ object InsightEdgeAdminUtils extends Assertions{
   def create(): this.type = {
     managerServers = startContainers(numOfIEMasters)
 
+    printLnWithTimestamp("Backing-up setenv-overrides.sh file")
+    execAndWaitFor(containersId("master1"), s"cp /opt/insightedge/bin/setenv-overrides.sh /opt/insightedge/bin/setenv-overrides.sh.bck")
     execAndWaitFor(containersId("master1"), s"""echo "" >> /opt/insightedge/bin/setenv-overrides.sh""")
     execAndWaitFor(containersId("master1"), s"""echo "export XAP_MANAGER_SERVERS=$managerServers" >> /opt/insightedge/bin/setenv-overrides.sh""")
     execAndWaitFor(containersId("master1"), """echo "export XAP_NIC_ADDRESS=\$(hostname -I | cut -d \" \" -f 1)" >> /opt/insightedge/bin/setenv-overrides.sh""")
@@ -502,6 +504,8 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def shutdown(): Unit = {
+    printLnWithTimestamp("Resetting setenv-overrides.sh file")
+    execAndWaitFor(containersId("master1"), s"cp /opt/insightedge/bin/setenv-overrides.sh.bck /opt/insightedge/bin/setenv-overrides.sh")
     printLnWithTimestamp("Stopping docker container")
     containersId foreach ((t2) => docker.removeContainer(t2._1, RemoveContainerParam.forceKill()))
     docker.close()
