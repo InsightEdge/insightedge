@@ -376,7 +376,7 @@ object InsightEdgeAdminUtils extends Assertions{
     managerServers = startContainers(numOfIEMasters)
 
     printLnWithTimestamp("Backing-up setenv-overrides.sh file")
-    execAndWaitFor(containersId("master1"), s"cp /opt/insightedge/bin/setenv-overrides.sh /opt/insightedge/bin/setenv-overrides.sh.bck")
+    execAndWaitFor(containersId("master1"), s"cp -p /opt/insightedge/bin/setenv-overrides.sh /opt/insightedge/bin/setenv-overrides.sh.bck")
     execAndWaitFor(containersId("master1"), s"""echo "" >> /opt/insightedge/bin/setenv-overrides.sh""")
     execAndWaitFor(containersId("master1"), s"""echo "export XAP_MANAGER_SERVERS=$managerServers" >> /opt/insightedge/bin/setenv-overrides.sh""")
     execAndWaitFor(containersId("master1"), """echo "export XAP_NIC_ADDRESS=\$(hostname -I | cut -d \" \" -f 1)" >> /opt/insightedge/bin/setenv-overrides.sh""")
@@ -505,7 +505,7 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def shutdown(): Unit = {
     printLnWithTimestamp("Resetting setenv-overrides.sh file")
-    execAndWaitFor(containersId("master1"), s"cp /opt/insightedge/bin/setenv-overrides.sh.bck /opt/insightedge/bin/setenv-overrides.sh")
+    execAndWaitFor(containersId("master1"), s"cp -p /opt/insightedge/bin/setenv-overrides.sh.bck /opt/insightedge/bin/setenv-overrides.sh")
     printLnWithTimestamp("Stopping docker container")
     containersId foreach ((t2) => docker.removeContainer(t2._1, RemoveContainerParam.forceKill()))
     docker.close()
