@@ -602,7 +602,7 @@
     },
     {
       "title": "Querying The Space With GigaSpaces JDBC",
-      "text": "//NOTE: The InsightEdge JDBC driver is an InsightEdge Platform Enterprise feature. If you are using the InsightEdge open source package, this paragraph won\u0027t work.\n%insightedge\u005fjdbc\n\nSELECT * FROM Product WHERE quantity \u003c 5\n",
+      "text": "%insightedge\u005fjdbc\n\n//NOTE: The InsightEdge JDBC driver is an InsightEdge Platform Enterprise feature. If you are using the InsightEdge open source package, this paragraph won\u0027t work.\nSELECT * FROM Product WHERE quantity \u003c 5\n",
       "user": "anonymous",
       "dateUpdated": "2018-10-09 16:23:47.008",
       "config": {
