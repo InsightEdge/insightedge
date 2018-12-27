@@ -74,7 +74,7 @@ Such command will start next components:
 
 #### Web Notebook 
   		  
-The interactive Web Notebook (based on Zeppelin) is started automatically in `demo` mode at http://127.0.0.1:8090. For more information, refer to 'Zeppelin Notebook' section in [InsightEdge documentation](http://insightedge.io/docs) 
+The interactive Web Notebook (based on Zeppelin) is started automatically in `demo` mode at http://127.0.0.1:9090. For more information, refer to 'Zeppelin Notebook' section in [InsightEdge documentation](http://insightedge.io/docs) 
  
 #### Running from IDE
 
