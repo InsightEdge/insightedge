@@ -1,6 +1,15 @@
 @echo off
 SETLOCAL EnableDelayedExpansion
 call %~dp0..\insightedge\conf\insightedge-env.cmd
-
-set INSIGHTEDGE_CLI_CP="%XAP_HOME%\tools\cli\*";%INSIGHTEDGE_CLASSPATH%;%SIGAR_JARS%
-%JAVACMD% %JAVA_OPTIONS% %XAP_OPTIONS% %XAP_CLI_OPTIONS% -cp %INSIGHTEDGE_CLI_CP% org.insightedge.cli.commands.I9EMainCommand %*
+FOR /F "tokens=*" %%i IN ('"%JAVACMD% -cp "%XAP_HOME%\lib\required\*"" org.insightedge.cli.commands.I9ECommandFactory cli-insightedge') DO set GS_COMMAND=%%i %*
+if "!GS_COMMAND:~0,6!"=="Error:" (
+  echo %GS_COMMAND%
+) else (
+  if "%GS_VERBOSE%"=="true" (
+    echo Executing GigaSpaces command:
+    echo %GS_COMMAND%
+    echo --------------------------------------------------------------------------------
+  )
+  %GS_COMMAND%
+)
+endlocal

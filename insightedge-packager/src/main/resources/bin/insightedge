@@ -1,6 +1,14 @@
 #!/bin/bash
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/../insightedge/conf/insightedge-env.sh
-
-INSIGHTEDGE_CLI_CP=${XAP_HOME}/tools/cli/*:${INSIGHTEDGE_CLASSPATH}:${SIGAR_JARS}
-"${JAVACMD}" ${JAVA_OPTIONS} ${XAP_OPTIONS} ${XAP_CLI_OPTIONS} -cp ${INSIGHTEDGE_CLI_CP} org.insightedge.cli.commands.I9EMainCommand $*
+GS_COMMAND="`$JAVACMD -cp "$XAP_HOME/lib/required/*" org.insightedge.cli.commands.I9ECommandFactory cli-insightedge` $*"
+if [[ $GS_COMMAND == Error:* ]]; then
+    echo $GS_COMMAND
+else
+    if [[ $GS_VERBOSE == "true" ]]; then
+        echo Executing GigaSpaces command:
+        echo $GS_COMMAND
+        echo --------------------------------------------------------------------------------
+    fi
+    $GS_COMMAND
+fi
