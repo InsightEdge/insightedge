@@ -21,7 +21,7 @@ public class I9ECommandFactory extends GsCommandFactory {
         command.mainClass("org.insightedge.cli.commands.I9EMainCommand");
         command.classpathFromPath(SystemInfo.singleton().getXapHome(), "tools", "cli", "*");
         command.classpathFromEnv("INSIGHTEDGE_CLASSPATH");
-        command.classpathFromEnv("SIGAR_JARS");
+        appendSigarClassPath();
         appendXapOptions();
         command.optionsFromEnv("XAP_CLI_OPTIONS");
 
