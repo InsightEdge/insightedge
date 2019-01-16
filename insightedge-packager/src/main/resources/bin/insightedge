@@ -1,7 +1,7 @@
 #!/bin/bash
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source ${DIRNAME}/../insightedge/conf/insightedge-env.sh
-GS_COMMAND="`$JAVACMD -cp "$XAP_HOME/lib/required/*" org.insightedge.cli.commands.I9ECommandFactory cli-insightedge` $*"
+GS_COMMAND="`$JAVACMD -cp "$XAP_HOME/lib/required/*:$XAP_HOME/tools/cli/*" org.insightedge.cli.commands.I9ECommandFactory cli-insightedge` $*"
 if [[ $GS_COMMAND == Error:* ]]; then
     echo $GS_COMMAND
 else
