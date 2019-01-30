@@ -103,6 +103,7 @@ object InsightEdgeAdminUtils extends Assertions{
       .hostConfig(hostConfig)
       .image(ImageName)
       .env("XAP_LICENSE=tryme", s"XAP_MANAGER_SERVERS=$managerServers")
+      .cmd("bash", "-c", s"cp -rf /opt/insightedge/deploy /")
       .cmd("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --spark-worker --containers=2 > $ieLogsPath/worker-$id.log")
       .build()
 
@@ -157,7 +158,7 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def loadInsightEdgeMasterContainer(id:Int, managerServers:String): String = {
     val containerId = containersId(s"master$id")
-    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/insightedge host run-agent --manager --spark-master > $ieLogsPath/master-$id.log 2>&1"))
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"cp -rf /opt/insightedge/deploy / && /opt/insightedge/bin/insightedge host run-agent --manager --spark-master > $ieLogsPath/master-$id.log 2>&1"))
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
