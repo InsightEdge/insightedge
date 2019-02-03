@@ -15,6 +15,8 @@
         <scalatest.version>2.2.4</scalatest.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <zeppelin.version>0.8.1</zeppelin.version>
+        <zeppelin.spark.version>0.7.3</zeppelin.spark.version>
     </properties>
 
     <repositories>
@@ -160,6 +162,14 @@
                     <key>${key}</key>
                     <container>${container}</container>
                     <type />
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>

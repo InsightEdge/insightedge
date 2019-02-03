@@ -46,7 +46,7 @@ public class CompilingInterpreter extends Interpreter {
     }
 
     @Override
-    public void open() {
+    public void open() throws InterpreterException{
         depInterpreter = getDepInterpreter();
     }
 
@@ -62,7 +62,7 @@ public class CompilingInterpreter extends Interpreter {
         if (intp != null) {
             return intp.getScheduler();
         }
-        throw new InterpreterException("Can't find SparkInterpreter");
+        return null;
     }
 
     @Override
@@ -105,11 +105,11 @@ public class CompilingInterpreter extends Interpreter {
     }
 
     @Override
-    public List<InterpreterCompletion> completion(String buf, int cursor) {
+    public List<InterpreterCompletion> completion(String buf, int cursor, InterpreterContext context) {
         return depInterpreter.completion(buf, cursor);
     }
 
-    private DepInterpreter getDepInterpreter() {
+    private DepInterpreter getDepInterpreter() throws InterpreterException {
         LazyOpenInterpreter lazy = null;
         DepInterpreter dep;
         Interpreter p = getInterpreterInTheSameSessionByClassName(DepInterpreter.class.getName());
