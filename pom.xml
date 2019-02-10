@@ -16,6 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <zeppelin.version>0.8.1</zeppelin.version>
+        <!--NOTICE zeppelin spark jar latest version is  0.7.3 not aligned with zeppelin latest version-->
         <zeppelin.spark.version>0.7.3</zeppelin.spark.version>
     </properties>
 
