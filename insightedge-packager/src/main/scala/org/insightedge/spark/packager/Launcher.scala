@@ -97,10 +97,17 @@ object Launcher {
       }
       run("Installing Zeppelin interperters" ){
         val script = s"$insightEdgeHome/zeppelin/bin/install-interpreter.sh"
+
         permissions(script,read = Some(true), write = None, execute = Some(true))
-        val exitCode = s"$script --name md,jdbc" !
+
+        var exitCode = s"$script --name md,jdbc,shell" !
 
         if(exitCode != 0) throw new RuntimeException("Zeppelin install-interpreter.sh failed to install new interpreters")
+
+        //Renaming zeppelin/interpreter/shell to zeppelin/interpreter/sh due to a zeppelin bug
+        exitCode = s"mv  $insightEdgeHome/zeppelin/interpreter/shell $insightEdgeHome/zeppelin/interpreter/sh" !
+
+        if(exitCode != 0) throw new RuntimeException("Failed to rename shell interpreter directory")
 
         remove(s"$insightEdgeHome/zeppelin/logs")
       }
