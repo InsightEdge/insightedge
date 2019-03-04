@@ -10,13 +10,8 @@
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source "${DIRNAME}/../../bin/setenv.sh"
 
-
 # Set InsightEdge defaults:
-export INSIGHTEDGE_CLASSPATH="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/insightedge/lib/jdbc/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
-
-export ANALYTICS_XTREME_CLASSPATH="${XAP_HOME}/insightedge/lib/analytics-xtreme/*:${XAP_HOME}/lib/platform/service-grid/*"
-
-export INSIGHTEDGE_CLASSPATH="${ANALYTICS_XTREME_CLASSPATH}:${INSIGHTEDGE_CLASSPATH}"
+export INSIGHTEDGE_CLASSPATH="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/insightedge/lib/jdbc/*:${XAP_HOME}/insightedge/lib/analytics-xtreme/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
 
 if [ -n "${INSIGHTEDGE_CLASSPATH_EXT}" ]; then
     export INSIGHTEDGE_CLASSPATH="${INSIGHTEDGE_CLASSPATH_EXT}:${INSIGHTEDGE_CLASSPATH}"
@@ -33,8 +28,7 @@ if [ -z "${SPARK_DIST_CLASSPATH}" ]; then
 fi
 
 # Zeppelin
-# Spark jars are added to interpreter classpath because of Analytics Xtreme
-export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${ANALYTICS_XTREME_CLASSPATH}:${INSIGHTEDGE_CLASSPATH}:${SPARK_HOME}/jars/*"
+export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CLASSPATH}"
 
 if [ -z "${ZEPPELIN_PORT}" ]; then
     export ZEPPELIN_PORT=9090
