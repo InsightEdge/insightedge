@@ -1,12 +1,9 @@
 package org.insightedge.cli.commands;
 
 import org.gigaspaces.cli.CliExecutor;
+import org.gigaspaces.cli.CommandsSet;
 import org.gigaspaces.cli.commands.*;
 import picocli.CommandLine.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
 
 @Command(name="insightedge", headerHeading = I9EMainCommand.HEADER, customSynopsis = "insightedge [global-options] command [options] [parameters]")
 public class I9EMainCommand extends XapMainCommand {
@@ -26,9 +23,9 @@ public class I9EMainCommand extends XapMainCommand {
     }
 
     @Override
-    public Collection<Object> getSubCommands() {
-        ArrayList<Object> coll = new ArrayList<Object>(super.getSubCommands());
-        coll.add(new I9EDemoCommand());
-        return coll;
+    public CommandsSet getSubCommands() {
+        CommandsSet result = new CommandsSet(super.getSubCommands());
+        result.add(new I9EDemoCommand());
+        return result;
     }
 }
