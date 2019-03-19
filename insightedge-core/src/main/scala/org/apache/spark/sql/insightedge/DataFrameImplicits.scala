@@ -28,8 +28,6 @@ trait DataFrameImplicits {
 
   val InsightEdgeFormat = "org.apache.spark.sql.insightedge"
 
-  def gridOptions(): Map[String, String] = Map()
-
   def nestedClass[R: ClassTag]: Metadata = {
     nestedClassName(classTag[R].runtimeClass.getName)
   }
@@ -46,6 +44,10 @@ trait DataFrameImplicits {
 
     def grid[R: ClassTag]: DataFrame = {
       reader.format(InsightEdgeFormat).option("class", classTag[R].runtimeClass.getName).load()
+    }
+
+    def analyticsXtreme(dbtable: String, puName: String): DataFrame = {
+      reader.format("jdbc").option("driver", "com.gigaspaces.jdbc.Driver").option("url", s"jdbc:insightedge:puName=$puName;analyticsXtreme.enabled=true").option("dbtable", dbtable).load
     }
   }
 
