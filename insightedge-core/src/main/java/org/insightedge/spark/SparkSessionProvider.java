@@ -32,7 +32,7 @@ import java.util.Map;
  * @author Alon Shoham
  * @since 14.2
  */
-public class SparkSessionFactory implements Externalizable {
+public class SparkSessionProvider implements Externalizable {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,33 +49,25 @@ public class SparkSessionFactory implements Externalizable {
         }
     }
 
+    public SparkSessionProvider() {
+    }
+
+    protected SparkSessionProvider(Builder builder) {
+        this.master = builder.master;
+        this.configOptions = builder.configOptions;
+        this.enableHiveSupport = builder.enableHiveSupport;
+    }
+
     public String getMaster() {
         return master;
-    }
-    public SparkSessionFactory setMaster(String master) {
-        this.master = master;
-        return this;
     }
 
     public boolean isEnableHiveSupport() {
         return enableHiveSupport;
     }
-    public SparkSessionFactory setEnableHiveSupport(boolean enableHiveSupport) {
-        this.enableHiveSupport = enableHiveSupport;
-        return this;
-    }
 
     public Map<String, Object> getConfigOptions() {
         return configOptions;
-    }
-    public SparkSessionFactory setConfigOptions(Map<String, Object> configOptions) {
-        this.configOptions = configOptions;
-        return this;
-    }
-
-    public SparkSessionFactory config(String key, String value) {
-        configOptions.put(key, value);
-        return this;
     }
 
     public synchronized SparkSession getOrCreate(){
@@ -127,5 +119,36 @@ public class SparkSessionFactory implements Externalizable {
         this.master = IOUtils.readString(in);
         this.configOptions = IOUtils.readObject(in);
         this.enableHiveSupport = in.readBoolean();
+    }
+
+    public static class Builder {
+        private String master;
+        private Map<String,Object> configOptions = new HashMap<>();
+        private boolean enableHiveSupport;
+
+        public SparkSessionProvider create() {
+            return new SparkSessionProvider(this);
+        }
+
+        public Builder master(String master) {
+            this.master = master;
+            return this;
+        }
+
+        public Builder configOptions(Map<String,Object> configOptions) {
+            this.configOptions = configOptions;
+            return this;
+        }
+
+        public Builder config(String key, String value) {
+            configOptions.put(key, value);
+            return this;
+        }
+
+
+        public Builder enableHiveSupport(boolean enableHiveSupport) {
+            this.enableHiveSupport = enableHiveSupport;
+            return this;
+        }
     }
 }
