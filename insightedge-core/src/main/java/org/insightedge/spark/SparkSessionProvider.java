@@ -27,6 +27,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * @author Alon Shoham
@@ -39,6 +40,7 @@ public class SparkSessionProvider implements Externalizable {
     private String master;
     private Map<String, Object> configOptions = new HashMap<>();
     private boolean enableHiveSupport;
+    private String logLevel;
 
     private transient SparkSession sparkSession;
 
@@ -56,6 +58,7 @@ public class SparkSessionProvider implements Externalizable {
         this.master = builder.master;
         this.configOptions = builder.configOptions;
         this.enableHiveSupport = builder.enableHiveSupport;
+        this.logLevel = builder.logLevel;
     }
 
     public String getMaster() {
@@ -80,6 +83,10 @@ public class SparkSessionProvider implements Externalizable {
                 builder.enableHiveSupport();
             }
             configOptions.forEach((key, value) -> config(builder, key, value));
+
+            if (logLevel != null) {
+                java.util.logging.Logger.getLogger("org.apache").setLevel(Level.parse(logLevel));
+            }
 
             sparkSession = builder.getOrCreate();
             return sparkSession;
@@ -112,6 +119,7 @@ public class SparkSessionProvider implements Externalizable {
         IOUtils.writeString(out, master);
         IOUtils.writeObject(out, configOptions);
         out.writeBoolean(enableHiveSupport);
+        IOUtils.writeString(out, logLevel);
     }
 
     @Override
@@ -119,12 +127,14 @@ public class SparkSessionProvider implements Externalizable {
         this.master = IOUtils.readString(in);
         this.configOptions = IOUtils.readObject(in);
         this.enableHiveSupport = in.readBoolean();
+        this.logLevel = IOUtils.readString(in);
     }
 
     public static class Builder {
         private String master;
         private Map<String,Object> configOptions = new HashMap<>();
         private boolean enableHiveSupport;
+        private String logLevel;
 
         public SparkSessionProvider create() {
             return new SparkSessionProvider(this);
@@ -148,6 +158,11 @@ public class SparkSessionProvider implements Externalizable {
 
         public Builder enableHiveSupport(boolean enableHiveSupport) {
             this.enableHiveSupport = enableHiveSupport;
+            return this;
+        }
+
+        public Builder logLevel(String logLevel) {
+            this.logLevel = logLevel;
             return this;
         }
     }

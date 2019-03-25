@@ -56,4 +56,8 @@ public class SparkSessionProviderFactoryBean implements FactoryBean<SparkSession
     public void setEnableHiveSupport(boolean enableHiveSupport) {
         builder.enableHiveSupport(enableHiveSupport);
     }
+
+    public void setLogLevel(String logLevel) {
+        builder.logLevel(logLevel);
+    }
 }
