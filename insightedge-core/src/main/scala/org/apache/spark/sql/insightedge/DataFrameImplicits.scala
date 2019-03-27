@@ -46,8 +46,8 @@ trait DataFrameImplicits {
       reader.format(InsightEdgeFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
 
-    def analyticsXtreme(dbtable: String, puName: String): DataFrame = {
-      reader.format("jdbc").option("driver", "com.gigaspaces.jdbc.Driver").option("url", s"jdbc:insightedge:puName=$puName;analyticsXtreme.enabled=true").option("dbtable", dbtable).load
+    def analyticsXtreme(dbtable: String, spaceName: String): DataFrame = {
+      reader.format("jdbc").option("driver", "com.gigaspaces.jdbc.Driver").option("url", s"jdbc:insightedge:spaceName=$spaceName;analyticsXtreme.enabled=true").option("dbtable", dbtable).load
     }
   }
 
