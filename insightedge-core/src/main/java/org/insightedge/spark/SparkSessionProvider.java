@@ -21,12 +21,10 @@ import org.insightedge.internal.utils.ClassLoaderUtils;
 import org.jini.rio.boot.ServiceClassLoader;
 import scala.Option;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 /**
@@ -42,7 +40,7 @@ public class SparkSessionProvider implements Externalizable {
     private boolean enableHiveSupport;
     private String logLevel;
 
-    private transient SparkSession sparkSession;
+    private transient Wrapper wrapper;
 
     static  {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -73,8 +71,8 @@ public class SparkSessionProvider implements Externalizable {
         return configOptions;
     }
 
-    public synchronized SparkSession getOrCreate(){
-        if (sparkSession != null) return sparkSession;
+    public synchronized Wrapper getOrCreate(){
+        if (wrapper != null) return wrapper.reuse();
 
         if (master != null && !master.isEmpty()) {
             SparkSession.Builder builder = SparkSession.builder();
@@ -88,17 +86,25 @@ public class SparkSessionProvider implements Externalizable {
                 java.util.logging.Logger.getLogger("org.apache").setLevel(Level.parse(logLevel));
             }
 
-            sparkSession = builder.getOrCreate();
-            return sparkSession;
+            SparkSession activeSession = getIfExists(SparkSession.getActiveSession());
+            SparkSession defaultSession = getIfExists(SparkSession.getDefaultSession());
+            SparkSession sparkSession = builder.getOrCreate();
+            boolean closable = sparkSession != activeSession && sparkSession != defaultSession;
+            wrapper = new Wrapper(sparkSession, closable);
+            return wrapper;
         }
 
         Option<SparkSession> activeSession = SparkSession.getActiveSession();
         if (activeSession.isDefined()) {
-            sparkSession = activeSession.get();
-            return sparkSession;
+            wrapper = new Wrapper(activeSession.get(), false);
+            return wrapper;
         }
 
         throw new IllegalStateException("Spark session is not configured and no active session was found");
+    }
+
+    private static <T> T getIfExists(Option<T> o) {
+        return o.isDefined() ? o.get() : null;
     }
 
     private void config(SparkSession.Builder builder, String key, Object value) {
@@ -164,6 +170,35 @@ public class SparkSessionProvider implements Externalizable {
         public Builder logLevel(String logLevel) {
             this.logLevel = logLevel;
             return this;
+        }
+    }
+
+    public static class Wrapper implements Closeable {
+        private final SparkSession sparkSession;
+        private final boolean closable;
+        private final AtomicInteger referenceCounter;
+
+        private Wrapper(SparkSession sparkSession, boolean closable) {
+            this.sparkSession = sparkSession;
+            this.closable = closable;
+            this.referenceCounter = new AtomicInteger(1);
+        }
+
+        public SparkSession get() {
+            return sparkSession;
+        }
+
+        private Wrapper reuse() {
+            referenceCounter.incrementAndGet();
+            return this;
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (referenceCounter.decrementAndGet() == 0) {
+                if (closable)
+                    sparkSession.close();
+            }
         }
     }
 }
