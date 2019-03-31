@@ -34,6 +34,7 @@ import java.util.logging.Level;
 public class SparkSessionProvider implements Externalizable {
 
     private static final long serialVersionUID = 1L;
+    private static final boolean CLOSABLE_ENABLED = Boolean.getBoolean("com.gs.spark.session.auto-close-enabled");
 
     private String master;
     private Map<String, Object> configOptions = new HashMap<>();
@@ -90,7 +91,7 @@ public class SparkSessionProvider implements Externalizable {
             SparkSession defaultSession = getIfExists(SparkSession.getDefaultSession());
             SparkSession sparkSession = builder.getOrCreate();
             boolean closable = sparkSession != activeSession && sparkSession != defaultSession;
-            wrapper = new Wrapper(sparkSession, closable);
+            wrapper = new Wrapper(sparkSession, CLOSABLE_ENABLED);
             return wrapper;
         }
 
