@@ -47,7 +47,7 @@ trait DataFrameImplicits {
     }
 
     def analyticsXtreme(dbtable: String, spaceName: String): DataFrame = {
-      reader.format("jdbc").option("driver", "com.gigaspaces.jdbc.Driver").option("url", s"jdbc:insightedge:spaceName=$spaceName;analyticsXtreme.enabled=true").option("dbtable", dbtable).load
+      reader.format("jdbc").option("driver", "com.gigaspaces.jdbc.Driver").option("url", s"jdbc:insightedge:spaceName=$spaceName;analyticsXtreme.enabled=true;autoCommit=true").option("dbtable", dbtable).load
     }
   }
 
