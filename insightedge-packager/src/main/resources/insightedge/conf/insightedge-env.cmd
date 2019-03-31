@@ -39,4 +39,4 @@ if "x%PYSPARK_DRIVER_PYTHON%"=="x" (
 
 rem PYTHONPATH is also defined in insightedge-pyspark
 set PYTHONPATH=%SPARK_HOME%\python;%PYTHONPATH%
-set PYTHONPATH=%SPARK_HOME%\python\lib\py4j-*-src.zip;%PYTHONPATH%
+set PYTHONPATH=%SPARK_HOME%\python\lib\py4j-0.10.7-src.zip;%PYTHONPATH%
