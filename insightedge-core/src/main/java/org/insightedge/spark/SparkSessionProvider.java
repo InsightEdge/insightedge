@@ -16,6 +16,7 @@
 package org.insightedge.spark;
 
 import com.gigaspaces.internal.io.IOUtils;
+import org.apache.spark.TaskContext;
 import org.apache.spark.sql.SparkSession;
 import org.insightedge.internal.utils.ClassLoaderUtils;
 import org.jini.rio.boot.ServiceClassLoader;
@@ -34,7 +35,7 @@ import java.util.logging.Level;
 public class SparkSessionProvider implements Externalizable {
 
     private static final long serialVersionUID = 1L;
-    private static final boolean CLOSABLE_ENABLED = Boolean.getBoolean("com.gs.spark.session.auto-close-enabled");
+    private static final boolean CLOSABLE_ENABLED = !Boolean.getBoolean("com.gs.spark.session.auto-close-disabled");
 
     private String master;
     private Map<String, Object> configOptions = new HashMap<>();
@@ -91,7 +92,7 @@ public class SparkSessionProvider implements Externalizable {
             SparkSession defaultSession = getIfExists(SparkSession.getDefaultSession());
             SparkSession sparkSession = builder.getOrCreate();
             boolean closable = sparkSession != activeSession && sparkSession != defaultSession;
-            wrapper = new Wrapper(sparkSession, CLOSABLE_ENABLED);
+            wrapper = new Wrapper(sparkSession, closable && CLOSABLE_ENABLED);
             return wrapper;
         }
 
@@ -135,6 +136,10 @@ public class SparkSessionProvider implements Externalizable {
         this.configOptions = IOUtils.readObject(in);
         this.enableHiveSupport = in.readBoolean();
         this.logLevel = IOUtils.readString(in);
+    }
+
+    public boolean hasSparkTaskContext() {
+        return TaskContext.get() != null;
     }
 
     public static class Builder {
