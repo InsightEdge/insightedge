@@ -18,6 +18,7 @@ package org.apache.spark.sql.insightedge
 
 import org.apache.spark.sql.types.{Metadata, MetadataBuilder}
 import org.apache.spark.sql._
+import org.insightedge.spark.implicits.basic._
 
 import scala.reflect._
 
@@ -46,8 +47,26 @@ trait DataFrameImplicits {
       reader.format(InsightEdgeFormat).option("class", classTag[R].runtimeClass.getName).load()
     }
 
+    def analyticsXtreme(dbtable: String): DataFrame = {
+      getDefaultSpaceName() match {
+        case Some(spaceName) => analyticsXtreme(dbtable, spaceName)
+        case None => throw new IllegalStateException("No active session, or no space name in active session")
+      }
+    }
+
     def analyticsXtreme(dbtable: String, spaceName: String): DataFrame = {
-      reader.format("jdbc").option("driver", "com.gigaspaces.jdbc.Driver").option("url", s"jdbc:insightedge:spaceName=$spaceName;analyticsXtreme.enabled=true;autoCommit=true").option("dbtable", dbtable).load
+      reader.format("jdbc")
+        .option("driver", "com.gigaspaces.jdbc.Driver")
+        .option("url", s"jdbc:insightedge:spaceName=$spaceName;analyticsXtreme.enabled=true;autoCommit=true")
+        .option("dbtable", dbtable)
+        .load
+    }
+
+    private def getDefaultSpaceName(): Option[String] = {
+      SparkSession.getActiveSession match {
+        case Some(session) => session.getInsightEdgeContext().map(_.ieConfig).map(_.spaceName)
+        case None => None
+      }
     }
   }
 

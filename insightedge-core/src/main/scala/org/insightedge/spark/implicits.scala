@@ -104,8 +104,11 @@ object implicits {
       def stopInsightEdgeContext() = {
         sparkSession.stop()
       }
-    }
 
+      def getInsightEdgeContext() : Option[InsightEdgeSparkContext] = {
+        insightEdgeSparkContextCache.get(sparkSession.sparkContext)
+      }
+    }
   }
 
 }

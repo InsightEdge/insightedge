@@ -31,6 +31,10 @@ private[spark] class LocalCache[K, V] {
     map.getOrElse(k, updateIfRequired(k, op))
   }
 
+  def get(k: K): Option[V] = {
+    map.get(k)
+  }
+
   private def updateIfRequired(k: K, op: => V): V = {
     this.synchronized {
       map.get(k) match {
