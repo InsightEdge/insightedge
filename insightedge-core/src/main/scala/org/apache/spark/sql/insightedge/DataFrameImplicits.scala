@@ -18,6 +18,7 @@ package org.apache.spark.sql.insightedge
 
 import org.apache.spark.sql.types.{Metadata, MetadataBuilder}
 import org.apache.spark.sql._
+import org.insightedge.internal.utils.SparkSessionUtils
 import org.insightedge.spark.implicits.basic._
 
 import scala.reflect._
@@ -63,7 +64,7 @@ trait DataFrameImplicits {
     }
 
     private def getDefaultSpaceName(): Option[String] = {
-      SparkSession.getActiveSession match {
+      SparkSessionUtils.getDefaultSparkSession match {
         case Some(session) => session.getInsightEdgeContext().map(_.ieConfig).map(_.spaceName)
         case None => None
       }
