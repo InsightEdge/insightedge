@@ -11,9 +11,7 @@ call %~dp0..\..\bin\setenv.bat
 
 rem Set InsightEdge defaults;
 set INSIGHTEDGE_CLASSPATH=%XAP_HOME%\insightedge\lib\*;%XAP_HOME%\insightedge\lib\jdbc\*;%XAP_HOME%\insightedge\lib\analytics-xtreme\*;%XAP_HOME%\lib\required\*;%XAP_HOME%\lib\optional\spatial\*
-set ANALYTICS_XTREME_CLASSPATH=%XAP_HOME%\insightedge\lib\analytics-xtreme\*;%XAP_HOME%\lib\platform\service-grid\*
 
-set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLASSPATH%;%ANALYTICS_XTREME_CLASSPATH%
 if defined INSIGHTEDGE_CLASSPATH_EXT set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLASSPATH%;%INSIGHTEDGE_CLASSPATH_EXT%
 
 if not defined HADOOP_HOME set HADOOP_HOME=%XAP_HOME%\insightedge\tools\winutils
