@@ -65,7 +65,6 @@ object Launcher {
       }
       run("Adding poms of integration libs") {
         copy(s"$project/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-package/pom.xml")
-        copy(s"$project/insightedge-core/pom.xml", s"$insightEdgeHome/tools/maven/poms/insightedge-core/pom.xml")
       }
       run("Adding examples") {
         val examplesModule = s"$examplesTarget/.."
