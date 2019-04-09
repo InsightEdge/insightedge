@@ -15,13 +15,9 @@
     <properties>
         <xap.download.phase>none</xap.download.phase>
         <xap.dist.filename>xap-premium.zip</xap.dist.filename>
-        <insightedge.version>1.1.0</insightedge.version>
-        <insightedge.milestone>m1</insightedge.milestone>
-        <insightedge.build.number>10000-1</insightedge.build.number>
-        <insightedge.branch>master</insightedge.branch>
-        <insightedge.full.build.version>${insightedge.version}-${insightedge.milestone}-b${insightedge.build.number}</insightedge.full.build.version>
-        <insightedge.premium.filename>gigaspaces-insightedge-enterprise-${insightedge.full.build.version}.zip</insightedge.premium.filename>
-        <insightedge.open.filename>gigaspaces-insightedge-${insightedge.full.build.version}.zip</insightedge.open.filename>
+        <gs.build-name>14.5.0-m1-ci-0</gs.build-name>
+        <insightedge.premium.filename>gigaspaces-insightedge-enterprise-${gs.build-name}.zip</insightedge.premium.filename>
+        <insightedge.open.filename>gigaspaces-insightedge-${gs.build-name}.zip</insightedge.open.filename>
     </properties>
 
     <dependencies>
@@ -90,10 +86,6 @@
                         <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
                         <!-- Path to examples (jar) -->
                         <jvmArg>-Ddist.examples.target=${dist.examples.target}</jvmArg>
-                        <jvmArg>-Dinsightedge.version=${insightedge.version}</jvmArg>
-                        <jvmArg>-Dinsightedge.milestone=${insightedge.milestone}</jvmArg>
-                        <jvmArg>-Dinsightedge.build.number=${insightedge.build.number}</jvmArg>
-                        <jvmArg>-Dxap.version=${xap.version}</jvmArg>
                     </jvmArgs>
                 </configuration>
             </plugin>
@@ -189,7 +181,7 @@
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-${insightedge.full.build.version}
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-${gs.build-name}
                                         </jvmArg>
                                         <!-- Distribution edition -->
                                         <jvmArg>-Ddist.edition=open</jvmArg>
@@ -230,7 +222,7 @@
                                         </jvmArg>
                                         <!-- Compressed contents prefix -->
                                         <jvmArg>
-                                            -Doutput.contents.prefix=gigaspaces-insightedge-enterprise-${insightedge.full.build.version}
+                                            -Doutput.contents.prefix=gigaspaces-insightedge-enterprise-${gs.build-name}
                                         </jvmArg>
                                         <!-- Distribution edition -->
                                         <jvmArg>-Ddist.edition=premium</jvmArg>
