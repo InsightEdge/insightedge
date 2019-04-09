@@ -90,8 +90,6 @@
                         <jvmArg>-Ddist.zeppelin=${dist.zeppelin}</jvmArg>
                         <!-- Path to examples (jar) -->
                         <jvmArg>-Ddist.examples.target=${dist.examples.target}</jvmArg>
-                        <!-- Hash of last commit, optional -->
-                        <jvmArg>-Dlast.commit.hash=${last.commit.hash}</jvmArg>
                         <jvmArg>-Dinsightedge.version=${insightedge.version}</jvmArg>
                         <jvmArg>-Dinsightedge.milestone=${insightedge.milestone}</jvmArg>
                         <jvmArg>-Dinsightedge.build.number=${insightedge.build.number}</jvmArg>
@@ -285,20 +283,6 @@
             </activation>
             <properties>
                 <dist.examples>${project.basedir}/dist/examples.jar</dist.examples>
-            </properties>
-        </profile>
-
-        <!-- Allows to package distribution locally with empty hash value-->
-        <profile>
-            <id>default-dist-githash</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>!last.commit.hash</name>
-                </property>
-            </activation>
-            <properties>
-                <last.commit.hash></last.commit.hash>
             </properties>
         </profile>
 
