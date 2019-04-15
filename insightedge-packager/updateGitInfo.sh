@@ -1,13 +1,13 @@
 #!/bin/bash
 mkdir -p target
 
-echo "LONG_TAG_NAME = ${LONG_TAG_NAME}"
+echo "TAG_NAME = ${TAG_NAME}"
 echo "IE_SHA = ${IE_SHA}"
 
 
-if [ ! -z "${LONG_TAG_NAME}" ]
+if [ ! -z "${TAG_NAME}" ]
 then
-    echo InsightEdge:https://github.com/InsightEdge/insightedge/tree/${LONG_TAG_NAME} > target/metadata.txt
+    echo InsightEdge:https://github.com/InsightEdge/insightedge/tree/${TAG_NAME} > target/metadata.txt
     exit 0
 fi
 
