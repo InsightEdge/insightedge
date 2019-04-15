@@ -31,14 +31,7 @@ object Launcher {
 
   def main(args: Array[String]) {
     val project = parameter("Project folder" -> "project.directory")
-    /* variables that used only in Launcher.scala in xap-premium project
-    val version = parameter("InsightEdge version" -> "insightedge.version")
-    val milestone = parameter("Project milestone" -> "insightedge.milestone")
-    val buildNumber = parameter("Project build number" -> "insightedge.build.number")
-    val artifactVersion = parameter("Project maven artifact version" -> "project.version")
-    val xapVersion = parameter("XAP version" -> "xap.version") */
     val edition = parameter("Distribution edition" -> "dist.edition")
-    val lastCommitHash = optionalParameter("Last commit hash" -> "last.commit.hash")
     val output = parameter("Output folder" -> "output.exploded.directory")
     val outputFile = parameter("Output file" -> "output.compressed.file")
     val outputPrefix = parameter("Output contents prefix" -> "output.contents.prefix")
@@ -55,7 +48,6 @@ object Launcher {
 
     println(s"grid is [$grid]")
     println(s"insightedgePackagerTargetPath is [$insightedgePackagerTargetPath]")
-    validateHash(lastCommitHash)
     remove(output)
     run("Unpacking datagrid " + grid + " to   " + output) {
       unzip(grid, s"$output", cutRootFolder = true)
