@@ -16,9 +16,13 @@
 
 package org.insightedge.spark.fixture
 
+import java.util
+
+import com.google.common.collect.ImmutableMap
 import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
 import org.insightedge.spark.utils.BuildUtils
+import org.insightedge.spark.utils.RestUtils.jsonBody
 import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import org.scalatest.{BeforeAndAfterAll, Suite}
 import play.api.libs.ws.ning.NingWSClient
@@ -38,12 +42,14 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
   self: Suite =>
 
   private val DockerImageStartTimeout = 3.minutes
-  private val ZeppelinPort = "9090"
+  private val ZeppelinPort = "9090/tcp"
+  private val SparkPort = "8080/tcp"
   private val ImageName = s"insightedge-tests-demo-mode"
 
   protected var containerId: String = _
   private val docker = DefaultDockerClient.fromEnv().build()
   private var zeppelinMappedPort: String = _
+  private var sparkMappedPort: String = _
 
   private val IE_HOME = BuildUtils.IEHome
   private val testFolder = BuildUtils.TestFolder
@@ -57,8 +63,7 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     super.beforeAll()
     printLnWithTimestamp("Starting docker container")
     printLnWithTimestamp(s"sharedOutputFolder: [$sharedOutputFolder] map to ieLogsPath: [$ieLogsPath] ")
-    val randomPort = Seq(PortBinding.randomPort("0.0.0.0")).asJava
-    val portBindings = Map(ZeppelinPort -> randomPort).asJava
+    val portBindings = Map(ZeppelinPort -> randomPort , SparkPort -> randomPort).asJava
     val hostConfig = HostConfig.builder()
       .portBindings(portBindings)
       .appendBinds(IE_HOME + ":/opt/gigaspaces-insightedge")
@@ -67,7 +72,8 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
     val containerConfig = ContainerConfig.builder()
       .hostConfig(hostConfig)
-      .image(ImageName).exposedPorts(ZeppelinPort)
+      .image(ImageName)
+      .exposedPorts(ZeppelinPort, SparkPort)
       .env("XAP_LICENSE=tryme")
       .cmd("/etc/bootstrap.sh", "-d")
       .build()
@@ -79,9 +85,10 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     docker.startContainer(containerId)
 
     val containerInfo = docker.inspectContainer(containerId)
-    val bindings = containerInfo.networkSettings().ports().get(ZeppelinPort + "/tcp")
-    val binding = bindings.asScala.head
-    zeppelinMappedPort = binding.hostPort()
+    val bindings: ImmutableMap[String, util.List[PortBinding]] = containerInfo.networkSettings().ports()
+    zeppelinMappedPort = bindings.get(ZeppelinPort).asScala.head.hostPort()
+    sparkMappedPort = bindings.get(SparkPort).asScala.head.hostPort()
+
 
     if (!awaitImageStarted()) {
       printLnWithTimestamp("image start failed with timeout ... cleaning up")
@@ -104,8 +111,16 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
     wsClient.close()
   }
 
+  def randomPort = {
+    Seq(PortBinding.randomPort("0.0.0.0")).asJava
+  }
+
   def zeppelinUrl = {
     s"http://127.0.0.1:$zeppelinMappedPort"
+  }
+
+  def sparkUrl = {
+    s"http://127.0.0.1:$sparkMappedPort"
   }
 
   private def awaitImageStarted(): Boolean = {
@@ -116,10 +131,22 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
     printLnWithTimestamp(s"Zeppelin $zeppelinUrl")
 
-    def attempt() = Try {
+    def pingZeppelin() = Try {
       printLnWithTimestamp("ping zeppelin")
       val resp = wsClient.url(zeppelinUrl).get()
       Await.result(resp, 1.second)
+    }
+
+    def isSparkAlive() =  {
+      printLnWithTimestamp("Check spark master and worker is alive")
+
+      val resp = jsonBody(wsClient.url(s"$sparkUrl/json").get())
+
+      val status = resp \ "status"
+
+      val aliveWorkers = resp \ "aliveworkers"
+
+      "\"ALIVE\"".equals(status.get.toString()) && "1".equals(aliveWorkers.get.toString())
     }
 
     def timeoutElapsed() = System.currentTimeMillis - startTime > DockerImageStartTimeout.toMillis
@@ -136,13 +163,19 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
       }
     }
 
-    val res = retryWhile {
-      val r = attempt()
+    val zeppelin = retryWhile {
+      val r = pingZeppelin()
       sleep()
       r
     }(x => x.isSuccess || timeoutElapsed())
 
-    res.isSuccess
+    val sparkMasterAlive = retryWhile {
+      val r = isSparkAlive()
+      sleep()
+      r
+    }(x => x || timeoutElapsed())
+
+    zeppelin.isSuccess && sparkMasterAlive
   }
 
 
