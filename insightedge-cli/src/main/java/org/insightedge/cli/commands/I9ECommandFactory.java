@@ -22,6 +22,7 @@ public class I9ECommandFactory extends GsCommandFactory {
         command.classpathFromPath(SystemInfo.singleton().getXapHome(), "tools", "cli", "*");
         command.classpathFromEnv("INSIGHTEDGE_CLASSPATH");
         appendSigarClassPath();
+        addOshiAndLoggerToClasspath();
         appendXapOptions();
         command.optionsFromEnv("XAP_CLI_OPTIONS");
 
