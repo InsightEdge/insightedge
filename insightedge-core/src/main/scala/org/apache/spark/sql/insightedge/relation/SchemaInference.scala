@@ -121,14 +121,21 @@ object SchemaInference {
       case other =>
         // assume the given type is a java type
         val typeToken = getTypeTokenFromClassName(className)
-        val beanInfo = Introspector.getBeanInfo(typeToken.getRawType)
-        val properties = beanInfo.getPropertyDescriptors.filterNot(_.getName == "class")
-        val fields = properties.map { property =>
-          val returnType = typeToken.method(property.getReadMethod).getReturnType
-          val Schema(dataType, nullable) = schemaFor(classToType(returnType.getRawType))
-          StructField(property.getName, dataType, nullable)
+        val rawType = typeToken.getRawType
+        val declaredFields = typeToken.getRawType.getDeclaredFields
+        if (rawType.getSuperclass.getName.equals("java.lang.Enum")) {
+          val fields = Array(StructField("name", StringType))
+          Schema(StructType(fields), nullable = true)
+        } else {
+          val beanInfo = Introspector.getBeanInfo(typeToken.getRawType)
+          val properties = beanInfo.getPropertyDescriptors.filterNot(_.getName == "class")
+          val fields = properties.map { property =>
+            val returnType = typeToken.method(property.getReadMethod).getReturnType
+            val Schema(dataType, nullable) = schemaFor(classToType(returnType.getRawType))
+            StructField(property.getName, dataType, nullable)
+          }
+          Schema(StructType(fields), nullable = true)
         }
-        Schema(StructType(fields), nullable = true)
     }
   }
 

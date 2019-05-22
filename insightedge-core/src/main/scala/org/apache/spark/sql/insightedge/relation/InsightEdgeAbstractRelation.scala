@@ -243,6 +243,11 @@ object InsightEdgeAbstractRelation {
         attributeNames
           .map(a => a ->(anyNestedClass, (e: Any) => e.asInstanceOf[DocumentProperties].getProperty[Any](a))).toMap
 
+      //extract name function from enum, ordinal not supported
+      case c if clazz.isEnum =>
+        attributeNames
+                .map(a => a -> getterToClassAndExtractor(c.getMethod("name"))).toMap
+
       // Getters for Java classes are from bean info, which is not serializable so we must rediscover it remotely for each partition
       case _ =>
         val beanInfo = Introspector.getBeanInfo(clazz)
