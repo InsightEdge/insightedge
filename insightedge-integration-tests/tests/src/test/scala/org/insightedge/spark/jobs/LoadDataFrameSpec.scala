@@ -45,7 +45,7 @@ class LoadDataFrameSpec extends FlatSpec with InsightedgeDemoModeDocker {
       s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
          |--class $fullClassName
          |--master spark://127.0.0.1:7077
-         |/opt/gigaspaces-insightedge/insightedge/examples/jars/insightedge-examples.jar""".stripMargin
+         |$JOBS""".stripMargin
 
     printLnWithTimestamp( "command:" + command )
     val exitCode = dockerExec(containerId, command)
