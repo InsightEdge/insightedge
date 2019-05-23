@@ -17,14 +17,15 @@
 package org.insightedge.spark.jobs
 
 import org.insightedge.spark.fixture.InsightedgeDemoModeDocker
-import org.insightedge.spark.utils.InsightEdgeAdminUtils
+import org.insightedge.spark.utils.DockerUtils.dockerExec
 import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
-import org.scalatest.{BeforeAndAfterAll, FlatSpec, Suite}
+import org.scalatest.{FlatSpec, Suite}
 
 
 /**
   * Test load DataFrame of Pojo, which also contains enum
   *
+  * @Since 14.5 Support for Enum
   * @author Moran
   */
 class LoadDataFrameSpec extends FlatSpec with InsightedgeDemoModeDocker {
@@ -38,35 +39,17 @@ class LoadDataFrameSpec extends FlatSpec with InsightedgeDemoModeDocker {
   }
 
   "insightedge-submit " should "submit LoadDataFrame job"  in {
-    val loadDfFullClassName = s"org.insightedge.spark.jobs.LoadDataFrame"
-    val masterIp = InsightEdgeAdminUtils.getMasterIp()
-    val masterContainerId = InsightEdgeAdminUtils.getMasterId()
+    val fullClassName = s"org.insightedge.spark.jobs.LoadDataFrame"
 
-    printLnWithTimestamp( "masterContainerId:" + masterContainerId )
+    val command =
+      s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
+         |--class $fullClassName
+         |--master spark://127.0.0.1:7077
+         |/opt/gigaspaces-insightedge/insightedge/examples/jars/insightedge-examples.jar""".stripMargin
 
-    val spaceName = "demo"
-
-    val loadDfCommand = s"/opt/insightedge/insightedge/bin/insightedge-submit --class " + loadDfFullClassName +
-      " --master spark://" + masterIp + ":7077 " + JOBS +
-      " spark://" + masterIp + ":7077 " + spaceName
-
-    printLnWithTimestamp( "loadDfCommand Command:" + loadDfCommand )
-
-    InsightEdgeAdminUtils.exec(masterContainerId, loadDfCommand)
-
-    val appId: String = InsightEdgeAdminUtils.getAppId(0)
-    printLnWithTimestamp(s"Application Id = $appId")
-
-    InsightEdgeAdminUtils.waitForAppSuccess(appId, 60)
-
-    InsightEdgeAdminUtils.exec(masterContainerId, loadDfCommand)
+    printLnWithTimestamp( "command:" + command )
+    val exitCode = dockerExec(containerId, command)
+    printLnWithTimestamp( "exitCode:" + exitCode )
+    assert(exitCode == 0)
   }
-
-
-  override protected def afterAll(): Unit = {
-    super.afterAll()
-    InsightEdgeAdminUtils
-      .shutdown()
-  }
-
 }
