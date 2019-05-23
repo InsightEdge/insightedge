@@ -20,6 +20,7 @@ public class I9ECommandFactory extends GsCommandFactory {
     private JavaCommandBuilder cliInsightEdge() {
         command.mainClass("org.insightedge.cli.commands.I9EMainCommand");
         command.classpathFromPath(SystemInfo.singleton().getXapHome(), "tools", "cli", "*");
+        command.classpathFromPath(SystemInfo.singleton().locations().getLibPlatform(), "blueprints", "*");
         command.classpathFromEnv("INSIGHTEDGE_CLASSPATH");
         appendSigarClassPath();
         addOshiAndLoggerToClasspath();
