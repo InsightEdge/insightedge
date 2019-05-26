@@ -244,7 +244,8 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def execAndWaitFor(containerId: String, command: String): Long = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
+
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr(), DockerClient.ExecCreateParam.attachStdin())
     val execId = execCreation.id()
     val output = docker.execStart(execId)
     val execOutput = output.readFully()
@@ -256,7 +257,7 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def execAndReturnProcessStdout(containerId: String, command: String): String = {
     printLnWithTimestamp(s"executing [$command] on container $containerId, will print its stdout")
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr(), DockerClient.ExecCreateParam.attachStdin())
     val execId = execCreation.id()
     val output = docker.execStart(execId)
     val outputString = output.readFully()

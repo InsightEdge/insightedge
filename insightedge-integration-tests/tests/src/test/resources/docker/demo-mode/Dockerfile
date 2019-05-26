@@ -5,12 +5,14 @@
 FROM centos:7.2.1511
 MAINTAINER Oleksiy Dyagilev oleksiy.dyagilev@gigaspaces.com
 
+ARG STORAGE_SERVER="imc-srv01"
+RUN echo "Using STORAGE_SERVER=${STORAGE_SERVER}"
+RUN if [[ "${STORAGE_SERVER}" == "" ]]; then echo "STORAGE_SERVER can't be empty"; exit 1; fi
+
 # upgrade system
 RUN yum -y update
 RUN yum clean all
 RUN yum -y install curl wget unzip
-
-ENV HERCULES_IP 192.168.10.50
 
 # java
 ENV ZIPPED_JDK=jdk-8u131-linux-x64.tar.gz
@@ -20,7 +22,7 @@ ENV JAVA_TARGET=jdk1.8.0_131
 ENV JAVA_HOME /usr/$JAVA_TARGET
 ENV PATH $PATH:$JAVA_HOME/bin
 
-RUN wget http://$HERCULES_IP/javas/$ZIPPED_JDK
+RUN wget http://${STORAGE_SERVER}/javas/$ZIPPED_JDK
 RUN gunzip $ZIPPED_JDK && tar -xvf $TAR_JDK -C /usr/
 RUN ln -s $JAVA_HOME /usr/java && rm -rf $JAVA_HOME/man
 
