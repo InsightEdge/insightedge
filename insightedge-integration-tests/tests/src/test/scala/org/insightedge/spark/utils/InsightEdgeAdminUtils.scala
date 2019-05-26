@@ -244,6 +244,8 @@ object InsightEdgeAdminUtils extends Assertions{
   }
 
   def execAndWaitFor(containerId: String, command: String): Long = {
+    Thread.sleep(5000)
+
     val execCreation = docker.execCreate(containerId, Array("bash", "-c", command), DockerClient.ExecCreateParam.attachStdout(), DockerClient.ExecCreateParam.attachStderr())
     val execId = execCreation.id()
     val output = docker.execStart(execId)
