@@ -202,6 +202,9 @@
                             <dockerDirectory>
                                 ${main.basedir}/insightedge-integration-tests/tests/src/test/resources/docker/failover
                             </dockerDirectory>
+                            <buildArgs>
+                                <STORAGE_SERVER>${env.STORAGE_SERVER}</STORAGE_SERVER>
+                            </buildArgs>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>
@@ -222,6 +225,9 @@
                             <dockerDirectory>
                                 ${main.basedir}/insightedge-integration-tests/tests/src/test/resources/docker/demo-mode
                             </dockerDirectory>
+                            <buildArgs>
+                                <STORAGE_SERVER>${env.STORAGE_SERVER}</STORAGE_SERVER>
+                            </buildArgs>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>
