@@ -31,8 +31,6 @@ import org.scalatest.{FlatSpec, Suite}
 class LoadDataFrameSpec extends FlatSpec with InsightedgeDemoModeDocker {
   self: Suite =>
 
-  private val JOBS = s"/opt/insightedge/insightedge/examples/jars/jobs.jar"
-
   override protected def beforeAll(): Unit = {
     printLnWithTimestamp("beforeAll - LoadDataFrameSpec")
     super.beforeAll()
@@ -45,7 +43,7 @@ class LoadDataFrameSpec extends FlatSpec with InsightedgeDemoModeDocker {
       s"""/opt/gigaspaces-insightedge/insightedge/bin/insightedge-submit
          |--class $fullClassName
          |--master spark://127.0.0.1:7077
-         |$JOBS""".stripMargin
+         |/opt/gigaspaces-insightedge/insightedge/examples/jars/jobs.jar""".stripMargin
 
     printLnWithTimestamp( "command:" + command )
     val exitCode = dockerExec(containerId, command)
