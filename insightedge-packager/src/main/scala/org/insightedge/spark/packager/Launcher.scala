@@ -64,7 +64,7 @@ object Launcher {
         copy(s"$project/insightedge-cli/target", s"$output/tools/cli", nameFilter(n => n.startsWith("insightedge-cli") && !n.contains("test") && !n.contains("sources") && !n.contains("javadoc")))
       }
       run("Adding poms of integration libs") {
-        copy(s"$project/pom.xml", s"$insightEdgeHome/../config/maven/poms/insightedge-package/pom.xml")
+        copy(s"$project/pom.xml", s"$insightEdgeHome/../config/maven/poms/parent-insightedge.xml")
       }
       run("Adding examples") {
         val examplesModule = s"$examplesTarget/.."
