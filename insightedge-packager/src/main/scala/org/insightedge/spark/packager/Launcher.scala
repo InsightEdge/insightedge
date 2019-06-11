@@ -120,9 +120,6 @@ object Launcher {
       run("Injecting InsightEdge spark overrides") {
         copy(s"$resources/insightedge/spark/", s"$insightEdgeHome/spark")
       }
-      run("copy cli auto complete script") {
-        copy(s"$project/insightedge-cli/target/gs-autocomplete", s"$insightEdgeHome/../tools/cli/gs-autocomplete")
-      }
       run("Making scripts executable") {
         permissions(s"$output/bin/", read = Some(true), write = Some(true), execute = Some(true))
         permissions(s"$insightEdgeHome/bin/", read = Some(true), write = Some(true), execute = Some(true))
