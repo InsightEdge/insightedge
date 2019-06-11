@@ -5,7 +5,7 @@ import org.gigaspaces.cli.CommandsSet;
 import org.gigaspaces.cli.commands.*;
 import picocli.CommandLine.*;
 
-@Command(name="insightedge", headerHeading = I9EMainCommand.HEADER, customSynopsis = "insightedge [global-options] command [options] [parameters]")
+@Command(headerHeading = I9EMainCommand.HEADER)
 public class I9EMainCommand extends XapMainCommand {
     public static final String HEADER =
         "@|green   _____           _       _     _   ______    _            |@%n"+
