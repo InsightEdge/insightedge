@@ -56,7 +56,6 @@ object Launcher {
 
     def buildInsightEdge() {
       run("Adding integration scripts") {
-        copy(s"$resources/bin", s"$output/bin")
         copy(s"$resources/insightedge/bin", s"$insightEdgeHome/bin")
       }
       run("Adding integration libs") {
