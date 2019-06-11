@@ -56,7 +56,6 @@ object Launcher {
 
     def buildInsightEdge() {
       run("Adding integration scripts") {
-        copy(s"$resources/bin", s"$output/bin")
         copy(s"$resources/insightedge/bin", s"$insightEdgeHome/bin")
       }
       run("Adding integration libs") {
@@ -120,9 +119,6 @@ object Launcher {
       }
       run("Injecting InsightEdge spark overrides") {
         copy(s"$resources/insightedge/spark/", s"$insightEdgeHome/spark")
-      }
-      run("copy cli auto complete script") {
-        copy(s"$project/insightedge-cli/target/insightedge-autocomplete", s"$insightEdgeHome/../tools/cli/insightedge-autocomplete")
       }
       run("Making scripts executable") {
         permissions(s"$output/bin/", read = Some(true), write = Some(true), execute = Some(true))

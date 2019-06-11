@@ -60,10 +60,10 @@ set SPARK_LOCAL_IP=127.0.0.1
 Prior to executing example application, you have to start the Data Grid and deploy an empty space on it. You can do it using `demo` mode:
 ```bash
 # Linux:
-./insightedge/bin/insightedge demo
+./insightedge/bin/gs demo
 
 # Windows:
-insightedge\bin\insightedge.bat demo
+insightedge\bin\gs demo
 ```
 
 Such command will start next components:
@@ -153,7 +153,7 @@ Ctrl C
 
 ##### Premium version
 To stop all InsightEdge components, next command can be executed:
-./insightedge/bin/insightedge.bat  host kill-agent
+./insightedge/bin/gs host kill-agent
 
 
 
