@@ -15,10 +15,10 @@ This repository contains example [InsightEdge](https://github.com/InsightEdge/in
 InsightEdge jars are not published to Maven Central Repository yet. To install artifacts to your local Maven repository, make sure you have Maven installed and then run the following from InsightEdge directory:
 ```bash
 # Linux:
-./bin/insightedge maven install
+./bin/gs maven install
 
 # Windows:
-bin\insightedge maven install
+bin\gs maven install
 ```
 
 This project has both SBT and Maven build files. You can build it with the next commands:

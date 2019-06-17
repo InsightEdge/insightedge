@@ -1,6 +1,6 @@
 #!/bin/bash
 
-/opt/gigaspaces-insightedge/bin/insightedge demo > /opt/gigaspaces-insightedge/logs/bootstrap.log 2>&1
+/opt/gigaspaces-insightedge/bin/gs demo > /opt/gigaspaces-insightedge/logs/bootstrap.log 2>&1
 
 
 if [[ $1 == "-d" ]]; then
