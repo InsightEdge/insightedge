@@ -2,9 +2,9 @@
 # ***********************************************************************************************************
 # * This script is used to initialize common environment to GigaSpaces InsightEdge platform.                *
 # * It is highly recommended NOT TO MODIFY THIS SCRIPT, to simplify future upgrades.                        *
-# * If you need to override the defaults, please modify $XAP_HOME\bin\setenv-overrides.sh or set           *
+# * If you need to override the defaults, please modify $XAP_HOME\bin\setenv-overrides.sh or set            *
 # * the XAP_SETTINGS_FILE environment variable to your custom script.                                       *
-# * For more information see https://docs.gigaspaces.com/14.2/started/common-environment-variables.html *
+# * For more information see https://docs.gigaspaces.com/14.5/started/common-environment-variables.html     *
 # ***********************************************************************************************************
 # Source XAP environment:
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
