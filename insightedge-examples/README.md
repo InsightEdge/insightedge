@@ -15,7 +15,7 @@ This repository contains example [InsightEdge](https://github.com/InsightEdge/in
 InsightEdge jars are not published to Maven Central Repository yet. To install artifacts to your local Maven repository, make sure you have Maven installed and then run the following from InsightEdge directory:
 ```bash
 # Linux:
-./bin/gs maven install
+./bin/gs.sh maven install
 
 # Windows:
 bin\gs maven install
@@ -60,7 +60,7 @@ set SPARK_LOCAL_IP=127.0.0.1
 Prior to executing example application, you have to start the Data Grid and deploy an empty space on it. You can do it using `demo` mode:
 ```bash
 # Linux:
-./insightedge/bin/gs demo
+./insightedge/bin/gs.sh demo
 
 # Windows:
 insightedge\bin\gs demo
@@ -153,8 +153,13 @@ Ctrl C
 
 ##### Premium version
 To stop all InsightEdge components, next command can be executed:
-./insightedge/bin/gs host kill-agent
+```bash
+# Linux:
+./insightedge/bin/gs.sh host kill-agent
 
+# Windows:
+insightedge\bin\gs host kill-agent
+```
 
 
 ## Troubleshooting
