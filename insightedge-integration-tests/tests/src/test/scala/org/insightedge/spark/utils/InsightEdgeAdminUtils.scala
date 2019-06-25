@@ -104,7 +104,7 @@ object InsightEdgeAdminUtils extends Assertions{
       .image(ImageName)
       .env("XAP_LICENSE=tryme", s"XAP_MANAGER_SERVERS=$managerServers")
       .cmd("bash", "-c", s"cp -rf /opt/insightedge/deploy /")
-      .cmd("bash", "-c", s"/opt/insightedge/bin/gs host run-agent --spark-worker --containers=2 > $ieLogsPath/worker-$id.log")
+      .cmd("bash", "-c", s"/opt/insightedge/bin/gs.sh host run-agent --spark-worker --containers=2 > $ieLogsPath/worker-$id.log")
       .build()
 
     ieSlaveCounter += 1
