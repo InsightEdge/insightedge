@@ -158,11 +158,11 @@ object InsightEdgeAdminUtils extends Assertions{
 
   def loadInsightEdgeMasterContainer(id:Int, managerServers:String): String = {
     val containerId = containersId(s"master$id")
-    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"cp -rf /opt/insightedge/deploy / && /opt/insightedge/bin/gs host run-agent --manager --spark-master > $ieLogsPath/master-$id.log 2>&1"))
+    val masterExecCreation = docker.execCreate(containerId, Array("bash", "-c", s"cp -rf /opt/insightedge/deploy / && /opt/insightedge/bin/gs.sh host run-agent --manager --spark-master > $ieLogsPath/master-$id.log 2>&1"))
     val masterExecId = masterExecCreation.id()
     docker.execStart(masterExecId)
 
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/gs  host run-agent --zeppelin > $ieLogsPath/zeppelin-$id.log 2>&1"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/gs.sh  host run-agent --zeppelin > $ieLogsPath/zeppelin-$id.log 2>&1"))
     val execId = execCreation.id()
     docker.execStart(execId)
 
@@ -285,14 +285,14 @@ object InsightEdgeAdminUtils extends Assertions{
         deployOptions += " --ha"
       }
     }
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/gs space deploy $deployOptions demo >> $ieLogsPath/deploy-space.log 2>&1"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/gs.sh space deploy $deployOptions demo >> $ieLogsPath/deploy-space.log 2>&1"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
 
 
   def unDeployDataGrid(containerId: String, masterIp: String): Unit = {
-    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/gs pu undeploy demo >> $ieLogsPath/undeploy-space.log 2>&1"))
+    val execCreation = docker.execCreate(containerId, Array("bash", "-c", s"/opt/insightedge/bin/gs.sh pu undeploy demo >> $ieLogsPath/undeploy-space.log 2>&1"))
     val execId = execCreation.id()
     var stream = docker.execStart(execId)
   }
