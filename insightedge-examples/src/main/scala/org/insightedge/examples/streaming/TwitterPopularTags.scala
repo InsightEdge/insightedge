@@ -18,10 +18,11 @@ package org.insightedge.examples.streaming
 
 import java.util
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.twitter._
-import org.apache.spark.streaming.{Minutes, Seconds, StreamingContext}
+import org.apache.spark.streaming.{Minutes, Seconds, StreamingContext, StreamingContextState}
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.implicits.all._
 
@@ -90,14 +91,20 @@ object TwitterPopularTags {
     }
 
     ssc.start()
+    TimeUnit.SECONDS.sleep(5)
+    ssc.stop(false, true)
     ssc.awaitTerminationOrTimeout(Seconds(30).milliseconds)
 
     // loads saved tags as RDD, usually it's done in a separate application
-    val lastHourTopTags = sc.gridSql[TopTags]("batchTime > ?", Seq(System.currentTimeMillis - Minutes(60).milliseconds))
-    println("Popular topics for each 10 seconds (last hour):")
-    lastHourTopTags
+    val lastHourTopTagsRDD = sc.gridSql[TopTags]("batchTime > ?", Seq(System.currentTimeMillis - Minutes(60).milliseconds))
+
+    val lastHourTopTags: Array[TopTags] = lastHourTopTagsRDD
       .sortBy(_.batchTime, ascending = false)
-      .foreach { top => println(s"${new Date(top.batchTime)} - top tag (${maxKey(top.tagsCount)}): ${top.tagsCount.getOrDefault(maxKey(top.tagsCount), "none")}") }
+      .collect()
+
+    println("Popular topics for each 10 seconds (last hour):")
+
+    lastHourTopTags.foreach { top => println(s"${new Date(top.batchTime)} - top tag (${maxKey(top.tagsCount)}): ${top.tagsCount.getOrDefault(maxKey(top.tagsCount), "none")}") }
   }
 
   def maxKey(map: java.util.Map[Int, String]): Int = {
