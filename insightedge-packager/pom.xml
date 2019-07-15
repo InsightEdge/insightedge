@@ -15,7 +15,7 @@
     <properties>
         <xap.download.phase>none</xap.download.phase>
         <xap.dist.filename>xap-premium.zip</xap.dist.filename>
-        <gs.build-name>14.5.0-m1-ci-0</gs.build-name>
+        <gs.build-name>15.0.0-m1-ci-0</gs.build-name>
         <insightedge.premium.filename>gigaspaces-insightedge-enterprise-${gs.build-name}.zip</insightedge.premium.filename>
         <insightedge.open.filename>gigaspaces-insightedge-${gs.build-name}.zip</insightedge.open.filename>
     </properties>
