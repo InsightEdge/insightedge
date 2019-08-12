@@ -18,7 +18,8 @@ spark = SparkSession \
 
 
 # load SF salaries dataset from file
-jsonFilePath = os.path.join(os.environ["XAP_HOME"], "insightedge/data/sf_salaries_sample.json")
+gsHome = os.getenv("XAP_HOME", os.environ["GS_HOME"])
+jsonFilePath = os.path.join(gsHome, "insightedge/data/sf_salaries_sample.json")
 jsonDf = spark.read.json(jsonFilePath)
 
 # save DataFrame to the grid
