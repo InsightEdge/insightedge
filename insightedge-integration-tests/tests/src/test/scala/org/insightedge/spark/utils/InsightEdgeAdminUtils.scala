@@ -138,9 +138,7 @@ object InsightEdgeAdminUtils extends Assertions{
         .image(ImageName)
         .exposedPorts(ZeppelinPort, "4174")
         .env("XAP_LICENSE=tryme")
-        //      .env("XAP_NIC_ADDRESS=#local:ip#")
         .cmd("bash", "-c", "sleep 1d")
-        //      .cmd("bash", "-c", "export MY_IP=`hostname -I | cut -d\" \" -f 1` && /opt/insightedge/insightedge/bin/insightedge --mode master --master $MY_IP && sleep 2h")
         .build()
 
       ieMasterCounter += 1
