@@ -29,7 +29,7 @@
     },
     {
       "title": "Load SF salaries dataset from file",
-      "text": "%pyspark\nimport os\njsonFilePath \u003d os.environ[\"XAP_HOME\"] + \"/insightedge/data/sf_salaries_sample.json\"\njsonDf \u003d spark.read.json(jsonFilePath)",
+      "text": "%pyspark\nimport os\njsonFilePath \u003d os.environ[\"GS_HOME\"] + \"/insightedge/data/sf_salaries_sample.json\"\njsonDf \u003d spark.read.json(jsonFilePath)",
       "user": "anonymous",
       "dateUpdated": "Jun 20, 2017 10:38:24 AM",
       "config": {

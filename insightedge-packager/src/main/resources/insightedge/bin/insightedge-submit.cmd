@@ -2,7 +2,7 @@
 call %~dp0..\conf\insightedge-env.cmd
 
 rem Because of SPARK-21642, the driver url is composed from hostname instead of ip. This is a workaround - setting SPARK_LOCAL_HOSTNAME to the submitting machine IP
-if not defined SPARK_LOCAL_HOSTNAME set SPARK_LOCAL_HOSTNAME=%XAP_NIC_ADDRESS%
+if not defined SPARK_LOCAL_HOSTNAME set SPARK_LOCAL_HOSTNAME=%GS_NIC_ADDRESS%
 
 rem loop over arguments to find if in cluster deploy-mode
 :loop
