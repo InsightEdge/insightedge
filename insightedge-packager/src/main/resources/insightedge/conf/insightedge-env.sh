@@ -2,8 +2,8 @@
 # ***********************************************************************************************************
 # * This script is used to initialize common environment to GigaSpaces InsightEdge platform.                *
 # * It is highly recommended NOT TO MODIFY THIS SCRIPT, to simplify future upgrades.                        *
-# * If you need to override the defaults, please modify $XAP_HOME\bin\setenv-overrides.sh or set            *
-# * the XAP_SETTINGS_FILE environment variable to your custom script.                                       *
+# * If you need to override the defaults, please modify $GS_HOME\bin\setenv-overrides.sh or set            *
+# * the GS_SETTINGS_FILE environment variable to your custom script.                                       *
 # * For more information see https://docs.gigaspaces.com/14.5/started/common-environment-variables.html     *
 # ***********************************************************************************************************
 # Source XAP environment:
@@ -12,7 +12,7 @@ source "${DIRNAME}/../../bin/setenv.sh"
 
 
 # Set InsightEdge defaults:
-export INSIGHTEDGE_CLASSPATH="${XAP_HOME}/insightedge/lib/*:${XAP_HOME}/insightedge/lib/jdbc/*:${XAP_HOME}/insightedge/lib/analytics-xtreme/*:${XAP_HOME}/lib/required/*:${XAP_HOME}/lib/optional/spatial/*"
+export INSIGHTEDGE_CLASSPATH="${GS_HOME}/insightedge/lib/*:${GS_HOME}/insightedge/lib/jdbc/*:${GS_HOME}/insightedge/lib/analytics-xtreme/*:${GS_HOME}/lib/required/*:${GS_HOME}/lib/optional/spatial/*"
 
 if [ -n "${INSIGHTEDGE_CLASSPATH_EXT}" ]; then
     export INSIGHTEDGE_CLASSPATH="${INSIGHTEDGE_CLASSPATH_EXT}:${INSIGHTEDGE_CLASSPATH}"
@@ -20,7 +20,7 @@ fi
 
 # Set SPARK_HOME if not set
 if [ -z "${SPARK_HOME}" ]; then
-    export SPARK_HOME="${XAP_HOME}/insightedge/spark"
+    export SPARK_HOME="${GS_HOME}/insightedge/spark"
 fi
 
 #Add InsightEdge dependencies to Spark
@@ -37,7 +37,7 @@ if [ -z "${ZEPPELIN_PORT}" ]; then
 fi
 
 if [ -z "${ZEPPELIN_LOG_DIR}" ]; then
-	export ZEPPELIN_LOG_DIR="${XAP_HOME}/logs/"
+	export ZEPPELIN_LOG_DIR="${GS_HOME}/logs/"
 fi
 
 if [ -z "${INSIGHTEDGE_SPACE_NAME}" ]; then
