@@ -114,6 +114,8 @@ public class SparkSessionProvider implements Externalizable {
             builder.config(key, (String)value);
         else if (value instanceof Boolean)
             builder.config(key, (Boolean)value);
+        else if (value instanceof Integer)
+            builder.config(key, ((Integer) value).longValue());
         else if (value instanceof Long)
             builder.config(key, (Long)value);
         else if (value instanceof Double)
