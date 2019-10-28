@@ -106,7 +106,7 @@ public class CompilingInterpreter extends Interpreter {
 
     @Override
     public List<InterpreterCompletion> completion(String buf, int cursor, InterpreterContext context) {
-        return depInterpreter.completion(buf, cursor);
+        return depInterpreter.completion(buf, cursor, context);
     }
 
     private DepInterpreter getDepInterpreter() throws InterpreterException {

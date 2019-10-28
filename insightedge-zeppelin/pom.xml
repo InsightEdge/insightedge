@@ -25,8 +25,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.zeppelin</groupId>
-            <artifactId>zeppelin-spark_2.11</artifactId>
-            <version>${zeppelin.spark.version}</version>
+            <artifactId>spark-interpreter</artifactId>
+            <version>${zeppelin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
