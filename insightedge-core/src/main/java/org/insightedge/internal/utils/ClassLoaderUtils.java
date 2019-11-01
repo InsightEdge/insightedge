@@ -23,6 +23,7 @@ import org.jini.rio.boot.ServiceClassLoader;
 import java.io.File;
 import java.io.FileFilter;
 import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 /**
@@ -49,7 +50,7 @@ public class ClassLoaderUtils {
     public static ClasspathBuilder getSparkClassPath(FileFilter sparkJarsFilter) {
         return new ClasspathBuilder()
                 //.appendPlatform("scala")
-                .append(path(SystemInfo.singleton().locations().getSparkHome(), "jars"), sparkJarsFilter);
+                .append(Paths.get(SystemInfo.singleton().locations().getSparkHome(), "jars"), sparkJarsFilter);
     }
 
     private static boolean sparkJarsFilter(File path) {
@@ -57,9 +58,5 @@ public class ClassLoaderUtils {
         return  !jarName.startsWith("xerces") &&
                 !jarName.startsWith("log4j-") &&
                 !jarName.contains("slf4j-");
-    }
-
-    private static String path(String ... tokens) {
-        return String.join(File.separator, tokens);
     }
 }
