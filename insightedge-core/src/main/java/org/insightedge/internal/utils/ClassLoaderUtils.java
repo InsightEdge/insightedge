@@ -17,13 +17,12 @@ package org.insightedge.internal.utils;
 
 import com.gigaspaces.api.InternalApi;
 import com.gigaspaces.start.ClasspathBuilder;
-import com.gigaspaces.start.SystemInfo;
+import com.gigaspaces.start.SystemLocations;
 import org.jini.rio.boot.ServiceClassLoader;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.net.MalformedURLException;
-import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 /**
@@ -50,7 +49,7 @@ public class ClassLoaderUtils {
     public static ClasspathBuilder getSparkClassPath(FileFilter sparkJarsFilter) {
         return new ClasspathBuilder()
                 //.appendPlatform("scala")
-                .append(Paths.get(SystemInfo.singleton().locations().getSparkHome(), "jars"), sparkJarsFilter);
+                .append(SystemLocations.singleton().sparkHome().resolve("jars"), sparkJarsFilter);
     }
 
     private static boolean sparkJarsFilter(File path) {
