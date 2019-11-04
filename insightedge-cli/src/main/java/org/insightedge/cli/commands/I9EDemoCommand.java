@@ -1,14 +1,14 @@
 package org.insightedge.cli.commands;
 
+import com.gigaspaces.internal.jvm.JavaUtils;
 import com.gigaspaces.start.SystemInfo;
+import com.gigaspaces.start.SystemLocations;
 import org.gigaspaces.cli.CliCommand;
-import org.gigaspaces.cli.commands.AbstractRunCommand;
 import org.gigaspaces.cli.commands.SpaceRunCommand;
 import org.gigaspaces.cli.commands.utils.ProcessBuilderWrapper;
 import org.gigaspaces.cli.commands.utils.XapCliUtils;
 import picocli.CommandLine.Command;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,12 +49,9 @@ public class I9EDemoCommand extends CliCommand {
 
 
     private ProcessBuilderWrapper sparkMasterBuilder(String sparkMasterHost) {
-        String sparkHome = SystemInfo.singleton().locations().getSparkHome();
-        String xapHomeFWSlash = SystemInfo.singleton().getXapHomeFwdSlash();
-        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
-        String script = buildPath(sparkHome, "bin", (isWindows ? "spark-class2.cmd" : "spark-class"));
+        String xapHomeFWSlash = SystemLocations.singleton().homeFwdSlash();
         String[] args = new String[]{
-                script,
+                getSparkClassScript(),
                 "org.apache.spark.deploy.master.Master",
                 "--host",
                 sparkMasterHost
@@ -73,12 +70,9 @@ public class I9EDemoCommand extends CliCommand {
     }
 
     private ProcessBuilderWrapper sparkWorkerBuilder(String sparkMasterUrl, String sparkWorkerHost) {
-        String sparkHome = SystemInfo.singleton().locations().getSparkHome();
-        String xapHomeFWSlash = SystemInfo.singleton().getXapHomeFwdSlash();
-        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
-        String script = buildPath(sparkHome, "bin", (isWindows ? "spark-class2.cmd" : "spark-class"));
+        String xapHomeFWSlash = SystemLocations.singleton().homeFwdSlash();
         String[] args = new String[]{
-                script,
+                getSparkClassScript(),
                 "org.apache.spark.deploy.worker.Worker",
                 sparkMasterUrl,
                 "--host",
@@ -94,6 +88,11 @@ public class I9EDemoCommand extends CliCommand {
 
         processBuilder.inheritIO();
         return new SparkWorkerProcessBuilderWrapper(processBuilder);
+    }
+
+    private String getSparkClassScript() {
+        String scriptName = JavaUtils.isWindows() ? "spark-class2.cmd" : "spark-class";
+        return SystemLocations.singleton().sparkHome().resolve("bin").resolve(scriptName).toString();
     }
 
     private class SparkWorkerProcessBuilderWrapper extends ProcessBuilderWrapper {
@@ -114,15 +113,10 @@ public class I9EDemoCommand extends CliCommand {
     }
 
     private ProcessBuilderWrapper zeppelinBuilder() {
-        String xapHome = SystemInfo.singleton().getXapHome();
-        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("win");
-        String script = buildPath(xapHome, "insightedge", "zeppelin", "bin", (isWindows ? "zeppelin.cmd" : "zeppelin.sh"));
-
-
+        String scriptName = JavaUtils.isWindows() ? "zeppelin.cmd" : "zeppelin.sh";
+        String script = SystemLocations.singleton().home("insightedge", "zeppelin", "bin", scriptName).toString();
         ProcessBuilder processBuilder = new ProcessBuilder(Collections.singletonList(script));
-
         processBuilder.inheritIO();
-
         return new ProcessBuilderWrapper(processBuilder);
     }
 
@@ -135,9 +129,4 @@ public class I9EDemoCommand extends CliCommand {
 		command.lus = true;
         return command.toProcessBuilders();
     }
-
-    private String buildPath(String... paths) {
-        return String.join(File.separator, paths);
-    }
-
 }
