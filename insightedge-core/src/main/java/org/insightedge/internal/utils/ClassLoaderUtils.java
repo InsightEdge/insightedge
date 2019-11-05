@@ -20,9 +20,9 @@ import com.gigaspaces.start.ClasspathBuilder;
 import com.gigaspaces.start.SystemLocations;
 import org.jini.rio.boot.ServiceClassLoader;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 /**
@@ -46,14 +46,14 @@ public class ClassLoaderUtils {
         return getSparkClassPath(ClassLoaderUtils::sparkJarsFilter);
     }
 
-    public static ClasspathBuilder getSparkClassPath(FileFilter sparkJarsFilter) {
+    public static ClasspathBuilder getSparkClassPath(Predicate<Path> sparkJarsFilter) {
         return new ClasspathBuilder()
-                //.appendPlatform("scala")
-                .append(SystemLocations.singleton().sparkHome().resolve("jars"), sparkJarsFilter);
+                //.appendPlatformJars("scala")
+                .appendJars(SystemLocations.singleton().sparkHome().resolve("jars"), sparkJarsFilter);
     }
 
-    private static boolean sparkJarsFilter(File path) {
-        String jarName = path.getName();
+    private static boolean sparkJarsFilter(Path path) {
+        String jarName = path.getFileName().toString();
         return  !jarName.startsWith("xerces") &&
                 !jarName.startsWith("log4j-") &&
                 !jarName.contains("slf4j-");
