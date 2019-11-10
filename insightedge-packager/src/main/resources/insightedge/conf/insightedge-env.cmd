@@ -4,7 +4,7 @@ rem * This script is used to initialize common environment to GigaSpaces Insight
 rem * It is highly recommended NOT TO MODIFY THIS SCRIPT, to simplify future upgrades.                        *
 rem * If you need to override the defaults, please modify $GS_HOME\bin\setenv-overrides.bat or set           *
 rem * the GS_SETTINGS_FILE environment variable to your custom script.                                       *
-rem * For more information see https://docs.gigaspaces.com/14.5/started/common-environment-variables.html     *
+rem * For more information see https://docs.gigaspaces.com/15.0/started/common-environment-variables.html     *
 rem ***********************************************************************************************************
 rem Source XAP environment;
 call "%~dp0..\..\bin\setenv.bat"
