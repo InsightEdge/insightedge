@@ -7,10 +7,10 @@ rem * the GS_SETTINGS_FILE environment variable to your custom script.          
 rem * For more information see https://docs.gigaspaces.com/14.5/started/common-environment-variables.html     *
 rem ***********************************************************************************************************
 rem Source XAP environment;
-call %~dp0..\..\bin\setenv.bat
+call "%~dp0..\..\bin\setenv.bat"
 
 rem Set InsightEdge defaults;
-set INSIGHTEDGE_CLASSPATH=%GS_HOME%\insightedge\lib\*;%GS_HOME%\insightedge\lib\jdbc\*;%GS_HOME%\insightedge\lib\analytics-xtreme\*;%GS_HOME%\lib\required\*;%GS_HOME%\lib\optional\spatial\*
+set INSIGHTEDGE_CLASSPATH="%GS_HOME%\insightedge\lib\*";"%GS_HOME%\insightedge\lib\jdbc\*";"%GS_HOME%\insightedge\lib\analytics-xtreme\*";"%GS_HOME%\lib\required\*";"%GS_HOME%\lib\optional\spatial\*"
 
 if defined INSIGHTEDGE_CLASSPATH_EXT set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLASSPATH%;%INSIGHTEDGE_CLASSPATH_EXT%
 
@@ -24,7 +24,7 @@ if not defined SPARK_DIST_CLASSPATH set SPARK_DIST_CLASSPATH=%INSIGHTEDGE_CLASSP
 rem Zeppelin
 if not defined ZEPPELIN_PORT set ZEPPELIN_PORT=9090
 rem Spark jars are added to interpreter classpath because of Analytics Xtreme
-if not defined ZEPPELIN_INTP_CLASSPATH_OVERRIDES set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CLASSPATH%;%SPARK_HOME%\jars\*
+if not defined ZEPPELIN_INTP_CLASSPATH_OVERRIDES set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CLASSPATH%;"%SPARK_HOME%\jars\*"
 if not defined ZEPPELIN_LOG_DIR set ZEPPELIN_LOG_DIR=%GS_HOME%\logs
 
 if not defined INSIGHTEDGE_SPACE_NAME set INSIGHTEDGE_SPACE_NAME=demo
