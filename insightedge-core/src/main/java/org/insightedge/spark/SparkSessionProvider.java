@@ -45,10 +45,7 @@ public class SparkSessionProvider implements Externalizable {
     private transient Wrapper wrapper;
 
     static  {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader instanceof ServiceClassLoader) {
-            ClassLoaderUtils.addSparkJars((ServiceClassLoader) classLoader);
-        }
+        ServiceClassLoader.appendIfContext(ClassLoaderUtils::getSparkClassPath);
     }
 
     public SparkSessionProvider() {

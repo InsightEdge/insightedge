@@ -31,17 +31,6 @@ import java.util.logging.Logger;
  */
 @InternalApi
 public class ClassLoaderUtils {
-    private static final Logger logger = Logger.getLogger(ClassLoaderUtils.class.getName());
-
-    public static void addSparkJars(ServiceClassLoader classLoader) {
-        logger.fine("Adding spark jars");
-        try {
-            classLoader.addURLs(getSparkClassPath().toURLs());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Failed to load spark jars", e);
-        }
-    }
-
     public static ClasspathBuilder getSparkClassPath() {
         return getSparkClassPath(ClassLoaderUtils::sparkJarsFilter);
     }
