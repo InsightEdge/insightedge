@@ -10,7 +10,7 @@ rem Source XAP environment;
 call "%~dp0..\..\bin\setenv.bat"
 
 rem Set InsightEdge defaults;
-set INSIGHTEDGE_CLASSPATH="%GS_HOME%\insightedge\lib\*";"%GS_HOME%\insightedge\lib\jdbc\*";"%GS_HOME%\insightedge\lib\analytics-xtreme\*";"%GS_HOME%\lib\required\*";"%GS_HOME%\lib\optional\spatial\*"
+set INSIGHTEDGE_CLASSPATH=%GS_HOME%\insightedge\lib\*;%GS_HOME%\insightedge\lib\jdbc\*;%GS_HOME%\insightedge\lib\analytics-xtreme\*;%GS_HOME%\lib\required\*;%GS_HOME%\lib\optional\spatial\*
 
 if defined INSIGHTEDGE_CLASSPATH_EXT set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLASSPATH%;%INSIGHTEDGE_CLASSPATH_EXT%
 
