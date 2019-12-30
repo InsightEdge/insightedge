@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.gigaspaces.insightedge</groupId>
     <artifactId>insightedge-package</artifactId>
-    <version>15.2.0-SNAPSHOT</version>
+    <version>15.2.0-m5-mon-7</version>
     <packaging>pom</packaging>
     <description>InsightEdge Package</description>
 
     <properties>
-        <xap.version>${project.version}</xap.version>
+        <xap.version>15.2.0-m5-mon-7</xap.version>
         <spark.version>2.4.4</spark.version>
         <scala.version>2.11.8</scala.version>
         <scalatest.version>2.2.4</scalatest.version>
