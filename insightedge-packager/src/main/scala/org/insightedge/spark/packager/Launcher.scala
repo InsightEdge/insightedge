@@ -94,7 +94,7 @@ object Launcher {
 
         if(exitCode != 0) throw new RuntimeException("Zeppelin install-interpreter.sh failed to install new interpreters")
 
-        Renaming zeppelin/interpreter/shell to zeppelin/interpreter/sh due to a zeppelin bug
+        //Renaming zeppelin/interpreter/shell to zeppelin/interpreter/sh due to a zeppelin bug
         exitCode = s"mv  $insightEdgeHome/zeppelin/interpreter/shell $insightEdgeHome/zeppelin/interpreter/sh" !
 
         if(exitCode != 0) throw new RuntimeException("Failed to rename shell interpreter directory")
