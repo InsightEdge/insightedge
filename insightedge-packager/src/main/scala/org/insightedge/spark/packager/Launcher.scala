@@ -85,6 +85,10 @@ object Launcher {
       run("Unpacking Zeppelin") {
         untgz(zeppelin, s"$insightEdgeHome/zeppelin", cutRootFolder = true)
       }
+      run("Configuring Zeppelin - copying custom Zeppelin resources") {
+        copy(s"$resources/insightedge/zeppelin", s"$insightEdgeHome/zeppelin")
+        remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep") ///delete in the future when delete zepplin spark interperter
+      }
       run("Installing Zeppelin interperters" ){
         val script = s"$insightEdgeHome/zeppelin/bin/install-interpreter.sh"
 
@@ -100,11 +104,6 @@ object Launcher {
         if(exitCode != 0) throw new RuntimeException("Failed to rename shell interpreter directory")
 
         remove(s"$insightEdgeHome/zeppelin/logs")
-      }
-
-      run("Configuring Zeppelin - copying custom Zeppelin resources") {
-        copy(s"$resources/insightedge/zeppelin", s"$insightEdgeHome/zeppelin")
-        remove(s"$insightEdgeHome/zeppelin/interpreter/spark/dep") ///delete in the future when delete zepplin spark interperter
       }
 
       run("Adding Zeppelin define interpreter"){

@@ -60,3 +60,8 @@ export PYSPARK_PYTHON
 # Add the PySpark classes to the Python path:
 export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
 export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH"
+
+# GS-14003 installing new interpreters fails due to Zeppelin accessing maven via http
+if [[ -z "$ZEPPELIN_INTERPRETER_DEP_MVNREPO" ]]; then
+    export ZEPPELIN_INTERPRETER_DEP_MVNREPO="https://repo1.maven.org/maven2"
+fi

@@ -38,3 +38,6 @@ if "x%PYSPARK_DRIVER_PYTHON%"=="x" (
 rem PYTHONPATH is also defined in insightedge-pyspark
 set PYTHONPATH=%SPARK_HOME%\python;%PYTHONPATH%
 set PYTHONPATH=%SPARK_HOME%\python\lib\py4j-0.10.7-src.zip;%PYTHONPATH%
+
+rem GS-14003 installing new interpreters fails due to Zeppelin accessing maven central via http
+if not defined ZEPPELIN_INTERPRETER_DEP_MVNREPO set ZEPPELIN_INTERPRETER_DEP_MVNREPO=https://repo1.maven.org/maven2
