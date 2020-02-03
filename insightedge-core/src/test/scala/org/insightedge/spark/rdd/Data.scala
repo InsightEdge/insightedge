@@ -38,9 +38,9 @@ case class Data(
                  var data: String,
 
                  @BooleanBeanProperty
-                 var flag: Boolean
+                 var flag: java.lang.Boolean
                  ) {
-  def this(routing: Long, data: String) = this(null, routing, data, false)
+  def this(routing: Long, data: String) = this(null, routing, data, null)
 
   def this() = this(-1, null)
 

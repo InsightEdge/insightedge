@@ -227,8 +227,9 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     ))
     val spark = ie.spark
     val df = spark.read.grid(collectionName)
+
     assert(df.count() == 2)
-    assert(df.schema.fields.length == 0)
+    assert(df.schema.fields.length == 1) // should only add the default _spaceId field even when there are no fixed properties
   }
 
 }

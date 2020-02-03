@@ -19,6 +19,7 @@ package org.apache.spark.sql.insightedge.relation
 import java.beans.Introspector
 
 import com.google.common.reflect.TypeToken
+import javax.activation.UnsupportedDataTypeException
 import org.apache.spark.sql.catalyst.ScalaReflection._
 import org.apache.spark.sql.types.{StructType, _}
 import org.apache.spark.util.Utils
@@ -48,7 +49,7 @@ object SchemaInference {
   case class Schema(dataType: DataType, nullable: Boolean)
 
   /**
-    * @param clazz          class from which the shema will be inferred
+    * @param clazz          class from which the schema will be inferred
     * @return datatype for a class
     */
   def schemaFor(clazz: Class[_]): Schema = {
@@ -113,17 +114,17 @@ object SchemaInference {
       case t if t <:< definitions.BooleanTpe => Schema(BooleanType, nullable = false)
       case t if definedByConstructorParams(t) =>
         val params = getConstructorParameters(t)
-        Schema(StructType(
-          params.map { case (fieldName, fieldType) =>
-            val Schema(dataType, nullable) = schemaFor(fieldType)
-            StructField(fieldName, dataType, nullable)
-          }), nullable = true)
+          Schema(StructType(
+            params.map { case (fieldName, fieldType) =>
+              val Schema(dataType, nullable) = schemaFor(fieldType)
+              StructField(fieldName, dataType, nullable)
+            }), nullable = true)
       case other =>
         // assume the given type is a java type
         val typeToken = getTypeTokenFromClassName(className)
         val rawType = typeToken.getRawType
         val declaredFields = typeToken.getRawType.getDeclaredFields
-        if (rawType.getSuperclass.getName.equals("java.lang.Enum")) {
+        if (rawType.getSuperclass != null && rawType.getSuperclass.getName.equals("java.lang.Enum")) {
           val fields = Array(StructField("name", StringType))
           Schema(StructType(fields), nullable = true)
         } else {
@@ -152,5 +153,4 @@ object SchemaInference {
     * Returns the type token for a class name.
     */
   def getTypeTokenFromClassName(clazz: String): TypeToken[_] = TypeToken.of(Utils.classForName(clazz))
-
 }

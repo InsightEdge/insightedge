@@ -17,15 +17,15 @@
 package org.apache.spark.sql.insightedge.relation
 
 import com.gigaspaces.document.SpaceDocument
-import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
+import com.gigaspaces.metadata.{SpacePropertyDescriptor, SpaceTypeDescriptorBuilder}
 import com.gigaspaces.query.IdQuery
 import com.j_spaces.core.client.SQLQuery
+import javax.activation.UnsupportedDataTypeException
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SaveMode._
 import org.apache.spark.sql._
 import org.apache.spark.sql.insightedge.{DataFrameSchema, InsightEdgeSourceOptions}
 import org.apache.spark.sql.types._
-import org.insightedge.spark.implicits
 import org.insightedge.spark.implicits.basic._
 import org.insightedge.spark.rdd.InsightEdgeDocumentRDD
 
@@ -38,9 +38,24 @@ private[insightedge] case class InsightEdgeDocumentRelation(
 
   lazy val inferredSchema: StructType = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
-      case null => new StructType()
+      case null => getStructType(collection)
       case storedSchema => storedSchema.schema
     }
+  }
+
+  private def getStructType(collection : String): StructType = {
+    val typeDescriptor = gs.getTypeManager.getTypeDescriptor(collection)
+    if (typeDescriptor == null) { throw new IllegalArgumentException("Couldn't find a collection in memory")}
+
+    val properties = typeDescriptor.getPropertiesNames
+    var structType = new StructType()
+
+    for (property <- properties) {
+      val propertyDescriptor: SpacePropertyDescriptor = typeDescriptor.getFixedProperty(property)
+      val schemaInference = SchemaInference.schemaFor(propertyDescriptor.getType)
+      structType = structType.add(propertyDescriptor.getName, schemaInference.dataType, schemaInference.nullable)
+    }
+    structType
   }
 
   override def insert(data: DataFrame, overwrite: Boolean): Unit = {

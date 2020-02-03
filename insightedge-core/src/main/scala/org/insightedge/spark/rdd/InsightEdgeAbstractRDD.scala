@@ -17,6 +17,7 @@
 package org.insightedge.spark.rdd
 
 import com.gigaspaces.document.SpaceDocument
+import com.gigaspaces.query.QueryResultType
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, SparkContext, TaskContext}
@@ -100,7 +101,7 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
     * @return GigaSpaces sql query
     */
   protected def createDocumentInsightEdgeQuery(typeName: String, partition: Partition, sqlQuery: String, params: Seq[Any] = Seq(), fields: Seq[String] = Seq()): SQLQuery[SpaceDocument] = {
-    val query = new SQLQuery[SpaceDocument](typeName, sqlQuery)
+    val query = new SQLQuery[SpaceDocument](typeName, sqlQuery, QueryResultType.DOCUMENT)
     query.setRouting(partition.index)
     query.setParameters(params.map(_.asInstanceOf[Object]): _*)
     if (fields.nonEmpty) {

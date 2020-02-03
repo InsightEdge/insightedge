@@ -23,15 +23,18 @@ import scala.beans.{BeanProperty, BooleanBeanProperty}
 case class Product(
                     @BeanProperty
                     @SpaceId
+                    @SpaceProperty(nullValue = "-1")
                     var id: Long,
 
                     @BeanProperty
                     var description: String,
 
                     @BeanProperty
+                    @SpaceProperty(nullValue = "-1")
                     var quantity: Int,
 
                     @BooleanBeanProperty
+                    @SpaceProperty(nullValue = "false")
                     var featuredProduct: Boolean
                   ) {
 

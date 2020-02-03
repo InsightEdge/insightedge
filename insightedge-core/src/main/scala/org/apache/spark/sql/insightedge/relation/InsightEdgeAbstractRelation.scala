@@ -77,7 +77,6 @@ abstract class InsightEdgeAbstractRelation(
   override def unhandledFilters(filters: Array[Filter]): Array[Filter] = unsupportedFilters(filters)
 
   def insert(data: DataFrame, mode: SaveMode): Unit
-
 }
 
 
