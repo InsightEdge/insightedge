@@ -20,7 +20,6 @@ import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.{SpacePropertyDescriptor, SpaceTypeDescriptorBuilder}
 import com.gigaspaces.query.IdQuery
 import com.j_spaces.core.client.SQLQuery
-import javax.activation.UnsupportedDataTypeException
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SaveMode._
 import org.apache.spark.sql._
@@ -36,6 +35,8 @@ private[insightedge] case class InsightEdgeDocumentRelation(
                                                           )
   extends InsightEdgeAbstractRelation(context, options) with Serializable {
 
+  private[this] val DATAFRAME_ID_PROPERTY = "I9E_DFID"
+
   lazy val inferredSchema: StructType = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
       case null => getStructType(collection)
@@ -47,7 +48,9 @@ private[insightedge] case class InsightEdgeDocumentRelation(
     val typeDescriptor = gs.getTypeManager.getTypeDescriptor(collection)
     if (typeDescriptor == null) { throw new IllegalArgumentException("Couldn't find a collection in memory")}
 
-    val properties = typeDescriptor.getPropertiesNames
+    // We don't want to return id field when reading Dataframe, which was written to space as Dataframe.
+    val properties = typeDescriptor.getPropertiesNames.filterNot(property => property.contains(DATAFRAME_ID_PROPERTY))
+
     var structType = new StructType()
 
     for (property <- properties) {
@@ -63,17 +66,29 @@ private[insightedge] case class InsightEdgeDocumentRelation(
       gs.clear(new SpaceDocument(collection))
     }
 
+    val attributes = data.schema.toAttributes
+    val properties: Map[String, Class[_]] = attributes.map(field => field.name -> dataTypeToClass(field.dataType)).toMap
+
     if (gs.getTypeManager.getTypeDescriptor(collection) == null) {
-      gs.getTypeManager.registerTypeDescriptor(new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true).create())
+      val spaceTypeDescriptorBuilder = new SpaceTypeDescriptorBuilder(collection)
+        .supportsDynamicProperties(true)
+        .idProperty(DATAFRAME_ID_PROPERTY, true)
+        .addFixedProperty(DATAFRAME_ID_PROPERTY, classOf[String])
+
+      for ((k,v) <- properties) { spaceTypeDescriptorBuilder.addFixedProperty(k,v) }
+      gs.getTypeManager.registerTypeDescriptor(spaceTypeDescriptorBuilder.create())
     }
 
     data.rdd.mapPartitions { rows =>
-      InsightEdgeAbstractRelation.rowsToDocuments(rows, schema).map(document => new SpaceDocument(collection, document))
+      InsightEdgeAbstractRelation.rowsToDocuments(rows, schema).map(document => {
+        new SpaceDocument(collection, document)
+      })
     }.saveToGrid()
 
-    def removeMetadata(s: StructType): StructType = {
-      StructType(s.fields.map { f =>
-        f.copy(metadata = Metadata.empty, dataType = f.dataType match {
+    // Write the Schema to space using DataFrameSchema
+    def removeMetadata(structType: StructType): StructType = {
+      StructType(structType.fields.map { structField =>
+        structField.copy(metadata = Metadata.empty, dataType = structField.dataType match {
           case dt: StructType => removeMetadata(dt)
           case dt => dt
         })
@@ -124,6 +139,25 @@ private[insightedge] case class InsightEdgeDocumentRelation(
     val rdd = new InsightEdgeDocumentRDD(ieConfig, sc, collection, query, params, fields.toSeq, options.readBufferSize)
 
     rdd.mapPartitions { data => InsightEdgeAbstractRelation.beansToRows(data, clazzName, schema, fields) }
+  }
+
+  private def dataTypeToClass(dataType: DataType): Class[_] = dataType match {
+    case _: ByteType => classOf[java.lang.Byte]
+    case _: ShortType => classOf[java.lang.Short]
+    case _: IntegerType => classOf[java.lang.Integer]
+    case _: LongType => classOf[java.lang.Long]
+    case _: FloatType => classOf[java.lang.Float]
+    case _: DoubleType => classOf[java.lang.Double]
+    case _: DecimalType => classOf[java.math.BigDecimal]
+    case _: StringType => classOf[java.lang.String]
+    case _: BinaryType => classOf[Array[Byte]]
+    case _: BooleanType => classOf[java.lang.Boolean]
+    case _: TimestampType => classOf[java.sql.Timestamp]
+    case _: DateType => classOf[java.sql.Date]
+    case _: ArrayType => Class.forName("java.util.List")
+    case _: MapType => Class.forName("java.util.Map")
+    case _: StructType => classOf[org.apache.spark.sql.Row]
+    case _ => classOf[java.lang.String]
   }
 
 }

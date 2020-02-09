@@ -40,6 +40,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val df = spark.read.grid[Person]
     df.printSchema()
+    df.show()
     assert(df.count() == 4)
     assert(df.filter(df("address.city") equalTo "Buffalo").count() == 1)
 
@@ -73,6 +74,7 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
   }
 
   it should "support nested properties after saving" taggedAs ScalaSpaceClass in { ie =>
+
     ie.sc.parallelize(Seq(
       Person(id = null, name = "Paul", age = 30, address = Address(city = "Columbus", state = "OH")),
       Person(id = null, name = "Mike", age = 25, address = Address(city = "Buffalo", state = "NY")),
@@ -82,20 +84,28 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
 
     val collectionName = randomString()
     val spark = ie.spark
-    spark.read.grid[Person].write.grid(collectionName)
+    val dataframeClass = spark.read.grid[Person]
+    dataframeClass.write.grid(collectionName)
+
+// TODO fix writing df with nested properties to space when the df was read as a collection like the example below.
+//    val dataFrameDocument = spark.read.grid("org.apache.spark.sql.insightedge.model.Person")
+//    dataFrameDocument.write.grid(collectionName)
 
     val person = ie.spaceProxy.read(new SQLQuery[SpaceDocument](collectionName, ""))
     assert(person.getProperty[Any]("address").isInstanceOf[DocumentProperties])
     assert(person.getProperty[Any]("age").isInstanceOf[Integer])
     assert(person.getProperty[Any]("name").isInstanceOf[String])
 
-    val df = spark.read.grid(collectionName)
-    assert(df.count() == 4)
-    assert(df.filter(df("address.state") equalTo "NC").count() == 2)
-    assert(df.filter(df("address.city") equalTo "Nowhere").count() == 0)
+    val dataframeCollection = spark.read.grid(collectionName)
+    dataframeCollection.printSchema()
+    dataframeCollection.show()
+    assert(dataframeCollection.count() == 4)
+    assert(dataframeCollection.filter(dataframeCollection("address.state") equalTo "NC").count() == 2)
+    assert(dataframeCollection.filter(dataframeCollection("address.city") equalTo "Nowhere").count() == 0)
   }
 
   it should "support nested properties after saving [java]" taggedAs ScalaSpaceClass in { ie =>
+
     parallelizeJavaSeq(ie.sc, () => Seq(
       new JPerson(null, "Paul", 30, new JAddress("Columbus", "OH")),
       new JPerson(null, "Mike", 25, new JAddress("Buffalo", "NY")),
@@ -117,6 +127,5 @@ class DataFrameNestedQuerySpec extends fixture.FlatSpec with InsightEdge {
     assert(df.filter(df("address.state") equalTo "NC").count() == 2)
     assert(df.filter(df("address.city") equalTo "Nowhere").count() == 0)
   }
-
 
 }

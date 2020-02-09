@@ -16,11 +16,12 @@
 
 package org.apache.spark.sql.insightedge.dataframe
 
+import java.sql.{DriverManager, SQLException}
 import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.metadata.SpaceTypeDescriptorBuilder
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.insightedge.JAddress
-import org.apache.spark.sql.insightedge.model.Address
+import org.apache.spark.sql.insightedge.model.{Address, Person}
 import org.apache.spark.sql.types._
 import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
@@ -93,6 +94,39 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
     assert(count == 1000)
   }
 
+  it should "Support jdbc querying but without nested properties" in { ie =>
+
+    ie.sc.parallelize(Seq(
+      Person(id = null, name = "Paul", age = 30, address = Address(city = "Columbus", state = "OH")),
+      Person(id = null, name = "Mike", age = 25, address = Address(city = "Buffalo", state = "NY")),
+      Person(id = null, name = "John", age = 20, address = Address(city = "Charlotte", state = "NC")),
+      Person(id = null, name = "Silvia", age = 27, address = Address(city = "Charlotte", state = "NC"))
+    )).saveToGrid()
+    Class.forName("com.j_spaces.jdbc.driver.GDriver")
+
+    val collectionName = randomString()
+    val spark = ie.spark
+
+    // Instead of person you can provide a schema
+    spark.read.grid[Person].write.grid(collectionName)
+    val dataFrame = spark.read.grid(collectionName)
+
+    val space = ie.spaceProxy.getSpace
+    val connection = DriverManager.getConnection("jdbc:gigaspaces:url:" + space.getFinderURL.getURL)
+    val preparedStatement = connection.prepareStatement("select * from " + collectionName + " where name='Mike'")
+    preparedStatement.execute
+    val resultSet = preparedStatement.getResultSet
+    resultSet.next
+
+    assert(dataFrame.filter(dataFrame("name") equalTo "Mike").count() == 1)
+    assert(resultSet.getString("name").equals("Mike"))
+    assert(resultSet.getInt("age") == 25)
+    assert(resultSet.getString("address").equals("DocumentProperties {city=Buffalo,state=NY}"))
+
+    // Nested properties are not allowed, only their toString of their super type
+    intercept[SQLException] { resultSet.getString("address.city") }
+  }
+
   it should "create dataframe with SQL syntax [java]" taggedAs JavaSpaceClass in { ie=>
     writeJDataSeqToDataGrid(1000)
     val spark = ie.spark
@@ -142,6 +176,7 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
   }
 
   it should "load dataframe from existing space documents with provided schema" in { ie =>
+
     val collectionName = randomString()
 
     ie.spaceProxy.getTypeManager.registerTypeDescriptor(
@@ -153,14 +188,14 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
 
     ie.spaceProxy.writeMultiple(Array(
       new SpaceDocument(collectionName, Map(
-        "personId" -> "111",
-        "name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32),
-        "address" -> Address("New York", "NY"), "jaddress" -> new JAddress("New York", "NY")
+        "personId" -> "111"
+        ,"name" -> "John", "surname" -> "Wind", "age" -> Integer.valueOf(32)
+        ,"address" -> Address("New York", "NY"), "jaddress" -> new JAddress("New York", "NY")
       )),
       new SpaceDocument(collectionName, Map(
-        "personId" -> "222",
-        "name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20),
-        "address" -> Address("Charlotte", "NC"), "jaddress" -> new JAddress("Charlotte", "NC")
+        "personId" -> "222"
+        ,"name" -> "Mike", "surname" -> "Green", "age" -> Integer.valueOf(20)
+        ,"address" -> Address("Charlotte", "NC"), "jaddress" -> new JAddress("Charlotte", "NC")
       ))
     ))
 
@@ -191,16 +226,16 @@ class DataFrameCreateSpec extends fixture.FlatSpec with InsightEdge {
       StructField("city", StringType, nullable = true)
     ))
     val spark = ie.spark
-    val df = spark.read.schema(
-      StructType(Seq(
+    val df = spark.read
+      .schema(StructType(Seq(
         StructField("personId", StringType, nullable = false),
         StructField("name", StringType, nullable = true),
         StructField("surname", StringType, nullable = true),
         StructField("age", IntegerType, nullable = false),
         StructField("address", addressType.copy(), nullable = true, nestedClass[Address]),
         StructField("jaddress", addressType.copy(), nullable = true, nestedClass[JAddress])
-      ))
-    ).grid(collectionName)
+      )))
+      .grid(collectionName)
     df.printSchema()
 
     // check schema

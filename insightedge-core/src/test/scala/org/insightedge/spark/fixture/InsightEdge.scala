@@ -115,4 +115,5 @@ trait InsightEdge extends fixture.FlatSpec {
   def dataQuery(query: String = "", params: Seq[Object] = Seq()): SQLQuery[Data] = new SQLQuery[Data](classOf[Data], query, params.toArray)
 
   def randomString() = RandomStringUtils.random(10, "abcdefghijklmnopqrst")
+
 }

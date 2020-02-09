@@ -82,6 +82,10 @@ object SchemaInference {
         val TypeRef(_, _, Seq(elementType)) = t
         val Schema(dataType, nullable) = schemaFor(elementType)
         Schema(ArrayType(dataType, containsNull = nullable), nullable = true)
+      case t if t <:< localTypeOf[java.util.List[_]] =>
+        val TypeRef(_, _, Seq(elementType)) = t
+        val Schema(dataType, nullable) = schemaFor(elementType)
+        Schema(ArrayType(dataType, containsNull = nullable), nullable = true)
       case t if t <:< localTypeOf[Map[_, _]] =>
         val TypeRef(_, _, Seq(keyType, valueType)) = t
         val Schema(valueDataType, valueNullable) = schemaFor(valueType)
@@ -105,6 +109,7 @@ object SchemaInference {
       case t if t <:< localTypeOf[java.lang.Short] => Schema(ShortType, nullable = true)
       case t if t <:< localTypeOf[java.lang.Byte] => Schema(ByteType, nullable = true)
       case t if t <:< localTypeOf[java.lang.Boolean] => Schema(BooleanType, nullable = true)
+      case t if t <:< localTypeOf[org.apache.spark.sql.Row] => Schema(StructType.defaultConcreteType, nullable = true)
       case t if t <:< definitions.IntTpe => Schema(IntegerType, nullable = false)
       case t if t <:< definitions.LongTpe => Schema(LongType, nullable = false)
       case t if t <:< definitions.DoubleTpe => Schema(DoubleType, nullable = false)

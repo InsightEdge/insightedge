@@ -117,6 +117,7 @@ class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMat
 
 
   it should "load dataset from existing space documents with provided schema" in { ie =>
+
     val collectionName = randomString()
     val spark = ie.spark
     import spark.implicits._
