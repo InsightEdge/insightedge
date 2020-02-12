@@ -32,11 +32,11 @@ private[spark] case class InsightEdgePartition(
     */
   override def equals(o: Any): Boolean = o match {
     case that: InsightEdgePartition =>
-      that.id == id &&
+        that.id == id &&
         that.hostName == hostName &&
-        that.gridContainerName == gridContainerName
-      that.bucketRangeBottom == bucketRangeBottom
-      that.bucketRangeTop == bucketRangeTop
+        that.gridContainerName == gridContainerName &&
+        that.bucketRangeBottom == bucketRangeBottom &&
+        that.bucketRangeTop == bucketRangeTop
     case _ => false
   }
 
