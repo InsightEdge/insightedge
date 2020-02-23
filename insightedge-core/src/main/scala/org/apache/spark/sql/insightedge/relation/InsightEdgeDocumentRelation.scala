@@ -35,8 +35,6 @@ private[insightedge] case class InsightEdgeDocumentRelation(
                                                           )
   extends InsightEdgeAbstractRelation(context, options) with Serializable {
 
-  private[this] val DATAFRAME_ID_PROPERTY = "I9E_DFID"
-
   lazy val inferredSchema: StructType = {
     gs.read[DataFrameSchema](new IdQuery(classOf[DataFrameSchema], collection)) match {
       case null => getStructType(collection)
@@ -48,9 +46,7 @@ private[insightedge] case class InsightEdgeDocumentRelation(
     val typeDescriptor = gs.getTypeManager.getTypeDescriptor(collection)
     if (typeDescriptor == null) { throw new IllegalArgumentException("Couldn't find a collection in memory")}
 
-    // We don't want to return id field when reading Dataframe, which was written to space as Dataframe.
-    val properties = typeDescriptor.getPropertiesNames.filterNot(property => property.contains(DATAFRAME_ID_PROPERTY))
-
+    val properties = typeDescriptor.getPropertiesNames
     var structType = new StructType()
 
     for (property <- properties) {
@@ -70,10 +66,7 @@ private[insightedge] case class InsightEdgeDocumentRelation(
     val properties: Map[String, Class[_]] = attributes.map(field => field.name -> dataTypeToClass(field.dataType)).toMap
 
     if (gs.getTypeManager.getTypeDescriptor(collection) == null) {
-      val spaceTypeDescriptorBuilder = new SpaceTypeDescriptorBuilder(collection)
-        .supportsDynamicProperties(true)
-        .idProperty(DATAFRAME_ID_PROPERTY, true)
-        .addFixedProperty(DATAFRAME_ID_PROPERTY, classOf[String])
+      val spaceTypeDescriptorBuilder = new SpaceTypeDescriptorBuilder(collection).supportsDynamicProperties(true)
 
       for ((k,v) <- properties) { spaceTypeDescriptorBuilder.addFixedProperty(k,v) }
       gs.getTypeManager.registerTypeDescriptor(spaceTypeDescriptorBuilder.create())
