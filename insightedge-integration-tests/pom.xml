@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
-        <version>15.2.0-SNAPSHOT</version>
+        <version>15.2.0-m13-k8s-scaling2-mon-6</version>
     </parent>
 
     <modules>
