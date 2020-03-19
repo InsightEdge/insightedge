@@ -43,8 +43,6 @@ public class ClassLoaderUtils {
 
     private static boolean sparkJarsFilter(Path path) {
         String jarName = path.getFileName().toString();
-        return  !jarName.startsWith("xerces") &&
-                !jarName.startsWith("log4j-") &&
-                !jarName.contains("slf4j-");
+        return  !jarName.startsWith("xerces");
     }
 }
