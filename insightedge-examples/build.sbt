@@ -1,6 +1,6 @@
 name := "insightedge-examples"
 
-val insightEdgeVersion = sys.props.getOrElse("insightEdgeVersion", "15.2.0")
+val insightEdgeVersion = sys.props.getOrElse("insightEdgeVersion", "15.2.0-patch-powerbi-sun-10")
 
 version := insightEdgeVersion
 
