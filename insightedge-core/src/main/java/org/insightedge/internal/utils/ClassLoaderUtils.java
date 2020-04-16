@@ -23,7 +23,6 @@ import org.jini.rio.boot.ServiceClassLoader;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.function.Predicate;
-import java.util.logging.Logger;
 
 /**
  * @author Niv Ingberg

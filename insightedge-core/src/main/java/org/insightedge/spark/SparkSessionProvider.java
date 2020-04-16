@@ -26,7 +26,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
+
 
 /**
  * @author Alon Shoham
@@ -82,7 +82,7 @@ public class SparkSessionProvider implements Externalizable {
             configOptions.forEach((key, value) -> config(builder, key, value));
 
             if (logLevel != null) {
-                java.util.logging.Logger.getLogger("org.apache").setLevel(Level.parse(logLevel));
+                java.util.logging.Logger.getLogger("org.apache").setLevel(java.util.logging.Level.parse(logLevel));
             }
 
             SparkSession activeSession = getIfExists(SparkSession.getActiveSession());
