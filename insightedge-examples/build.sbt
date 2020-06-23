@@ -4,7 +4,7 @@ val insightEdgeVersion = sys.props.getOrElse("insightEdgeVersion", "15.5.0-SNAPS
 
 version := insightEdgeVersion
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.11"
 
 
 resolvers += Resolver.mavenLocal
@@ -13,7 +13,7 @@ resolvers += "Openspaces Maven Repository" at "http://maven-repository.openspace
 libraryDependencies ++= Seq(
   "org.gigaspaces.insightedge" % "insightedge-core" % insightEdgeVersion % "provided" exclude("javax.jms", "jms"),
   "org.apache.bahir" %% "spark-streaming-twitter" % "2.4.0",
-  "org.scalatest" % "scalatest_2.11" % "3.0.3" % "test"
+  "org.scalatest" % "scalatest_2.12" % "3.0.3" % "test"
 )
 
 test in assembly := {}

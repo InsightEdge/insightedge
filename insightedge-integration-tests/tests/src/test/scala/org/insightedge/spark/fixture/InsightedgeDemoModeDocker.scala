@@ -18,6 +18,8 @@ package org.insightedge.spark.fixture
 
 import java.util
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import com.google.common.collect.ImmutableMap
 import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}
@@ -25,7 +27,7 @@ import org.insightedge.spark.utils.BuildUtils
 import org.insightedge.spark.utils.RestUtils.jsonBody
 import org.insightedge.spark.utils.TestUtils.printLnWithTimestamp
 import org.scalatest.{BeforeAndAfterAll, Suite}
-import play.api.libs.ws.ning.NingWSClient
+import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -57,7 +59,9 @@ trait InsightedgeDemoModeDocker extends BeforeAndAfterAll {
 
   private val ieLogsPath="/opt/gigaspaces-insightedge/logs"
 
-  val wsClient = NingWSClient()
+  implicit val system = ActorSystem()
+  implicit val materializer = ActorMaterializer()
+  val wsClient              = AhcWSClient()
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()

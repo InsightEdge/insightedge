@@ -51,7 +51,7 @@ class InsightEdgeStreamingSpec extends fixture.FlatSpec with InsightEdgeStreamin
     eventually {
       val savedData = ie.spaceProxy.readMultiple(dataQuery())
       assert(savedData.length == 1)
-    }(timeout(2))
+    }(timeout(2), org.scalactic.source.Position("InsightEdgeStreamingSpec", "", 0))
   }
 
   it should "save multiple objects from Spark driver" in { ie =>
@@ -70,7 +70,7 @@ class InsightEdgeStreamingSpec extends fixture.FlatSpec with InsightEdgeStreamin
     eventually {
       val savedData = ie.spaceProxy.readMultiple(dataQuery())
       assert(savedData.nonEmpty)
-    }(timeout(2))
+    }(timeout(2), org.scalactic.source.Position("InsightEdgeStreamingSpec", "", 0))
   }
 
   it should "save DStream" in { ie =>
@@ -87,7 +87,7 @@ class InsightEdgeStreamingSpec extends fixture.FlatSpec with InsightEdgeStreamin
     eventually {
       val savedData = ie.spaceProxy.readMultiple(dataQuery())
       assert(savedData.nonEmpty)
-    }(timeout(2))
+    }(timeout(2), org.scalactic.source.Position("InsightEdgeStreamingSpec", "", 0))
   }
 
   def stringQueue(sc: SparkContext) = {

@@ -70,7 +70,7 @@
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.11</artifactId>
+            <artifactId>scalatest_2.12</artifactId>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -94,8 +94,8 @@
         <!-- REST client lib -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-ws_2.11</artifactId>
-            <version>2.4.6</version>
+            <artifactId>play-ahc-ws_2.12</artifactId>
+            <version>2.6.25</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>

@@ -20,6 +20,7 @@ import com.gigaspaces.document.SpaceDocument
 import com.gigaspaces.query.QueryResultType
 import com.j_spaces.core.client.SQLQuery
 import org.apache.spark.rdd.RDD
+import org.apache.spark.util.TaskCompletionListener
 import org.apache.spark.{Partition, SparkContext, TaskContext}
 import org.insightedge.spark.context.InsightEdgeConfig
 import org.insightedge.spark.impl.{InsightEdgePartition, InsightEdgeQueryIterator, ProfilingIterator}
@@ -55,11 +56,13 @@ abstract class InsightEdgeAbstractRDD[R: ClassTag](
       new ProfilingIterator(new InsightEdgeQueryIterator[T](proxy.iterator(dataGridQuery, readRddBufferSize)))
     }
 
-    context.addTaskCompletionListener { _ =>
-      val endTime = System.currentTimeMillis()
-      val duration = (endTime - startTime) / 1000.0
-      logInfo(f"Fetched ${iterator.count()} rows for partition $gsPartition in $duration%.3f s. May include time of pipelined operation.")
-    }
+    context.addTaskCompletionListener( new TaskCompletionListener {
+      override def onTaskCompletion(context: TaskContext): Unit = {
+        val endTime = System.currentTimeMillis()
+        val duration = (endTime - startTime) / 1000.0
+        logInfo(f"Fetched ${iterator.count()} rows for partition $gsPartition in $duration%.3f s. May include time of pipelined operation.")
+      }
+    } )
 
     iterator
   }

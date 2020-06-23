@@ -38,14 +38,14 @@
         <!--TwitterStreaming-->
         <dependency>
             <groupId>org.apache.bahir</groupId>
-            <artifactId>spark-streaming-twitter_2.11</artifactId>
+            <artifactId>spark-streaming-twitter_2.12</artifactId>
             <version>2.4.0</version>
         </dependency>
 
         <!--Test-->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.11</artifactId>
+            <artifactId>scalatest_2.12</artifactId>
             <version>3.0.3</version>
             <scope>test</scope>
             <exclusions>

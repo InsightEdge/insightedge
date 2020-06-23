@@ -4,6 +4,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import com.gigaspaces.cluster.activeelection.SpaceMode
 import com.spotify.docker.client.DockerClient.RemoveContainerParam
 import com.spotify.docker.client.messages.{Container, ContainerConfig, HostConfig, PortBinding}
@@ -14,7 +16,7 @@ import org.openspaces.admin.pu.ProcessingUnitInstance
 import org.openspaces.admin.{Admin, AdminFactory}
 import org.scalatest.Assertions
 import play.api.libs.ws.WSResponse
-import play.api.libs.ws.ning.NingWSClient
+import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -70,7 +72,10 @@ object InsightEdgeAdminUtils extends Assertions{
 
   private val IE_HOME = BuildUtils.IEHome
 
-  private val wsClient = NingWSClient()
+  implicit val system = ActorSystem()
+  implicit val materializer = ActorMaterializer()
+  val wsClient              = AhcWSClient()
+
   var containersId: Map[String, String] = Map[String, String]()
   private var ieSlaveCounter = 0
   private var ieMasterCounter = 0

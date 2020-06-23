@@ -25,11 +25,11 @@ import org.insightedge.spark.fixture.InsightEdge
 import org.insightedge.spark.implicits.all._
 import org.insightedge.spark.rdd.{BucketedData, Data, JBucketedData, JData}
 import org.insightedge.spark.utils.{JavaSpaceClass, ScalaSpaceClass}
-import org.scalatest.{ShouldMatchers, fixture}
+import org.scalatest.{Matchers, fixture}
 
 import scala.collection.JavaConversions._
 
-class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with ShouldMatchers {
+class DataSetCreateSpec extends fixture.FlatSpec with InsightEdge with Matchers {
 
   it should "create dataset with insightedge format" taggedAs ScalaSpaceClass in { ie =>
     writeDataSeqToDataGrid(1000)
