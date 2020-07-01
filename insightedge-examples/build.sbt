@@ -4,7 +4,7 @@ val insightEdgeVersion = sys.props.getOrElse("insightEdgeVersion", "15.5.0-SNAPS
 
 version := insightEdgeVersion
 
-scalaVersion := "2.12.11"
+scalaVersion := "2.12.10"
 
 
 resolvers += Resolver.mavenLocal
