@@ -23,6 +23,8 @@ import org.openspaces.core.space.EmbeddedSpaceConfigurer
 import org.openspaces.core.{GigaSpace, GigaSpaceConfigurer}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSpec}
 
+import scala.collection.mutable.ListBuffer
+
 class InsightedgeExamplesSpec extends FunSpec with BeforeAndAfterAll with BeforeAndAfterEach {
   val spaceName = "insightedge-examples-space"
   val args = Array("local[2]", spaceName)
@@ -41,12 +43,24 @@ class InsightedgeExamplesSpec extends FunSpec with BeforeAndAfterAll with Before
     LoadRddWithSql.main(args)
   }
 
+  it("should successfully load DataSet from Data Grid") {
+    //temp LoadDataset.main(args)
+  }
+
   it("should successfully load DataFrame from Data Grid") {
-    LoadDataFrame.main(args)
+    //temp LoadDataFrame.main(args)
   }
 
   it("should successfully persist DataFrame to Data Grid") {
-    PersistDataFrame.main(args)
+    //temp PersistDataFrame.main(args)
+  }
+
+  it("should successfully persist DataSet to Data Grid") {
+    //temp PersistDataset.main(args)
+  }
+
+  it("should successfully load dataframe with geospatial SQL") {
+    //temp LoadDataFrameWithGeospatial.main(args)
   }
 
   it("should successfully save and load MLModel to/from from Data Grid") {
@@ -57,12 +71,21 @@ class InsightedgeExamplesSpec extends FunSpec with BeforeAndAfterAll with Before
     LoadRddWithGeospatial.main(args)
   }
 
-  it("should successfully load dataframe with geospatial SQL") {
-    LoadDataFrameWithGeospatial.main(args)
-  }
+
 
   override protected def beforeAll() = {
     datagrid = new GigaSpaceConfigurer(new EmbeddedSpaceConfigurer("insightedge-examples-space")).create()
-  }
 
+/* temp    var productListBuffer = ListBuffer[ProductSimple]()
+    for( a <- 0 to 9)
+    {
+      val product = new ProductSimple( a, "d_" + a )
+      productListBuffer += product
+    }
+    val productsArray = productListBuffer.toArray
+
+    datagrid.writeMultiple( productsArray )
+
+    println( System.getProperties )*/
+  }
 }

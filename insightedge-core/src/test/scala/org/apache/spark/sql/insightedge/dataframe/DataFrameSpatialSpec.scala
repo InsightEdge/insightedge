@@ -100,19 +100,25 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     val intArray = Array(6, 8, 4)
     val intScalaList = List(6, 8, 4)
     val array = Array[Byte](25.toByte, 66.toByte)
-    val intJavaList = util.Arrays.asList(Integer.valueOf(6), Integer.valueOf(6), Integer.valueOf(6))
+    val intJavaArray = Array(Integer.valueOf(6), Integer.valueOf(6), Integer.valueOf(6))
+    val strJavaArray = Array("a", "B", "c")
+    val strJavaArray2 = Array("a", "y", "c")
+
     val strJavaList = util.Arrays.asList("a", "B", "c")
     val strJavaList2 = util.Arrays.asList("a", "y", "c")
 
     val date = Date.valueOf("2006-11-12")
     ie.spaceProxy.writeMultiple(Array(
-      AllClassesSupport("first", 6, bigDecimal, array, new Timestamp(777), date, intArray, intScalaList, intJavaList, strJavaList)
-      , AllClassesSupport("second", 6, bigDecimal, array, new Timestamp(999), date, intArray, intScalaList, intJavaList, strJavaList2)
-      , AllClassesSupport("third", 6, bigDecimal, array, new Timestamp(777), date, intArray, intScalaList, intJavaList, strJavaList2)
+      AllClassesSupport("first", 6, bigDecimal, array, new Timestamp(777), date, intArray, intScalaList, intJavaArray, strJavaArray)
+      , AllClassesSupport("second", 6, bigDecimal, array, new Timestamp(999), date, intArray, intScalaList, intJavaArray, strJavaArray2)
+      , AllClassesSupport("third", 6, bigDecimal, array, new Timestamp(777), date, intArray, intScalaList, intJavaArray, strJavaArray2)
     ))
 
     val spark = ie.spark
     val regularDataFrame = spark.read.grid[AllClassesSupport]
+
+    //regularDataFrame.write.save( "myFileDF-" + System.currentTimeMillis() + ".txt" )
+
     regularDataFrame.write.grid("collection")
     val dataFrameFromSpace = spark.read.grid("collection")
 
@@ -134,11 +140,11 @@ class DataFrameSpatialSpec extends fixture.FlatSpec with InsightEdge {
     assert(regularDataFrame.filter(row => row.getAs[Seq[Int]]("list1").sameElements(intScalaList)).count() == 3)
     assert(dataFrameFromSpace.filter(row => row.getAs[Seq[Int]]("list1").sameElements(intScalaList)).count() == 3)
 
-    assert(regularDataFrame.filter(row => row.getAs[Seq[Integer]]("list2").sameElements(intJavaList.toArray)).count() == 3)
-    assert(dataFrameFromSpace.filter(row => row.getAs[Seq[Integer]]("list2").sameElements(intJavaList.toArray)).count() == 3)
+    assert(regularDataFrame.filter(row => row.getAs[Seq[Integer]]("arrayJavaInt").sameElements(intJavaArray)).count() == 3)
+    assert(dataFrameFromSpace.filter(row => row.getAs[Seq[Integer]]("arrayJavaInt").sameElements(intJavaArray)).count() == 3)
 
-    assert(regularDataFrame.filter(row => row.getAs[Seq[String]]("listString").sameElements(strJavaList2.toArray)).count() == 2)
-    assert(dataFrameFromSpace.filter(row => row.getAs[Seq[String]]("listString").sameElements(strJavaList2.toArray)).count() == 2)
+    assert(regularDataFrame.filter(row => row.getAs[Seq[String]]("arrayJavaString").sameElements(strJavaArray2)).count() == 2)
+    assert(dataFrameFromSpace.filter(row => row.getAs[Seq[String]]("arrayJavaString").sameElements(strJavaArray2)).count() == 2)
 
     assert(regularDataFrame.filter(regularDataFrame("timeStamp1") equalTo new Timestamp(999)).count() == 1)
     assert(dataFrameFromSpace.filter(dataFrameFromSpace("timeStamp1") equalTo new Timestamp(999)).count() == 1)

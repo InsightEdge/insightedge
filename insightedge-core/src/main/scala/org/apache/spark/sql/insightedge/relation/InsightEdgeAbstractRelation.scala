@@ -25,7 +25,6 @@ import org.apache.spark.internal.Logging
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.catalyst.expressions.AttributeReference
 import org.apache.spark.sql.insightedge.InsightEdgeSourceOptions
-import org.apache.spark.sql.insightedge.filter.{GeoContains, GeoIntersects, GeoWithin}
 import org.apache.spark.sql.insightedge.relation.InsightEdgeAbstractRelation._
 import org.apache.spark.sql.insightedge.udt._
 import org.apache.spark.sql.sources._
@@ -102,9 +101,9 @@ object InsightEdgeAbstractRelation {
       case _: StringStartsWith => false
       case _: StringEndsWith => false
       case _: StringContains => false
-      case _: GeoIntersects => true
+/*      case _: GeoIntersects => true
       case _: GeoWithin => true
-      case _: GeoContains => true
+      case _: GeoContains => true*/
       case other => false
     }
   }
@@ -160,7 +159,7 @@ object InsightEdgeAbstractRelation {
       case f: Or =>
         builder -> "(" ->(f.left, params) -> ") or (" ->(f.right, params) -> ")"
 
-      case f: GeoIntersects =>
+/*      case f: GeoIntersects =>
         builder -> f.attribute -> " spatial:intersects ?"
         params += f.value
 
@@ -170,7 +169,7 @@ object InsightEdgeAbstractRelation {
 
       case f: GeoWithin =>
         builder -> f.attribute -> " spatial:within ?"
-        params += f.value
+        params += f.value*/
     }
   }
 

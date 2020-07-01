@@ -38,8 +38,9 @@ case class AllClassesSupport(
                         ,@BeanProperty var date1: java.sql.Date
                         ,@BeanProperty var arrInt: Array[Int]
                         ,@BeanProperty var list1: List[Int]
-                        ,@BeanProperty var list2: java.util.List[Integer]
-                        ,@BeanProperty var listString: java.util.List[String]
+                        ,@BeanProperty var arrayJavaInt: Array[Integer]
+                        ,@BeanProperty var arrayJavaString: Array[String]
+                        //,@BeanProperty var javaListString: java.util.List[String]
                             ) {
 
   def this(routing: Long) = this(null, routing, null, null, null, null, null, null, null, null)

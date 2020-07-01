@@ -138,6 +138,7 @@ object SchemaInference {
           val fields = properties.map { property =>
             val returnType = typeToken.method(property.getReadMethod).getReturnType
             val Schema(dataType, nullable) = schemaFor(classToType(returnType.getRawType))
+
             StructField(property.getName, dataType, nullable)
           }
           Schema(StructType(fields), nullable = true)
@@ -157,5 +158,5 @@ object SchemaInference {
   /**
     * Returns the type token for a class name.
     */
-  def getTypeTokenFromClassName(clazz: String): TypeToken[_] = TypeToken.of(Utils.classForName(clazz))
+  def getTypeTokenFromClassName[T](clazz: String): TypeToken[T] = TypeToken.of(Utils.classForName(clazz))
 }
