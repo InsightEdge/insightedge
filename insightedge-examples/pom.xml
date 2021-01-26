@@ -23,7 +23,7 @@
     <properties>
         <!--Toggling this property between provided/compile allows to run examples in cluster/IDE  -->
         <distribution.dependencies.scope>provided</distribution.dependencies.scope>
-        <ie.version>15.8.0</ie.version>
+        <ie.version>${project.version}</ie.version>
     </properties>
 
     <dependencies>
