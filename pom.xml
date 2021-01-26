@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.gigaspaces.insightedge</groupId>
     <artifactId>insightedge-package</artifactId>
-    <version>15.8.0</version>
+    <version>15.8.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>InsightEdge Package</description>
 
