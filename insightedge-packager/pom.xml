@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
-        <version>15.8.0-SNAPSHOT</version>
+        <version>15.8.1-preview4</version>
     </parent>
 
     <properties>
