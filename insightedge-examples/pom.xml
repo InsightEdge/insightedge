@@ -6,7 +6,7 @@
     <parent>
         <artifactId>insightedge-package</artifactId>
         <groupId>org.gigaspaces.insightedge</groupId>
-        <version>16.0.0-SNAPSHOT</version>
+        <version>16.0.0-m17-sun-9</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -23,7 +23,7 @@
     <properties>
         <!--Toggling this property between provided/compile allows to run examples in cluster/IDE  -->
         <distribution.dependencies.scope>provided</distribution.dependencies.scope>
-        <ie.version>16.0.0-SNAPSHOT</ie.version>
+        <ie.version>16.0.0-m17-sun-9</ie.version>
     </properties>
 
     <dependencies>
