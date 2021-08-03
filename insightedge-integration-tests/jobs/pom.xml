@@ -5,7 +5,7 @@
     <parent>
         <artifactId>insightedge-integration-tests</artifactId>
         <groupId>org.gigaspaces.insightedge</groupId>
-        <version>16.0.0-SNAPSHOT</version>
+        <version>16.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -22,7 +22,7 @@
             <groupId>org.gigaspaces.insightedge</groupId>
             <artifactId>insightedge-core</artifactId>
             <scope>${distribution.dependencies.scope}</scope>
-            <version>16.0.0-SNAPSHOT</version>
+            <version>16.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
