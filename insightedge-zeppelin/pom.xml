@@ -6,12 +6,12 @@
 
     <groupId>org.gigaspaces.insightedge</groupId>
     <artifactId>insightedge-zeppelin</artifactId>
-    <version>16.1.0-SNAPSHOT</version>
+    <version>16.1.0-m11-mon-12</version>
 
     <parent>
         <groupId>org.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
-        <version>16.1.0-SNAPSHOT</version>
+        <version>16.1.0-m11-mon-12</version>
     </parent>
 
     <build>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.gigaspaces.insightedge</groupId>
             <artifactId>insightedge-core</artifactId>
-            <version>16.1.0-SNAPSHOT</version>
+            <version>16.1.0-m11-mon-12</version>
         </dependency>
     </dependencies>
 
