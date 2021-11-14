@@ -12,7 +12,7 @@ source "${DIRNAME}/../../bin/setenv.sh"
 
 
 # Set InsightEdge defaults:
-export INSIGHTEDGE_CLASSPATH="${GS_HOME}/insightedge/lib/*:${GS_HOME}/tools/jdbc/lib/*:${GS_HOME}/insightedge/lib/analytics-xtreme/*:${GS_HOME}/lib/required/*:${GS_HOME}/lib/optional/spatial/*"
+export INSIGHTEDGE_CLASSPATH="${GS_HOME}/insightedge/lib/*:${GS_HOME}/tools/jdbc/lib/*:${GS_HOME}/lib/required/*:${GS_HOME}/lib/optional/spatial/*"
 
 if [ -n "${INSIGHTEDGE_CLASSPATH_EXT}" ]; then
     export INSIGHTEDGE_CLASSPATH="${INSIGHTEDGE_CLASSPATH_EXT}:${INSIGHTEDGE_CLASSPATH}"
