@@ -13,7 +13,7 @@ public class I9ECommandFactory extends GsCommandFactory {
         command.mainClass("org.insightedge.cli.commands.I9EMainCommand");
         // Class path:
         command.classpathFromEnv("INSIGHTEDGE_CLASSPATH");
-        appendMetricToolsClassPath();
+        appendOshiClassPath();
 
         return command;
     }
