@@ -9,8 +9,9 @@ rem ****************************************************************************
 rem Source XAP environment;
 call "%~dp0..\..\bin\setenv.bat"
 
+set JACKSON_CLASSPATH="%GS_HOME%\tools\jdbc\lib\jackson-databind-2.6.3.jar;%GS_HOME%\tools\jdbc\lib\jackson-core-2.6.3.jar;%GS_HOME%\tools\jdbc\lib\jackson-annotations-2.6.3.jar"
 rem Set InsightEdge defaults;
-set INSIGHTEDGE_CLASSPATH=%GS_HOME%\insightedge\lib\*;%GS_HOME%\tools\jdbc\lib\*;%GS_HOME%\lib\required\*;%GS_HOME%\lib\optional\spatial\*
+set INSIGHTEDGE_CLASSPATH=%GS_HOME%\insightedge\lib\*;%JACKSON_CLASSPATH%;%GS_HOME%\lib\platform\jdbc\*;%GS_HOME%\lib\required\*;%GS_HOME%\lib\optional\spatial\*
 
 if defined INSIGHTEDGE_CLASSPATH_EXT set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLASSPATH%;%INSIGHTEDGE_CLASSPATH_EXT%
 
@@ -24,7 +25,7 @@ if not defined SPARK_DIST_CLASSPATH set SPARK_DIST_CLASSPATH=%INSIGHTEDGE_CLASSP
 rem Zeppelin
 if not defined ZEPPELIN_PORT set ZEPPELIN_PORT=9090
 rem Spark jars are added to interpreter classpath because of Analytics Xtreme
-if not defined ZEPPELIN_INTP_CLASSPATH_OVERRIDES set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CLASSPATH%;"%SPARK_HOME%\jars\*"
+if not defined ZEPPELIN_INTP_CLASSPATH_OVERRIDES set ZEPPELIN_INTP_CLASSPATH_OVERRIDES=%INSIGHTEDGE_CLASSPATH%"
 if not defined ZEPPELIN_LOG_DIR set ZEPPELIN_LOG_DIR=%GS_HOME%\logs
 
 if not defined INSIGHTEDGE_SPACE_NAME set INSIGHTEDGE_SPACE_NAME=demo

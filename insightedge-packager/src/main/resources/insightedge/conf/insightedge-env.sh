@@ -10,9 +10,9 @@
 DIRNAME=$(dirname ${BASH_SOURCE[0]})
 source "${DIRNAME}/../../bin/setenv.sh"
 
-
+export JACKSON_CLASSPATH="${GS_HOME}/tools/jdbc/lib/jackson-databind-2.6.3.jar:${GS_HOME}/tools/jdbc/lib/jackson-core-2.6.3.jar:${GS_HOME}/tools/jdbc/lib/jackson-annotations-2.6.3.jar"
 # Set InsightEdge defaults:
-export INSIGHTEDGE_CLASSPATH="${GS_HOME}/insightedge/lib/*:${GS_HOME}/tools/jdbc/lib/*:${GS_HOME}/lib/required/*:${GS_HOME}/lib/optional/spatial/*"
+export INSIGHTEDGE_CLASSPATH="${GS_HOME}/insightedge/lib/*:${JACKSON_CLASSPATH}:${GS_HOME}/lib/platform/jdbc/*:${GS_HOME}/lib/required/*:${GS_HOME}/lib/optional/spatial/*"
 
 if [ -n "${INSIGHTEDGE_CLASSPATH_EXT}" ]; then
     export INSIGHTEDGE_CLASSPATH="${INSIGHTEDGE_CLASSPATH_EXT}:${INSIGHTEDGE_CLASSPATH}"
@@ -30,7 +30,7 @@ fi
 
 # Zeppelin
 # Spark jars are added to interpreter classpath because of Analytics Xtreme
-export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CLASSPATH}:${SPARK_HOME}/jars/*"
+export ZEPPELIN_INTP_CLASSPATH_OVERRIDES="${INSIGHTEDGE_CLASSPATH}"
 
 if [ -z "${ZEPPELIN_PORT}" ]; then
     export ZEPPELIN_PORT=9090
