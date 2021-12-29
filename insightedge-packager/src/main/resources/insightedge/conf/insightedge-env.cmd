@@ -9,9 +9,8 @@ rem ****************************************************************************
 rem Source XAP environment;
 call "%~dp0..\..\bin\setenv.bat"
 
-set JACKSON_CLASSPATH="%GS_HOME%\tools\jdbc\lib\jackson-databind-2.6.3.jar;%GS_HOME%\tools\jdbc\lib\jackson-core-2.6.3.jar;%GS_HOME%\tools\jdbc\lib\jackson-annotations-2.6.3.jar"
 rem Set InsightEdge defaults;
-set INSIGHTEDGE_CLASSPATH=%GS_HOME%\insightedge\lib\*;%JACKSON_CLASSPATH%;%GS_HOME%\lib\platform\jdbc\*;%GS_HOME%\lib\required\*;%GS_HOME%\lib\optional\spatial\*
+set INSIGHTEDGE_CLASSPATH=%GS_HOME%\insightedge\lib\*;%GS_HOME%\lib\platform\jdbc\*;%GS_HOME%\lib\required\*;%GS_HOME%\lib\optional\spatial\*
 
 if defined INSIGHTEDGE_CLASSPATH_EXT set INSIGHTEDGE_CLASSPATH=%INSIGHTEDGE_CLASSPATH%;%INSIGHTEDGE_CLASSPATH_EXT%
 
