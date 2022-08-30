@@ -103,7 +103,9 @@ class ZeppelinNotebooksSpec extends FlatSpec with InsightedgeDemoModeDocker {
       val jobStatus = jsonBody(
         wsClient.url(notebookJobUrl).get()
       )
-      val finished = (jobStatus \ "body" \\ "status").collect { case s@JsString("FINISHED") => s }
+      val finished = (jobStatus \ "body" \\ "status").collect { case s@JsString("FINISHED") => s;
+                                                                case s@JsString("READY") => s;
+                                                              }
       val finishedCount = finished.size
       printLnWithTimestamp(s"finished count $finishedCount/$paragraphsCount")
       assert(finishedCount == paragraphsCount)
