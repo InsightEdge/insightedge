@@ -5,7 +5,7 @@
     <parent>
         <artifactId>insightedge-package</artifactId>
         <groupId>org.gigaspaces.insightedge</groupId>
-        <version>16.2.1-SNAPSHOT</version>
+        <version>16.2.1-m3-tue-153</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
