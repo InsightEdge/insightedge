@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
-        <version>16.2.0-SNAPSHOT</version>
+        <version>16.2.1-PIC-944-k8stests-wait-for-termination-wed-140</version>
     </parent>
 
     <dependencies>
