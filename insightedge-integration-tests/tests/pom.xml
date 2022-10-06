@@ -5,7 +5,7 @@
     <parent>
         <artifactId>insightedge-integration-tests</artifactId>
         <groupId>org.gigaspaces.insightedge</groupId>
-        <version>16.2.1-SNAPSHOT</version>
+        <version>16.2.1-m3-thu-155</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
