@@ -6,7 +6,7 @@
     <parent>
         <artifactId>insightedge-package</artifactId>
         <groupId>org.gigaspaces.insightedge</groupId>
-        <version>16.2.0-SNAPSHOT</version>
+        <version>16.2.1-PIC-1151-zookeeper-version-upgrade-fri-146</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -23,7 +23,7 @@
     <properties>
         <!--Toggling this property between provided/compile allows to run examples in cluster/IDE  -->
         <distribution.dependencies.scope>provided</distribution.dependencies.scope>
-        <ie.version>16.2.0-SNAPSHOT</ie.version>
+        <ie.version>16.2.1-PIC-1151-zookeeper-version-upgrade-fri-146</ie.version>
     </properties>
 
     <dependencies>
