@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
-        <version>16.2.2-SNAPSHOT</version>
+        <version>16.2.2-16.2.2-build-thu-208</version>
     </parent>
 
     <dependencies>
