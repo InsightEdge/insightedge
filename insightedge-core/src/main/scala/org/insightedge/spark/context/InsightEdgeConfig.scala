@@ -66,9 +66,14 @@ object InsightEdgeConfig {
     val ieConfig = for {
       spaceName <- sparkConf.getOption(SpaceNameKey).orElse(Option(sys.env.getOrElse(InsightEdgeConfig.INSIGHTEDGE_SPACE_NAME,
         InsightEdgeConfig.INSIGHTEDGE_SPACE_NAME_DEFAULT)))
-      spaceManagerKey = sparkConf.getOption(SpaceManagerKey).flatMap(k => Option(k.concat("-insightedge-manager-hs")))
+      lookupLocator =
+        if (sparkConf.getOption(SpaceManagerKey).isEmpty) {
+          Option("insightedge-manager-hs")
+        } else {
+          sparkConf.getOption(SpaceManagerKey).flatMap(k => Option(k.concat("-insightedge-manager-hs")))
+        }
+
       lookupGroups = sparkConf.getOption(LookupGroupKey)
-      lookupLocator = spaceManagerKey.orElse(sparkConf.getOption(LookupLocatorKey))
     } yield InsightEdgeConfig(spaceName, lookupGroups, lookupLocator)
 
     ieConfig.getOrElse(throw new RuntimeException("Unable to read InsightEdgeConfig from SparkConf. Use sparkConf.setInsightEdgeConfig(ieConfig) to set config"))
