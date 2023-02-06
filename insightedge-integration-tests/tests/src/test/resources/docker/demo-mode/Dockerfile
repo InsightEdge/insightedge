@@ -5,7 +5,7 @@
 FROM centos:7.2.1511
 MAINTAINER Oleksiy Dyagilev oleksiy.dyagilev@gigaspaces.com
 
-ARG STORAGE_SERVER="imc-srv01"
+ENV STORAGE_SERVER="gs-storage-server.s3.amazonaws.com"
 RUN echo "Using STORAGE_SERVER=${STORAGE_SERVER}"
 RUN if [[ "${STORAGE_SERVER}" == "" ]]; then echo "STORAGE_SERVER can't be empty"; exit 1; fi
 
