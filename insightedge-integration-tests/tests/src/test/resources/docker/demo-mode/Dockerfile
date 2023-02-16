@@ -19,10 +19,10 @@ ENV ZIPPED_JDK=jdk-8u45-linux-x64.tar.gz
 ENV TAR_JDK=jdk-8u45-linux-x64.tar
 
 ENV JAVA_TARGET=jdk1.8.0_45
-ENV JAVA_HOME /usr/$JAVA_TARGET
+ENV JAVA_HOME /usr/java/$JAVA_TARGET
 ENV PATH $PATH:$JAVA_HOME/bin
 
-RUN wget http://${STORAGE_SERVER}/javas/$ZIPPED_JDK
+RUN wget http://${STORAGE_SERVER}/jdk/$ZIPPED_JDK
 RUN gunzip $ZIPPED_JDK && tar -xvf $TAR_JDK -C /usr/
 RUN ln -s $JAVA_HOME /usr/java && rm -rf $JAVA_HOME/man
 
