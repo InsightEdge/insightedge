@@ -15,10 +15,10 @@ RUN yum clean all
 RUN yum -y install curl wget unzip
 
 # java
-ENV ZIPPED_JDK=jdk-8u131-linux-x64.tar.gz
-ENV TAR_JDK=jdk-8u131-linux-x64.tar
+ENV ZIPPED_JDK=jdk-8u45-linux-x64.tar.gz
+ENV TAR_JDK=jdk-8u45-linux-x64.tar
 
-ENV JAVA_TARGET=jdk1.8.0_131
+ENV JAVA_TARGET=jdk1.8.0_45
 ENV JAVA_HOME /usr/$JAVA_TARGET
 ENV PATH $PATH:$JAVA_HOME/bin
 
