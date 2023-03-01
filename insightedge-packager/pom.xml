@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.gigaspaces.insightedge</groupId>
         <artifactId>insightedge-package</artifactId>
-        <version>15.8.1-SNAPSHOT</version>
+        <version>15.8.1-patch-a-sagiv-4</version>
     </parent>
 
     <properties>
