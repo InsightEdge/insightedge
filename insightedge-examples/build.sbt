@@ -1,6 +1,6 @@
 name := "insightedge-examples"
 
-val insightEdgeVersion = sys.props.getOrElse("insightEdgeVersion", "16.3.0-SNAPSHOT")
+val insightEdgeVersion = sys.props.getOrElse("insightEdgeVersion", "16.3.0-PIC-2018-Backup-file-security-test-fri-502")
 
 version := insightEdgeVersion
 
